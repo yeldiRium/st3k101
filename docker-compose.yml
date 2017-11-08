@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+
+  db-mongo:
+    build: ./db-mongo
+    restart: always
+
+  memcached:
+    build: ./memcached
+    restart: always
+
+  websrv-flask:
+    build: ./websrv-flask
+    restart: always
+    ports:
+      - 80:80
