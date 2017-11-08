@@ -9,3 +9,8 @@ after changes to code use
 	$ docker-compose build
 
 will create auto mounted volumes for this later yadda yadda it's late
+
+
+Data:
+
+Prof. E-Mail: drachsler@dipf.de
