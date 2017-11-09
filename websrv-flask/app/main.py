@@ -9,7 +9,7 @@ def hello():
     """
     Home route
     """
-    return render_template("base.html")
+    return render_template("home.html")
 
 
 # SESSION STUFF:
