@@ -1,0 +1,23 @@
+{
+  "name": "efla-web",
+  "authors": [
+    "Hannes Leutloff <hannes.leutloff@aol.de",
+    "Noah Hummel <strangedev@posteo.net"
+  ],
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "angular": "^1.6.6",
+    "angular-route": "^1.6.6",
+    "bootstrap": "^3.3.7",
+    "sass": "^1.0.0-beta.3"
+  },
+  "scripts": {
+    "preinstall": "npm run clearStaticDir",
+    "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run moveNodeModules",
+    "clearStaticDir": "rm -rf websrv-flask/app/static",
+    "mkCssDir": "mkdir -p websrv-flask/app/static/css",
+    "compileSCSS": "sass websrv-flask/app/sass/base.scss >> websrv-flask/app/static/css/base.css",
+    "moveNodeModules": "mv node_modules/ websrv-flask/app/static/vendor/"
+  }
+}
