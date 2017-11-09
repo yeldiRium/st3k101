@@ -71,7 +71,7 @@ def user_account():
 
 
 # SURVEY FOR DATA SUBJECT
-@app.route("/survey/<string:survey_uuid", methods=["GET"])
+@app.route("/survey/<string:survey_uuid>", methods=["GET"])
 def survey(survey_uuid):
     """
     Survey
