@@ -1,0 +1,5 @@
+__pycache__/
+.sass-cache/
+
+/websrv-flask/app/static/css/*
+/websrv-flask/app/static/vendor/*

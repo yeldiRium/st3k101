@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Survey Tool 3000 lol Backend</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" />
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+    {% block content %}
+    {% endblock content %}
+
+    {% block pre_foot_js %}
+    {% endblock %}
+    <script src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
+    {% block post_foot_js %}
+    {% endblock %}
+</body>
+</html>
