@@ -14,10 +14,11 @@
   },
   "scripts": {
     "preinstall": "npm run clearStaticDir",
-    "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run moveNodeModules",
+    "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run removeSassModule && npm run moveNodeModules",
     "clearStaticDir": "rm -rf websrv-flask/app/static",
     "mkCssDir": "mkdir -p websrv-flask/app/static/css",
     "compileSCSS": "sass websrv-flask/app/sass/base.scss >> websrv-flask/app/static/css/base.css",
+    "removeSassModule": "rm -rf node_modules/sass && rm -rf node_modules/.bin/",
     "moveNodeModules": "mv node_modules/ websrv-flask/app/static/vendor/"
   }
 }
