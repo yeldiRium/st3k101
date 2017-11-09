@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=["GET"])
-def hello():
+def home():
     """
     Home route
     """
@@ -18,7 +18,7 @@ def register():
     """
     Registration Route
     """
-    return render_template("home.html")
+    return render_template("home_base.html")
 
 
 @app.route("/login", methods=["GET"])
@@ -26,7 +26,7 @@ def login():
     """
     Login Route
     """
-    return render_template("home.html")
+    return render_template("home_base.html")
 
 
 @app.route("/logout", methods=["GET"])
@@ -34,7 +34,7 @@ def logout():
     """
     Logout Route
     """
-    return render_template("home.html")
+    return render_template("home_base.html")
 
 
 # USER BACKEND
