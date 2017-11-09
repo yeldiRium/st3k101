@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from memcache import Client
 
 app = Flask(__name__)
@@ -9,7 +9,7 @@ def hello():
     """
     Home route
     """
-    return "Bring caffeine, du ficker."
+    return render_template("base.html")
 
 
 # SESSION STUFF:
@@ -38,7 +38,7 @@ def logout():
 
 
 # USER BACKEND
-@app.route("be/dash", methods=["GET"])
+@app.route("/be/dash", methods=["GET"])
 def user_dashboard():
     """
     Dashboard for users
@@ -46,7 +46,7 @@ def user_dashboard():
     return ""
 
 
-@app.route("be/surveys", methods=["GET"])
+@app.route("/be/surveys", methods=["GET"])
 def user_survey_overview():
     """
     Survey overview for users
@@ -54,7 +54,7 @@ def user_survey_overview():
     return ""
 
 
-@app.route("be/surveys/<string:survey_uuid>", methods=["GET"])
+@app.route("/be/surveys/<string:survey_uuid>", methods=["GET"])
 def user_survey_details(survey_uuid):
     """
     Survey details for users
@@ -62,7 +62,7 @@ def user_survey_details(survey_uuid):
     return ""
 
 
-@app.route("be/account", methods=["GET"])
+@app.route("/be/account", methods=["GET"])
 def user_account():
     """
     Account management for users
@@ -71,7 +71,7 @@ def user_account():
 
 
 # SURVEY FOR DATA SUBJECT
-@app.route("survey/<string:survey_uuid", methods=["GET"])
+@app.route("/survey/<string:survey_uuid", methods=["GET"])
 def survey(survey_uuid):
     """
     Survey
