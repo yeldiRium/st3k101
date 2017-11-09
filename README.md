@@ -2,13 +2,15 @@ howto:
 
 install docker
 install docker-compose (might be already bundled, who knows)
+install node
+install npm
 
+	$ npm install
 	$ docker-compose up
 
-after changes to code use
+after changes to code stop docker (strg+c) and
 	$ docker-compose build
-
-will create auto mounted volumes for this later yadda yadda it's late
+	$ docker-compose up
 
 
 Data:
