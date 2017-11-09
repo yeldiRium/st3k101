@@ -18,7 +18,7 @@ def register():
     """
     Registration Route
     """
-    return render_template("home_base.html")
+    return render_template("register.html")
 
 
 @app.route("/login", methods=["GET"])
