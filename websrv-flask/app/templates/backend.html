@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Survey Tool 3000 lol Backend</title>
+{% extends 'base.html' %}
+
+{% block header %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/backend.css') }}" type="text/css" />
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     This is the Survey Tool 3000 lol Backend! here you can configure stuff.
-</body>
-</html>
+{% endblock %}

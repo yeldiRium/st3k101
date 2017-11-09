@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Survey</title>
+{% extends 'base.html' %}
+
+{% block header %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/survey.css') }}" type="text/css" />
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     This is a survey lol.
-</body>
-</html>
+{% endblock %}
