@@ -9,7 +9,7 @@ def home():
     """
     Home route
     """
-    return render_template("home.html")
+    return render_template("home_index.html")
 
 
 # SESSION STUFF:
@@ -18,7 +18,7 @@ def register():
     """
     Registration Route
     """
-    return render_template("register.html")
+    return render_template("home_register.html")
 
 
 @app.route("/login", methods=["POST"])

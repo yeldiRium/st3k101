@@ -6,21 +6,21 @@
 
 {% block content %}
     <div class="nav-side-menu">
-        <div class="brand">Brand Logo</div>
+        <div class="brand">ST3K101</div>
         <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
         <div class="menu-list">
             <ul id="menu-content" class="menu-content collapse out">
-                <li>
+                <li class="{% if request.endpoint == 'user_dashboard' %}active{% endif %}">
                     <a href="{{ url_for('user_dashboard') }}">
                         <i class="fa fa-lg"></i> Dashboard
                     </a>
                 </li>
-                <li>
+                <li class="{% if request.endpoint == 'user_survey_overview' %}active{% endif %}">
                     <a href="{{ url_for('user_survey_overview') }}">
                         <i class="fa fa-lg"></i> Surveys
                     </a>
                 </li>
-                <li>
+                <li class="{% if request.endpoint == 'user_account' %}active{% endif %}">
                     <a href="{{ url_for('user_account') }}">
                         <i class="fa fa-lg"></i> Account
                     </a>
@@ -28,7 +28,7 @@
             </ul>
         </div>
     </div>
-    <div class="container">
+    <div class="container-fluid" id="content">
         {% block subcontent %}
         {% endblock %}
     </div>
