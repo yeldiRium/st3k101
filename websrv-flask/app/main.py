@@ -45,7 +45,7 @@ def user_dashboard():
     """
     Dashboard for users
     """
-    return render_template("backend.html")
+    return render_template("backend_base.html")
 
 
 @app.route("/be/surveys", methods=["GET"])
@@ -53,7 +53,7 @@ def user_survey_overview():
     """
     Survey overview for users
     """
-    return render_template("backend.html")
+    return render_template("backend_base.html")
 
 
 @app.route("/be/surveys/<string:survey_uuid>", methods=["GET"])
@@ -61,7 +61,7 @@ def user_survey_details(survey_uuid):
     """
     Survey details for users
     """
-    return render_template("backend.html")
+    return render_template("backend_base.html")
 
 
 @app.route("/be/account", methods=["GET"])
@@ -69,7 +69,7 @@ def user_account():
     """
     Account management for users
     """
-    return render_template("backend.html")
+    return render_template("backend_base.html")
 
 
 # SURVEY FOR DATA SUBJECT
@@ -78,4 +78,4 @@ def survey(survey_uuid):
     """
     Survey
     """
-    return render_template("survey.html")
+    return render_template("survey_base.html")
