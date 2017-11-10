@@ -6,7 +6,7 @@ from model.database import PersistentObject
 
 class Questionnaire(PersistentObject):
 
-    def __init__(self, uuid:str):
+    def __init__(self, uuid:str=None):
         super().__init__(uuid)
 
         self.__name = ""  # type: str
@@ -23,9 +23,10 @@ class Questionnaire(PersistentObject):
     @name.setter
     def name(self, value: str):
         if type(value) != str:
-            raise Exception("Invalid type")
-        super().set_member("name", value)
+            raise TypeError
+        super().set_member("__name", value)
 
     @questiongroups.setter
     def questiongroups(self, value:List[QuestionGroup]):
-        super().set_member("questiongroups", value)
+        ids = [o.uuid for o in value]
+        super().set_member("__questiongroup_ids", ids)

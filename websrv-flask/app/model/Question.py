@@ -3,7 +3,7 @@ from model.database import PersistentObject
 
 class Question(PersistentObject):
 
-    def __init__(self, uuid:str):
+    def __init__(self, uuid:str=None):
         super().__init__(uuid)
 
         self.__text = ""  # type: str
@@ -14,17 +14,17 @@ class Question(PersistentObject):
         return self.__text
 
     @property
-    def value(self) -> int:
+    def answer_value(self) -> int:
         return self.__answer_value
 
     @text.setter
     def text(self, value: str):
         if type(value) != str:
-            raise Exception("Invalid type")
-        super().set_member("text", value)
+            raise TypeError
+        super().set_member("__text", value)
 
-    @value.setter
-    def value(self, value:int):
+    @answer_value.setter
+    def answer_value(self, value:int):
         if type(value) != int:
-            raise Exception("Invalid type")
-        super().set_member("value", value)
+            raise TypeError
+        super().set_member("__answer_value", value)

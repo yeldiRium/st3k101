@@ -6,7 +6,7 @@ from model.database import PersistentObject
 
 class QuestionGroup(PersistentObject):
 
-    def __init__(self, uuid:str):
+    def __init__(self, uuid:str=None):
         super().__init__(uuid)
 
         self.__name = ""  # type: str
@@ -18,25 +18,26 @@ class QuestionGroup(PersistentObject):
         return self.__name
 
     @property
-    def questions(self) -> List[Question]:
-        return [Question(uuid) for uuid in self.__question_ids]
+    def color(self) -> List[Question]:
+        return self.__color
 
     @property
-    def color(self) -> List[Question]:
+    def questions(self) -> List[Question]:
         return [Question(uuid) for uuid in self.__question_ids]
-
-    @color.setter
-    def color(self, value: str):
-        if type(value) != str:
-            raise Exception("Invalid type")
-        super().set_member("color", value)
 
     @name.setter
     def name(self, value: str):
         if type(value) != str:
-            raise Exception("Invalid type")
-        super().set_member("name", value)
+            raise TypeError
+        super().set_member("__name", value)
+
+    @color.setter
+    def color(self, value: str):
+        if type(value) != str:
+            raise TypeError
+        super().set_member("__color", value)
 
     @questions.setter
     def questions(self, value:List[Question]):
-        super().set_member("questions", value)
+        ids = [o.uuid for o in value]
+        super().set_member("__question_ids", ids)
