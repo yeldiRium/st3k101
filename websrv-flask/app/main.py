@@ -45,7 +45,7 @@ def user_dashboard():
     """
     Dashboard for users
     """
-    return render_template("backend_base.html")
+    return render_template("backend_dashboard.html")
 
 
 @app.route("/be/surveys", methods=["GET"])
