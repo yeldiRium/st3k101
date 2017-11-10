@@ -41,14 +41,16 @@ class PersistentObject(object):
     _encoder = DefaultEncoder
     _decoder = DefaultDecoder
 
-    def __init__(self, uuid: str):
+    def __init__(self, uuid: str=None):
         """
         TODO: lock object for duration of request
         :param query: 
         """
         self._id = None
+        self.__collection = self.__db[classname(self)]
         if uuid:
             self.__from_document(self.__collection.find_one({u'_id': ObjectId(uuid)}))
+            self._id = uuid
 
     @property
     def uuid(self):
@@ -57,7 +59,7 @@ class PersistentObject(object):
     def __from_document(self, document: dict):
         if not document:
             return
-        self.__dict__.update(self.__decoder.decode(document))
+        self.__dict__.update(self._decoder().decode(document))
 
     def set_member(self, member, value):
         """
@@ -66,10 +68,9 @@ class PersistentObject(object):
         :return: None
         """
         setattr(self, member, value)
-        coll = self.__client[self.__collection]
-        coll.update_one(
+        self.__collection.update_one(
             {u'_id': self._id},
-            {u'$set': {member: self.__encoder.encode(value)}}
+            {u'$set': {'fields.{}'.format(member): value}}
         )
 
     def save(self):
@@ -78,12 +79,10 @@ class PersistentObject(object):
         between changed and unchanged fields, but instead replaces whole document
         :return: None
         """
-        coll = self.__client[self.__collection]
         if not self._id:
-            self._id = coll.insert_one(self.__encoder.encode(self)).inserted_id
+            self._id = self.__collection.insert_one(self._encoder().encode(self)).inserted_id
         else:
-            coll.replace_one({u'_id': self._id}, self.__encoder.encode(self))
+            self.__collection.replace_one({u'_id': self._id}, self._encoder().encode(self))
 
     def remove(self):
-        coll = self.__client[self.__collection]
-        coll.delete_one({u'_id': self._id})
+        self.__collection.delete_one({u'_id': self._id})
