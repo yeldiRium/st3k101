@@ -78,4 +78,22 @@ def survey(survey_uuid):
     """
     Survey
     """
-    return render_template("survey_base.html")
+    return render_template(
+        "survey_base.html",
+        caption="Dis is an Example Survey",
+        description="it is used to demontsrate the survey page. it has no " +
+                    "content yet",
+        background_color="#000000",
+        font_color="#FFFFFF"
+    )
+
+
+@app.route("/survey/<string:survey_uuid>", methods=["POST"])
+def survey_submit(survey_uuid):
+    """
+    Survey submit
+
+    This endpoint receives survey data via POST and persists them. Then redi-
+    rects to a thank-you page.
+    """
+    return ""
