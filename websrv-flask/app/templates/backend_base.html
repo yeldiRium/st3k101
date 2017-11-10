@@ -5,5 +5,31 @@
 {% endblock %}
 
 {% block content %}
-    This is the Survey Tool 3000 lol Backend! here you can configure stuff.
+    <div class="nav-side-menu">
+        <div class="brand">Brand Logo</div>
+        <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+        <div class="menu-list">
+            <ul id="menu-content" class="menu-content collapse out">
+                <li>
+                    <a href="{{ url_for('user_dashboard') }}">
+                        <i class="fa fa-lg"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('user_survey_overview') }}">
+                        <i class="fa fa-lg"></i> Surveys
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('user_account') }}">
+                        <i class="fa fa-lg"></i> Account
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        {% block subcontent %}
+        {% endblock %}
+    </div>
 {% endblock %}
