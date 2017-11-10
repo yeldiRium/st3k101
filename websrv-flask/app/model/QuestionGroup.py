@@ -17,7 +17,7 @@ class QuestionGroup(PersistentObject):
         return self.__name
 
     @property
-    def color(self) -> List[Question]:
+    def color(self) -> str:
         return self.__color
 
     @property
