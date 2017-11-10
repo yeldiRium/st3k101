@@ -20,7 +20,7 @@
     "mkCssDir": "mkdir -p websrv-flask/app/static/css",
     "compileSCSS": "npm run compileSCSSBackend && npm run compileSCSSHome && npm run compileSCSSSurvey",
     "compileSCSSBackend": "sass websrv-flask/app/sass/base.scss >> websrv-flask/app/static/css/backend.css",
-    "compileSCSSHome": "sass websrv-flask/app/sass/base.scss >> websrv-flask/app/static/css/home.css",
+    "compileSCSSHome": "sass websrv-flask/app/sass/home.scss >> websrv-flask/app/static/css/home.css",
     "compileSCSSSurvey": "sass websrv-flask/app/sass/base.scss >> websrv-flask/app/static/css/survey.css",
     "removeSassModule": "rm -rf node_modules/sass && rm -rf node_modules/.bin/",
     "moveNodeModules": "mv node_modules/ websrv-flask/app/static/vendor/"
