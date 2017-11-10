@@ -21,10 +21,12 @@ def register():
     return render_template("register.html")
 
 
-@app.route("/login", methods=["GET"])
+@app.route("/login", methods=["POST"])
 def login():
     """
     Login Route
+
+    Takes login parameters via POST and starts session.
     """
     return render_template("home_base.html")
 
