@@ -1,10 +1,11 @@
+from typing import List
+
 from model.database import PersistentObject
 from model.Questionnaire import Questionnaire
 
 
 class Survey(PersistentObject):
-
-    def __init__(self, uuid:str=None):
+    def __init__(self, uuid: str = None):
         super().__init__(uuid)
 
         self.__name = ""  # type: str
@@ -26,8 +27,6 @@ class Survey(PersistentObject):
         super().set_member("__name", value)
 
     @questionnaires.setter
-    def questionnaires(self, value:List[Questionnaire]):
+    def questionnaires(self, value: List[Questionnaire]):
         ids = [o.uuid for o in value]
         super().set_member("__questionnaire_ids", ids)
-
-

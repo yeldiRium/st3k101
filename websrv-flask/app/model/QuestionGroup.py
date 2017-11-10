@@ -1,16 +1,15 @@
 from typing import List
 
-from model.Question import Question
 from model.database import PersistentObject
+from model.Question import Question
 
 
 class QuestionGroup(PersistentObject):
-
-    def __init__(self, uuid:str=None):
+    def __init__(self, uuid: str = None):
         super().__init__(uuid)
 
         self.__name = ""  # type: str
-        self.__color = "#99ff99" # type: str
+        self.__color = "#99ff99"  # type: str
         self.__question_ids = None  # type: List[str]
 
     @property
@@ -38,6 +37,6 @@ class QuestionGroup(PersistentObject):
         super().set_member("__color", value)
 
     @questions.setter
-    def questions(self, value:List[Question]):
+    def questions(self, value: List[Question]):
         ids = [o.uuid for o in value]
         super().set_member("__question_ids", ids)

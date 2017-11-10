@@ -1,12 +1,11 @@
 from typing import List
 
-from model.QuestionGroup import QuestionGroup
 from model.database import PersistentObject
+from model.QuestionGroup import QuestionGroup
 
 
 class Questionnaire(PersistentObject):
-
-    def __init__(self, uuid:str=None):
+    def __init__(self, uuid: str = None):
         super().__init__(uuid)
 
         self.__name = ""  # type: str
@@ -27,6 +26,6 @@ class Questionnaire(PersistentObject):
         super().set_member("__name", value)
 
     @questiongroups.setter
-    def questiongroups(self, value:List[QuestionGroup]):
+    def questiongroups(self, value: List[QuestionGroup]):
         ids = [o.uuid for o in value]
         super().set_member("__questiongroup_ids", ids)
