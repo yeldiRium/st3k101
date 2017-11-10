@@ -3,3 +3,5 @@ __pycache__/
 
 /websrv-flask/app/static/css/*
 /websrv-flask/app/static/vendor/*
+
+.idea/
