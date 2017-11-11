@@ -1,0 +1,1 @@
+class ClientIpChangedException(Exception): pass

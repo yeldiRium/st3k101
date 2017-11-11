@@ -1,7 +1,7 @@
-from flask import Flask, render_template
-from memcache import Client
+from flask import Flask, render_template, g
 
 app = Flask(__name__)
+g._config = app.config
 
 
 @app.route("/", methods=["GET"])
