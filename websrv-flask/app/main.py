@@ -1,7 +1,55 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, request
+
+import auth
+from framework.exceptions import ClientIpChangedException
+from model.DataClient import DataClient
 
 app = Flask(__name__)
-g._config = app.config
+
+
+# before and after request foo
+@app.before_request
+def before_request():
+    """
+    Called before each request, when the app context is initialized
+    Automatically sets g._current_user
+    """
+    g._config = app.config
+
+    session_token = request.args.get('session_token')
+    g._current_user = None
+    if session_token:
+        if auth.activity(session_token):  # also validates token, raises ClientIpChangedException if IP pinning fails
+            g._current_user = DataClient(auth.who_is(session_token))
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    """
+    Called after request is handled, before app context is deleted
+    :param exception: Exception Did an exception happen?
+    """
+    #app.log_exception(exception)
+    pass
+
+
+# error handling
+@app.errorhandler(ClientIpChangedException)
+def client_ip_changed(error):
+    """
+    Called when IP pinning indicates a changed client ip between sessions
+    :param error: Exception The exception object
+    """
+    return "LUL you're a fake and I know it"
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """
+    Called on HTTP 404
+    :param error: 
+    """
+    return "This is not the url you're looking for."
 
 
 @app.route("/", methods=["GET"])
