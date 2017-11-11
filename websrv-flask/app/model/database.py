@@ -1,8 +1,7 @@
 from flask import json
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from pydoc import safeimport
-
+from framework.exceptions import ClassnameMismatchException, UuidMismatchException
 
 _client = MongoClient("db-mongo")
 _db = _client['efla-web']
@@ -60,6 +59,32 @@ class PersistentObject(object):
         if not document:
             return
         self.__dict__.update(self._internal_decoder().decode(document))
+
+    def as_json(self):
+        as_dict = self._internal_encoder().encode(self)
+        as_dict['uuid'] = self.uuid
+        return json.dumps(as_dict)
+
+    def update_from_json(self, json_data: str):
+        if type(json_data) is not str:
+            raise TypeError
+
+        as_dict = json.loads(json_data)
+        as_dict = self._internal_decoder().decode(as_dict)
+
+        if as_dict['classname'] is not classname(self):
+            raise ClassnameMismatchException(
+                "Tried to update PersistentObject {} with data of wrong class: {}".format(
+                    classname(self), as_dict['classname']))
+
+        if as_dict['uuid'] is not self.uuid:
+            raise UuidMismatchException(
+                "Tried to update PersistentObject {} having uuid {} with data of Object having uuid {}".format(
+                    classname(self), self.uuid, as_dict['uuid']
+                ))
+
+        del as_dict['uuid']
+        self.__from_document(as_dict)
 
     def set_member(self, member, value):
         """
