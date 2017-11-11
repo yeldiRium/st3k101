@@ -6,10 +6,10 @@ from model.QuestionGroup import QuestionGroup
 
 class Questionnaire(PersistentObject):
     def __init__(self, uuid: str = None):
-        super().__init__(uuid)
-
         self.__name = ""  # type: str
         self.__questiongroup_ids = None  # type: List[str]
+
+        super().__init__(uuid)
 
     @property
     def name(self) -> str:

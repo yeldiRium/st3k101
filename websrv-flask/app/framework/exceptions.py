@@ -5,3 +5,6 @@ class ClassnameMismatchException(Exception): pass
 
 
 class UuidMismatchException(Exception): pass
+
+
+class ObjectDoesntExistException(Exception): pass
