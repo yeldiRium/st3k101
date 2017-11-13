@@ -113,6 +113,17 @@ class PersistentObject(object):
         self._collection().delete_one({u'_id': self.__id})
 
 
+    @staticmethod
+    def __transform_query(query: dict) -> dict:
+        """
+        Transforms mongodb filter dict from external representation (e.g. object.name)
+        to internal representation (e.g. object.__name)
+        :param query: dict A filter dictionary
+        :return: dict Another filter dictionary
+        """
+        return {k.replace("__", ""): v for k, v in query.items()}
+
+
     @classmethod
     def one_from_query(cls, query: dict):
         """
@@ -121,6 +132,7 @@ class PersistentObject(object):
         :param query: The query the object should match
         :return: PersistentObject The PersistentObject instance if found, None otherwise
         """
+        query = cls.__transform_query(query)
         document = cls._collection().find_one(query)
         if not document:
             return None
@@ -136,6 +148,7 @@ class PersistentObject(object):
         :param query: The query the objects should match
         :return: List[PersistentObject] The list of all matching PersistentObject instances
         """
+        query = cls.__transform_query(query)
         documents = cls._collection().find(query)
         results = []
 
