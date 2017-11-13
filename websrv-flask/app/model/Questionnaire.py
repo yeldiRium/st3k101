@@ -1,6 +1,6 @@
 from typing import List
 
-from model.database import PersistentObject
+from model.PersistentObject import PersistentObject
 from model.QuestionGroup import QuestionGroup
 
 

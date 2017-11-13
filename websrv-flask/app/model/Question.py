@@ -1,4 +1,4 @@
-from model.database import PersistentObject
+from model.PersistentObject import PersistentObject
 
 
 class Question(PersistentObject):

@@ -1,7 +1,7 @@
 from typing import List
 
 from model.Survey import Survey
-from model.database import PersistentObject
+from model.PersistentObject import PersistentObject
 
 
 class DataClient(PersistentObject):
@@ -9,14 +9,19 @@ class DataClient(PersistentObject):
     def __init__(self, uuid:str=None):
         super().__init__(uuid)
 
-        self.__name = ""  # type: str
+        self.__email = ""  # type: str
+        self.__activated = False  # type: bool
         self.__password_salt = ""  # type: str
         self.__password_hash = ""  # type: str
         self.__survey_ids = None  # type: List[str]
 
     @property
-    def name(self) -> str:
-        return self.__name
+    def email(self) -> str:
+        return self.__email
+
+    @property
+    def activated(self):
+        return self.__activated
 
     @property
     def password_salt(self) -> str:
@@ -30,11 +35,17 @@ class DataClient(PersistentObject):
     def surveys(self) -> List[Survey]:
         return [Survey(uuid) for uuid in self.__survey_ids]
 
-    @name.setter
-    def name(self, value: str):
+    @email.setter
+    def email(self, value: str):
         if type(value) != str:
             raise TypeError
-        super().set_member("name", value)
+        super().set_member("__email", value)
+
+    @activated.setter
+    def activated(self, value: bool):
+        if type(value) != bool:
+            raise TypeError
+        super().set_member("__activated", value)
 
     @password_salt.setter
     def password_salt(self, value: str):
