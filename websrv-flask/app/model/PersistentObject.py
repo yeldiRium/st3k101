@@ -40,21 +40,26 @@ class PersistentObject(object):
     __encoder = DefaultEncoder
     __decoder = DefaultDecoder
 
+
+    @classmethod
+    def _collection(cls):
+        return cls.__db[str(cls)[8:2]]  # same as classname method
+
+
     def __init__(self, uuid: str=None):
         """
         TODO: lock object for duration of request
         :param query: 
         """
         self.__id = None
-        self.__collection = self.__db[classname(self)]
         if uuid:
-            document = self.__collection.find_one({u'_id': ObjectId(uuid)})
+            document = self._collection().find_one({u'_id': ObjectId(uuid)})
             if not document:
                 raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
             self.__from_document(document)
             self.__id = ObjectId(uuid)
         else:
-            self.__id = self.__collection.insert_one(self.__encoder().encode(self)).inserted_id
+            self.__id = self._collection().insert_one(self.__encoder().encode(self)).inserted_id
 
     @property
     def uuid(self):
@@ -99,10 +104,42 @@ class PersistentObject(object):
         :return: None
         """
         setattr(self, member, value)
-        self.__collection.update_one(
+        self._collection().update_one(
             {u'_id': self.__id},
             {u'$set': {'fields.{}'.format(member): value}}
         )
 
     def remove(self):
-        self.__collection.delete_one({u'_id': self.__id})
+        self._collection().delete_one({u'_id': self.__id})
+
+
+    @classmethod
+    def one_from_query(cls, query: dict):
+        """
+        Returns one PersistentObject of class cls which matches query
+        :param cls: The class of PersistentObject to find
+        :param query: The query the object should match
+        :return: PersistentObject The PersistentObject instance if found, None otherwise
+        """
+        document = cls._collection().find_one(query)
+        if not document:
+            return None
+
+        return cls(document['_id'])
+
+
+    @classmethod
+    def many_from_query(cls, query: dict):
+        """
+        Returns all PersistentObjects of class cls which match query
+        :param cls: The class of PersistentObject to find
+        :param query: The query the objects should match
+        :return: List[PersistentObject] The list of all matching PersistentObject instances
+        """
+        documents = cls._collection().find(query)
+        results = []
+
+        for doc in documents:
+            results.append(cls(doc['_id']))
+
+        return results
