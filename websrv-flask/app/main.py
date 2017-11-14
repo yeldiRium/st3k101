@@ -1,12 +1,10 @@
-from flask import Flask, render_template, g, request
-
-import auth
-from framework.exceptions import ClientIpChangedException
-from model.DataClient import DataClient
+from flask import Flask, render_template
+from memcache import Client
 
 app = Flask(__name__)
 
 
+<<<<<<< HEAD
 # before and after request foo
 @app.before_request
 def before_request():
@@ -53,6 +51,8 @@ def page_not_found(error):
     return "This is not the url you're looking for."
 
 
+=======
+>>>>>>> add Angular module structure for backend
 @app.route("/", methods=["GET"])
 def home():
     """
@@ -89,36 +89,12 @@ def logout():
 
 
 # USER BACKEND
-@app.route("/be/dash", methods=["GET"])
-def user_dashboard():
+@app.route("/be", methods=["GET"])
+def backend():
     """
     Dashboard for users
     """
-    return render_template("backend_dashboard.html")
-
-
-@app.route("/be/surveys", methods=["GET"])
-def user_survey_overview():
-    """
-    Survey overview for users
-    """
-    return render_template("backend_base.html")
-
-
-@app.route("/be/surveys/<string:survey_uuid>", methods=["GET"])
-def user_survey_details(survey_uuid):
-    """
-    Survey details for users
-    """
-    return render_template("backend_base.html")
-
-
-@app.route("/be/account", methods=["GET"])
-def user_account():
-    """
-    Account management for users
-    """
-    return render_template("backend_base.html")
+    return render_template("backend.html")
 
 
 # SURVEY FOR DATA SUBJECT
