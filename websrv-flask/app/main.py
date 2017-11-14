@@ -1,5 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, g, request
 from memcache import Client
+import auth
+from framework.exceptions import ClientIpChangedException
+from model.DataClient import DataClient
 
 app = Flask(__name__)
 
@@ -65,6 +68,14 @@ def register():
     Registration Route
     """
     return render_template("home_register.html")
+
+
+@app.route("/register", methods=["POST"])
+def register_post():
+    """
+    Registration endpoint that takes post information for new account
+    """
+    return ""
 
 
 @app.route("/login", methods=["POST"])
