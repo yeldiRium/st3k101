@@ -4,7 +4,6 @@ from memcache import Client
 app = Flask(__name__)
 
 
-<<<<<<< HEAD
 # before and after request foo
 @app.before_request
 def before_request():
@@ -51,8 +50,6 @@ def page_not_found(error):
     return "This is not the url you're looking for."
 
 
-=======
->>>>>>> add Angular module structure for backend
 @app.route("/", methods=["GET"])
 def home():
     """
