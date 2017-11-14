@@ -3,14 +3,20 @@ angular.module('Surveys', ['ngRoute'])
         function($scope) {
 
         }])
+    .controller('EditSurveyController', ['$scope',
+        function($scope) {
+
+        }])
     .config(['$routeProvider', '$locationProvider',
         function($routeProvider, $locationProvider) {
             $locationProvider.hashPrefix('');
             $routeProvider
-                .when('/be/surveys/', {
-
+                .when('/surveys/', {
+                    templateUrl: '/static/js/templates/Surveys.html',
+                    controller: 'SurveysController'
                 })
-                .when('/be/surveys/:surveyID/', {
-                    
+                .when('/surveys/:surveyID/', {
+                    templateUrl: '/static/js/templates/EditSurvey.html',
+                    controller: 'EditSurveyController'
                 });
         }]);

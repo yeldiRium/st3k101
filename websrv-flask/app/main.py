@@ -102,7 +102,7 @@ def logout():
 
 
 # USER BACKEND
-@app.route("/be", methods=["GET"])
+@app.route("/be/", methods=["GET"])
 def backend():
     """
     Dashboard for users

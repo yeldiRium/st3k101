@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-<head ng-app="App">
+<html ng-app="App">
+<head>
     <title>Survey Tool 3000 lol Backend</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" />
@@ -13,17 +13,17 @@
         <div class="menu-list">
             <ul id="menu-content" class="menu-content collapse out">
                 <li class="{% if request.endpoint == 'user_dashboard' %}active{% endif %}">
-                    <a href="">
+                    <a href="#/dashboard">
                         <i class="fa fa-lg"></i> Dashboard
                     </a>
                 </li>
                 <li class="{% if request.endpoint == 'user_survey_overview' %}active{% endif %}">
-                    <a href="">
+                    <a href="#/surveys">
                         <i class="fa fa-lg"></i> Surveys
                     </a>
                 </li>
                 <li class="{% if request.endpoint == 'user_account' %}active{% endif %}">
-                    <a href="">
+                    <a href="#/account">
                         <i class="fa fa-lg"></i> Account
                     </a>
                 </li>
@@ -31,6 +31,7 @@
         </div>
     </div>
     <div class="container-fluid" id="content">
+        <ng-view></ng-view>
     </div>
 
     <script src="{{ url_for('static', filename='vendor/jquery/dist/jquery.js') }}"></script>

@@ -1,16 +1,19 @@
 angular.module('Dashboard', ['ngRoute'])
     .controller('DashboardController', ['$scope',
         function($scope) {
-
+            
         }])
     .config(['$routeProvider', '$locationProvider',
         function($routeProvider, $locationProvider) {
             $locationProvider.hashPrefix('');
             $routeProvider
-                .when('/be', {
-                    redirectTo: '/be/dashboard'
+                .when('/', {
+                    redirectTo: '/dashboard',
+                    templateUrl: '/static/js/templates/Dashboard.html',
+                    controller: 'DashboardController'
                 })
-                .when('/be/dashboard', {
-
+                .when('/dashboard', {
+                    templateUrl: '/static/js/templates/Dashboard.html',
+                    controller: 'DashboardController'
                 });
         }]);

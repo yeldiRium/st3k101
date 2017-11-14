@@ -7,7 +7,7 @@ angular.module('Account', ['ngRoute'])
         function($routeProvider, $locationProvider) {
             $locationProvider.hashPrefix('');
             $routeProvider
-                .when('/be/account', {
-
+                .when('/account', {
+                    controller: 'AccountController'
                 });
         }]);
