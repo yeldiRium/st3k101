@@ -17,3 +17,6 @@ class SessionExistsException(Exception): pass
 
 
 class UserExistsException(Exception): pass
+
+
+class UserNotLoggedInException(Exception): pass

@@ -4,7 +4,7 @@ import argon2
 from flask import g
 
 import auth
-from framework.exceptions import UserExistsException, BadCredentialsException
+from framework.exceptions import UserExistsException, BadCredentialsException, UserNotLoggedInException
 from model.DataClient import DataClient
 
 
@@ -53,3 +53,15 @@ def login(email: str, password: str) -> str:
         success = auth.new_session(session_token, client.uuid)
 
     return session_token
+
+
+def logout():
+    """
+    Logs out the current user, raises UserNotLoggedInException if the session is already invalid.
+    :return: None
+    """
+    if not g._current_user:
+        raise UserNotLoggedInException()
+
+    if not auth.invalidate(g._current_session_token):
+        raise UserNotLoggedInException()

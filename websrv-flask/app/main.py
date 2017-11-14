@@ -21,6 +21,7 @@ def before_request():
     if session_token:
         if auth.activity(session_token):  # also validates token, raises ClientIpChangedException if IP pinning fails
             g._current_user = DataClient(auth.who_is(session_token))
+            g._current_session_token = session_token
 
 
 @app.teardown_appcontext
