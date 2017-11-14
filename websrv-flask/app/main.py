@@ -1,6 +1,7 @@
 from flask import Flask, render_template, g, request
 from memcache import Client
 import auth
+import businesslogic.users as users
 from framework.exceptions import ClientIpChangedException
 from model.DataClient import DataClient
 
@@ -62,20 +63,24 @@ def home():
 
 
 # SESSION STUFF:
-@app.route("/register", methods=["GET"])
-def register():
+@app.route("/registration", methods=["GET"])
+def registration():
     """
     Registration Route
     """
-    return render_template("home_register.html")
+    return render_template("home_registration.html")
 
 
-@app.route("/register", methods=["POST"])
-def register_post():
+@app.route("/registration", methods=["POST"])
+def registration_post():
     """
     Registration endpoint that takes post information for new account
     """
-    return ""
+    data_client = users.register(request.form["email"], request.form["password"])
+    return render_template(
+        "home_registration_successful.html",
+        new_user=data_client
+    )
 
 
 @app.route("/login", methods=["POST"])

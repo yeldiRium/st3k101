@@ -5,31 +5,31 @@
 
     <div class="container">
         <div class="row">
-            <form action="" method="POST" class="form-horizontal">
+            <form action="{{ url_for('registration_post') }}" method="POST" class="form-horizontal">
                 <div class="form-group">
                     <div class="col-sm-2"></div>
                     <label for="email" class="col-sm-2 control-label">E-Mail</label>
                     <div class="col-sm-4">
-                        <input type="email" class="form-control" id="email" />
+                        <input type="email" class="form-control" name="email" />
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-2"></div>
                     <label for="password" class="col-sm-2 control-label">Password</label>
                     <div class="col-sm-4">
-                        <input type="password" class="form-control" id="password" />
+                        <input type="password" class="form-control" name="password" />
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-2"></div>
                     <label for="confirmation" class="col-sm-2 control-label">Confirm Password</label>
                     <div class="col-sm-4">
-                        <input type="password" class="form-control" id="confirmation" />
+                        <input type="password" class="form-control" name="confirmation" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-4"></div>
-                    <button type="submit" class="btn btn-default col-sm-4">Register</button>
+                    <input type="submit" class="btn btn-default col-sm-4" value="Register" />
                     <div class="col-sm-4"></div>
                 </div>
             </form>
