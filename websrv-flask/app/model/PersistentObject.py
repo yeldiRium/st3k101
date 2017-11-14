@@ -1,3 +1,5 @@
+from typing import Any
+
 from flask import json
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -23,7 +25,6 @@ class PersistentObject(object):
     @classmethod
     def _collection(cls):
         return cls.__db[str(cls)[8:-2]]  # same as classname method
-
 
     def __init__(self, uuid: str=None):
         """
@@ -102,7 +103,7 @@ class PersistentObject(object):
         :param obj_dict: 
         :return: 
         """
-        def  __key_is_valid(key: str) -> bool:
+        def __key_is_valid(key: str) -> bool:
             if "__" in key:
                 return False
             elif key == "_id":
@@ -112,7 +113,6 @@ class PersistentObject(object):
             return key.startswith("_")
 
         return {PersistentObject.__key_to_external(k): v for k, v in obj_dict.items() if __key_is_valid(k)}
-
 
     @classmethod
     def one_from_query(cls, query: dict):
@@ -127,7 +127,6 @@ class PersistentObject(object):
             return None
 
         return cls(document['_id'])
-
 
     @classmethod
     def many_from_query(cls, query: dict):
@@ -145,9 +144,10 @@ class PersistentObject(object):
 
         return results
 
-    def set_member(self, member, value):
+    def set_member(self, member: str, value: Any) -> None:
         """
         Saves a field of self to the database.
+        :param value: The member value
         :param member: The member / field name
         :return: None
         """
@@ -165,7 +165,7 @@ class PersistentObject(object):
         """
         self._collection().delete_one({u'_id': self.__id})
 
-    def __from_dict(self, obj_dict: dict, write_back=True):
+    def __from_dict(self, obj_dict: dict, write_back: bool=True):
         """
         Helper function to initialize self from a member dict in external representation
         :param obj_dict: dict The dict containing the data to initialize from
