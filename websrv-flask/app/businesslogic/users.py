@@ -22,7 +22,7 @@ def register(email: str, password: str) -> DataClient:
 
     client = DataClient()
     client.email = email
-    client.password_salt = os.urandom(g._config['auth.salt_length']).hex()
+    client.password_salt = os.urandom(g._config['AUTH_SALT_LENGTH']).hex()
     client.password_hash = argon2.argon2_hash(password, client.password_salt)
 
     return client
@@ -49,7 +49,7 @@ def login(email: str, password: str) -> str:
     success = False
     session_token = ""
     while not success:
-        session_token = os.urandom(g._config['auth.session_token_length']).hex()
+        session_token = os.urandom(g._config['AUTH_SESSION_TOKEN_LENGTH']).hex()
         success = auth.new_session(session_token, client.uuid)
 
     return session_token

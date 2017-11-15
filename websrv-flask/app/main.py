@@ -6,6 +6,7 @@ from framework.exceptions import ClientIpChangedException
 from model.DataClient import DataClient
 
 app = Flask(__name__)
+app.config.from_envvar('FLASK_CONFIG_PATH')
 
 
 # before and after request foo
