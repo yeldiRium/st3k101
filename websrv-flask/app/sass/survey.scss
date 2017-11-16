@@ -61,10 +61,15 @@
 .question-right-text {
   text-align: center;
 }
-@media screen and (min-width: 992px) and (-webkit-max-device-pixel-ratio: 1.5),
-       screen and (min-width: 992px) and (-moz-max-device-pixel-ratio: 1.5),
-       screen and (min-width: 992px) and (-o-max-device-pixel-ratio: 1.5),
-       screen and (min-width: 992px) and (max-device-pixel-ratio: 1.5) {
+
+.survey-form-footer {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+}
+
+@media screen and (min-width: 992px) {
   .question-group-container {
     width: 100%;
 
@@ -88,6 +93,12 @@
     .question-right-text {
       text-align: left;
       margin-left: 50px;
+    }
+  }
+
+  .questionnaire-form {
+    .survey-form-footer {
+      width: 50%;
     }
   }
 }
