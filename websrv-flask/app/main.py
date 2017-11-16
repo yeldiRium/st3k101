@@ -23,6 +23,9 @@ def before_request():
     g._config = app.config
 
     session_token = request.args.get('session_token')
+    if not session_token:
+        session_token = request.cookies.get('session_token')
+
     g._current_user = None
     if session_token:
         if auth.activity(session_token):  # also validates token, raises ClientIpChangedException if IP pinning fails
