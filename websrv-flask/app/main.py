@@ -105,7 +105,7 @@ def login():
         return response
     except BadCredentialsException as e:
         app.log_exception(e)
-        return render_template('home_base.html', login_failed=True)
+        return render_template('home_index.html', login_failed=True)
 
 
 @app.route("/logout", methods=["GET"])

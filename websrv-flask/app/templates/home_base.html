@@ -19,6 +19,9 @@
                 <input type="password" class="form-control" name="password" placeholder="Password" />
                 <button type="submit" class="btn btn-link" id="login">Login</button>
             </form>
+            {% if login_failed %}
+            <div class="navbar-text navbar-right"><span class="text-danger">E-Mail or Password was not correct</span></div>
+            {% endif %}
         </div>
     </nav>
 {% endblock content %}
