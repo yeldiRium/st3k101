@@ -143,7 +143,6 @@ def survey(survey_uuid):
 
     questionnaire.uuid
 
-
     return render_template(
         "survey_base.html",
         uuid=survey_uuid,
