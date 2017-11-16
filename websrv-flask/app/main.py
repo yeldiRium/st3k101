@@ -9,6 +9,8 @@ from model.DataClient import DataClient
 from model.Questionnaire import Questionnaire
 from model.QuestionGroup import QuestionGroup
 from model.Question import Question
+from model.QuestionResult import QuestionResult
+from model.DataSubject import DataSubject
 
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
@@ -139,8 +141,8 @@ def backend():
 
 
 # SURVEY FOR DATA SUBJECT
-@app.route("/survey/<string:survey_uuid>", methods=["GET"])
-def survey(survey_uuid):
+@app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
+def survey(questionnaire_uuid):
     """
     Survey
     """
@@ -167,18 +169,37 @@ def survey(survey_uuid):
     questionnaire.uuid
 
     return render_template(
-        "survey_base.html",
-        uuid=survey_uuid,
+        "survey_survey.html",
+        uuid=questionnaire.uuid,
         questionnaire=questionnaire
     )
 
 
-@app.route("/survey/<string:survey_uuid>", methods=["POST"])
-def survey_submit(survey_uuid):
+@app.route("/survey/<string:questionnaire_uuid>", methods=["POST"])
+def survey_submit(questionnaire_uuid):
     """
     Survey submit
 
     This endpoint receives survey data via POST and persists them. Then redi-
     rects to a thank-you page.
     """
-    return ""
+    data_subject = DataSubject.one_from_query({"email": request.form["email"]})
+    if data_subject is None:
+        data_subject = DataSubject()
+        data_subject.email = request.form["email"]
+
+    questionnaire = Questionnaire(questionnaire_uuid)
+
+    for question_group in questionnaire.questiongroups:
+        for question in question_group.questions:
+            current_answer = QuestionResult.one_from_query({
+                "data_subject": data_subject.uuid,
+                "question": question.uuid
+            })
+            if current_answer is None:
+                current_answer = QuestionResult()
+                current_answer.data_subject = data_subject
+                current_answer.question = question
+            current_answer.answer_value = request.form["question_" + question.uuid]
+
+    return render_template("survey_thanks.html", email=request.form["email"])

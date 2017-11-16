@@ -7,5 +7,5 @@ class QuestionResult(PersistentObject): pass
 
 
 QuestionResult.question = PersistentReference(QuestionResult, "question", Question)
-QuestionResult.data_subject = PersistentReference(QuestionResult, "question", DataSubject)
+QuestionResult.data_subject = PersistentReference(QuestionResult, "data_subject", DataSubject)
 QuestionResult.answer_value = PersistentAttribute(QuestionResult, "answer_value")

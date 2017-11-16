@@ -3,14 +3,8 @@
 {% block header %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/survey.css') }}" type="text/css" />
     <style type="text/css">
-    {% for questiongroup in questionnaire.questiongroups %}
-    .question-group-{{ loop.index }} {
-        background-color: {{ questiongroup.color }}
-    }
-    .question-group-header-{{ loop.index }} {
-        color: {{ questiongroup.text_color }};
-    }
-    {% endfor %}
+    {% block css %}
+    {% endblock %}
     </style>
 {% endblock %}
 
@@ -23,58 +17,6 @@
         </div>
     </nav>
 
-    <div class="jumbotron text-center">
-        <div class="container">
-            <h1>{{ questionnaire.name }}</h1>
-            <p>{{ questionnaire.description }}</p>
-        </div>
-    </div>
-    <div class="container">
-        <form class="questionnaire-form" method="POST" action="{{ url_for('survey_submit', survey_uuid=uuid) }}">
-            <div class="row">
-                {% for questiongroup in questionnaire.questiongroups %}
-                <div class="question-group-container question-group-{{ loop.index }}">
-                    <div class="question-group-header question-group-header-{{ loop.index }}">
-                        {{ questiongroup.name }}
-                    </div>
-                    <div class="question-group-content">
-                        {% for question in questiongroup.questions %}
-                        <div class="question">
-                            <div class="question-text">
-                                {{ question.text }}
-                            </div>
-                            <div class="question-answer-container">
-                                <div class="question-left-text">
-                                    <span class="glyphicon glyphicon-arrow-left hidden-md hidden-lg" aria-hidden="true"></span>
-                                    Strongly Disagree
-                                </div>
-
-                                {% for i in range(0,11) %}
-                                <div class="question-answer">
-                                    <div class="question-answer-label">{{ i }}</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="{{ i }}" title="Value {{ i }}">
-                                </div>
-                                {% endfor %}
-
-                                <div class="question-right-text">
-                                    Strongly Agree
-                                    <span class="glyphicon glyphicon-arrow-right hidden-md hidden-lg" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="row text-center survey-form-footer">
-                <div class="input-group">
-                    <input type="email" class="form-control" name="email" placeholder="E-Mail" />
-                    <div class="input-group-btn">
-                        <input type="submit" class="btn btn-default" name="submit" value="Submit" />
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+    {% block subcontent %}
+    {% endblock %}
 {% endblock %}
