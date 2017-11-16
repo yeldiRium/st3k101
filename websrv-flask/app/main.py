@@ -1,8 +1,8 @@
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, make_response, redirect
 from memcache import Client
 import auth
 import businesslogic.users as users
-from framework.exceptions import ClientIpChangedException
+from framework.exceptions import ClientIpChangedException, BadCredentialsException
 from model.DataClient import DataClient
 
 from model.Questionnaire import Questionnaire
@@ -98,7 +98,14 @@ def login():
 
     Takes login parameters via POST and starts session.
     """
-    return render_template("home_base.html")
+    try:
+        session_token = users.login(request.form["email"], request.form["password"])
+        response = make_response(redirect('/be/'))
+        response.set_cookie('session_token', session_token)
+        return response
+    except BadCredentialsException as e:
+        app.log_exception(e)
+        return render_template('home_base.html', login_failed=True)
 
 
 @app.route("/logout", methods=["GET"])

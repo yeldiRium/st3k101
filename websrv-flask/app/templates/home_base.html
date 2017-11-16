@@ -15,8 +15,8 @@
                 <button type="submit" class="btn btn-link" id="submit">or Register</button>
             </form>
             <form class="navbar-form navbar-right login-form" method="POST" action="{{ url_for('login') }}">
-                <input type="email" class="form-control" id="email" placeholder="E-Mail" />
-                <input type="password" class="form-control" id="password" placeholder="Password" />
+                <input type="email" class="form-control" name="email" placeholder="E-Mail" />
+                <input type="password" class="form-control" name="password" placeholder="Password" />
                 <button type="submit" class="btn btn-link" id="login">Login</button>
             </form>
         </div>
