@@ -84,7 +84,7 @@ def registration_post():
     data_client = users.register(request.form["email"], request.form["password"])
     return render_template(
         "home_registration_successful.html",
-        new_user=data_client
+        data_client=data_client
     )
 
 
@@ -140,6 +140,8 @@ def survey(survey_uuid):
     questiongroup_1.questions += [question_1_2]
 
     questionnaire.questiongroups += [questiongroup_1]
+
+    questionnaire.uuid
 
 
     return render_template(
