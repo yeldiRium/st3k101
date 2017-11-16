@@ -5,6 +5,10 @@ import businesslogic.users as users
 from framework.exceptions import ClientIpChangedException
 from model.DataClient import DataClient
 
+from model.Questionnaire import Questionnaire
+from model.QuestionGroup import QuestionGroup
+from model.Question import Question
+
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
 
@@ -117,13 +121,31 @@ def survey(survey_uuid):
     """
     Survey
     """
+    questionnaire = Questionnaire()
+    questionnaire.name = "Teacher's thing"
+    questionnaire.description = "This is an example questionnaire which is hopefully not persisted yet."
+
+    questiongroup_1 = QuestionGroup()
+    questiongroup_1.name = "Data"
+    questiongroup_1.color = "#000000"
+    questiongroup_1.text_color = "#FFFFFF"
+
+    question_1_1 = Question()
+    question_1_1.text = "This is a question."
+
+    question_1_2 = Question()
+    question_1_2.text = "This is not a question."
+
+    questiongroup_1.questions += [question_1_1]
+    questiongroup_1.questions += [question_1_2]
+
+    questionnaire.questiongroups += [questiongroup_1]
+
+
     return render_template(
         "survey_base.html",
-        caption="Dis is an Example Survey",
-        description="it is used to demontsrate the survey page. it has no " +
-                    "content yet",
-        background_color="#000000",
-        font_color="#FFFFFF"
+        uuid=survey_uuid,
+        questionnaire=questionnaire
     )
 
 

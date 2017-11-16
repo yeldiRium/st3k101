@@ -3,18 +3,14 @@
 {% block header %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/survey.css') }}" type="text/css" />
     <style type="text/css">
-    .question-group-1 {
-        background-color: black;
+    {% for questiongroup in questionnaire.questiongroups %}
+    .question-group-{{ loop.index }} {
+        background-color: {{ questiongroup.color }}
     }
-    .question-group-header-1 {
-        color: white;
+    .question-group-header-{{ loop.index }} {
+        color: {{ questiongroup.text_color }};
     }
-    .question-group-2 {
-        background-color: pink;
-    }
-    .question-group-header-2 {
-        color: black;
-    }
+    {% endfor %}
     </style>
 {% endblock %}
 
@@ -29,21 +25,23 @@
 
     <div class="jumbotron text-center">
         <div class="container">
-            <h1>{{ caption }}</h1>
-            <p>{{ description }}</p>
+            <h1>{{ questionnaire.name }}</h1>
+            <p>{{ questionnaire.description }}</p>
         </div>
     </div>
     <div class="container">
         <div class="row">
             <form class="questionnaire-form" method="POST" action="{{ url_for('survey_submit', survey_uuid=uuid) }}">
-                <div class="question-group-container question-group-1">
-                    <div class="question-group-header question-group-header-1">
-                        Data
+                {% for questiongroup in questionnaire.questiongroups %}
+                <div class="question-group-container question-group-{{ loop.index }}">
+                    <div class="question-group-header question-group-header-{{ loop.index }}">
+                        {{ questiongroup.name }}
                     </div>
                     <div class="question-group-content">
+                        {% for question in questiongroup.questions %}
                         <div class="question">
                             <div class="question-text">
-                                What is your name? LOL jk you can't answer that on a scale. Still what's your name?
+                                {{ question.text }}
                             </div>
                             <div class="question-answer-container">
                                 <div class="question-left-text">
@@ -51,46 +49,12 @@
                                     Strongly Disagree
                                 </div>
 
+                                {% for i in range(0,11) %}
                                 <div class="question-answer">
-                                    <div class="question-answer-label">1</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="1">
+                                    <div class="question-answer-label">{{ i }}</div>
+                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="{{ i }}" title="Value {{ i }}">
                                 </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">2</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="2">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">3</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="3">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">4</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="4">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">5</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="5">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">6</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="6">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">7</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="7">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">8</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="8">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">9</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="9">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">10</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="10">
-                                </div>
+                                {% endfor %}
 
                                 <div class="question-right-text">
                                     Strongly Agree
@@ -98,186 +62,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="question">
-                            <div class="question-text">
-                                How old are you? You must be at least 16 to take this Survey.
-                            </div>
-                            <div class="question-answer-container">
-                                <div class="question-left-text">
-                                    <span class="glyphicon glyphicon-arrow-left hidden-md hidden-lg" aria-hidden="true"></span>
-                                    Strongly Disagree
-                                </div>
-
-                                <div class="question-answer">
-                                    <div class="question-answer-label">1</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="1">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">2</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="2">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">3</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="3">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">4</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="4">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">5</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="5">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">6</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="6">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">7</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="7">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">8</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="8">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">9</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="9">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">10</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="10">
-                                </div>
-
-                                <div class="question-right-text">
-                                    Strongly Agree
-                                    <span class="glyphicon glyphicon-arrow-right hidden-md hidden-lg" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-                <div class="question-group-container question-group-2">
-                    <div class="question-group-header question-group-header-2">
-                        Awareness & Reflection
-                    </div>
-                    <div class="question-group-content">
-                        <div class="question">
-                            <div class="question-text">
-                                Does this questionnaire even make sense?
-                            </div>
-                            <div class="question-answer-container">
-                                <div class="question-left-text">
-                                    <span class="glyphicon glyphicon-arrow-left hidden-md hidden-lg" aria-hidden="true"></span>
-                                    Strongly Disagree
-                                </div>
-
-                                <div class="question-answer">
-                                    <div class="question-answer-label">1</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="1">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">2</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="2">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">3</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="3">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">4</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="4">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">5</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="5">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">6</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="6">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">7</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="7">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">8</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="8">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">9</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="9">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">10</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="10">
-                                </div>
-
-                                <div class="question-right-text">
-                                    Strongly Agree
-                                    <span class="glyphicon glyphicon-arrow-right hidden-md hidden-lg" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="question">
-                            <div class="question-text">
-                                I don't care about your opinion tbh. But now I need to test how this template handles long questions, so I'm gonna write some more.
-                            </div>
-                            <div class="question-answer-container">
-                                <div class="question-left-text">
-                                    <span class="glyphicon glyphicon-arrow-left hidden-md hidden-lg" aria-hidden="true"></span>
-                                    Strongly Disagree
-                                </div>
-
-                                <div class="question-answer">
-                                    <div class="question-answer-label">1</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="1">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">2</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="2">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">3</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="3">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">4</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="4">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">5</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="5">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">6</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="6">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">7</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="7">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">8</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="8">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">9</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="9">
-                                </div>
-                                <div class="question-answer">
-                                    <div class="question-answer-label">10</div>
-                                    <input class="question-answer-radio" type="radio" name="question_someid" id="question_someid" value="10">
-                                </div>
-
-                                <div class="question-right-text">
-                                    Strongly Agree
-                                    <span class="glyphicon glyphicon-arrow-right hidden-md hidden-lg" aria-hidden="true"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </form>
         </div>
     </div>
