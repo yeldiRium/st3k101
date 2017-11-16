@@ -2,7 +2,8 @@ from flask import Flask, render_template, g, request, make_response, redirect
 from memcache import Client
 import auth
 import businesslogic.users as users
-from framework.exceptions import ClientIpChangedException, BadCredentialsException
+from framework.exceptions import ClientIpChangedException, \
+    BadCredentialsException, UserExistsException
 from model.DataClient import DataClient
 
 from model.Questionnaire import Questionnaire
@@ -84,11 +85,23 @@ def registration_post():
     """
     Registration endpoint that takes post information for new account
     """
-    data_client = users.register(request.form["email"], request.form["password"])
-    return render_template(
-        "home_registration_successful.html",
-        data_client=data_client
-    )
+    if not (request.form["password"] == request.form["confirmation"]):
+        return render_template(
+            "home_registration.html",
+            reason="Password and Confirmation did not match."
+        )
+
+    try:
+        data_client = users.register(request.form["email"], request.form["password"])
+        return render_template(
+            "home_registration_successful.html",
+            data_client=data_client
+        )
+    except UserExistsException as e:
+        return render_template(
+            "home_registration.html",
+            reason="User with E-Mail " + request.form["email"] + "already exists."
+        )
 
 
 @app.route("/login", methods=["POST"])

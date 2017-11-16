@@ -4,6 +4,13 @@
     {{ super() }}
 
     <div class="container">
+        {% if reason %}
+        <div class="row text-center">
+            <div class="alert alert-danger" role="alert">
+                Error: {{ reason }}
+            </div>
+        </div>
+        {% endif %}
         <div class="row">
             <form action="{{ url_for('registration_post') }}" method="POST" class="form-horizontal">
                 <div class="form-group">
