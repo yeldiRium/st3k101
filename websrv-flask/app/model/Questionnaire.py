@@ -6,4 +6,5 @@ class Questionnaire(PersistentObject): pass
 
 
 Questionnaire.name = PersistentAttribute(Questionnaire, "name")
+Questionnaire.description = PersistentAttribute(Questionnaire, "description")
 Questionnaire.questiongroups = PersistentReferenceList(Questionnaire, "questiongroups", QuestionGroup)
