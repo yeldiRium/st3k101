@@ -20,3 +20,6 @@ class UserExistsException(Exception): pass
 
 
 class UserNotLoggedInException(Exception): pass
+
+
+class BadQueryException(Exception): pass

@@ -3,7 +3,7 @@ from typing import Any, List
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 
-from framework.exceptions import ObjectDoesntExistException
+from framework.exceptions import ObjectDoesntExistException, BadQueryException
 
 _client = MongoClient("db-mongo")
 _db = _client['efla-web']
@@ -28,7 +28,7 @@ class PersistentObject(object):
                 raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
             self.__from_document(document)
         else:
-            self.__id = self._collection().insert_one(self.__persistent_members()).inserted_id
+            self.__id = self._collection().insert_one(self._document_skeleton()).inserted_id
 
     @property
     def uuid(self):
@@ -45,7 +45,15 @@ class PersistentObject(object):
         :param query: The query the object should match
         :return: PersistentObject The PersistentObject instance if found, None otherwise
         """
-        document = cls._collection().find_one(query)
+        new_query = dict({})
+        for name, value in query.items():
+            attr = cls.persistent_members().get(name)
+            if not attr:
+                raise BadQueryException("No attribute {} for class {}".format(name, str(cls)[8:-2]))
+
+            new_query[attr.internal_name] = value
+
+        document = cls._collection().find_one(new_query)
         if not document:
             return None
 
@@ -59,7 +67,15 @@ class PersistentObject(object):
         :param query: The query the objects should match
         :return: List[PersistentObject] The list of all matching PersistentObject instances
         """
-        documents = cls._collection().find(query)
+        new_query = dict({})
+        for name, value in query.items():
+            attr = cls.persistent_members().get(name)
+            if not attr:
+                raise BadQueryException("No attribute {} for class {}".format(name, str(cls)[8:-2]))
+
+            new_query[attr.internal_name] = value
+
+        documents = cls._collection().find(new_query)
         results = []
 
         for doc in documents:
@@ -99,45 +115,30 @@ class PersistentObject(object):
         del document['_id']
         self.__dict__.update(document)
 
-    def __persistent_members(self) -> dict:
+
+    @classmethod
+    def persistent_members(cls) -> dict:
         """
         Returns data of self as dict in external representation.
         Used for serialization (storing to mongodb, to_json())
         :return: dict
         """
         pers_attrs = {}
-        if hasattr(self, "persistent_attributes"):
-            pers_attrs = {a.internal_name: getattr(self, a.internal_name, None)
-                          for a in self.persistent_attributes}
+        if hasattr(cls, "persistent_attributes"):
+            pers_attrs.update(cls.persistent_attributes)
 
-        pers_refs = {}
-        if hasattr(self, "persistent_references"):
-            pers_refs = {a.internal_name: getattr(self, a.internal_name, None)
-                         for a in self.persistent_references}
+        if hasattr(cls, "persistent_references"):
+            pers_attrs.update(cls.persistent_references)
 
-        pers_ref_lists = {}
-        if hasattr(self, "persistent_reference_lists"):
-            pers_ref_lists = {a.internal_name: getattr(self, a.internal_name, [])
-                              for a in self.persistent_reference_lists}
-
-        pers_attrs.update(pers_refs)
-        pers_attrs.update(pers_ref_lists)
-        return pers_attrs
-
-
-    def persistent_members(self) -> list:
-
-        pers_attrs = []
-        if hasattr(self, "persistent_attributes"):
-            pers_attrs.extend([a.internal_name for a in self.persistent_attributes])
-
-        if hasattr(self, "persistent_references"):
-            pers_attrs.extend([a.internal_name for a in self.persistent_references])
-
-        if hasattr(self, "persistent_reference_lists"):
-            pers_attrs.extend([a.internal_name for a in self.persistent_reference_lists])
+        if hasattr(cls, "persistent_reference_lists"):
+            pers_attrs.update(cls.persistent_reference_lists)
 
         return pers_attrs
+
+    @classmethod
+    def _document_skeleton(cls) -> dict:
+
+        return {a.internal_name: None for _, a in cls.persistent_members().items()}
 
 
 class PersistentAttribute(object):
@@ -145,8 +146,8 @@ class PersistentAttribute(object):
 
     def __init__(self, cls: type, name: str):
         if not hasattr(cls, "persistent_attributes"):
-            cls.persistent_attributes = []
-        cls.persistent_attributes.append(self)
+            cls.persistent_attributes = dict({})
+        cls.persistent_attributes[name] = self
         self.__external_name = name
         self.__name = "__persistent_attr_{}".format(name)
 
@@ -177,8 +178,8 @@ class PersistentReference(object):
 
     def __init__(self, cls: type, name: str, other_class: type):
         if not hasattr(cls, "persistent_references"):
-            cls.persistent_references = []
-        cls.persistent_references.append(self)
+            cls.persistent_references = dict({})
+        cls.persistent_references[name] = self
         self.__external_name = name
         self.__name = "__persistent_ref_{}".format(name)
         self.__other_class = other_class
@@ -213,8 +214,8 @@ class PersistentReferenceList(object):
 
     def __init__(self, cls: type, name: str, other_class: type):
         if not hasattr(cls, "persistent_reference_lists"):
-            cls.persistent_references = []
-        cls.persistent_references.append(self)
+            cls.persistent_references = dict({})
+        cls.persistent_references[name] = self
         self.__external_name = name
         self.__name = "__persistent_reflist_{}".format(name)
         self.__other_class = other_class
