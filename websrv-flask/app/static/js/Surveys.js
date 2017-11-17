@@ -1,7 +1,26 @@
 angular.module('Surveys', ['ngRoute'])
-    .controller('SurveysController', ['$scope',
-        function($scope) {
-
+    .factory('Surveys', ['$http', function($http) {
+        return $http.get('/api/surveys').then(
+            function(result) {
+                return new Promise(function(resolve, reject) {
+                    resolve(JSON.parse(result));
+                });
+            },
+            function(error) {
+                throw error; // TODO: ERROR HANDLING?
+            }
+        )
+    }])
+    .controller('SurveysController', ['$scope', 'Surveys',
+        function($scope, Surveys) {
+            Surveys.then(
+                function(result) {
+                    $scope.surveys = result;
+                },
+                function(error) {
+                    $scope.error = error;
+                }
+            );
         }])
     .controller('EditSurveyController', ['$scope',
         function($scope) {
