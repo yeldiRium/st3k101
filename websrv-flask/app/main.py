@@ -90,7 +90,8 @@ def registration_post():
     if not (request.form["password"] == request.form["confirmation"]):
         return render_template(
             "home_registration.html",
-            reason="Password and Confirmation did not match."
+            reason="Password and Confirmation did not match.",
+            email=request.form["email"]
         )
 
     try:
