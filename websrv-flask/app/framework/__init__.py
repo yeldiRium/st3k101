@@ -9,3 +9,12 @@ def get_client_ip():
     :return: str The client's IP
     """
     return request.headers.get('X-Forwarded-For', request.remote_addr)
+
+
+def classname(o):
+    """
+    Resolves to model.modulename.classname
+    :param o: object
+    :return: str
+    """
+    return str(o.__class__)[8:-2]
