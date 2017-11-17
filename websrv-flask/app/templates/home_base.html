@@ -22,6 +22,9 @@
             {% if login_failed %}
             <div class="navbar-text navbar-right"><span class="text-danger">E-Mail or Password was not correct</span></div>
             {% endif %}
+            {% if not_logged_in %}
+            <div class="navbar-text navbar-right"><span class="text-danger">You need to log in to access this site.</span></div>
+            {% endif %}
         </div>
     </nav>
 {% endblock content %}
