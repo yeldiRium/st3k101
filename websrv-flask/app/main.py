@@ -1,4 +1,5 @@
-from flask import Flask, render_template, g, request, make_response, redirect
+from flask import Flask, render_template, g, request, make_response, redirect, \
+    jsonify
 from memcache import Client
 import auth
 import businesslogic.users as users
@@ -6,6 +7,7 @@ from framework.exceptions import ClientIpChangedException, \
     BadCredentialsException, UserExistsException
 from model.DataClient import DataClient
 
+from model.Survey import Survey
 from model.Questionnaire import Questionnaire
 from model.QuestionGroup import QuestionGroup
 from model.Question import Question
@@ -138,8 +140,8 @@ def backend():
     """
     Dashboard for users
     """
-    if not g._current_user:
-        return render_template('home_index.html', not_logged_in=True)
+    #if not g._current_user:
+    #    return render_template('home_index.html', not_logged_in=True)
     return render_template("backend.html")
 
 
@@ -149,9 +151,13 @@ def survey(questionnaire_uuid):
     """
     Survey
     """
+    survey = Survey()
+    survey.name = "New Survey"
+
     questionnaire = Questionnaire()
     questionnaire.name = "Teacher's thing"
     questionnaire.description = "This is an example questionnaire which is hopefully not persisted yet."
+    survey.questionnaires += [questionnaire]
 
     questiongroup_1 = QuestionGroup()
     questiongroup_1.name = "Data"
@@ -160,16 +166,12 @@ def survey(questionnaire_uuid):
 
     question_1_1 = Question()
     question_1_1.text = "This is a question."
+    questiongroup_1.questions += [question_1_1]
 
     question_1_2 = Question()
     question_1_2.text = "This is not a question."
-
-    questiongroup_1.questions += [question_1_1]
     questiongroup_1.questions += [question_1_2]
-
     questionnaire.questiongroups += [questiongroup_1]
-
-    questionnaire.uuid
 
     return render_template(
         "survey_survey.html",
@@ -206,3 +208,11 @@ def survey_submit(questionnaire_uuid):
             current_answer.answer_value = request.form["question_" + question.uuid]
 
     return render_template("survey_thanks.html", email=request.form["email"])
+
+
+# APIs
+
+@app.route("/api/surveys", methods=["GET"])
+def api_surveys():
+    surveys = Survey.many_from_query({})
+    return jsonify(surveys)
