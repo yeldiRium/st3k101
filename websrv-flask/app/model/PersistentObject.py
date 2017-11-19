@@ -10,7 +10,7 @@ from pymongo import MongoClient
 from framework.exceptions import ObjectDoesntExistException, BadQueryException
 from framework.memcached import get_memcache
 
-_client = MongoClient("db-mongo")  # the database server
+_client = MongoClient("db-mongo", username='flask', password='flask', authSource='efla-web')  # the database server
 _db = _client['efla-web']  # the database used for persisting objects
 
 
