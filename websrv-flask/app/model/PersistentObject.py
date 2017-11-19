@@ -1,34 +1,71 @@
+import random
+import time
 from typing import Any, List
 
 from bson.objectid import ObjectId
+from flask import g
+from memcache import Client
 from pymongo import MongoClient
 
 from framework.exceptions import ObjectDoesntExistException, BadQueryException
+from framework.memcached import get_memcache
 
 _client = MongoClient("db-mongo")
 _db = _client['efla-web']
 
 
 class PersistentObject(object):
-
     __db = _db
 
     @classmethod
     def _collection(cls):
         return cls.__db[str(cls)[8:-2]]  # same as classname method
 
-    def __init__(self, uuid: str=None):
+    def __init__(self, uuid: str = None):
         """
-        :param uuid: str If passed, self will be a representant of the object with the given uuid
+        :param uuid: str If passed, self will be a representant of the object with the given uuid. Important: If two
+        instances of the same PersistentObject are created, the instances do not update each other, when values are
+        changed.
         """
         self.__id = None
         if uuid:
-            document = self._collection().find_one({u'_id': ObjectId(uuid)})  # TODO: lock object for duration of reques
+            document = self._collection().find_one({u'_id': ObjectId(uuid)})
             if not document:
                 raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
             self.__from_document(document)
         else:
             self.__id = self._collection().insert_one(self._document_skeleton()).inserted_id
+
+        # lock object by shared mutex in memcached while object is alive
+        # only one app context may access a PersistentObject at a time.
+        # This is used to prevent race conditions and data corruption between requests.
+        mutex_key = "mutex_{}".format(self.uuid)
+        mutex_polling_time = g._config["DISTRIBUTED_MUTEX_POLLING_TIME"]
+
+        if hasattr(g, "_local_mutexes"):
+            if mutex_key in g._local_mutexes:
+                self.__mutex_set = True
+                return
+
+        while True:
+
+            mutex_set = get_memcache().get(mutex_key)
+            while mutex_set:
+                time.sleep(mutex_polling_time + random.uniform(0, mutex_polling_time / 10))
+                mutex_set = get_memcache().get(mutex_key)
+
+            if not get_memcache().cas(mutex_key, True) != 0:
+                continue
+
+            break
+
+        if not hasattr(g, "_local_mutexes"):
+            g._local_mutexes = []
+        g._local_mutexes.append(mutex_key)
+        self.__mutex_set = True
+
+    def __del__(self):
+        Client(['memcached']).delete("mutex_{}".format(self.uuid))  # context is already destroyed, can't use framework
 
     @property
     def uuid(self):
@@ -114,7 +151,6 @@ class PersistentObject(object):
         self.__id = document['_id']
         del document['_id']
         self.__dict__.update(document)
-
 
     @classmethod
     def persistent_members(cls) -> dict:
