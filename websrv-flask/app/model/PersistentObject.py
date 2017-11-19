@@ -10,8 +10,8 @@ from pymongo import MongoClient
 from framework.exceptions import ObjectDoesntExistException, BadQueryException
 from framework.memcached import get_memcache
 
-_client = MongoClient("db-mongo")
-_db = _client['efla-web']
+_client = MongoClient("db-mongo")  # the database server
+_db = _client['efla-web']  # the database used for persisting objects
 
 
 class PersistentObject(object):
@@ -19,21 +19,30 @@ class PersistentObject(object):
 
     @classmethod
     def _collection(cls):
-        return cls.__db[str(cls)[8:-2]]  # same as classname method
+        """
+        Returns the name of the mongodb collection used for persisting instances of cls.
+        The collection name will be Python's representation of the class name, including containing parent modules.
+        This class, for example, will use 'model.PersistentObject.PersistentObject' as collection name.
+        :return: str
+        """
+        return cls.__db[str(cls)[8:-2]]  # same as framework.classname(o) method
 
     def __init__(self, uuid: str = None):
         """
         :param uuid: str If passed, self will be a representant of the object with the given uuid. Important: If two
         instances of the same PersistentObject are created, the instances do not update each other, when values are
-        changed.
+        changed. Only one request context may access the same uuid at once. As a consequence, the constructor may be 
+        deferred until the database resource becomes available.
         """
         self.__id = None
-        if uuid:
+
+        if uuid:  # initialize self from mongodb document with the given uuid
             document = self._collection().find_one({u'_id': ObjectId(uuid)})
             if not document:
                 raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
             self.__from_document(document)
-        else:
+
+        else:  # create a new mongodb document for self
             self.__id = self._collection().insert_one(self._document_skeleton()).inserted_id
 
         # lock object by shared mutex in memcached while object is alive
@@ -43,29 +52,45 @@ class PersistentObject(object):
         mutex_polling_time = g._config["SHARED_MUTEX_POLLING_TIME"]
 
         if hasattr(g, "_local_mutexes"):
-            if mutex_key in g._local_mutexes:
-                self.__mutex_set = True
+            if mutex_uuid in g._local_mutexes:  # if this context has already acquired the mutex, don't acquire again
                 return
 
-        while True:
+        while True:  # until mutex is acquired
 
-            mutex_set = get_memcache().get(mutex_key)
-            while mutex_set:
+            mutex_locked = get_memcache().get(mutex_uuid)
+            while mutex_locked:
+                # wait random time to avoid deadlocks
                 time.sleep(mutex_polling_time + random.uniform(0, mutex_polling_time / 10))
-                mutex_set = get_memcache().get(mutex_key)
+                mutex_locked = get_memcache().get(mutex_uuid)
 
-            if not get_memcache().cas(mutex_key, True) != 0:
-                continue
+            if not get_memcache().cas(mutex_uuid, True) != 0:  # atomic write, if memcached wasn't modified
+                continue  # atomic write failed
 
-            break
+            break  # atomic write succeeded, mutex is acquired
 
         if not hasattr(g, "_local_mutexes"):
             g._local_mutexes = []
-        g._local_mutexes.append(mutex_key)
-        self.__mutex_set = True
+        g._local_mutexes.append(mutex_uuid)  # save mutex uuid in request context
+
+    @property
+    def __mutex_uuid(self):
+        """
+        An uuid identifying the shared mutex to the mongodb document of which self is an representant uniquely
+        :return: str
+        """
+        return "mutex_{}".format(self.uuid)
 
     def __del__(self):
-        Client(['memcached']).delete("mutex_{}".format(self.uuid))  # context is already destroyed, can't use framework
+        """
+        Called, when instance is garbage collected. In Python >= 3.5, this happens when self's reference count reaches
+         0. Because the first request context which accesses the PersistentObject with self.uuid creates a shared
+         mutex in memcached, this method automatically releases the mutex, so that a mutex will never outlive the 
+         request context.
+        """
+        mutex_uuid = self.__mutex_uuid
+        if g:  # request context is still valid
+            g._local_mutexes.remove(mutex_uuid)
+        Client(['memcached']).delete(mutex_uuid)  # context is already destroyed, can't use framework
 
     @property
     def uuid(self):
@@ -173,16 +198,31 @@ class PersistentObject(object):
 
     @classmethod
     def _document_skeleton(cls) -> dict:
-
+        """
+        Returns self in dict representation. This representation is used to store all instances of cls in the 
+        database. The returned representation will not contain any data yet.
+        :return: dict
+        """
         return {a.internal_name: None for _, a in cls.persistent_members().items()}
 
 
 class PersistentAttribute(object):
-    "Emulate PyProperty_Type() in Objects/descrobject.c"
+    """
+    Emulate PyProperty_Type() in Objects/descrobject.c
+    This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
+    PersistentObject attributes. Use cls.attribute_name = PersistentAttribute(cls, "attribute_name") to add a
+    database persistent attribute to some class cls.
+    """
 
     def __init__(self, cls: type, name: str):
+        """
+        :param cls: type The class to which to add the attribute. This argument is needed to keep the target class
+         aware of which PersistentAttributes exist, to automatically make subclasses of PersistentObject json
+         serializable.
+        :param name: str The name of the PersistentAttribute. This is how it will show up in the database and in json.
+        """
         if not hasattr(cls, "persistent_attributes"):
-            cls.persistent_attributes = dict({})
+            cls.persistent_attributes = dict({})  # let cls keep track of all persistent attributed
         cls.persistent_attributes[name] = self
         self.__external_name = name
         self.__name = "__persistent_attr_{}".format(name)
@@ -193,9 +233,18 @@ class PersistentAttribute(object):
 
     @property
     def internal_name(self):
+        """
+        The name of the target classes internal attribute keeping track of the attributes value.
+        Never use the internal attribute directly, instead use this descriptor class, or it's __get__() method.
+        :return: 
+        """
         return self.__name
 
     def __get__(self, obj, obj_type=None):
+        """
+        Called when attribute is accessed.
+        See Python's descriptor protocol.
+        """
         if obj is None:
             return self
 
@@ -203,16 +252,36 @@ class PersistentAttribute(object):
         return value
 
     def __set__(self, obj: PersistentObject, value):
+        """
+        Called when attribute is set.
+        See Python's descriptor protocol.
+        """
         obj._set_member(self.__name, value)
 
     def __delete__(self, obj):
+        """
+        Called when attribute is deleted.
+        See Python's descriptor protocol.
+        """
         obj._set_member(self.__name, None)
 
 
 class PersistentReference(object):
-    "Emulate PyProperty_Type() in Objects/descrobject.c"
+    """
+    Emulate PyProperty_Type() in Objects/descrobject.c
+    This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
+    PersistentObject attributes, which are references to other PersistentObject.
+    Use cls.attribute_name = PersistentAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
+    erence to ome other PersistentObject.
+    """
 
     def __init__(self, cls: type, name: str, other_class: type):
+        """
+        :param cls: type See documentation for PersistentAttribute.
+        :param name: str See documentation for PersistentAttribute.
+        :param other_class: type The class that is referenced by this attribute. Needed to instantiate other_class
+        when this attribute is accessed.
+        """
         if not hasattr(cls, "persistent_references"):
             cls.persistent_references = dict({})
         cls.persistent_references[name] = self
@@ -226,29 +295,57 @@ class PersistentReference(object):
 
     @property
     def internal_name(self):
+        """
+        The name of the target classes internal attribute keeping track of the attributes value.
+        Never use the internal attribute directly, instead use this descriptor class, or it's __get__() method.
+        :return: 
+        """
         return self.__name
 
     def __get__(self, obj, obj_type=None):
+        """
+        Called when attribute is accessed.
+        See Python's descriptor protocol.
+        """
         if obj is None:
             return self
 
-        value = getattr(obj, self.__name, None)  # stores uuid
+        value = getattr(obj, self.__name, None)  # only stores uuid
         if value is None:
             return None
-        return self.__other_class(value)
+        return self.__other_class(value)  # instantiate referenced PersistentObject by it's uuid
 
     def __set__(self, obj: PersistentObject, value: PersistentObject):
-        uuid = value.uuid
+        """
+        Called when attribute is set.
+        See Python's descriptor protocol.
+        """
+        uuid = value.uuid  # store only the object's uuid
         obj._set_member(self.__name, uuid)
 
     def __delete__(self, obj):
+        """
+        Called when attribute is deleted.
+        See Python's descriptor protocol.
+        """
         obj._set_member(self.__name, None)
 
 
 class PersistentReferenceList(object):
-    "Emulate PyProperty_Type() in Objects/descrobject.c"
+    """
+    Emulate PyProperty_Type() in Objects/descrobject.c
+    This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
+    PersistentObject attributes, which are lists of references to other PersistentObjects.
+    Use cls.attribute_name = PersistentAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
+    erence list to some other PersistentObject.
+    """
 
     def __init__(self, cls: type, name: str, other_class: type):
+        """
+        :param cls: type See documentation for PersistentAttribute.
+        :param name: str See documentation for PersistentAttribute.
+        :param other_class: See documentation for PersistentReference
+        """
         if not hasattr(cls, "persistent_reference_lists"):
             cls.persistent_references = dict({})
         cls.persistent_references[name] = self
@@ -262,20 +359,37 @@ class PersistentReferenceList(object):
 
     @property
     def internal_name(self):
+        """
+        The name of the target classes internal attribute keeping track of the attributes value.
+        Never use the internal attribute directly, instead use this descriptor class, or it's __get__() method.
+        :return: 
+        """
         return self.__name
 
     def __get__(self, obj, obj_type=None):
+        """
+        Called when attribute is accessed.
+        See Python's descriptor protocol.
+        """
         if obj is None:
             return self
 
-        value = getattr(obj, self.__name, None)  # stores uuid
+        value = getattr(obj, self.__name, None)  # stores list of uuids
         if not value:
             return []
-        return [self.__other_class(uuid) for uuid in value]
+        return [self.__other_class(uuid) for uuid in value]  # instantiate all referenced objects
 
     def __set__(self, obj: PersistentObject, value: List[PersistentObject]):
+        """
+        Called when attribute is set.
+        See Python's descriptor protocol.
+        """
         uuids = [e.uuid for e in value]
         obj._set_member(self.__name, uuids)
 
     def __delete__(self, obj):
+        """
+        Called when attribute is deleted.
+        See Python's descriptor protocol.
+        """
         obj._set_member(self.__name, None)
