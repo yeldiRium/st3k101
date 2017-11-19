@@ -39,8 +39,8 @@ class PersistentObject(object):
         # lock object by shared mutex in memcached while object is alive
         # only one app context may access a PersistentObject at a time.
         # This is used to prevent race conditions and data corruption between requests.
-        mutex_key = "mutex_{}".format(self.uuid)
-        mutex_polling_time = g._config["DISTRIBUTED_MUTEX_POLLING_TIME"]
+        mutex_uuid = self.__mutex_uuid  # string identifying mutex to PersistentObject with this self.uuid uniquely
+        mutex_polling_time = g._config["SHARED_MUTEX_POLLING_TIME"]
 
         if hasattr(g, "_local_mutexes"):
             if mutex_key in g._local_mutexes:
