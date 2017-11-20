@@ -1,5 +1,5 @@
 from flask import g
-from memcache import Client
+from bmemcached import Client
 
 
 def get_memcache():
@@ -10,5 +10,9 @@ def get_memcache():
 
     mc = getattr(g, '_memcache_client', None)
     if mc is None:
-        mc = g._memcache_client = Client(['memcached'], debug=g._config['DEBUG'])
+        mc = g._memcache_client = Client(
+            ['memcached:11211'],
+            g._config["MEMCACHED_USERNAME"],
+            g._config["MEMCACHED_PASSWORD"]
+        )
     return mc

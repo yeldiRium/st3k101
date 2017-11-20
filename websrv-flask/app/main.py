@@ -1,18 +1,17 @@
 from flask import Flask, render_template, g, request, make_response, redirect, \
     jsonify
-from memcache import Client
+
 import auth
 import businesslogic.users as users
 from framework.exceptions import ClientIpChangedException, \
     BadCredentialsException, UserExistsException
 from model.DataClient import DataClient
-
-from model.Survey import Survey
-from model.Questionnaire import Questionnaire
-from model.QuestionGroup import QuestionGroup
-from model.Question import Question
-from model.QuestionResult import QuestionResult
 from model.DataSubject import DataSubject
+from model.Question import Question
+from model.QuestionGroup import QuestionGroup
+from model.QuestionResult import QuestionResult
+from model.Questionnaire import Questionnaire
+from model.Survey import Survey
 
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')

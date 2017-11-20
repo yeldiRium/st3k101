@@ -2,9 +2,10 @@ import random
 import time
 from typing import Any, List
 
+import sys
 from bson.objectid import ObjectId
 from flask import g
-from memcache import Client
+from bmemcached import Client
 
 from framework.exceptions import ObjectDoesntExistException, BadQueryException
 from framework.memcached import get_memcache
@@ -31,6 +32,7 @@ class PersistentObject(object):
         deferred until the database resource becomes available.
         """
         self.__id = None
+        self.__memcached_client = get_memcache()
 
         if uuid:  # initialize self from mongodb document with the given uuid
             document = self._collection().find_one({u'_id': ObjectId(uuid)})
@@ -51,15 +53,17 @@ class PersistentObject(object):
             if mutex_uuid in g._local_mutexes:  # if this context has already acquired the mutex, don't acquire again
                 return
 
+        get_memcache().add(mutex_uuid, False)  # ensure key exists, doesn't set if already exists
+
         while True:  # until mutex is acquired
 
-            mutex_locked = get_memcache().get(mutex_uuid)
+            mutex_locked, cas = get_memcache().get(mutex_uuid, get_cas=True)
             while mutex_locked:
                 # wait random time to avoid deadlocks
                 time.sleep(mutex_polling_time + random.uniform(0, mutex_polling_time / 10))
-                mutex_locked = get_memcache().get(mutex_uuid)
+                mutex_locked, cas = get_memcache().get(mutex_uuid, get_cas=True)
 
-            if not get_memcache().cas(mutex_uuid, True) != 0:  # atomic write, if memcached wasn't modified
+            if not get_memcache().cas(mutex_uuid, True, cas):  # atomic write, if memcached wasn't modified
                 continue  # atomic write failed
 
             break  # atomic write succeeded, mutex is acquired
@@ -86,7 +90,7 @@ class PersistentObject(object):
         mutex_uuid = self.__mutex_uuid
         if g:  # request context is still valid
             g._local_mutexes.remove(mutex_uuid)
-        Client(['memcached']).delete(mutex_uuid)  # context is already destroyed, can't use framework
+        self.__memcached_client.delete(self.__mutex_uuid)  # context is already destroyed, can't use framework
 
     @property
     def uuid(self):
