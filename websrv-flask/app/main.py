@@ -140,8 +140,8 @@ def backend():
     """
     Dashboard for users
     """
-    #if not g._current_user:
-    #    return render_template('home_index.html', not_logged_in=True)
+    if not g._current_user:
+        return render_template('home_index.html', not_logged_in=True)
     return render_template("backend.html")
 
 
