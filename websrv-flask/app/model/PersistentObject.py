@@ -5,18 +5,13 @@ from typing import Any, List
 from bson.objectid import ObjectId
 from flask import g
 from memcache import Client
-from pymongo import MongoClient
 
 from framework.exceptions import ObjectDoesntExistException, BadQueryException
 from framework.memcached import get_memcache
-
-_client = MongoClient("db-mongo", username='flask', password='flask', authSource='efla-web')  # the database server
-_db = _client['efla-web']  # the database used for persisting objects
+from framework.mongodb import get_db
 
 
 class PersistentObject(object):
-    __db = _db
-
     @classmethod
     def _collection(cls):
         """
@@ -25,7 +20,8 @@ class PersistentObject(object):
         This class, for example, will use 'model.PersistentObject.PersistentObject' as collection name.
         :return: str
         """
-        return cls.__db[str(cls)[8:-2]]  # same as framework.classname(o) method
+        db = get_db()
+        return db[str(cls)[8:-2]]  # same as framework.classname(o) method
 
     def __init__(self, uuid: str = None):
         """
