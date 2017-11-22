@@ -23,3 +23,9 @@ class UserNotLoggedInException(Exception): pass
 
 
 class BadQueryException(Exception): pass
+
+
+class QuestionGroupNotFoundException(Exception): pass
+
+
+class QuestionNotFoundException(Exception): pass

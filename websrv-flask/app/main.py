@@ -154,26 +154,22 @@ def survey(questionnaire_uuid):
     Survey
     """
     survey = Survey()
-    survey.name = "New Survey"
+    survey.name = "New Test Survey"
 
     questionnaire = Questionnaire()
-    questionnaire.name = "Teacher's thing"
+    questionnaire.name = "Teacher's thingy 2"
     questionnaire.description = "This is an example questionnaire which is hopefully not persisted yet."
+    questionnaire.question_count = 0
     survey.questionnaires += [questionnaire]
 
     questiongroup_1 = QuestionGroup()
     questiongroup_1.name = "Data"
     questiongroup_1.color = "#000000"
     questiongroup_1.text_color = "#FFFFFF"
-
-    question_1_1 = Question()
-    question_1_1.text = "This is a question."
-    questiongroup_1.questions += [question_1_1]
-
-    question_1_2 = Question()
-    question_1_2.text = "This is not a question."
-    questiongroup_1.questions += [question_1_2]
     questionnaire.questiongroups += [questiongroup_1]
+
+    questionnaire.add_question_to_group("Data", "This is a question.")
+    questionnaire.add_question_to_group("Data", "This is not a question.")
 
     return render_template(
         "survey_survey.html",
