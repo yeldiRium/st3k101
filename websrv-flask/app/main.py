@@ -13,8 +13,11 @@ from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
 from model.Survey import Survey
 
+from model.PersistentObjectEncoder import PersistentObjectEncoder
+
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
+app.json_encoder = PersistentObjectEncoder
 
 
 # before and after request foo
