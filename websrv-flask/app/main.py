@@ -66,7 +66,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: 
     """
-    return "This is not the url you're looking for."
+    return make_response("This is not the url you're looking for.", 404)
 
 
 @app.route("/", methods=["GET"])
