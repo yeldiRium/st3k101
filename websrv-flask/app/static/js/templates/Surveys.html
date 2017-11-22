@@ -6,15 +6,24 @@
 <div class="row" ng-repeat="survey in surveys">
     <div class="panel panel-default">
         <div class="panel-heading">
-            {{ survey.fields.name }}
+            <h3 class="panel-title">{{ survey.fields.name }}</h3>
         </div>
         <div class="panel-body">
-            <ul class="list-group">
-                <li class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires">
+            <div class="list-group">
+                <button type="button" class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires">
                     <span class="badge">{{ questionnaire.fields.question_count }}</span>
-                    {{ questionnaire.fields.name }}
-                </li>
-            </ul>
+                    <h4 class="list-group-item-heading">{{ questionnaire.fields.name }}</h4>
+                    <p class="list-group-item-text">{{ questionnaire.fields.description }}</p>
+                </button>
+                <button type="button" class="list-group-item">
+                    Add new Questionnaire to this survey...
+                </button>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-default">
+                Add new Questionnaire to this survey...
+            </button>
         </div>
     </div>
 </div>
