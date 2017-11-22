@@ -5,6 +5,10 @@ from framework.exceptions import *
 
 class Survey(PersistentObject):
     def add_new_questionnaire(self, name: str, description: str) -> Questionnaire:
+        questionnaire = next((x for x in self.questionnaires if x.name == name), None)
+        if questionnaire is not None:
+            raise DuplicateQuestionnaireNameException(self.name, name)
+
         questionnaire = Questionnaire()
         questionnaire.name = name
         questionnaire.description = description

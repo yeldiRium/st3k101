@@ -32,3 +32,6 @@ class QuestionNotFoundException(Exception): pass
 
 
 class QuestionnaireNotFoundException(Exception): pass
+
+
+class DuplicateQuestionnaireNameException(Exception): pass

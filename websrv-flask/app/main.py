@@ -3,8 +3,7 @@ from flask import Flask, render_template, g, request, make_response, redirect, \
 
 import auth
 import businesslogic.users as users
-from framework.exceptions import ClientIpChangedException, \
-    BadCredentialsException, UserExistsException
+from framework.exceptions import *
 from model.DataClient import DataClient
 from model.DataSubject import DataSubject
 from model.Question import Question
@@ -212,3 +211,18 @@ def survey_submit(questionnaire_uuid):
 def api_surveys():
     surveys = Survey.many_from_query({})
     return jsonify(surveys)
+
+
+@app.route("/api/questionnaire", methods=["POST"])
+def api_questionnaire_create():
+    data = request.get_json()
+    survey = Survey(data["survey"])
+    try:
+        survey.add_new_questionnaire(data["questionnaire"]["name"], data["questionnaire"]["description"])
+    except DuplicateQuestionnaireNameException as e:
+        return jsonify({
+            "error": "Questionnaire with name \"" + data["questionnaire"]["name"] + "\" already exists."
+        }, 400)
+    return jsonify({
+        "result": "Questionnaire created."
+    })

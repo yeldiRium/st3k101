@@ -17,8 +17,8 @@ angular.module('Surveys', ['ngRoute'])
             }
         }
     }])
-    .controller('SurveysController', ['$scope', 'Surveys',
-        function($scope, Surveys) {
+    .controller('SurveysController', ['$scope', '$http', 'Surveys',
+        function($scope, $http, Surveys) {
             /**
              * Queries surveys and writes them into $scope.surveys.
              * If something goes wrong, $scope.error will be set.
@@ -38,7 +38,64 @@ angular.module('Surveys', ['ngRoute'])
                     }
                 );
             };
-            
+
+            $scope.resetEditing = function() {
+                $scope.newForm = {
+                    questionnaire: {
+                        survey: null,
+                        data: null
+                    },
+                    survey: {
+                        data: null
+                    }
+                };
+            };
+
+            $scope.newQuestionnaire = function(survey) {
+                $scope.resetEditing();
+                $scope.newForm.questionnaire.survey = survey;
+                $scope.newForm.questionnaire.data = {
+                    name: "name",
+                    description: "description"
+                };
+            };
+
+            $scope.createQuestionnaire = function() {
+                if (($scope.newForm.questionnaire.survey == null)
+                    || $scope.newForm.questionnaire.data == null) {
+                    return;
+                }
+                $http({
+                    method: 'POST',
+                    url: '/api/questionnaire',
+                    data: JSON.stringify({
+                        survey: $scope.newForm.questionnaire.survey.uuid,
+                        questionnaire: {
+                            name: $scope.newForm.questionnaire.data.name,
+                            description: $scope.newForm.questionnaire.data.description
+                        }
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(
+                        function success(result) {
+                            if (result.status == 200
+                                && result.data.result == "Questionnaire created.") {
+                                $scope.resetEditing();
+                                $scope.query();
+                            } else {
+                                $scope.error = "Something went wrong. Please try again!";
+                            }
+                        },
+                        function failure(error) {
+                            $scope.error = error;
+                        }
+                    )
+            };
+
+            $scope.resetEditing();
             $scope.query();
         }])
     .controller('EditSurveyController', ['$scope',
