@@ -155,12 +155,10 @@ def survey(questionnaire_uuid):
     """
     survey = Survey()
     survey.name = "New Test Survey"
-
-    questionnaire = Questionnaire()
-    questionnaire.name = "Teacher's thingy 2"
-    questionnaire.description = "This is an example questionnaire which is hopefully not persisted yet."
-    questionnaire.question_count = 0
-    survey.questionnaires += [questionnaire]
+    questionnaire = survey.add_new_questionnaire(
+        "Teacher's thingy 2",
+        "This is an example questionnaire which is hopefully not persisted yet."
+    )
 
     questiongroup_1 = QuestionGroup()
     questiongroup_1.name = "Data"

@@ -13,22 +13,15 @@ class Questionnaire(PersistentObject):
 
     def add_question_to_group(self, group_name: str, text: str) -> QuestionGroup:
         question_group = self.find_question_group_by_name(group_name)
-        question = Question()
-        question.text = text
-        question_group.questions += [question]
+        question_group.add_new_question(text)
         self.question_count += 1
         return question_group
 
     def remove_question_from_group(self, group_name: str, text: str) -> QuestionGroup:
         question_group = self.find_question_group_by_name(group_name)
 
-        length = len(question_group.questions)
-        question_group.questions = [x for x in question_group.questions if not x.text == text]
-        length_after = len(question_group.questions)
+        question_group.remove_question(text)
 
-        # if the length did not change, the question was not there
-        if length == length_after:
-            raise QuestionNotFoundException(group_name, text)
         self.question_count -= 1
         return question_group
 

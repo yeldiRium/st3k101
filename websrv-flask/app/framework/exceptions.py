@@ -29,3 +29,6 @@ class QuestionGroupNotFoundException(Exception): pass
 
 
 class QuestionNotFoundException(Exception): pass
+
+
+class QuestionnaireNotFoundException(Exception): pass

@@ -1,8 +1,25 @@
 from model.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
 from model.Questionnaire import Questionnaire
+from framework.exceptions import *
 
 
-class Survey(PersistentObject): pass
+class Survey(PersistentObject):
+    def add_new_questionnaire(self, name: str, description: str) -> Questionnaire:
+        questionnaire = Questionnaire()
+        questionnaire.name = name
+        questionnaire.description = description
+        questionnaire.questiongroups = []
+        questionnaire.question_count = 0
+        self.questionnaires += [questionnaire]
+        return questionnaire
+
+    def remove_questionnaire(self, name: str) -> None:
+        length = len(self.questionnaires)
+        self.questionnaires = [x for x in self.questionnaires if not x.name == name]
+        length_after = len(self.questionnaires)
+
+        if length == length_after:
+            raise QuestionnaireNotFoundException(self.name, name)
 
 
 Survey.name = PersistentAttribute(Survey, "name")
