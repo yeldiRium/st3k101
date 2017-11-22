@@ -4,15 +4,13 @@ from flask import Flask, render_template, g, request, make_response, redirect, \
 import auth
 import businesslogic.users as users
 from framework.exceptions import *
+from framework.odm.PersistentObjectEncoder import PersistentObjectEncoder
 from model.DataClient import DataClient
 from model.DataSubject import DataSubject
-from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
 from model.Survey import Survey
-
-from model.PersistentObjectEncoder import PersistentObjectEncoder
 
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
