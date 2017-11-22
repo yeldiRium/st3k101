@@ -1,1 +1,1 @@
-angular.module('App', ['Dashboard', 'Surveys', 'Account']);
+angular.module('App', ['Dashboard', 'Surveys', 'Account', 'Utility']);

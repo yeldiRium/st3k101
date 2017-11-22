@@ -95,6 +95,43 @@ angular.module('Surveys', ['ngRoute'])
                     )
             };
 
+            $scope.newSurvey = function() {
+                $scope.resetEditing();
+                $scope.newForm.survey.data = {
+                    name: "name"
+                }
+            };
+
+            $scope.createSurvey = function() {
+                if ($scope.newForm.survey.data == null) {
+                    return;
+                }
+                $http({
+                    method: 'POST',
+                    url: '/api/survey',
+                    data: JSON.stringify({
+                        name: $scope.newForm.survey.data.name
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(
+                        function success(result) {
+                            if (result.status == 200
+                                && result.data.result == "Survey created.") {
+                                $scope.resetEditing();
+                                $scope.query();
+                            } else {
+                                $scope.error = "Something went wrong. Please try again!";
+                            }
+                        },
+                        function failure(error) {
+                            $scope.error = error;
+                        }
+                    )
+            };
+
             $scope.resetEditing();
             $scope.query();
         }])

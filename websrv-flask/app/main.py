@@ -213,6 +213,23 @@ def api_surveys():
     return jsonify(surveys)
 
 
+@app.route("/api/survey", methods=["Post"])
+def api_survey_create():
+    data = request.get_json()
+    survey = Survey.one_from_query({"name": data["name"]})
+    if survey is not None:
+        return jsonify({
+            "error": "Survey with name \"" + data["name"] + "\" already exists."
+        }, 400)
+
+    survey = Survey()
+    survey.name = data["name"]
+
+    return jsonify({
+        "result": "Survey created."
+    })
+
+
 @app.route("/api/questionnaire", methods=["POST"])
 def api_questionnaire_create():
     data = request.get_json()
