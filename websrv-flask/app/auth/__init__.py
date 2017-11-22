@@ -69,9 +69,6 @@ def invalidate(session_token: str) -> bool:
     :param session_token: str A valid session token
     :return: bool success
     """
-    if not is_valid(session_token):
-        return False
-
     mc = get_memcache()
     return mc.delete(_get_session_record_id(session_token))
 
