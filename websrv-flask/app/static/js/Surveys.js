@@ -3,11 +3,13 @@ angular.module('Surveys', ['ngRoute'])
         return $http.get('/api/surveys').then(
             function(result) {
                 return new Promise(function(resolve, reject) {
-                    resolve(JSON.parse(result));
+                    resolve(result.data);
                 });
             },
             function(error) {
-                throw error; // TODO: ERROR HANDLING?
+                return new Promise(function(resolve, reject) {
+                    reject(error);
+                });
             }
         )
     }])

@@ -1,26 +1,23 @@
-<div class="row">
-    <div class="alert alert-danger" ng-if="error" role="alert">
+<div class="row" ng-if="error">
+    <div class="alert alert-danger" role="alert">
         {{ error }}
     </div>
+</div>
+<div class="row" ng-repeat="survey in surveys">
     <div class="panel panel-default">
         <div class="panel-heading">
-            Survey Eins
+            {{ survey.fields.name }}
         </div>
         <div class="panel-body">
             <ul class="list-group">
-                <li class="list-group-item">
-                    <span class="badge">12</span>
-                    Questionnaire Eins
-                </li>
-                <li class="list-group-item">
-                    <span class="badge">14</span>
-                    Questionnaire Zwei
-                </li>
-                <li class="list-group-item">
-                    <span class="badge">7</span>
-                    Questionnaire Drei
+                <li class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires">
+                    <span class="badge">{{ questionnaire.fields.question_count }}</span>
+                    {{ questionnaire.fields.name }}
                 </li>
             </ul>
         </div>
     </div>
+</div>
+<div class="row" ng-if="(!surveys || (surveys.length == 0)) && !error">
+    <div class="alert alert-info">You have no surveys yet!</div>
 </div>
