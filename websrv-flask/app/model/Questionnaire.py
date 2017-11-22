@@ -1,11 +1,11 @@
 from framework.exceptions import *
-from model.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
 from model.QuestionGroup import QuestionGroup
-from model.Question import Question
 
 
 class Questionnaire(PersistentObject):
     def find_question_group_by_name(self, group_name: str) -> QuestionGroup:
+        # TODO: refactor to use QuestionGroup.one_from_query()
         question_group = next((x for x in self.questiongroups if x.name == group_name), None)
         if question_group is None:
             raise QuestionGroupNotFoundException(self.name, group_name)

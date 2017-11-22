@@ -1,6 +1,6 @@
-from model.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
-from model.Questionnaire import Questionnaire
 from framework.exceptions import *
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
+from model.Questionnaire import Questionnaire
 
 
 class Survey(PersistentObject):
@@ -14,7 +14,7 @@ class Survey(PersistentObject):
         questionnaire.description = description
         questionnaire.questiongroups = []
         questionnaire.question_count = 0
-        self.questionnaires += [questionnaire]
+        self.questionnaires.add(questionnaire)
         return questionnaire
 
     def remove_questionnaire(self, name: str) -> None:

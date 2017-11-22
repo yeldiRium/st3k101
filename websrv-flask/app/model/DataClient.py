@@ -1,4 +1,4 @@
-from model.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
 from model.Survey import Survey
 
 

@@ -1,5 +1,5 @@
+from framework.odm.PersistentObject import PersistentObject, PersistentReference, PersistentAttribute
 from model.DataSubject import DataSubject
-from model.PersistentObject import PersistentObject, PersistentReference, PersistentAttribute
 from model.Question import Question
 
 

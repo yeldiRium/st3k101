@@ -1,7 +1,8 @@
 import json
 
 from framework import classname
-from model.PersistentObject import PersistentObject, PersistentAttribute, PersistentReference, PersistentReferenceList
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReference, \
+    PersistentReferenceList
 
 
 class PersistentObjectEncoder(json.JSONEncoder):

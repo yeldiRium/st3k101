@@ -163,7 +163,7 @@ def survey(questionnaire_uuid):
     questiongroup_1.name = "Data"
     questiongroup_1.color = "#000000"
     questiongroup_1.text_color = "#FFFFFF"
-    questionnaire.questiongroups += [questiongroup_1]
+    questionnaire.questiongroups.add(questiongroup_1)
 
     questionnaire.add_question_to_group("Data", "This is a question.")
     questionnaire.add_question_to_group("Data", "This is not a question.")
