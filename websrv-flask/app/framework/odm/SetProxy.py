@@ -67,13 +67,16 @@ class SetProxy():
     def add(self, item):
         if not item.uuid in self._get_proxee():
             self._get_proxee().append(item.uuid)
+            self.__instance._set_member(self.__attr_name, self._get_proxee())
 
     def discard(self, item):
         try:
             self._get_proxee().remove(item.uuid)
+            self.__instance._set_member(self.__attr_name, self._get_proxee())
         except: pass
 
     def remove(self, item):
         if not item.uuid in self._get_proxee():
             raise KeyError
         self._get_proxee().remove(item.uuid)
+        self.__instance._set_member(self.__attr_name, self._get_proxee())
