@@ -8,6 +8,7 @@ from flask import g
 from framework.exceptions import ObjectDoesntExistException, BadQueryException
 from framework.memcached import get_memcache
 from framework.mongodb import get_db
+from framework.odm.SetProxy import SetProxy
 
 
 class UniqueObject(object):
@@ -390,6 +391,7 @@ class PersistentReferenceList(object):
         self.__name = "__persistent_reflist_{}".format(name)
         self.__other_class = other_class
 
+
     @property
     def name(self):
         return self.__external_name
@@ -413,8 +415,8 @@ class PersistentReferenceList(object):
 
         value = getattr(obj, self.__name, None)  # stores list of uuids
         if not value:
-            return []
-        return [self.__other_class(uuid) for uuid in value]  # instantiate all referenced objects
+            obj._set_member(self.__name, [])
+        return SetProxy(obj, self.__name, self.__other_class)
 
     def __set__(self, obj: PersistentObject, value: List[PersistentObject]):
         """

@@ -1,4 +1,4 @@
-from model.PersistentObject import PersistentObject, PersistentAttribute
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute
 
 
 class Question(PersistentObject): pass

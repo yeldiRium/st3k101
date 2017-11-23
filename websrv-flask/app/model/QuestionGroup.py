@@ -1,13 +1,13 @@
-from model.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
-from model.Question import Question
 from framework.exceptions import *
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
+from model.Question import Question
 
 
 class QuestionGroup(PersistentObject):
     def add_new_question(self, text: str):
         question = Question()
         question.text = text
-        self.questions += [question]
+        self.questions.add(question)
 
     def remove_question(self, text: str):
         length = len(self.questions)

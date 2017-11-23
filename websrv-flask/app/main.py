@@ -4,15 +4,13 @@ from flask import Flask, render_template, g, request, make_response, redirect, \
 import auth
 import businesslogic.users as users
 from framework.exceptions import *
+from framework.odm.PersistentObjectEncoder import PersistentObjectEncoder
 from model.DataClient import DataClient
 from model.DataSubject import DataSubject
-from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
 from model.Survey import Survey
-
-from model.PersistentObjectEncoder import PersistentObjectEncoder
 
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
@@ -163,7 +161,7 @@ def survey(questionnaire_uuid):
     questiongroup_1.name = "Data"
     questiongroup_1.color = "#000000"
     questiongroup_1.text_color = "#FFFFFF"
-    questionnaire.questiongroups += [questiongroup_1]
+    questionnaire.questiongroups.add(questiongroup_1)
 
     questionnaire.add_question_to_group("Data", "This is a question.")
     questionnaire.add_question_to_group("Data", "This is not a question.")
