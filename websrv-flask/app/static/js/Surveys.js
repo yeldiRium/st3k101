@@ -2,7 +2,7 @@ angular.module('Surveys', ['ngRoute'])
     .factory('Surveys', ['$http', function($http) {
         return {
             query: function() {
-                return $http.get('/api/surveys').then(
+                return $http.get('/api/survey').then(
                     function(result) {
                         return new Promise(function(resolve, reject) {
                             resolve(result.data);

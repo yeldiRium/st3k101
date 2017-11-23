@@ -205,8 +205,8 @@ def survey_submit(questionnaire_uuid):
 
 # APIs
 
-@app.route("/api/surveys", methods=["GET"])
-def api_surveys():
+@app.route("/api/survey", methods=["GET"])
+def api_survey_list():
     surveys = Survey.many_from_query({})
     return jsonify(surveys)
 
