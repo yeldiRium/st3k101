@@ -7,6 +7,10 @@ from framework.odm.PersistentObject import PersistentObject, PersistentAttribute
 
 class PersistentObjectEncoder(json.JSONEncoder):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__seen = set({})
+
     def default(self, o):
 
         if PersistentObject in o.__class__.__mro__:
@@ -16,6 +20,11 @@ class PersistentObjectEncoder(json.JSONEncoder):
                 "class": classname(o),
                 "fields": {}
             }
+
+            if o.uuid in self.__seen:
+                return obj_dict
+
+            self.__seen.add(o.uuid)
 
             for name, a in o.persistent_members().items():
                 if type(a) == PersistentAttribute:
