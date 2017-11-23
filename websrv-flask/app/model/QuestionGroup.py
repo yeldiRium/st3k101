@@ -1,5 +1,5 @@
 from framework.exceptions import *
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceSet
 from model.Question import Question
 
 
@@ -23,4 +23,4 @@ class QuestionGroup(PersistentObject):
 QuestionGroup.name = PersistentAttribute(QuestionGroup, "name")
 QuestionGroup.color = PersistentAttribute(QuestionGroup, "color")
 QuestionGroup.text_color = PersistentAttribute(QuestionGroup, "text_color")
-QuestionGroup.questions = PersistentReferenceList(QuestionGroup, "questions", Question)
+QuestionGroup.questions = PersistentReferenceSet(QuestionGroup, "questions", Question)

@@ -2,7 +2,7 @@ import json
 
 from framework import classname
 from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReference, \
-    PersistentReferenceList
+    PersistentReferenceSet
 
 
 class PersistentObjectEncoder(json.JSONEncoder):
@@ -24,7 +24,7 @@ class PersistentObjectEncoder(json.JSONEncoder):
                 elif type(a) == PersistentReference:
                     obj_dict["fields"][name] = self.default(a.__get__(o))
 
-                elif type(a) == PersistentReferenceList:
+                elif type(a) == PersistentReferenceSet:
                     reflist = []
                     for ref_obj in a.__get__(o):
                         reflist.append(self.default(ref_obj))

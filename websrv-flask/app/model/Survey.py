@@ -1,5 +1,5 @@
 from framework.exceptions import *
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceList
+from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceSet
 from model.Questionnaire import Questionnaire
 
 
@@ -29,4 +29,4 @@ class Survey(PersistentObject):
 
 Survey.name = PersistentAttribute(Survey, "name")
 Survey.date_created = PersistentAttribute(Survey, "date_created")
-Survey.questionnaires = PersistentReferenceList(Survey, "questionnaires", Questionnaire)
+Survey.questionnaires = PersistentReferenceSet(Survey, "questionnaires", Questionnaire)

@@ -369,7 +369,7 @@ class PersistentReference(object):
         obj._set_member(self.__name, None)
 
 
-class PersistentReferenceList(object):
+class PersistentReferenceSet(object):
     """
     Emulate PyProperty_Type() in Objects/descrobject.c
     This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
