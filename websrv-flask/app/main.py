@@ -7,6 +7,7 @@ from framework.exceptions import *
 from framework.odm.PersistentObjectEncoder import PersistentObjectEncoder
 from model.DataClient import DataClient
 from model.DataSubject import DataSubject
+from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
@@ -214,18 +215,45 @@ def api_survey_list():
 @app.route("/api/survey", methods=["Post"])
 def api_survey_create():
     data = request.get_json()
-    survey = Survey.one_from_query({"name": data["name"]})
-    if survey is not None:
-        return jsonify({
-            "error": "Survey with name \"" + data["name"] + "\" already exists."
-        }, 400)
-
     survey = Survey()
     survey.name = data["name"]
 
     return jsonify({
-        "result": "Survey created."
+        "result": "Survey created.",
+        "survey": survey
     })
+
+
+@app.route("/api/survey", methods=["PUT"])
+def api_survey_update():
+    data = request.get_json()
+    try:
+        survey = Survey(data["uuid"])
+        survey.name = data["name"]
+        return jsonify({
+            "result": "Survey updated.",
+            "survey": survey
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Survey doesn't exist."
+        }, 400)
+
+
+@app.route("/api/survey", methods=["DELETE"])
+def api_survey_delete():
+    data = request.get_json()
+    try:
+        survey = Survey(data["uuid"])
+        # TODO: delete subobjects
+        survey.remove()
+        return jsonify({
+            "result": "Survey deleted."
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Survey doesn't exist."
+        }, 400)
 
 
 @app.route("/api/questionnaire", methods=["POST"])
@@ -241,3 +269,142 @@ def api_questionnaire_create():
     return jsonify({
         "result": "Questionnaire created."
     })
+
+
+@app.route("/api/questionnaire", methods=["PUT"])
+def api_questionnaire_update():
+    data = request.get_json()
+    try:
+        questionnaire = Questionnaire(data["uuid"])
+        if "name" in data:
+            questionnaire.name = data["name"]
+        if "description" in data:
+            questionnaire.description = data["description"]
+        return jsonify({
+            "result": "Questionnaire updated.",
+            "questionnaire": questionnaire
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Questionnaire doesn't exist."
+        }, 400)
+
+
+@app.route("/api/questionnaire", methods=["DELETE"])
+def api_questionnaire_delete():
+    data = request.get_json()
+    try:
+        questionnaire = Questionnaire(data["uuid"])
+        questionnaire.remove()
+        return jsonify({
+            "result": "Questionnaire deleted."
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Questionnaire doesn't exist."
+        }, 400)
+
+
+@app.route("/api/questiongroup", methods=["POST"])
+def api_questiongroup_create():
+    data = request.get_json()
+    try:
+        questionnaire = Questionnaire(data["questionnaire"])
+        question_group = QuestionGroup()
+        question_group.name = data["name"]
+        question_group.color = "#FFFFFF"
+        question_group.text_color = "#000000"
+        questionnaire.questiongroups.add(question_group)
+        return jsonify({
+            "result": "QuestionGroup created on Questionnaire " + data["questionnaire"] + ".",
+            "question_group": question_group
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Questionnaire doesn't exist."
+        }, 400)
+
+
+@app.route("/api/quostiongroup", methods=["PUT"])
+def api_questiongroup_update():
+    data = request.get_json()
+    try:
+        question_group = QuestionGroup(data["uuid"])
+        if "name" in data:
+            question_group.name = data["name"]
+        if "color" in data:
+            question_group.color = data["color"]
+        if "text_color" in data:
+            question_group.text_color = data["text_color"]
+        return jsonify({
+            "result": "QuestionGroup updated.",
+            "question_group": question_group
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "QuestionGroup doesn't exist."
+        }, 400)
+
+
+@app.route("/api/quostiongroup", methods=["DELETE"])
+def api_questiongroup_delete():
+    data = request.get_json()
+    try:
+        question_group = QuestionGroup(data["uuid"])
+        # TODO: delete subobjects. MEMORY LEAK
+        question_group.remove()
+        return jsonify({
+            "result": "QuestionGroup deleted."
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "QuestionGroup doesn't exist."
+        }, 400)
+
+
+@app.route("/api/question", methods=["POST"])
+def api_question_create():
+    data = request.get_json()
+    try:
+        question_group = QuestionGroup(data["question_group"])
+        question = question_group.add_new_question(data["text"])
+        return jsonify({
+            "result": "Question created.",
+            "question": question
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "QuestionGroup doesn't exist."
+        }, 400)
+
+
+@app.route("/api/question", methods=["PUT"])
+def api_question_update():
+    data = request.get_json()
+    try:
+        question = Question(data["uuid"])
+        question.text = data["text"]
+        return jsonify({
+            "result": "Question updated.",
+            "question": Question
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Question doesn't exist."
+        }, 400)
+
+
+@app.route("/api/question", methods=["DELETE"])
+def api_question_delete():
+    data = request.get_json()
+    try:
+        question = Question(data["uuid"])
+        # TODO: remove all answers to deleted question
+        question.remove()
+        return jsonify({
+            "result": "Question deleted."
+        })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Question doesn't exist."
+        }, 400)

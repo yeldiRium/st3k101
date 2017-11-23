@@ -4,10 +4,11 @@ from model.Question import Question
 
 
 class QuestionGroup(PersistentObject):
-    def add_new_question(self, text: str):
+    def add_new_question(self, text: str) -> Question:
         question = Question()
         question.text = text
         self.questions.add(question)
+        return question
 
     def remove_question(self, text: str):
         length = len(self.questions)
