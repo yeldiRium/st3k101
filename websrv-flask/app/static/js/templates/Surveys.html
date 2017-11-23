@@ -21,17 +21,17 @@
             </div>
         </div>
         <div class="panel-footer">
-            <form class="form-horizontal" ng-if="newForm.questionnaire.survey == survey">
+            <form class="form-horizontal" ng-if="new.questionnaire.survey == survey">
                 <div class="form-group">
                     <label for="inputQuestionnaireName" class="col-sm-2 control-label">Name</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="newForm.questionnaire.data.name" ng-enter="createQuestionnaire()">
+                        <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="new.questionnaire.data.name" ng-enter="createQuestionnaire()">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputQuestionnaireDescription" class="col-sm-2 control-label">Description</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="newForm.questionnaire.data.description" ng-enter="createQuestionnaire()">
+                        <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="new.questionnaire.data.description" ng-enter="createQuestionnaire()">
                     </div>
                 </div>
                 <div class="form-group">
@@ -44,23 +44,26 @@
                     </div>
                 </div>
             </form>
-            <button type="button" class="btn btn-default" ng-click="newQuestionnaire(survey)" ng-if="newForm.questionnaire.survey != survey">
+            <button type="button" class="btn btn-default" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
                 Add new Questionnaire to this survey...
+            </button>
+            <button type="button" class="btn btn-default" ng-click="deleteQuestionnaires(survey)" ng-if="selection.survey == survey">
+                Remove the selected {{ selection.questionnaires.keys().length }} Questionnaires from this Survey...
             </button>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="input-group" ng-if="newForm.survey.data != null">
+    <div class="input-group" ng-if="new.survey.data != null">
         <span class="input-group-btn">
             <button class="btn btn-default" type="button" ng-click="createSurvey()">Create</button>
         </span>
-        <input type="text" class="form-control" ng-model="newForm.survey.data.name" ng-enter="createSurvey()" />
+        <input type="text" class="form-control" ng-model="new.survey.data.name" ng-enter="createSurvey()" />
         <span class="input-group-btn">
             <button class="btn btn-default" type="button" ng-click="resetEditing()">Cancel</button>
         </span>
     </div>
-    <button type="button" class="btn btn-default" ng-click="newSurvey()" ng-if="newForm.survey.data == null">
+    <button type="button" class="btn btn-default" ng-click="newSurvey()" ng-if="new.survey.data == null">
         Add new Survey...
     </button>
 </div>

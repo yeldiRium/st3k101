@@ -40,7 +40,7 @@ angular.module('Surveys', ['ngRoute'])
             };
 
             $scope.resetEditing = function() {
-                $scope.newForm = {
+                $scope.new = {
                     questionnaire: {
                         survey: null,
                         data: null
@@ -53,26 +53,26 @@ angular.module('Surveys', ['ngRoute'])
 
             $scope.newQuestionnaire = function(survey) {
                 $scope.resetEditing();
-                $scope.newForm.questionnaire.survey = survey;
-                $scope.newForm.questionnaire.data = {
+                $scope.new.questionnaire.survey = survey;
+                $scope.new.questionnaire.data = {
                     name: "name",
                     description: "description"
                 };
             };
 
             $scope.createQuestionnaire = function() {
-                if (($scope.newForm.questionnaire.survey == null)
-                    || $scope.newForm.questionnaire.data == null) {
+                if (($scope.new.questionnaire.survey == null)
+                    || $scope.new.questionnaire.data == null) {
                     return;
                 }
                 $http({
                     method: 'POST',
                     url: '/api/questionnaire',
                     data: JSON.stringify({
-                        survey: $scope.newForm.questionnaire.survey.uuid,
+                        survey: $scope.new.questionnaire.survey.uuid,
                         questionnaire: {
-                            name: $scope.newForm.questionnaire.data.name,
-                            description: $scope.newForm.questionnaire.data.description
+                            name: $scope.new.questionnaire.data.name,
+                            description: $scope.new.questionnaire.data.description
                         }
                     }),
                     headers: {
@@ -97,20 +97,20 @@ angular.module('Surveys', ['ngRoute'])
 
             $scope.newSurvey = function() {
                 $scope.resetEditing();
-                $scope.newForm.survey.data = {
+                $scope.new.survey.data = {
                     name: "name"
                 }
             };
 
             $scope.createSurvey = function() {
-                if ($scope.newForm.survey.data == null) {
+                if ($scope.new.survey.data == null) {
                     return;
                 }
                 $http({
                     method: 'POST',
                     url: '/api/survey',
                     data: JSON.stringify({
-                        name: $scope.newForm.survey.data.name
+                        name: $scope.new.survey.data.name
                     }),
                     headers: {
                         'Content-Type': 'application/json'
