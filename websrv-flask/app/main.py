@@ -295,15 +295,16 @@ def api_questionnaire_update():
 def api_questionnaire_delete():
     data = request.get_json()
     try:
+        survey = Survey(data["survey"])
         questionnaire = Questionnaire(data["uuid"])
-        questionnaire.remove()
+        survey.remove_questionnaire(questionnaire)
         return jsonify({
             "result": "Questionnaire deleted."
         })
     except ObjectDoesntExistException as e:
-        return jsonify({
+        return make_response(jsonify({
             "result": "Questionnaire doesn't exist."
-        }, 400)
+        }), 400)
 
 
 @app.route("/api/questiongroup", methods=["POST"])

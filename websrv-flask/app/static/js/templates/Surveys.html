@@ -13,11 +13,12 @@
         </div>
         <div class="panel-body">
             <div class="list-group">
-                <button type="button" class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires">
-                    <span class="badge">{{ questionnaire.fields.question_count }}</span>
+                <a class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires" ng-click="toggleSelect(survey, questionnaire)" ng-class="{'list-group-item-info': selection.questionnaires[questionnaire.uuid] == true}">
+                    <button type="button" class="pull-left btn btn-default disabled">{{ questionnaire.fields.question_count }}</button>
+                    <button type="button" class="pull-left btn btn-default edit-button">edit</button>
                     <h4 class="list-group-item-heading">{{ questionnaire.fields.name }}</h4>
                     <p class="list-group-item-text">{{ questionnaire.fields.description }}</p>
-                </button>
+                </a>
             </div>
         </div>
         <div class="panel-footer">
@@ -47,8 +48,8 @@
             <button type="button" class="btn btn-default" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
                 Add new Questionnaire to this survey...
             </button>
-            <button type="button" class="btn btn-default" ng-click="deleteQuestionnaires(survey)" ng-if="selection.survey == survey">
-                Remove the selected {{ selection.questionnaires.keys().length }} Questionnaires from this Survey...
+            <button type="button" class="btn btn-default" mw-confirm-click="deleteQuestionnaires(survey)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questionnaires?" ng-if="selection.survey == survey">
+                Remove the selected {{ selection.count }} Questionnaires from this Survey...
             </button>
         </div>
     </div>

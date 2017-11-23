@@ -49,6 +49,29 @@ angular.module('Surveys', ['ngRoute'])
                         data: null
                     }
                 };
+
+                $scope.selection =  {
+                    survey: null,
+                    questionnaires: {},
+                    count: 0
+                };
+            };
+
+            $scope.toggleSelect = function(survey, questionnaire) {
+                if ($scope.selection.survey != survey) {
+                    $scope.resetEditing();
+                }
+                $scope.selection.survey = survey;
+                if ($scope.selection.questionnaires[questionnaire.uuid] == true) {
+                    $scope.selection.questionnaires[questionnaire.uuid] = false;
+                    $scope.selection.count--;
+                } else {
+                    $scope.selection.questionnaires[questionnaire.uuid] = true;
+                    $scope.selection.count++;
+                }
+                if ($scope.selection.count == 0) {
+                    $scope.resetEditing();
+                }
             };
 
             $scope.newQuestionnaire = function(survey) {
@@ -93,6 +116,32 @@ angular.module('Surveys', ['ngRoute'])
                             $scope.error = error;
                         }
                     )
+            };
+
+            $scope.deleteQuestionnaires = function() {
+                promises = [];
+                $.each($scope.selection.questionnaires, function(uuid, shouldDelete) {
+                    if (shouldDelete == true) {
+                        promises.push(
+                            $http({
+                                method: 'DELETE',
+                                url: '/api/questionnaire',
+                                data: {
+                                    uuid: uuid,
+                                    survey: $scope.selection.survey.uuid
+                                },
+                                headers: {'Content-Type': 'application/json'}
+                            })
+                        );
+                    }
+                });
+                Promise.waitAll(promises).then(
+                    function success(results) {
+                        $scope.resetEditing();
+                        $scope.query();
+                    },
+                    function fail(results) {}
+                );
             };
 
             $scope.newSurvey = function() {

@@ -1,4 +1,4 @@
-Promise.prototype.waitAll = function (iterable) {
+Promise.waitAll = function (iterable) {
     return new Promise(function(resolve, reject) {
         var waitCount = 0;
         var results = [];
@@ -9,7 +9,7 @@ Promise.prototype.waitAll = function (iterable) {
             }
         }
 
-        $.each(iterable, function(promise) {
+        $.each(iterable, function(index, promise) {
             waitCount++;
             promise.then(
                 function success(result) {

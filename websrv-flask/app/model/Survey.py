@@ -17,14 +17,12 @@ class Survey(PersistentObject):
         self.questionnaires.add(questionnaire)
         return questionnaire
 
-    def remove_questionnaire(self, name: str) -> None:
-        length = len(self.questionnaires)
-        # TODO: memory leak. the removed questionnaire is not removed from the db
-        self.questionnaires = [x for x in self.questionnaires if not x.name == name]
-        length_after = len(self.questionnaires)
-
-        if length == length_after:
-            raise QuestionnaireNotFoundException(self.name, name)
+    def remove_questionnaire(self, questionnaire: Questionnaire) -> None:
+        try:
+            self.questionnaires.remove(questionnaire)
+            questionnaire.remove()
+        except KeyError as e:
+            raise QuestionnaireNotFoundException(self.name, questionnaire.name)
 
 
 Survey.name = PersistentAttribute(Survey, "name")
