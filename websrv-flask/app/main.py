@@ -261,14 +261,15 @@ def api_questionnaire_create():
     data = request.get_json()
     survey = Survey(data["survey"])
     try:
-        survey.add_new_questionnaire(data["questionnaire"]["name"], data["questionnaire"]["description"])
+        questionnaire = survey.add_new_questionnaire(data["questionnaire"]["name"], data["questionnaire"]["description"])
+        return jsonify({
+            "result": "Questionnaire created.",
+            "questionnaire": questionnaire
+        })
     except DuplicateQuestionnaireNameException as e:
         return jsonify({
             "error": "Questionnaire with name \"" + data["questionnaire"]["name"] + "\" already exists."
         }, 400)
-    return jsonify({
-        "result": "Questionnaire created."
-    })
 
 
 @app.route("/api/questionnaire", methods=["PUT"])
