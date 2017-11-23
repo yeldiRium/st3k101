@@ -19,6 +19,7 @@ class Survey(PersistentObject):
 
     def remove_questionnaire(self, name: str) -> None:
         length = len(self.questionnaires)
+        # TODO: memory leak. the removed questionnaire is not removed from the db
         self.questionnaires = [x for x in self.questionnaires if not x.name == name]
         length_after = len(self.questionnaires)
 

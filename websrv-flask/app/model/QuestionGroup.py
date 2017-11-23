@@ -11,6 +11,7 @@ class QuestionGroup(PersistentObject):
 
     def remove_question(self, text: str):
         length = len(self.questions)
+        # TODO: memory leak. the removed question is not deleted from the db
         self.questions = [x for x in self.questions if not x.text == text]
         length_after = len(self.questions)
 
