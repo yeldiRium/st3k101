@@ -1,5 +1,6 @@
 import random
 import time
+from enum import Enum, auto
 from typing import Any, List
 
 from bson.objectid import ObjectId
@@ -16,6 +17,7 @@ class UniqueObject(object):
     This class mainly exists to calm PyCharm's linter.
     See it as a kind of forward declaration.
     """
+
     @property
     def uuid(self):
         return str(self.__id)
@@ -32,6 +34,7 @@ class UniqueHandle(type):
     This means that for any given flask request context, only one instance of UniqueObject with a given uuid
     can exist.
     """
+
     def __call__(cls, uuid=None):
         if uuid:  # uuid should be str, but we will also allow types which support string representations
             if type(uuid) != str:
@@ -71,6 +74,7 @@ class PersistentObject(UniqueObject, metaclass=UniqueHandle):
         """
         super().__init__(uuid)
         self.__memcached_client = get_memcache()
+        self.__ref_count = 0
 
         if uuid:  # initialize self from mongodb document with the given uuid
             document = self._collection().find_one({u'_id': ObjectId(uuid)})
@@ -137,6 +141,16 @@ class PersistentObject(UniqueObject, metaclass=UniqueHandle):
         """
         return str(self.__id)
 
+    def inc_refcount(self):
+        self.__ref_count += 1
+
+    def dec_refcount(self):
+        self.__ref_count -= 1
+
+    @property
+    def ref_count(self):
+        return self.__ref_count
+
     @classmethod
     def one_from_query(cls, query: dict):
         """
@@ -201,6 +215,25 @@ class PersistentObject(UniqueObject, metaclass=UniqueHandle):
         Removes the database entry represented by self from mongodb.
         :return: None
         """
+        if self.ref_count > 0:
+            return
+
+        # TODO: Handle references and delete if cascading_delete
+        if hasattr(self, "persistent_references"):
+            for name, ref in self.persistent_references.items():
+
+                other = None
+                if ref.cascading_delete:  # get referenced obj if we need to delete it later
+                    other = getattr(self, name)
+
+                delattr(self, name)  # calls ref.__del__ to decrease ref count if necessary
+
+                if other:
+                    other.remove()  # do cascading delete
+
+        if hasattr(self, "persistent_reference_lists"):
+            pass  # TODO
+
         self._collection().delete_one({u'_id': self.__id})
 
     def __from_document(self, document: dict):
@@ -242,6 +275,11 @@ class PersistentObject(UniqueObject, metaclass=UniqueHandle):
         :return: dict
         """
         return {a.internal_name: None for _, a in cls.persistent_members().items()}
+
+
+class ReferenceType(Enum):
+    WEAK = auto()
+    STRONG = auto()
 
 
 class PersistentAttribute(object):
@@ -313,7 +351,8 @@ class PersistentReference(object):
     erence to ome other PersistentObject.
     """
 
-    def __init__(self, cls: type, name: str, other_class: type):
+    def __init__(self, cls: type, name: str, other_class: type, cascading_delete: bool = False,
+                 reference_type: ReferenceType = ReferenceType.WEAK):
         """
         :param cls: type See documentation for PersistentAttribute.
         :param name: str See documentation for PersistentAttribute.
@@ -326,6 +365,16 @@ class PersistentReference(object):
         self.__external_name = name
         self.__name = "__persistent_ref_{}".format(name)
         self.__other_class = other_class
+        self.__cascading_delete = cascading_delete
+        self.__reference_type = reference_type
+
+    @property
+    def cascading_delete(self):
+        return self.__cascading_delete
+
+    @property
+    def reference_type(self):
+        return self.__reference_type
 
     @property
     def name(self):
@@ -358,6 +407,9 @@ class PersistentReference(object):
         Called when attribute is set.
         See Python's descriptor protocol.
         """
+        if self.__reference_type == ReferenceType.STRONG:
+            value.inc_refcount()
+
         uuid = value.uuid  # store only the object's uuid
         obj._set_member(self.__name, uuid)
 
@@ -366,6 +418,12 @@ class PersistentReference(object):
         Called when attribute is deleted.
         See Python's descriptor protocol.
         """
+
+        uuid = getattr(obj, self.__name, None)
+
+        if self.__reference_type == ReferenceType.STRONG:
+            self.__other_class(uuid).dec_refcount()
+
         obj._set_member(self.__name, None)
 
 
@@ -390,7 +448,6 @@ class PersistentReferenceSet(object):
         self.__external_name = name
         self.__name = "__persistent_reflist_{}".format(name)
         self.__other_class = other_class
-
 
     @property
     def name(self):
