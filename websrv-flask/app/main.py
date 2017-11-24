@@ -364,6 +364,8 @@ def api_questiongroup_delete():
     data = request.get_json()
     try:
         question_group = QuestionGroup(data["uuid"])
+        questionnaire = Questionnaire(data["questionnaire"])
+        questionnaire.questiongroups.remove(question_group)
         # TODO: delete subobjects. MEMORY LEAK
         question_group.remove()
         return jsonify({
