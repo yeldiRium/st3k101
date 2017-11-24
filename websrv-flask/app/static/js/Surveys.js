@@ -284,26 +284,26 @@ angular.module('Surveys', ['ngRoute'])
             $scope.resetEditing = function() {
                 $scope.new = {
                     question: {
-                        questiongroup: null,
+                        questionGroup: null,
                         data: null
                     },
-                    questiongroup: {
+                    questionGroup: {
                         data: null
                     }
                 };
 
                 $scope.selection =  {
-                    questiongroup: null,
+                    questionGroup: null,
                     questions: {},
                     count: 0
                 };
             };
 
-            $scope.toggleSelect = function(questiongroup, question) {
-                if ($scope.selection.questiongroup != questiongroup) {
+            $scope.toggleSelect = function(questionGroup, question) {
+                if ($scope.selection.questionGroup != questionGroup) {
                     $scope.resetEditing();
                 }
-                $scope.selection.questiongroup = questiongroup;
+                $scope.selection.questionGroup = questionGroup;
                 if ($scope.selection.questions[question.uuid] == true) {
                     $scope.selection.questions[question.uuid] = false;
                     $scope.selection.count--;
@@ -318,14 +318,14 @@ angular.module('Surveys', ['ngRoute'])
 
             $scope.newQuestion = function(questiongroup) {
                 $scope.resetEditing();
-                $scope.new.question.questiongroup = questiongroup;
+                $scope.new.question.questionGroup = questiongroup;
                 $scope.new.question.data = {
                     text: "text"
                 };
             };
 
             $scope.createQuestion = function() {
-                if (($scope.new.question.questiongroup == null)
+                if (($scope.new.question.questionGroup == null)
                     || $scope.new.question.data == null) {
                     return;
                 }
@@ -334,7 +334,7 @@ angular.module('Surveys', ['ngRoute'])
                     url: '/api/question',
                     data: JSON.stringify({
                         questionnaire: $scope.questionnaire.uuid,
-                        question_group: $scope.new.question.questiongroup.uuid,
+                        question_group: $scope.new.question.questionGroup.uuid,
                         text: $scope.new.question.data.text
                     }),
                     headers: {
@@ -367,7 +367,7 @@ angular.module('Surveys', ['ngRoute'])
                                 url: '/api/question',
                                 data: {
                                     questionnaire: $scope.questionnaire.uuid,
-                                    question_group: $scope.selection.questiongroup.uuid,
+                                    question_group: $scope.selection.questionGroup.uuid,
                                     uuid: uuid
                                 },
                                 headers: {'Content-Type': 'application/json'}
@@ -384,22 +384,23 @@ angular.module('Surveys', ['ngRoute'])
                 );
             };
 
-            $scope.newSurvey = function() {
+            $scope.newQuestionGroup = function() {
                 $scope.resetEditing();
-                $scope.new.survey.data = {
+                $scope.new.questionGroup.data = {
                     name: "name"
                 }
             };
 
-            $scope.createSurvey = function() {
-                if ($scope.new.survey.data == null) {
+            $scope.createQuestionGroup = function() {
+                if ($scope.new.questionGroup.data == null) {
                     return;
                 }
                 $http({
                     method: 'POST',
-                    url: '/api/survey',
+                    url: '/api/question_group',
                     data: JSON.stringify({
-                        name: $scope.new.survey.data.name
+                        questionnaire: $scope.questionnaire.uuid,
+                        name: $scope.new.questionGroup.data.name,
                     }),
                     headers: {
                         'Content-Type': 'application/json'
@@ -408,7 +409,7 @@ angular.module('Surveys', ['ngRoute'])
                     .then(
                         function success(result) {
                             if (result.status == 200
-                                && result.data.result == "Survey created.") {
+                                && result.data.result == "QuestionGroup created.") {
                                 $scope.resetEditing();
                                 $scope.query();
                             } else {
@@ -421,22 +422,26 @@ angular.module('Surveys', ['ngRoute'])
                     )
             };
 
-            $scope.deleteSurvey = function(survey) {
+            $scope.deleteQuestionGroup = function(questionGroup) {
                 $http({
                     method: 'DELETE',
-                    url: '/api/survey',
+                    url: '/api/question_group',
                     data: {
-                        uuid: survey.uuid
+                        uuid: questionGroup.uuid,
+                        questionnaire: $scope.questionnaire.uuid
                     },
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 }).then(
                     function success(result) {
-                        $scope.surveys.splice($scope.surveys.indexOf(survey), 1);
+                        $scope.questionnaire.fields.questiongroups.splice(
+                            $scope.questionnaire.fields.questiongroups.indexOf(questionGroup),
+                            1
+                        );
                     },
                     function fail(error) {
-                        $scope.showError("Survey could not be deleted. Please try again.");
+                        $scope.showError("QuestionGroup could not be deleted. Please try again.");
                     }
                 )
             };
