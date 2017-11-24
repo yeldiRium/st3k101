@@ -318,7 +318,7 @@ def api_questionnaire_delete():
         }), 400)
 
 
-@app.route("/api/questiongroup", methods=["POST"])
+@app.route("/api/question_group", methods=["POST"])
 def api_questiongroup_create():
     data = request.get_json()
     try:
@@ -338,7 +338,7 @@ def api_questiongroup_create():
         }, 400)
 
 
-@app.route("/api/quostiongroup", methods=["PUT"])
+@app.route("/api/question_group", methods=["PUT"])
 def api_questiongroup_update():
     data = request.get_json()
     try:
@@ -359,7 +359,7 @@ def api_questiongroup_update():
         }, 400)
 
 
-@app.route("/api/quostiongroup", methods=["DELETE"])
+@app.route("/api/quostion_group", methods=["DELETE"])
 def api_questiongroup_delete():
     data = request.get_json()
     try:
