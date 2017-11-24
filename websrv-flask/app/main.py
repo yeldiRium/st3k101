@@ -338,8 +338,8 @@ def api_questiongroup_create():
         questionnaire = Questionnaire(data["questionnaire"])
         question_group = QuestionGroup()
         question_group.name = data["name"]
-        question_group.color = "#FFFFFF"
-        question_group.text_color = "#000000"
+        question_group.color = "#000000"
+        question_group.text_color = "#FFFFFF"
         questionnaire.questiongroups.add(question_group)
         return jsonify({
             "result": "QuestionGroup created.",
