@@ -17,8 +17,8 @@ angular.module('Surveys', ['ngRoute'])
             }
         }
     }])
-    .controller('SurveysController', ['$scope', '$http', 'Surveys',
-        function($scope, $http, Surveys) {
+    .controller('SurveysController', ['$scope', '$http', '$timeout', 'Surveys',
+        function($scope, $http, $timeout, Surveys) {
             /**
              * Queries surveys and writes them into $scope.surveys.
              * If something goes wrong, $scope.error will be set.
@@ -37,6 +37,13 @@ angular.module('Surveys', ['ngRoute'])
                         $scope.error = error;
                     }
                 );
+            };
+
+            $scope.showError = function(message) {
+                $scope.error = message;
+                $timeout(function() {
+                    $scope.error = null;
+                }, 3000);
             };
 
             $scope.resetEditing = function() {
@@ -109,11 +116,11 @@ angular.module('Surveys', ['ngRoute'])
                                 $scope.resetEditing();
                                 $scope.query();
                             } else {
-                                $scope.error = "Something went wrong. Please try again!";
+                                $scope.showError("Something went wrong. Please try again!");
                             }
                         },
                         function failure(error) {
-                            $scope.error = error;
+                            $scope.showError(error);
                         }
                     )
             };
@@ -172,11 +179,11 @@ angular.module('Surveys', ['ngRoute'])
                                 $scope.resetEditing();
                                 $scope.query();
                             } else {
-                                $scope.error = "Something went wrong. Please try again!";
+                                $scope.showError("Something went wrong. Please try again!");
                             }
                         },
                         function failure(error) {
-                            $scope.error = error;
+                            $scope.showError(error);
                         }
                     )
             };
