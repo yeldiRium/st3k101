@@ -137,7 +137,7 @@ angular.module('Surveys', ['ngRoute'])
                 if (win) {
                     win.focus();
                 } else {
-                    $scope.showError("We tried to open the survey at '" + url + "', but the popup was blocked.");
+                    $scope.showError("Tried to open the survey at '" + url + "', but the popup was blocked.");
                 }
             };
 
@@ -375,6 +375,19 @@ angular.module('Surveys', ['ngRoute'])
                     questions: {},
                     count: 0
                 };
+            };
+
+            /**
+             * Navigates to the frontend view of a Questionnaire.
+             */
+            $scope.gotoQuestionnaire = function() {
+                var url = '/survey/' + $scope.questionnaire.uuid;
+                var win = window.open('/survey/' + $scope.questionnaire.uuid, '_blank');
+                if (win) {
+                    win.focus();
+                } else {
+                    $scope.showError("Tried to open the questionnaire at '" + url + "', but the popup was blocked.");
+                }
             };
 
 
