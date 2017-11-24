@@ -43,6 +43,16 @@ angular.module('Surveys', ['ngRoute'])
              * @returns Promise
              */
             $scope.query = function() {
+                /**
+                 * Queries for surveys and creates a list of templates that
+                 * can be used for new questionnaires based on the surveys
+                 * found.
+                 * The default options for templates are 'efla_teacher' and
+                 * 'efla_student', which are standardized tests.
+                 *
+                 * If something goes wrong, an error message is set and nothing
+                 * else displayed.
+                 */
                 return Surveys.query().then(
                     function(result) {
                         $scope.error = null;
@@ -84,13 +94,20 @@ angular.module('Surveys', ['ngRoute'])
                 );
             };
 
+            /**
+             * Show an error for 5 seconds.
+             * @param message
+             */
             $scope.showError = function(message) {
                 $scope.error = message;
                 $timeout(function() {
                     $scope.error = null;
-                }, 3000);
+                }, 5000);
             };
 
+            /**
+             * Resets all editing forms and all temporary data.
+             */
             $scope.resetEditing = function() {
                 $scope.new = {
                     questionnaire: {
@@ -110,6 +127,15 @@ angular.module('Surveys', ['ngRoute'])
                 };
             };
 
+            /**
+             * Toggles the selection of a single questionnaire.
+             * Selection is survey-based. It is not possible to select multi-
+             * ple questionnaires across surveys.
+             * So the previous selection is reset, if a questionnaire on a different survey is selected.
+             *
+             * @param survey
+             * @param questionnaire
+             */
             $scope.toggleSelect = function(survey, questionnaire) {
                 if ($scope.selection.survey != survey) {
                     $scope.resetEditing();
@@ -127,6 +153,11 @@ angular.module('Surveys', ['ngRoute'])
                 }
             };
 
+            /**
+             * Opens a form for a new questionnaire by setting temporary data to
+             * default values.
+             * @param survey
+             */
             $scope.newQuestionnaire = function(survey) {
                 $scope.resetEditing();
                 $scope.new.questionnaire.survey = survey;
@@ -137,6 +168,11 @@ angular.module('Surveys', ['ngRoute'])
                 };
             };
 
+            /**
+             * Sends a create request for a new Questionnaire.
+             * Uses the current temporary data, which is bound to the template
+             * form.
+             */
             $scope.createQuestionnaire = function() {
                 if (($scope.new.questionnaire.survey == null)
                     || $scope.new.questionnaire.data == null) {
@@ -173,6 +209,10 @@ angular.module('Surveys', ['ngRoute'])
                     )
             };
 
+            /**
+             * Sends delete requests for all currently selected questionnaires.
+             * TODO: Error handling.
+             */
             $scope.deleteQuestionnaires = function() {
                 promises = [];
                 $.each($scope.selection.questionnaires, function(uuid, shouldDelete) {
@@ -199,6 +239,10 @@ angular.module('Surveys', ['ngRoute'])
                 );
             };
 
+            /**
+             * Opens a form for a new Survey by setting temporary data to
+             * default values.
+             */
             $scope.newSurvey = function() {
                 $scope.resetEditing();
                 $scope.new.survey.data = {
@@ -206,6 +250,10 @@ angular.module('Surveys', ['ngRoute'])
                 }
             };
 
+            /**
+             * Sends a create request for a new Survey with the current tempora-
+             * ry data.
+             */
             $scope.createSurvey = function() {
                 if ($scope.new.survey.data == null) {
                     return;
@@ -236,6 +284,10 @@ angular.module('Surveys', ['ngRoute'])
                     )
             };
 
+            /**
+             * Sends a delete request for a specific survey.
+             * @param survey
+             */
             $scope.deleteSurvey = function(survey) {
                 $http({
                     method: 'DELETE',
@@ -261,6 +313,11 @@ angular.module('Surveys', ['ngRoute'])
         }])
     .controller('EditQuestionnaireController', ['$scope', '$http', '$timeout', '$routeParams', 'Questionnaire',
         function($scope, $http, $timeout, $routeParams, Questionnaire) {
+            /**
+             * Queries the current questionnaire and stores its data.
+             * If something goes wrong, an error message is displayed and
+             * nothing else.
+             */
             $scope.query = function() {
                 Questionnaire.query($routeParams.questionnaire).then(
                     function success(result) {
@@ -274,13 +331,20 @@ angular.module('Surveys', ['ngRoute'])
                 )
             };
 
+            /**
+             * Show an error for 5 seconds.
+             * @param message
+             */
             $scope.showError = function(message) {
                 $scope.error = message;
                 $timeout(function() {
                     $scope.error = null;
-                }, 3000);
+                }, 5000);
             };
 
+            /**
+             * Resets all editing forms and all temporary data.
+             */
             $scope.resetEditing = function() {
                 $scope.new = {
                     question: {
@@ -299,6 +363,17 @@ angular.module('Surveys', ['ngRoute'])
                 };
             };
 
+
+            /**
+             * Toggles the selection of a single question.
+             * Selection is questionGroup-based. It is not possible to select
+             * multiple questions across questionGroup.
+             * So the previous selection is reset, if a question on a different
+             * questionGroup is selected.
+             *
+             * @param questionGroup
+             * @param question
+             */
             $scope.toggleSelect = function(questionGroup, question) {
                 if ($scope.selection.questionGroup != questionGroup) {
                     $scope.resetEditing();
@@ -316,6 +391,10 @@ angular.module('Surveys', ['ngRoute'])
                 }
             };
 
+            /**
+             * Opens a form for a new Question by setting temporary data to
+             * default values.
+             */
             $scope.newQuestion = function(questiongroup) {
                 $scope.resetEditing();
                 $scope.new.question.questionGroup = questiongroup;
@@ -324,6 +403,10 @@ angular.module('Surveys', ['ngRoute'])
                 };
             };
 
+            /**
+             * Sends a create request for a new Question with the current tempora-
+             * ry data.
+             */
             $scope.createQuestion = function() {
                 if (($scope.new.question.questionGroup == null)
                     || $scope.new.question.data == null) {
@@ -357,6 +440,10 @@ angular.module('Surveys', ['ngRoute'])
                     )
             };
 
+            /**
+             * Sends a delete request for each currently selected Question.
+             * TODO: error handling
+             */
             $scope.deleteQuestions = function() {
                 promises = [];
                 $.each($scope.selection.questions, function(uuid, shouldDelete) {
@@ -384,6 +471,10 @@ angular.module('Surveys', ['ngRoute'])
                 );
             };
 
+            /**
+             * Opens a form for a new QuestionGroup by setting temporary data to
+             * default values.
+             */
             $scope.newQuestionGroup = function() {
                 $scope.resetEditing();
                 $scope.new.questionGroup.data = {
@@ -391,6 +482,10 @@ angular.module('Surveys', ['ngRoute'])
                 }
             };
 
+            /**
+             * Sends a create request for a new QuestionGroup with the current
+             * temporary data.
+             */
             $scope.createQuestionGroup = function() {
                 if ($scope.new.questionGroup.data == null) {
                     return;
@@ -422,6 +517,9 @@ angular.module('Surveys', ['ngRoute'])
                     )
             };
 
+            /**
+             * Sends a delete request for a specific QuestionGroup.
+             */
             $scope.deleteQuestionGroup = function(questionGroup) {
                 $http({
                     method: 'DELETE',
