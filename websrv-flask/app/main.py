@@ -146,10 +146,10 @@ def backend():
 
 
 # SURVEY FOR DATA SUBJECT
-@app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
-def survey(questionnaire_uuid):
+@app.route("/survey_test", methods=["GET"])
+def survey_test():
     """
-    Survey
+    test Survey, always generates a new questionnaire
     """
     survey = Survey()
     survey.name = "New Test Survey"
@@ -172,6 +172,19 @@ def survey(questionnaire_uuid):
         uuid=questionnaire.uuid,
         questionnaire=questionnaire
     )
+
+
+@app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
+def survey(questionnaire_uuid):
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        return render_template(
+            "survey_survey.html",
+            uuid=questionnaire_uuid,
+            questionnaire=questionnaire
+        )
+    except ObjectDoesntExistException as _:
+        return make_response(redirect("/"))
 
 
 @app.route("/survey/<string:questionnaire_uuid>", methods=["POST"])
