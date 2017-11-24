@@ -1,8 +1,4 @@
-<div class="row" ng-if="error">
-    <div class="alert alert-danger" role="alert">
-        {{ error }}
-    </div>
-</div>
+<flash-message></flash-message>
 <div class="row" ng-if="(!surveys || (surveys.length == 0)) && !error">
     <div class="alert alert-info">You have no surveys yet!</div>
 </div>

@@ -1,4 +1,8 @@
-angular.module('Surveys', ['ngRoute'])
+angular.module('Surveys', ['ngRoute', 'ngFlash'])
+    .config(['FlashProvider', function(FlashProvider) {
+        FlashProvider.setTimeout(5000);
+        FlashProvider.setShowClose(true);
+    }])
     .factory('Surveys', ['$http', function($http) {
         return {
             query: function() {
@@ -35,8 +39,8 @@ angular.module('Surveys', ['ngRoute'])
             }
         }
     }])
-    .controller('SurveysController', ['$scope', '$http', '$timeout', 'Surveys',
-        function($scope, $http, $timeout, Surveys) {
+    .controller('SurveysController', ['$scope', '$http', '$timeout', 'Flash', 'Surveys',
+        function($scope, $http, $timeout, Flash, Surveys) {
             /**
              * Queries surveys and writes them into $scope.surveys.
              * If something goes wrong, $scope.error will be set.
@@ -55,7 +59,6 @@ angular.module('Surveys', ['ngRoute'])
                  */
                 return Surveys.query().then(
                     function(result) {
-                        $scope.error = null;
                         $scope.surveys = result;
                         $scope.templates = [
                             {
@@ -88,21 +91,9 @@ angular.module('Surveys', ['ngRoute'])
                     },
                     function(error) {
                         $scope.surveys = null;
-                        $scope.templates = [];
-                        $scope.error = error;
+                        Flash.create('danger', error);
                     }
                 );
-            };
-
-            /**
-             * Show an error for 5 seconds.
-             * @param message
-             */
-            $scope.showError = function(message) {
-                $scope.error = message;
-                $timeout(function() {
-                    $scope.error = null;
-                }, 5000);
             };
 
             /**
@@ -137,7 +128,7 @@ angular.module('Surveys', ['ngRoute'])
                 if (win) {
                     win.focus();
                 } else {
-                    $scope.showError("Tried to open the survey at '" + url + "', but the popup was blocked.");
+                    Flash.create('danger', "Tried to open the survey at '" + url + "', but the popup was blocked.");
                 }
             };
 
@@ -212,13 +203,14 @@ angular.module('Surveys', ['ngRoute'])
                             if (result.status == 200
                                 && result.data.result == "Questionnaire created.") {
                                 $scope.resetEditing();
+                                Flash.create('success', 'Questionnaire successfully created.');
                                 $scope.query();
                             } else {
-                                $scope.showError("Something went wrong. Please try again!");
+                                Flash.create('danger', "Something went wrong. Please try again!");
                             }
                         },
                         function failure(error) {
-                            $scope.showError(error);
+                            Flash.create('danger', error);
                         }
                     )
             };
@@ -247,9 +239,17 @@ angular.module('Surveys', ['ngRoute'])
                 Promise.waitAll(promises).then(
                     function success(results) {
                         $scope.resetEditing();
+                        Flash.create('success', 'Questionnaire(s) successfully deleted.');
                         $scope.query();
                     },
-                    function fail(results) {}
+                    function fail(results) {
+                        Flash.create('danger', 'Something went wrong with one of the Questionnaires:');
+                        $.each(results, function(index, result) {
+                            if (result.status != 200) {
+                                Flash.create('danger', results.data);
+                            }
+                        })
+                    }
                 );
             };
 
@@ -287,13 +287,14 @@ angular.module('Surveys', ['ngRoute'])
                             if (result.status == 200
                                 && result.data.result == "Survey created.") {
                                 $scope.resetEditing();
+                                Flash.create('success', 'Survey successfully createy.');
                                 $scope.query();
                             } else {
-                                $scope.showError("Something went wrong. Please try again!");
+                                Flash.create('danger', "Something went wrong. Please try again!");
                             }
                         },
                         function failure(error) {
-                            $scope.showError(error);
+                            Flash.create('danger', error);
                         }
                     )
             };
@@ -315,9 +316,10 @@ angular.module('Surveys', ['ngRoute'])
                 }).then(
                     function success(result) {
                         $scope.surveys.splice($scope.surveys.indexOf(survey), 1);
+                        Flash.create('success', 'Survey successfully deleted.');
                     },
                     function fail(error) {
-                        $scope.showError("Survey could not be deleted. Please try again.");
+                        Flash.create('danger', "Survey could not be deleted. Please try again.");
                     }
                 )
             };
@@ -325,8 +327,8 @@ angular.module('Surveys', ['ngRoute'])
             $scope.resetEditing();
             $scope.query();
         }])
-    .controller('EditQuestionnaireController', ['$scope', '$http', '$timeout', '$routeParams', 'Questionnaire',
-        function($scope, $http, $timeout, $routeParams, Questionnaire) {
+    .controller('EditQuestionnaireController', ['$scope', '$http', '$timeout', 'Flash', '$routeParams', 'Questionnaire',
+        function($scope, $http, $timeout, Flash, $routeParams, Questionnaire) {
             /**
              * Queries the current questionnaire and stores its data.
              * If something goes wrong, an error message is displayed and
@@ -335,25 +337,13 @@ angular.module('Surveys', ['ngRoute'])
             $scope.query = function() {
                 Questionnaire.query($routeParams.questionnaire).then(
                     function success(result) {
-                        $scope.error = null;
                         $scope.questionnaire = result;
                     },
                     function fail(error) {
                         $scope.questionnaire = null;
-                        $scope.error = error;
+                        Flash.create('danger', error);
                     }
                 )
-            };
-
-            /**
-             * Show an error for 5 seconds.
-             * @param message
-             */
-            $scope.showError = function(message) {
-                $scope.error = message;
-                $timeout(function() {
-                    $scope.error = null;
-                }, 5000);
             };
 
             /**
@@ -386,7 +376,7 @@ angular.module('Surveys', ['ngRoute'])
                 if (win) {
                     win.focus();
                 } else {
-                    $scope.showError("Tried to open the questionnaire at '" + url + "', but the popup was blocked.");
+                    Flash.create('danger', "Tried to open the questionnaire at '" + url + "', but the popup was blocked.");
                 }
             };
 
@@ -407,10 +397,10 @@ angular.module('Surveys', ['ngRoute'])
                     }
                 }).then(
                     function success(result) {
-                        $scope.query();
+                        Flash.create('success', 'Questionnaire updated!');
                     },
                     function fail(error) {
-                        $scope.showError(error);
+                        Flash.create('danger', error);
                     }
                 )
             };
@@ -481,13 +471,14 @@ angular.module('Surveys', ['ngRoute'])
                             if (result.status == 200
                                 && result.data.result == "Question created.") {
                                 $scope.resetEditing();
+                                Flash.create('success', 'Question successfully created.');
                                 $scope.query();
                             } else {
-                                $scope.showError("Something went wrong. Please try again!");
+                                Flash.create('danger', "Something went wrong. Please try again!");
                             }
                         },
                         function failure(error) {
-                            $scope.showError(error);
+                            Flash.create('danger', error);
                         }
                     )
             };
@@ -517,9 +508,17 @@ angular.module('Surveys', ['ngRoute'])
                 Promise.waitAll(promises).then(
                     function success(results) {
                         $scope.resetEditing();
+                        Flash.create('success', 'Question(s) successfully deleted.');
                         $scope.query();
                     },
-                    function fail(results) {}
+                    function fail(results) {
+                        Flash.create('danger', 'Something went wrong with one of the Questions:');
+                        $.each(results, function(index, result) {
+                            if (result.status != 200) {
+                                Flash.create('danger', results.data);
+                            }
+                        })
+                    }
                 );
             };
 
@@ -558,13 +557,14 @@ angular.module('Surveys', ['ngRoute'])
                             if (result.status == 200
                                 && result.data.result == "QuestionGroup created.") {
                                 $scope.resetEditing();
+                                Flash.create('success', 'QuestionGroup successfully created.');
                                 $scope.query();
                             } else {
-                                $scope.showError("Something went wrong. Please try again!");
+                                Flash.create('danger', "Something went wrong. Please try again!");
                             }
                         },
                         function failure(error) {
-                            $scope.showError(error);
+                            Flash.create('danger', error);
                         }
                     )
             };
@@ -585,13 +585,14 @@ angular.module('Surveys', ['ngRoute'])
                     }
                 }).then(
                     function success(result) {
+                        Flash.create('success', 'QuestionGroup successfully deleted.');
                         $scope.questionnaire.fields.questiongroups.splice(
                             $scope.questionnaire.fields.questiongroups.indexOf(questionGroup),
                             1
                         );
                     },
                     function fail(error) {
-                        $scope.showError("QuestionGroup could not be deleted. Please try again.");
+                        Flash.create('danger', "QuestionGroup could not be deleted. Please try again.");
                     }
                 )
             };
