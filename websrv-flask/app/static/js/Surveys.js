@@ -27,13 +27,40 @@ angular.module('Surveys', ['ngRoute'])
             $scope.query = function() {
                 return Surveys.query().then(
                     function(result) {
-                        $scope.surveys = null;
                         $scope.error = null;
                         $scope.surveys = result;
+                        $scope.templates = [
+                            {
+                                value: null,
+                                name: 'You can optionally create a questionnaire from a template. Select one here.'
+                            },
+                            {
+                                value: 'efla_teacher',
+                                name: 'EFLA Teacher'
+                            },
+                            {
+                                value: 'efla_student',
+                                name: 'EFLA Student'
+                            }
+                        ];
+                        $.each(result, function(index, survey) {
+                            if (survey.fields.questionnaires.length > 0) {
+                                $scope.templates.push({
+                                    value: null,
+                                    name: '-- from Survey ' + survey.fields.name + ' --'
+                                });
+                                $.each(survey.fields.questionnaires, function(index, questionnaire) {
+                                    $scope.templates.push({
+                                        value: questionnaire.uuid,
+                                        name: questionnaire.fields.name
+                                    })
+                                });
+                            }
+                        })
                     },
                     function(error) {
                         $scope.surveys = null;
-                        $scope.error = null;
+                        $scope.templates = [];
                         $scope.error = error;
                     }
                 );
@@ -50,7 +77,8 @@ angular.module('Surveys', ['ngRoute'])
                 $scope.new = {
                     questionnaire: {
                         survey: null,
-                        data: null
+                        data: null,
+                        template: null
                     },
                     survey: {
                         data: null
@@ -86,7 +114,8 @@ angular.module('Surveys', ['ngRoute'])
                 $scope.new.questionnaire.survey = survey;
                 $scope.new.questionnaire.data = {
                     name: "name",
-                    description: "description"
+                    description: "description",
+                    template: null
                 };
             };
 
@@ -102,7 +131,8 @@ angular.module('Surveys', ['ngRoute'])
                         survey: $scope.new.questionnaire.survey.uuid,
                         questionnaire: {
                             name: $scope.new.questionnaire.data.name,
-                            description: $scope.new.questionnaire.data.description
+                            description: $scope.new.questionnaire.data.description,
+                            template: $scope.new.questionnaire.data.template
                         }
                     }),
                     headers: {
