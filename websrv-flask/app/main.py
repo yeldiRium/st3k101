@@ -164,8 +164,8 @@ def survey(questionnaire_uuid):
     questiongroup_1.text_color = "#FFFFFF"
     questionnaire.questiongroups.add(questiongroup_1)
 
-    questionnaire.add_question_to_group("Data", "This is a question.")
-    questionnaire.add_question_to_group("Data", "This is not a question.")
+    questionnaire.add_question_to_group(questiongroup_1, "This is a question.")
+    questionnaire.add_question_to_group(questiongroup_1, "This is not a question.")
 
     return render_template(
         "survey_survey.html",
@@ -368,8 +368,9 @@ def api_questiongroup_delete():
 def api_question_create():
     data = request.get_json()
     try:
+        questionnaire = Questionnaire(data["questionnaire"])
         question_group = QuestionGroup(data["question_group"])
-        question = question_group.add_new_question(data["text"])
+        question = questionnaire.add_question_to_group(question_group, data["text"])
         return jsonify({
             "result": "Question created.",
             "question": question
@@ -401,8 +402,10 @@ def api_question_delete():
     data = request.get_json()
     try:
         question = Question(data["uuid"])
+        question_group = QuestionGroup(data["question_group"])
+        questionnaire = Questionnaire(data["questionnaire"])
+        questionnaire.remove_question_from_group(question_group, question)
         # TODO: remove all answers to deleted question
-        question.remove()
         return jsonify({
             "result": "Question deleted."
         })
