@@ -45,11 +45,14 @@
                     </div>
                 </div>
             </form>
-            <button type="button" class="btn btn-default" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
+            <button type="button" class="btn btn-default btn-success" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
                 Add new Questionnaire to this survey...
             </button>
-            <button type="button" class="btn btn-default" mw-confirm-click="deleteQuestionnaires(survey)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questionnaires?" ng-if="selection.survey == survey">
+            <button type="button" class="btn btn-default btn-warning" mw-confirm-click="deleteQuestionnaires(survey)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questionnaires?" ng-if="selection.survey == survey">
                 Remove the selected {{ selection.count }} Questionnaires from this Survey...
+            </button>
+            <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteSurvey(survey)" mw-confirm-message="Are you sure you want to delete the survey '{{ survey.fields.name }}'?">
+                Delete this Survey...
             </button>
         </div>
     </div>

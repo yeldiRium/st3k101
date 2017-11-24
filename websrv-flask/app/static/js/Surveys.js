@@ -188,6 +188,26 @@ angular.module('Surveys', ['ngRoute'])
                     )
             };
 
+            $scope.deleteSurvey = function(survey) {
+                $http({
+                    method: 'DELETE',
+                    url: '/api/survey',
+                    data: {
+                        uuid: survey.uuid
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(
+                    function success(result) {
+                        $scope.surveys.splice($scope.surveys.indexOf(survey), 1);
+                    },
+                    function fail(error) {
+                        $scope.showError("Survey could not be deleted. Please try again.");
+                    }
+                )
+            };
+
             $scope.resetEditing();
             $scope.query();
         }])
