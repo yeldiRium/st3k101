@@ -33,7 +33,7 @@
         <div class="panel-body">
             <div class="list-group">
                 <a class="list-group-item" ng-repeat="question in questionGroup.fields.questions" ng-click="toggleSelect(questionGroup, question)" ng-class="{'list-group-item-info': selection.questions[question.uuid] == true}">
-                    <h4 class="list-group-item-heading">{{ question.fields.text }}</h4>
+                    {{ question.fields.text }}
                 </a>
             </div>
         </div>
