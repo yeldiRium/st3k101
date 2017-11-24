@@ -1,1 +1,83 @@
-<div class="jumbotron">Edit Survey</div>
+<div class="row" ng-if="error">
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+</div>
+<div class="row">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="inputQuestionnaireName" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="questionnaire.fields.name" ng-enter="updateQuestionnaire()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputQuestionnaireDescription" class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="questionnaire.fields.description" ng-enter="updateQuestionnaire()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="buttonQuestionnaireUpdate" class="col-sm-2 control-label"></label>
+            <div class="col-sm-2">
+                <button type="button" id="buttonQuestionnaireUpdate" class="form-control btn btn-default" ng-click="updateQuestionnaire()">Update</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row" ng-repeat="questiongroup in questionnaire.fields.questiongroups">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ questiongroup.fields.name }}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="list-group">
+                <a class="list-group-item" ng-repeat="question in questiongroup.fields.questions" ng-click="toggleSelect(questiongroup, question)" ng-class="{'list-group-item-info': selection.questions[question.uuid] == true}">
+                    <h4 class="list-group-item-heading">{{ question.fields.text }}</h4>
+                </a>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <form class="form-horizontal" ng-if="new.question.questiongroup == questiongroup">
+                <div class="form-group">
+                    <label for="inputQuestionText" class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputQuestionText" ng-model="new.question.data.text" ng-enter="createQuestion()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="buttonQuestionCreate" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-2">
+                        <button type="button" id="buttonQuestionCreate" class="form-control btn btn-default" ng-click="createQuestion()">Create</button>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="button" id="buttonQuestionCancel" class="form-control btn btn-default" ng-click="resetEditing()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+            <button type="button" class="btn btn-default btn-success" ng-click="newQuestion(questiongroup)" ng-if="new.question.questiongroup != questiongroup">
+                Add new Question to this Question Group...
+            </button>
+            <button type="button" class="btn btn-default btn-warning" mw-confirm-click="deleteQuestions(questiongroup)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questions?" ng-if="selection.questiongroup == questiongroup">
+                Remove the selected {{ selection.count }} Questions from this Question Group...
+            </button>
+            <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteQuestiongroup(questiongroup)" mw-confirm-message="Are you sure you want to delete the Question Group '{{ questiongroup.fields.name }}'?">
+                Delete this Question Group...
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="input-group" ng-if="new.questiongroup.data != null">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="createQuestiongroup()">Create</button>
+        </span>
+        <input type="text" class="form-control" ng-model="new.survey.data.name" ng-enter="createQuestiongroup()" />
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="resetEditing()">Cancel</button>
+        </span>
+    </div>
+    <button type="button" class="btn btn-default" ng-click="newQuestiongroup()" ng-if="new.questiongroup.data == null">
+        Add new Question Group...
+    </button>
+</div>

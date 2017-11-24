@@ -17,6 +17,24 @@ angular.module('Surveys', ['ngRoute'])
             }
         }
     }])
+    .factory('Questionnaire', ['$http', function($http) {
+        return {
+            query: function(uuid) {
+                return $http.get('/api/questionnaire/' + uuid).then(
+                    function success(result) {
+                        return new Promise(function(resolve, reject) {
+                            resolve(result.data);
+                        })
+                    },
+                    function fail(error) {
+                        return new Promise(function(resolve, reject) {
+                            reject(error);
+                        });
+                    }
+                )
+            }
+        }
+    }])
     .controller('SurveysController', ['$scope', '$http', '$timeout', 'Surveys',
         function($scope, $http, $timeout, Surveys) {
             /**
@@ -241,9 +259,190 @@ angular.module('Surveys', ['ngRoute'])
             $scope.resetEditing();
             $scope.query();
         }])
-    .controller('EditSurveyController', ['$scope',
-        function($scope) {
+    .controller('EditQuestionnaireController', ['$scope', '$http', '$timeout', '$routeParams', 'Questionnaire',
+        function($scope, $http, $timeout, $routeParams, Questionnaire) {
+            $scope.query = function() {
+                Questionnaire.query($routeParams.questionnaire).then(
+                    function success(result) {
+                        $scope.error = null;
+                        $scope.questionnaire = result;
+                    },
+                    function fail(error) {
+                        $scope.questionnaire = null;
+                        $scope.error = error;
+                    }
+                )
+            };
 
+            $scope.showError = function(message) {
+                $scope.error = message;
+                $timeout(function() {
+                    $scope.error = null;
+                }, 3000);
+            };
+
+            $scope.resetEditing = function() {
+                $scope.new = {
+                    question: {
+                        questiongroup: null,
+                        data: null
+                    },
+                    questiongroup: {
+                        data: null
+                    }
+                };
+
+                $scope.selection =  {
+                    questiongroup: null,
+                    questions: {},
+                    count: 0
+                };
+            };
+
+            $scope.toggleSelect = function(questiongroup, question) {
+                if ($scope.selection.questiongroup != questiongroup) {
+                    $scope.resetEditing();
+                }
+                $scope.selection.questiongroup = questiongroup;
+                if ($scope.selection.questions[question.uuid] == true) {
+                    $scope.selection.questions[question.uuid] = false;
+                    $scope.selection.count--;
+                } else {
+                    $scope.selection.questions[question.uuid] = true;
+                    $scope.selection.count++;
+                }
+                if ($scope.selection.count == 0) {
+                    $scope.resetEditing();
+                }
+            };
+
+            $scope.newQuestion = function(questiongroup) {
+                $scope.resetEditing();
+                $scope.new.question.questiongroup = questiongroup;
+                $scope.new.question.data = {
+                    text: "text"
+                };
+            };
+
+            $scope.createQuestion = function() {
+                if (($scope.new.question.questiongroup == null)
+                    || $scope.new.question.data == null) {
+                    return;
+                }
+                $http({
+                    method: 'POST',
+                    url: '/api/question',
+                    data: JSON.stringify({
+                        questionnaire: $scope.questionnaire.uuid,
+                        question_group: $scope.new.question.questiongroup.uuid,
+                        text: $scope.new.question.data.text
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(
+                        function success(result) {
+                            if (result.status == 200
+                                && result.data.result == "Question created.") {
+                                $scope.resetEditing();
+                                $scope.query();
+                            } else {
+                                $scope.showError("Something went wrong. Please try again!");
+                            }
+                        },
+                        function failure(error) {
+                            $scope.showError(error);
+                        }
+                    )
+            };
+
+            $scope.deleteQuestions = function() {
+                promises = [];
+                $.each($scope.selection.questions, function(uuid, shouldDelete) {
+                    if (shouldDelete == true) {
+                        promises.push(
+                            $http({
+                                method: 'DELETE',
+                                url: '/api/question',
+                                data: {
+                                    questionnaire: $scope.questionnaire.uuid,
+                                    question_group: $scope.selection.questiongroup.uuid,
+                                    uuid: uuid
+                                },
+                                headers: {'Content-Type': 'application/json'}
+                            })
+                        );
+                    }
+                });
+                Promise.waitAll(promises).then(
+                    function success(results) {
+                        $scope.resetEditing();
+                        $scope.query();
+                    },
+                    function fail(results) {}
+                );
+            };
+
+            $scope.newSurvey = function() {
+                $scope.resetEditing();
+                $scope.new.survey.data = {
+                    name: "name"
+                }
+            };
+
+            $scope.createSurvey = function() {
+                if ($scope.new.survey.data == null) {
+                    return;
+                }
+                $http({
+                    method: 'POST',
+                    url: '/api/survey',
+                    data: JSON.stringify({
+                        name: $scope.new.survey.data.name
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(
+                        function success(result) {
+                            if (result.status == 200
+                                && result.data.result == "Survey created.") {
+                                $scope.resetEditing();
+                                $scope.query();
+                            } else {
+                                $scope.showError("Something went wrong. Please try again!");
+                            }
+                        },
+                        function failure(error) {
+                            $scope.showError(error);
+                        }
+                    )
+            };
+
+            $scope.deleteSurvey = function(survey) {
+                $http({
+                    method: 'DELETE',
+                    url: '/api/survey',
+                    data: {
+                        uuid: survey.uuid
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(
+                    function success(result) {
+                        $scope.surveys.splice($scope.surveys.indexOf(survey), 1);
+                    },
+                    function fail(error) {
+                        $scope.showError("Survey could not be deleted. Please try again.");
+                    }
+                )
+            };
+
+            $scope.resetEditing();
+            $scope.query();
         }])
     .config(['$routeProvider', '$locationProvider',
         function($routeProvider, $locationProvider) {
@@ -253,8 +452,8 @@ angular.module('Surveys', ['ngRoute'])
                     templateUrl: '/static/js/templates/Surveys.html',
                     controller: 'SurveysController'
                 })
-                .when('/surveys/:surveyID/', {
+                .when('/surveys/:questionnaire/', {
                     templateUrl: '/static/js/templates/EditSurvey.html',
-                    controller: 'EditSurveyController'
+                    controller: 'EditQuestionnaireController'
                 });
         }]);

@@ -256,6 +256,17 @@ def api_survey_delete():
         }, 400)
 
 
+@app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["GET"])
+def api_questionnaire_get_single(questionnaire_uuid):
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        return jsonify(questionnaire)
+    except ObjectDoesntExistException as e:
+        return make_response(jsonify({
+            "result": "Questionnaire doesn't exist."
+        }), 400)
+
+
 @app.route("/api/questionnaire", methods=["POST"])
 def api_questionnaire_create():
     data = request.get_json()
