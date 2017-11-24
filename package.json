@@ -18,7 +18,7 @@
     "preinstall": "npm run clearStaticDir",
     "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run moveNodeModules",
     "cleanup": "npm run removeSassModule",
-    "clearStaticDir": "rm -rf websrv-flask/app/static",
+    "clearStaticDir": "rm -rf websrv-flask/app/static/css && rm -rf websrv-flask/app/static/vendor",
     "mkCssDir": "mkdir -p websrv-flask/app/static/css",
     "compileSCSS": "npm run compileSCSSBackend && npm run compileSCSSHome && npm run compileSCSSSurvey",
     "compileSCSSBackend": "sass websrv-flask/app/sass/backend.scss >> websrv-flask/app/static/css/backend.css",
