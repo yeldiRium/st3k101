@@ -128,6 +128,20 @@ angular.module('Surveys', ['ngRoute'])
             };
 
             /**
+             * Navigates to the frontend view of a Questionnaire.
+             * @param questionnaire
+             */
+            $scope.gotoQuestionnaire = function(questionnaire) {
+                var url = '/survey/' + questionnaire.uuid;
+                var win = window.open('/survey/' + questionnaire.uuid, '_blank');
+                if (win) {
+                    win.focus();
+                } else {
+                    $scope.showError("We tried to open the survey at '" + url + "', but the popup was blocked.");
+                }
+            };
+
+            /**
              * Toggles the selection of a single questionnaire.
              * Selection is survey-based. It is not possible to select multi-
              * ple questionnaires across surveys.
