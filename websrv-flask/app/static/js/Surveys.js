@@ -390,6 +390,31 @@ angular.module('Surveys', ['ngRoute'])
                 }
             };
 
+            /**
+             * Sends updates with current questionnaire data
+             */
+            $scope.updateQuestionnaire = function() {
+                $http({
+                    method: 'PUT',
+                    url: '/api/questionnaire',
+                    data: {
+                        uuid: $scope.questionnaire.uuid,
+                        name: $scope.questionnaire.fields.name,
+                        description: $scope.questionnaire.fields.description
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(
+                    function success(result) {
+                        $scope.query();
+                    },
+                    function fail(error) {
+                        $scope.showError(error);
+                    }
+                )
+            };
+
 
             /**
              * Toggles the selection of a single question.
