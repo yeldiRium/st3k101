@@ -329,7 +329,7 @@ def api_questiongroup_create():
         question_group.text_color = "#000000"
         questionnaire.questiongroups.add(question_group)
         return jsonify({
-            "result": "QuestionGroup created on Questionnaire " + data["questionnaire"] + ".",
+            "result": "QuestionGroup created.",
             "question_group": question_group
         })
     except ObjectDoesntExistException as e:
@@ -359,7 +359,7 @@ def api_questiongroup_update():
         }, 400)
 
 
-@app.route("/api/quostion_group", methods=["DELETE"])
+@app.route("/api/question_group", methods=["DELETE"])
 def api_questiongroup_delete():
     data = request.get_json()
     try:
