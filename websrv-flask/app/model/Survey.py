@@ -15,6 +15,7 @@ class Survey(PersistentObject):
         questionnaire.description = description
         questionnaire.questiongroups = []
         questionnaire.question_count = 0
+        questionnaire.answer_count = 0
         self.questionnaires.add(questionnaire)
         return questionnaire
 

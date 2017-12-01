@@ -214,6 +214,8 @@ def survey_submit(questionnaire_uuid):
                 current_answer.question = question
             current_answer.answer_value = request.form["question_" + question.uuid]
 
+    questionnaire.answer_count += 1
+
     return render_template("survey_thanks.html", email=request.form["email"])
 
 
