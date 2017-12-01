@@ -285,7 +285,28 @@ def api_questionnaire_create():
     data = request.get_json()
     survey = Survey(data["survey"])
     try:
-        questionnaire = survey.add_new_questionnaire(data["questionnaire"]["name"], data["questionnaire"]["description"])
+        if "template" in data["questionnaire"]:
+            if data["questionnaire"]["template"] == "efla_teacher":
+                questionnaire = survey.add_new_questionnaire_from_efla_teacher(
+                    data["questionnaire"]["name"],
+                    data["questionnaire"]["description"]
+                )
+            elif data["questionnaire"]["template"] == "efla_student":
+                questionnaire = survey.add_new_questionnaire_from_efla_student(
+                    data["questionnaire"]["name"],
+                    data["questionnaire"]["description"]
+                )
+            else:
+                questionnaire = survey.add_new_questionnaire_from_template(
+                    data["questionnaire"]["name"],
+                    data["questionnaire"]["description"],
+                    Questionnaire(data["questionnaire"]["template"])
+                )
+        else:
+            questionnaire = survey.add_new_questionnaire(
+                data["questionnaire"]["name"],
+                data["questionnaire"]["description"]
+            )
         return jsonify({
             "result": "Questionnaire created.",
             "questionnaire": questionnaire
