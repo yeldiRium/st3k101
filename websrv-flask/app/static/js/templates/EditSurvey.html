@@ -25,10 +25,24 @@
 </div>
 <div class="row" ng-repeat="questionGroup in questionnaire.fields.questiongroups">
     <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" style="background-color: {{ questionGroup.fields.color }}; color: {{ questionGroup.fields.text_color }};">
             <h3 class="panel-title">{{ questionGroup.fields.name }}</h3>
         </div>
         <div class="panel-body">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Background Color:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="colorPicker_{{ questionGroup.uuid }}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Text Color:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="textColorPicker_{{ questionGroup.uuid }}" />
+                    </div>
+                </div>
+            </form>
             <div class="list-group">
                 <a class="list-group-item" ng-repeat="question in questionGroup.fields.questions" ng-click="toggleSelect(questionGroup, question)" ng-class="{'list-group-item-info': selection.questions[question.uuid] == true}">
                     {{ question.fields.text }}

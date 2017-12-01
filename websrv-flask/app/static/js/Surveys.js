@@ -337,6 +337,26 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             $scope.query = function() {
                 Questionnaire.query($routeParams.questionnaire).then(
                     function success(result) {
+                        $.each(result.fields.questiongroups, function(index, questiongroup) {
+                            setTimeout(
+                                function() {
+                                    $('#colorPicker_' + questiongroup.uuid).spectrum({
+                                        color: questiongroup.fields.color,
+                                        change: function(color) {
+                                            $scope.updateColor(color.toHexString(), questiongroup);
+                                        }
+                                    });
+                                }, 0);
+                            setTimeout(
+                                function() {
+                                    $('#textColorPicker_' + questiongroup.uuid).spectrum({
+                                        color: questiongroup.fields.text_color,
+                                        change: function(color) {
+                                            $scope.updateTextColor(color.toHexString(), questiongroup);
+                                        }
+                                    });
+                                }, 0);
+                        });
                         $scope.questionnaire = result;
                     },
                     function fail(error) {
@@ -593,6 +613,58 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     },
                     function fail(error) {
                         Flash.create('danger', "QuestionGroup could not be deleted. Please try again.");
+                    }
+                )
+            };
+
+            $scope.updateColor = function(color, questionGroup) {
+                $http({
+                    method: 'PUT',
+                    url: '/api/question_group',
+                    data: {
+                        uuid: questionGroup.uuid,
+                        color: color
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(
+                    function success(result) {
+                        if (result.status == 200 && result.data.result == 'QuestionGroup updated.') {
+                            questionGroup.fields.color = color;
+                            Flash.create('success', 'QuestionGroup color was updated!');
+                        } else {
+                            Flash.create('danger', 'QuestionGroup color could not be updated. Please try again.');
+                        }
+                    },
+                    function fail(error) {
+                        Flash.create('danger', 'QuestionGroup color could not be updated. Please try again.');
+                    }
+                )
+            };
+
+            $scope.updateTextColor = function(color, questionGroup) {
+                $http({
+                    method: 'PUT',
+                    url: '/api/question_group',
+                    data: {
+                        uuid: questionGroup.uuid,
+                        text_color: color
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(
+                    function success(result) {
+                        if (result.status == 200 && result.data.result == 'QuestionGroup updated.') {
+                            questionGroup.fields.text_color = color;
+                            Flash.create('success', 'QuestionGroup text color was updated!');
+                        } else {
+                            Flash.create('danger', 'QuestionGroup text color could not be updated. Please try again.');
+                        }
+                    },
+                    function fail(error) {
+                        Flash.create('danger', 'QuestionGroup text color could not be updated. Please try again.');
                     }
                 )
             };

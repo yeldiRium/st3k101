@@ -84,3 +84,14 @@ body {
     margin-right: 10px;
   }
 }
+
+.color-orb {
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  margin-top: 2px;
+  border: 1px solid black;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  border-radius: 7px;
+}
