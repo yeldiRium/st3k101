@@ -1,8 +1,3 @@
-<div class="row" ng-if="error">
-    <div class="alert alert-danger" role="alert">
-        {{ error }}
-    </div>
-</div>
 <div class="row" ng-if="(!surveys || (surveys.length == 0)) && !error">
     <div class="alert alert-info">You have no surveys yet!</div>
 </div>
@@ -13,11 +8,13 @@
         </div>
         <div class="panel-body">
             <div class="list-group">
-                <button type="button" class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires">
-                    <span class="badge">{{ questionnaire.fields.question_count }}</span>
+                <a class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires" ng-click="toggleSelect(survey, questionnaire)" ng-class="{'list-group-item-info': selection.questionnaires[questionnaire.uuid] == true}">
+                    <button type="button" class="pull-left btn btn-default disabled">{{ questionnaire.fields.answer_count || 0 }}</button>
+                    <button type="button" class="pull-left btn btn-default" ng-click="gotoQuestionnaire(questionnaire)">Link</button>
+                    <button type="button" class="pull-left btn btn-default edit-button" click-go="/surveys/{{ questionnaire.uuid }}">edit</button>
                     <h4 class="list-group-item-heading">{{ questionnaire.fields.name }}</h4>
                     <p class="list-group-item-text">{{ questionnaire.fields.description }}</p>
-                </button>
+                </a>
             </div>
         </div>
         <div class="panel-footer">
@@ -35,6 +32,14 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="selectQuestionnaireTemplate" class="col-sm-2 control-label">Use Template</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="selectQuestionnaireTemplate" ng-model="new.questionnaire.data.template">
+                            <option ng-repeat="template in templates" value="{{ template.value }}">{{ template.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="buttonQuestionnaireCreate" class="col-sm-2 control-label"></label>
                     <div class="col-sm-2">
                         <button type="button" id="buttonQuestionnaireCreate" class="form-control btn btn-default" ng-click="createQuestionnaire()">Create</button>
@@ -44,11 +49,14 @@
                     </div>
                 </div>
             </form>
-            <button type="button" class="btn btn-default" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
+            <button type="button" class="btn btn-default btn-success" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
                 Add new Questionnaire to this survey...
             </button>
-            <button type="button" class="btn btn-default" ng-click="deleteQuestionnaires(survey)" ng-if="selection.survey == survey">
-                Remove the selected {{ selection.questionnaires.keys().length }} Questionnaires from this Survey...
+            <button type="button" class="btn btn-default btn-warning" mw-confirm-click="deleteQuestionnaires(survey)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questionnaires?" ng-if="selection.survey == survey">
+                Remove the selected {{ selection.count }} Questionnaires from this Survey...
+            </button>
+            <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteSurvey(survey)" mw-confirm-message="Are you sure you want to delete the survey '{{ survey.fields.name }}'?">
+                Delete this Survey...
             </button>
         </div>
     </div>

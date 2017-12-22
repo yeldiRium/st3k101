@@ -1,1 +1,95 @@
-<div class="jumbotron">Edit Survey</div>
+<div class="row" ng-if="questionnaire != null">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="inputQuestionnaireName" class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="questionnaire.fields.name" ng-enter="updateQuestionnaire()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputQuestionnaireDescription" class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="questionnaire.fields.description" ng-enter="updateQuestionnaire()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="buttonQuestionnaireUpdate" class="col-sm-2 control-label"></label>
+            <div class="col-sm-2">
+                <button type="button" id="buttonQuestionnaireUpdate" class="form-control btn btn-default" ng-click="updateQuestionnaire()">Update</button>
+            </div>
+            <div class="col-sm-2">
+                <button type="button" id="buttonQuestionnaireGoto" class="form-control btn btn-default" ng-click="gotoQuestionnaire()">Go To Questionnaire</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row" ng-repeat="questionGroup in questionnaire.fields.questiongroups">
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color: {{ questionGroup.fields.color }}; color: {{ questionGroup.fields.text_color }};">
+            <h3 class="panel-title">{{ questionGroup.fields.name }}</h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Background Color:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="colorPicker_{{ questionGroup.uuid }}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Text Color:</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="textColorPicker_{{ questionGroup.uuid }}" />
+                    </div>
+                </div>
+            </form>
+            <div class="list-group">
+                <a class="list-group-item" ng-repeat="question in questionGroup.fields.questions" ng-click="toggleSelect(questionGroup, question)" ng-class="{'list-group-item-info': selection.questions[question.uuid] == true}">
+                    {{ question.fields.text }}
+                </a>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <form class="form-horizontal" ng-if="new.question.questionGroup == questionGroup">
+                <div class="form-group">
+                    <label for="inputQuestionText" class="col-sm-2 control-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="inputQuestionText" ng-model="new.question.data.text" ng-enter="createQuestion()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="buttonQuestionCreate" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-2">
+                        <button type="button" id="buttonQuestionCreate" class="form-control btn btn-default" ng-click="createQuestion()">Create</button>
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="button" id="buttonQuestionCancel" class="form-control btn btn-default" ng-click="resetEditing()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+            <button type="button" class="btn btn-default btn-success" ng-click="newQuestion(questionGroup)" ng-if="new.question.questionGroup != questionGroup">
+                Add new Question to this Question Group...
+            </button>
+            <button type="button" class="btn btn-default btn-warning" mw-confirm-click="deleteQuestions(questionGroup)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questions?" ng-if="selection.questionGroup == questionGroup">
+                Remove the selected {{ selection.count }} Questions from this Question Group...
+            </button>
+            <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteQuestionGroup(questionGroup)" mw-confirm-message="Are you sure you want to delete the Question Group '{{ questionGroup.fields.name }}'?">
+                Delete this Question Group...
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row" ng-if="questionnaire != null">
+    <div class="input-group" ng-if="new.questionGroup.data != null">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="createQuestionGroup()">Create</button>
+        </span>
+        <input type="text" class="form-control" ng-model="new.questionGroup.data.name" ng-enter="createQuestionGroup()" />
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="resetEditing()">Cancel</button>
+        </span>
+    </div>
+    <button type="button" class="btn btn-default" ng-click="newQuestionGroup()" ng-if="new.questionGroup.data == null">
+        Add new Question Group...
+    </button>
+</div>

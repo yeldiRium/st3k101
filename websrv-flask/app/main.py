@@ -147,10 +147,10 @@ def backend():
 
 
 # SURVEY FOR DATA SUBJECT
-@app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
-def survey(questionnaire_uuid):
+@app.route("/survey_test", methods=["GET"])
+def survey_test():
     """
-    Survey
+    test Survey, always generates a new questionnaire
     """
     survey = Survey()
     survey.name = "New Test Survey"
@@ -165,14 +165,27 @@ def survey(questionnaire_uuid):
     questiongroup_1.text_color = "#FFFFFF"
     questionnaire.questiongroups.add(questiongroup_1)
 
-    questionnaire.add_question_to_group("Data", "This is a question.")
-    questionnaire.add_question_to_group("Data", "This is not a question.")
+    questionnaire.add_question_to_group(questiongroup_1, "This is a question.")
+    questionnaire.add_question_to_group(questiongroup_1, "This is not a question.")
 
     return render_template(
         "survey_survey.html",
         uuid=questionnaire.uuid,
         questionnaire=questionnaire
     )
+
+
+@app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
+def survey(questionnaire_uuid):
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        return render_template(
+            "survey_survey.html",
+            uuid=questionnaire_uuid,
+            questionnaire=questionnaire
+        )
+    except ObjectDoesntExistException as _:
+        return make_response(redirect("/"))
 
 
 @app.route("/survey/<string:questionnaire_uuid>", methods=["POST"])
@@ -201,6 +214,8 @@ def survey_submit(questionnaire_uuid):
                 current_answer.data_subject = data_subject
                 current_answer.question = question
             current_answer.answer_value = request.form["question_" + question.uuid]
+
+    questionnaire.answer_count += 1
 
     return render_template("survey_thanks.html", email=request.form["email"])
 
@@ -257,19 +272,52 @@ def api_survey_delete():
         }, 400)
 
 
+@app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["GET"])
+def api_questionnaire_get_single(questionnaire_uuid):
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        return jsonify(questionnaire)
+    except ObjectDoesntExistException as e:
+        return make_response(jsonify({
+            "result": "Questionnaire doesn't exist."
+        }), 400)
+
+
 @app.route("/api/questionnaire", methods=["POST"])
 def api_questionnaire_create():
     data = request.get_json()
     survey = Survey(data["survey"])
     try:
-        survey.add_new_questionnaire(data["questionnaire"]["name"], data["questionnaire"]["description"])
+        if "template" in data["questionnaire"]:
+            if data["questionnaire"]["template"] == "efla_teacher":
+                questionnaire = survey.add_new_questionnaire_from_efla_teacher(
+                    data["questionnaire"]["name"],
+                    data["questionnaire"]["description"]
+                )
+            elif data["questionnaire"]["template"] == "efla_student":
+                questionnaire = survey.add_new_questionnaire_from_efla_student(
+                    data["questionnaire"]["name"],
+                    data["questionnaire"]["description"]
+                )
+            else:
+                questionnaire = survey.add_new_questionnaire_from_template(
+                    data["questionnaire"]["name"],
+                    data["questionnaire"]["description"],
+                    Questionnaire(data["questionnaire"]["template"])
+                )
+        else:
+            questionnaire = survey.add_new_questionnaire(
+                data["questionnaire"]["name"],
+                data["questionnaire"]["description"]
+            )
+        return jsonify({
+            "result": "Questionnaire created.",
+            "questionnaire": questionnaire
+        })
     except DuplicateQuestionnaireNameException as e:
         return jsonify({
             "error": "Questionnaire with name \"" + data["questionnaire"]["name"] + "\" already exists."
         }, 400)
-    return jsonify({
-        "result": "Questionnaire created."
-    })
 
 
 @app.route("/api/questionnaire", methods=["PUT"])
@@ -295,29 +343,30 @@ def api_questionnaire_update():
 def api_questionnaire_delete():
     data = request.get_json()
     try:
+        survey = Survey(data["survey"])
         questionnaire = Questionnaire(data["uuid"])
-        questionnaire.remove()
+        survey.remove_questionnaire(questionnaire)
         return jsonify({
             "result": "Questionnaire deleted."
         })
     except ObjectDoesntExistException as e:
-        return jsonify({
+        return make_response(jsonify({
             "result": "Questionnaire doesn't exist."
-        }, 400)
+        }), 400)
 
 
-@app.route("/api/questiongroup", methods=["POST"])
+@app.route("/api/question_group", methods=["POST"])
 def api_questiongroup_create():
     data = request.get_json()
     try:
         questionnaire = Questionnaire(data["questionnaire"])
         question_group = QuestionGroup()
         question_group.name = data["name"]
-        question_group.color = "#FFFFFF"
-        question_group.text_color = "#000000"
+        question_group.color = "#000000"
+        question_group.text_color = "#FFFFFF"
         questionnaire.questiongroups.add(question_group)
         return jsonify({
-            "result": "QuestionGroup created on Questionnaire " + data["questionnaire"] + ".",
+            "result": "QuestionGroup created.",
             "question_group": question_group
         })
     except ObjectDoesntExistException as e:
@@ -326,7 +375,7 @@ def api_questiongroup_create():
         }, 400)
 
 
-@app.route("/api/quostiongroup", methods=["PUT"])
+@app.route("/api/question_group", methods=["PUT"])
 def api_questiongroup_update():
     data = request.get_json()
     try:
@@ -347,11 +396,13 @@ def api_questiongroup_update():
         }, 400)
 
 
-@app.route("/api/quostiongroup", methods=["DELETE"])
+@app.route("/api/question_group", methods=["DELETE"])
 def api_questiongroup_delete():
     data = request.get_json()
     try:
         question_group = QuestionGroup(data["uuid"])
+        questionnaire = Questionnaire(data["questionnaire"])
+        questionnaire.questiongroups.remove(question_group)
         # TODO: delete subobjects. MEMORY LEAK
         question_group.remove()
         return jsonify({
@@ -367,8 +418,9 @@ def api_questiongroup_delete():
 def api_question_create():
     data = request.get_json()
     try:
+        questionnaire = Questionnaire(data["questionnaire"])
         question_group = QuestionGroup(data["question_group"])
-        question = question_group.add_new_question(data["text"])
+        question = questionnaire.add_question_to_group(question_group, data["text"])
         return jsonify({
             "result": "Question created.",
             "question": question
@@ -400,8 +452,10 @@ def api_question_delete():
     data = request.get_json()
     try:
         question = Question(data["uuid"])
+        question_group = QuestionGroup(data["question_group"])
+        questionnaire = Questionnaire(data["questionnaire"])
+        questionnaire.remove_question_from_group(question_group, question)
         # TODO: remove all answers to deleted question
-        question.remove()
         return jsonify({
             "result": "Question deleted."
         })

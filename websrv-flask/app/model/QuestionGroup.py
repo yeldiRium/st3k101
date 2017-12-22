@@ -10,15 +10,12 @@ class QuestionGroup(PersistentObject):
         self.questions.add(question)
         return question
 
-    def remove_question(self, text: str):
-        length = len(self.questions)
-        # TODO: memory leak. the removed question is not deleted from the db
-        self.questions = [x for x in self.questions if not x.text == text]
-        length_after = len(self.questions)
-
-        # if the length did not change, the question was not there
-        if length == length_after:
-            raise QuestionNotFoundException(self.name, text)
+    def remove_question(self, question: Question):
+        try:
+            self.questions.remove(question)
+            question.remove()
+        except KeyError as _:
+            raise QuestionNotFoundException(self.name, question.text)
 
 QuestionGroup.name = PersistentAttribute(QuestionGroup, "name")
 QuestionGroup.color = PersistentAttribute(QuestionGroup, "color")
