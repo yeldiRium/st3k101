@@ -1,8 +1,9 @@
 from flask import Flask, render_template, g, request, make_response, redirect, \
-    jsonify
+    jsonify, abort
 
 import auth
 import businesslogic.users as users
+import test
 from framework.exceptions import *
 from framework.odm.PersistentObjectEncoder import PersistentObjectEncoder
 from model.DataClient import DataClient
@@ -408,3 +409,12 @@ def api_question_delete():
         return jsonify({
             "result": "Question doesn't exist."
         }, 400)
+
+@app.route("/test/runall", methods=["POST"])
+def api_test_runall():
+    # if g._current_user is None:  FIXME: remove in production
+    #    return abort(403)
+
+    return jsonify({
+        "result": test.run_all()
+    })
