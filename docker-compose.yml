@@ -15,6 +15,9 @@ services:
     restart: always
     ports:
       - 80:80
+    links:
+      - db-mongo
+      - memcached
     environment:
       - FLASK_DEBUG=1
       - FLASK_APP=main.py
