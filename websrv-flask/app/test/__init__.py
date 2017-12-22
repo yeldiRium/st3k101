@@ -57,17 +57,11 @@ class TestUnit(object):
         test_cases = []
 
         for name, method in methods:
-            print(name, file=sys.stderr)
             if name in special_method_names:
-                print("skipping", name, file=sys.stderr)
                 continue
+            test_cases.append((name, method, self))
 
-            test_cases.append((name, method, self))  # closures, bitches
-            #test_cases.append((name, lambda: print(method, file=sys.stderr)))  # closures, bitches
-
-        print("cases:",test_cases,file=sys.stderr)
-
-        return test_cases#[(name, lambda: case(self)) for name, case in test_cases]
+        return test_cases
 
     @staticmethod
     def test_assert(predicate, failure_message):
@@ -110,7 +104,6 @@ def run_all() -> List[TestResult]:
     tests_modules = _discover_test_modules()
     for mod in tests_modules:
         units = _get_test_units(mod)  # type: List[TestUnit]
-        print(units, file=sys.stderr)
         for u in units:
             unit_results = u.execute()  # type: List[TestResult]
             sorted_by_passed = sorted(unit_results, key=lambda res: res.passed)
