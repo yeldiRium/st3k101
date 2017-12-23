@@ -238,6 +238,9 @@ def api_survey_create():
     survey = Survey()
     survey.name = data["name"]
 
+    if g._current_user is not None:
+        g._current_user.surveys.add(survey)
+
     return jsonify({
         "result": "Survey created.",
         "survey": survey
@@ -249,6 +252,13 @@ def api_survey_update():
     data = request.get_json()
     try:
         survey = Survey(data["uuid"])
+
+        if g._current_user is not None and survey not in g._current_user.surveys:
+            return jsonify({
+                "result": "Error",
+                "reason": "Survey with given uuid does not belong to you."
+            }, 400)
+
         survey.name = data["name"]
         return jsonify({
             "result": "Survey updated.",
@@ -265,6 +275,11 @@ def api_survey_delete():
     data = request.get_json()
     try:
         survey = Survey(data["uuid"])
+        if g._current_user is not None and survey not in g._current_user.surveys:
+            return jsonify({
+                "result": "Error",
+                "reason": "Survey with given uuid does not belong to you."
+            }, 400)
         # TODO: delete subobjects
         survey.remove()
         return jsonify({
@@ -291,6 +306,11 @@ def api_questionnaire_get_single(questionnaire_uuid):
 def api_questionnaire_create():
     data = request.get_json()
     survey = Survey(data["survey"])
+    if g._current_user is not None and survey not in g._current_user.surveys:
+        return jsonify({
+            "result": "Error",
+            "reason": "Survey with given uuid does not belong to you."
+        }, 400)
     try:
         if "template" in data["questionnaire"]:
             if data["questionnaire"]["template"] == "efla_teacher":
@@ -348,6 +368,11 @@ def api_questionnaire_delete():
     data = request.get_json()
     try:
         survey = Survey(data["survey"])
+        if g._current_user is not None and survey not in g._current_user.surveys:
+            return jsonify({
+                "result": "Error",
+                "reason": "Survey with given uuid does not belong to you."
+            }, 400)
         questionnaire = Questionnaire(data["uuid"])
         survey.remove_questionnaire(questionnaire)
         return jsonify({
@@ -467,6 +492,7 @@ def api_question_delete():
         return jsonify({
             "result": "Question doesn't exist."
         }, 400)
+
 
 @app.route("/test/runall", methods=["POST"])
 def api_test_runall():
