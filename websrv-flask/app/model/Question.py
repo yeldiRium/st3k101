@@ -1,16 +1,25 @@
 from framework.odm.PersistentObject import PersistentObject, \
     PersistentAttribute, \
-    PersistentReference
+    PersistentReference, \
+    PersistentReferenceSet
+from model.QuestionResult import QuestionResult
 from model.QuestionStatistic import QuestionStatistic
 
 
-class Question(PersistentObject): pass
+class Question(PersistentObject):
+    def add_question_result(self, question_result: QuestionResult):
+        self.results.add(question_result)
 
 
-# This is here to prevent circular dependencies in the QuestionStatistic.py file
+# These are here to prevent circular dependencies in QuestionStatistic and
+# QuestionResult modules
 QuestionStatistic.question = PersistentReference(QuestionStatistic, "question",
                                                  Question)
+QuestionResult.question = PersistentReference(QuestionResult, "question", Question)
+
 
 Question.text = PersistentAttribute(Question, "text")
 Question.statistic = PersistentReference(Question, "statistic",
                                          QuestionStatistic)
+Question.results = PersistentReferenceSet(Question, "results",
+                                          QuestionResult)

@@ -1,11 +1,9 @@
 from framework.odm.PersistentObject import PersistentObject, PersistentReference, PersistentAttribute
 from model.DataSubject import DataSubject
-from model.Question import Question
 
 
 class QuestionResult(PersistentObject): pass
 
 
-QuestionResult.question = PersistentReference(QuestionResult, "question", Question)
 QuestionResult.data_subject = PersistentReference(QuestionResult, "data_subject", DataSubject)
 QuestionResult.answer_value = PersistentAttribute(QuestionResult, "answer_value")

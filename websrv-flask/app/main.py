@@ -214,6 +214,7 @@ def survey_submit(questionnaire_uuid):
                 current_answer = QuestionResult()
                 current_answer.data_subject = data_subject
                 current_answer.question = question
+                question.results.add(current_answer)
             current_answer.answer_value = request.form["question_" + question.uuid]
             question.statistic.update()
 

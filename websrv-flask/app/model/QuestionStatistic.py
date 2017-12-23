@@ -9,7 +9,7 @@ class QuestionStatistic(PersistentObject):
     def update(self):
         if self.question is None:
             raise QuestionStatisticHasNoQuestionException()
-        print("updating statistic!")
+        self.biggest = [x for x in self.question.results][0].answer_value
 
 
 QuestionStatistic.smallest = PersistentAttribute(QuestionStatistic, "smallest")
