@@ -1,6 +1,6 @@
 from framework.exceptions import *
 from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceSet
-from model import Question
+from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 
 
