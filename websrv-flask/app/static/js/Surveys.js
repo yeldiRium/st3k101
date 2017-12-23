@@ -287,7 +287,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                             if (result.status == 200
                                 && result.data.result == "Survey created.") {
                                 $scope.resetEditing();
-                                Flash.create('success', 'Survey successfully createy.');
+                                Flash.create('success', 'Survey successfully created.');
                                 $scope.query();
                             } else {
                                 Flash.create('danger', "Something went wrong. Please try again!");
