@@ -7,9 +7,10 @@ from model.QuestionStatistic import QuestionStatistic
 class QuestionGroup(PersistentObject):
     def add_new_question(self, text: str) -> Question:
         question = Question()
+        question.text = text
+
         question_statistic = QuestionStatistic()
         question_statistic.question = question
-        question.text = text
         question.statistic = question_statistic
         self.questions.add(question)
         return question

@@ -214,10 +214,9 @@ def survey_submit(questionnaire_uuid):
                 current_answer = QuestionResult()
                 current_answer.data_subject = data_subject
                 current_answer.question = question
-                question.results.add(current_answer)
+                question.add_question_result(current_answer)
             current_answer.answer_value = request.form["question_" + question.uuid]
             question.statistic.update()
-
     questionnaire.answer_count += 1
 
     return render_template("survey_thanks.html", email=request.form["email"])
@@ -491,6 +490,17 @@ def api_question_delete():
         return jsonify({
             "result": "Question deleted."
         })
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Question doesn't exist."
+        }, 400)
+
+
+@app.route("/api/question/<string:question_uuid>/statistic", methods=["GET"])
+def api_question_statistic(question_uuid):
+    try:
+        question = Question(question_uuid)
+        return jsonify(question.statistic)
     except ObjectDoesntExistException as e:
         return jsonify({
             "result": "Question doesn't exist."

@@ -15,8 +15,8 @@ class Question(PersistentObject):
 # QuestionResult modules
 QuestionStatistic.question = PersistentReference(QuestionStatistic, "question",
                                                  Question)
-QuestionResult.question = PersistentReference(QuestionResult, "question", Question)
-
+QuestionResult.question = PersistentReference(QuestionResult, "question",
+                                              Question)
 
 Question.text = PersistentAttribute(Question, "text")
 Question.statistic = PersistentReference(Question, "statistic",
