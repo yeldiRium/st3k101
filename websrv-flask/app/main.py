@@ -223,9 +223,10 @@ def survey_submit(questionnaire_uuid):
 # APIs
 
 @app.route("/api/survey", methods=["GET"])
-def api_survey_list(current_client=True):
-    if current_client is True and g._current_user is not None:
-        surveys = g._current_user.surveys
+def api_survey_list():
+    if g._current_user is not None:
+        surveys = []
+        surveys.extend(g._current_user.surveys)
     else:
         surveys = Survey.many_from_query({})
     return jsonify(surveys)
