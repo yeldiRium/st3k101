@@ -132,7 +132,8 @@ def logout():
     """
     Logout Route
     """
-    return render_template("home_base.html")
+    users.logout()
+    return make_response(redirect('/'))
 
 
 # USER BACKEND
