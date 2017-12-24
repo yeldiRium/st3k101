@@ -1,0 +1,43 @@
+<div class="jumbotron">ES GEHT</div>
+
+<svg width="{{ properties.graph_width }}px" height="{{ properties.graph_height }}px">
+    <g ng-repeat="questionGroup in statistics.questionGroups">
+        <g ng-repeat="question in questionGroup.questions">
+            <line
+                    x1="{{ getX(question.statistic.smallest) }}px"
+                    y1="{{ getY($index) + (properties.bar_height / 2) }}px"
+                    x2="{{ getX(question.statistic.biggest) }}px"
+                    y2="{{ getY($index) + (properties.bar_height / 2) }}px"
+                    style="stroke:black;stroke-width:2px"
+            ></line>
+            <line
+                    x1="{{ getX(question.statistic.smallest) }}px"
+                    y1="{{ getY($index) }}px"
+                    x2="{{ getX(question.statistic.smallest) }}px"
+                    y2="{{ getY($index) + properties.bar_height }}px"
+                    style="stroke:black;stroke-width:1px"
+            ></line>
+            <line
+                    x1="{{ getX(question.statistic.biggest) }}px"
+                    y1="{{ getY($index) }}px"
+                    x2="{{ getX(question.statistic.biggest) }}px"
+                    y2="{{ getY($index) + properties.bar_height }}px"
+                    style="stroke:black;stroke-width:1px"
+            ></line>
+            <rect
+                    x="{{ getX(question.statistic.q1) }}px"
+                    y="{{ getY($index) + 10 }}px"
+                    width="{{ getX(question.statistic.q3) - getX(question.statistic.q1) }}px"
+                    height="{{ properties.bar_height - 20 }}px"
+                    style="fill:#bbb;stroke:black;stroke-width:3px"
+            ></rect>
+            <line
+                    x1="{{ getX(question.statistic.q2) }}px"
+                    y1="{{ getY($index) }}px"
+                    x2="{{ getX(question.statistic.q2) }}px"
+                    y2="{{ getY($index) + properties.bar_height }}px"
+                    style="stroke:black;stroke-width:3px"
+            ></line>
+        </g>
+    </g>
+</svg>

@@ -39,6 +39,31 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             }
         }
     }])
+    .factory('QuestionStatistic', ['$http', function($http) {
+        return {
+            query: function(uuid) {
+                return $http.get('/api/question/' + uuid + '/statistic').then(
+                    function success(result) {
+                        return new Promise(function(resolve, reject) {
+                            var statistic = {
+                                'biggest': result.data.fields.biggest,
+                                'smallest': result.data.fields.smallest,
+                                'q1': result.data.fields.q1,
+                                'q2': result.data.fields.q2,
+                                'q3': result.data.fields.q3
+                            };
+                            resolve(statistic);
+                        })
+                    },
+                    function fail(error) {
+                        return new Promise(function(resolve, reject) {
+                            reject(error);
+                        });
+                    }
+                )
+            }
+        }
+    }])
     .controller('SurveysController', ['$scope', '$http', '$timeout', 'Flash', 'Surveys',
         function($scope, $http, $timeout, Flash, Surveys) {
             /**
@@ -672,6 +697,82 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             $scope.resetEditing();
             $scope.query();
         }])
+    .controller('QuestionnaireStatisticController', ['$scope', '$http', '$routeParams', '$timeout', 'Questionnaire', 'QuestionStatistic',
+        function($scope, $http, $routeParams, $timeout, Questionnaire, QuestionStatistic) {
+            $scope.properties = {
+                'graph_width': window.innerWidth - 400,
+                'graph_height': 40, // 2 * graph_padding as default
+                'graph_padding': 20,
+                'bar_height': 50,
+                'bar_padding': 20
+            };
+
+            $scope.query = function() {
+                Questionnaire.query($routeParams.questionnaire).then(
+                    function success(result) {
+                        $scope.statistics = {
+                            'questionGroups': []
+                        };
+                        $.each(result.fields.questiongroups, function(index, questionGroup) {
+                            var questionGroupObject = {
+                                'name': questionGroup.fields.name,
+                                'color': questionGroup.fields.color,
+                                'text_color': questionGroup.fields.text_color,
+                                'questions': []
+                            };
+                            $.each(questionGroup.fields.questions, function(index, question) {
+                                var questionObject = {
+                                    'text': question.text,
+                                    'statistic': null
+                                };
+                                questionGroupObject.questions.push(questionObject);
+
+                                QuestionStatistic.query(question.uuid).then(
+                                    function success(result) {
+                                        questionObject.statistic = result;
+                                        if($scope.properties.graph_height == 0) {
+                                            $scope.properties.graph_height += $scope.properties.bar_height;
+                                        } else {
+                                            $scope.properties.graph_height += $scope.properties.bar_height + $scope.properties.bar_padding;
+                                        }
+                                    },
+                                    function fail(error) {
+                                        Flash.create('danger', error);
+                                    }
+                                );
+                            });
+                            $scope.statistics.questionGroups.push(questionGroupObject);
+                        });
+                        setTimeout(function() {
+                        }, 0);
+                        console.log($scope.statistics);
+                        return $scope.statistics;
+                    },
+                    function fail(error) {
+                        $scope.questionnaire = null;
+                        $scope.statistics = null;
+                        Flash.create('danger', error);
+                    }
+                )
+            };
+
+            $scope.getX = function(value) {
+                var maxValue = 10;
+                var effectiveWidth = $scope.properties.graph_width - 2 * $scope.properties.graph_padding;
+
+                return $scope.properties.graph_padding + effectiveWidth * value / maxValue;
+            };
+
+            $scope.getY = function(index) {
+                var result = $scope.properties.graph_padding;
+                if(index != 0) {
+                    result += index * ($scope.properties.bar_height + $scope.properties.bar_padding)
+                }
+                return result;
+            };
+
+            $scope.query();
+        }])
     .config(['$routeProvider', '$locationProvider',
         function($routeProvider, $locationProvider) {
             $locationProvider.hashPrefix('');
@@ -683,5 +784,9 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 .when('/surveys/:questionnaire/', {
                     templateUrl: '/static/js/templates/EditSurvey.html',
                     controller: 'EditQuestionnaireController'
+                })
+                .when('/surveys/:questionnaire/statistic', {
+                    templateUrl: '/static/js/templates/QuestionnaireStatistics.html',
+                    controller: 'QuestionnaireStatisticController'
                 });
         }]);
