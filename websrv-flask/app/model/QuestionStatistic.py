@@ -30,11 +30,11 @@ class QuestionStatistic(PersistentObject):
         if result_list_length % 4 == 1:
             n = int((result_list_length - 1) / 4)
             self.q1 = 0.25 * int(result_list[n - 1].answer_value) + 0.75 * int(result_list[n].answer_value)
-            self.q3 = 0.75 * int(result_list[3*n].answer_value) + 0.75 * int(result_list[3*n + 1].answer_value)
+            self.q3 = 0.75 * int(result_list[3*n].answer_value) + 0.25 * int(result_list[3*n + 1].answer_value)
         if result_list_length % 4 == 3:
             n = int((result_list_length - 3) / 4)
             self.q1 = 0.25 * int(result_list[n].answer_value) + 0.75 * int(result_list[n + 1].answer_value)
-            self.q3 = 0.75 * int(result_list[3*n + 1].answer_value) + 0.75 * int(result_list[3*n + 2].answer_value)
+            self.q3 = 0.75 * int(result_list[3*n + 1].answer_value) + 0.25 * int(result_list[3*n + 2].answer_value)
 
     def median(self, values):
         """
