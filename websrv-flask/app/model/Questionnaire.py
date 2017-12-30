@@ -23,7 +23,7 @@ class Questionnaire(PersistentObject):
     def get_efla_student_template():
         template = Questionnaire.one_from_query({"name": "efla_student_template"})
         if template is None:
-            pass  # create template
+            pass  # TODO: create template
         else:
             return template
 
@@ -31,7 +31,7 @@ class Questionnaire(PersistentObject):
     def get_efla_teacher_template():
         template = Questionnaire.one_from_query({"name": "efla_teacher_template"})
         if template is None:
-            pass  # create template
+            pass  # TODO: create template
         else:
             return template
 
