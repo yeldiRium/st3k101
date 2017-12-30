@@ -701,10 +701,18 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
         function($scope, $http, $routeParams, $timeout, Questionnaire, QuestionStatistic) {
             $scope.properties = {
                 'graph_width': window.innerWidth - 400,
-                'graph_height': 40, // 2 * graph_padding as default
-                'graph_padding': 20,
+                'graph_height': 60, // 2 * bar_padding as default
+                'graph_padding_left': 100,
+                'graph_padding_right': 20,
+                'text_padding_left': 5,
                 'bar_height': 50,
-                'bar_padding': 20
+                'bar_padding': 30,
+                'upper_scale_line_upper_y': '20',
+                'upper_scale_line_lower_y': '25',
+                'upper_scale_text_y': '15',
+                'lower_scale_line_upper_y': '25',
+                'lower_scale_line_lower_y': '20',
+                'lower_scale_text_y': '5'
             };
 
             $scope.query = function() {
@@ -722,10 +730,11 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                             };
                             $.each(questionGroup.fields.questions, function(index, question) {
                                 var questionObject = {
-                                    'text': question.text,
+                                    'text': $scope.cutQuestionText(question.fields.text),
                                     'statistic': null
                                 };
                                 questionGroupObject.questions.push(questionObject);
+                                console.log(questionObject);
 
                                 QuestionStatistic.query(question.uuid).then(
                                     function success(result) {
@@ -757,18 +766,50 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             };
 
             $scope.getX = function(value) {
-                var maxValue = 10;
-                var effectiveWidth = $scope.properties.graph_width - 2 * $scope.properties.graph_padding;
+                var maxValue = 11;
+                var effectiveWidth = $scope.properties.graph_width - $scope.properties.graph_padding_left - $scope.properties.graph_padding_right;
 
-                return $scope.properties.graph_padding + effectiveWidth * value / maxValue;
+                return $scope.properties.graph_padding_left + effectiveWidth * value / maxValue;
             };
 
             $scope.getY = function(index) {
-                var result = $scope.properties.graph_padding;
+                var result = $scope.properties.bar_padding;
                 if(index != 0) {
                     result += index * ($scope.properties.bar_height + $scope.properties.bar_padding)
                 }
                 return result;
+            };
+
+            $scope.cutQuestionText = function(text) {
+                var width = $scope.getTextWidth(text, "12pt Arial");
+                var cuts = 0;
+                while(width > ($scope.properties.graph_padding_left - 2 * $scope.properties.text_padding_left)) {
+                    text = text.slice(0, -1);
+                    width = $scope.getTextWidth(text, "12pt Arial");
+                    cuts++;
+                }
+                if(cuts > 0) {
+                    text = text.slice(0, -3);
+                    return text + '...';
+                }
+                return text;
+            };
+
+            /**
+             * Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
+             *
+             * @param {String} text The text to be rendered.
+             * @param {String} font The css font descriptor that text is to be rendered with (e.g. "bold 14px verdana").
+             *
+             * @see https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
+             */
+            $scope.getTextWidth = function(text, font) {
+                // re-use canvas object for better performance
+                var canvas = $scope.getTextWidth.canvas || ($scope.getTextWidth.canvas = document.createElement("canvas"));
+                var context = canvas.getContext("2d");
+                context.font = font;
+                var metrics = context.measureText(text);
+                return metrics.width;
             };
 
             $scope.query();
