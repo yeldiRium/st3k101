@@ -315,22 +315,11 @@ def api_questionnaire_create():
         }, 400)
     try:
         if "template" in data["questionnaire"]:
-            if data["questionnaire"]["template"] == "efla_teacher":
-                questionnaire = survey.add_new_questionnaire_from_efla_teacher(
-                    data["questionnaire"]["name"],
-                    data["questionnaire"]["description"]
-                )
-            elif data["questionnaire"]["template"] == "efla_student":
-                questionnaire = survey.add_new_questionnaire_from_efla_student(
-                    data["questionnaire"]["name"],
-                    data["questionnaire"]["description"]
-                )
-            else:
-                questionnaire = survey.add_new_questionnaire_from_template(
-                    data["questionnaire"]["name"],
-                    data["questionnaire"]["description"],
-                    Questionnaire(data["questionnaire"]["template"])
-                )
+            questionnaire = survey.add_new_questionnaire_from_template(
+                data["questionnaire"]["name"],
+                data["questionnaire"]["description"],
+                data["questionnaire"]["template"]
+            )
         else:
             questionnaire = survey.add_new_questionnaire(
                 data["questionnaire"]["name"],

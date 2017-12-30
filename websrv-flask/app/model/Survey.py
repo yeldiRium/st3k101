@@ -20,21 +20,32 @@ class Survey(PersistentObject):
         return questionnaire
 
     def add_new_questionnaire_from_template(
-            self, name: str, description: str, template: Questionnaire
+            self, name: str, description: str, template: str
     ) -> Questionnaire:
         """
         Creates a new Questionnaire by copying all settings from a given
         Questionnaire.
         """
-        questionnaire = self.add_new_questionnaire(name, description)
-        for template_group in template.questiongroups:
-            new_group = QuestionGroup()
-            new_group.name = template_group.name
-            new_group.color = template_group.color
-            new_group.text_color = template_group.text_color
-            questionnaire.questiongroups.add(new_group)
-            for question in template_group.questions:
-                questionnaire.add_question_to_group(new_group, question.text)
+        if template == "efla_teacher":
+            questionnaire = self.add_new_questionnaire_from_efla_teacher(
+                name,
+                description
+            )
+        elif template == "efla_student":
+            questionnaire = self.add_new_questionnaire_from_efla_student(
+                name,
+                description
+            )
+        else:
+            questionnaire = self.add_new_questionnaire(name, description)
+            for template_group in template.questiongroups:
+                new_group = QuestionGroup()
+                new_group.name = template_group.name
+                new_group.color = template_group.color
+                new_group.text_color = template_group.text_color
+                questionnaire.questiongroups.add(new_group)
+                for question in template_group.questions:
+                    questionnaire.add_question_to_group(new_group, question.text)
         return questionnaire
 
     def add_new_questionnaire_from_efla_student(
