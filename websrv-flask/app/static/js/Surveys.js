@@ -700,6 +700,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
     .controller('QuestionnaireStatisticController', ['$scope', '$http', '$routeParams', '$timeout', 'Questionnaire', 'QuestionStatistic',
         function($scope, $http, $routeParams, $timeout, Questionnaire, QuestionStatistic) {
             $scope.properties = {
+                'questionnaire_uuid': null,
                 'graph_width': window.innerWidth - 400,
                 'graph_height': 60, // 2 * bar_padding as default
                 'graph_padding_left': 100,
@@ -721,6 +722,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                         $scope.statistics = {
                             'questionGroups': []
                         };
+                        $scope.properties.questionnaire_uuid = result.uuid;
                         $.each(result.fields.questiongroups, function(index, questionGroup) {
                             var questionGroupObject = {
                                 'name': questionGroup.fields.name,
