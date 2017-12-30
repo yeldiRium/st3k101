@@ -19,6 +19,22 @@ class Questionnaire(PersistentObject):
         self.question_count -= 1
         return question_group
 
+    @staticmethod
+    def get_efla_student_template():
+        template = Questionnaire.one_from_query({"name": "efla_student_template"})
+        if template is None:
+            pass  # create template
+        else:
+            return template
+
+    @staticmethod
+    def get_efla_teacher_template():
+        template = Questionnaire.one_from_query({"name": "efla_teacher_template"})
+        if template is None:
+            pass  # create template
+        else:
+            return template
+
 
 Questionnaire.name = PersistentAttribute(Questionnaire, "name")
 Questionnaire.description = PersistentAttribute(Questionnaire, "description")
