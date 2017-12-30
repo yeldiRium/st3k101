@@ -13,11 +13,6 @@
         <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
         <div class="menu-list">
             <ul id="menu-content" class="menu-content collapse out">
-                <li class="{% if request.endpoint == 'user_dashboard' %}active{% endif %}">
-                    <a href="#/dashboard">
-                        <i class="fa fa-lg"></i> Dashboard
-                    </a>
-                </li>
                 <li class="{% if request.endpoint == 'user_survey_overview' %}active{% endif %}">
                     <a href="#/surveys">
                         <i class="fa fa-lg"></i> Surveys
@@ -48,7 +43,6 @@
     <script src="{{ url_for('static', filename='vendor/angular-flash-alert/dist/angular-flash.js') }}"></script>
     <script src="{{ url_for('static', filename='vendor/spectrum-colorpicker/spectrum.js') }}"></script>
     <script src="{{ url_for('static', filename='js/Utility.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/Dashboard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/Surveys.js') }}"></script>
     <script src="{{ url_for('static', filename='js/Account.js') }}"></script>
     <script src="{{ url_for('static', filename='js/App.js') }}"></script>

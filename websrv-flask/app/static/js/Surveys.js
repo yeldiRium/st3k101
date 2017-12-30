@@ -820,6 +820,10 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
         function($routeProvider, $locationProvider) {
             $locationProvider.hashPrefix('');
             $routeProvider
+                .when('/', {
+                    templateUrl: '/static/js/templates/Surveys.html',
+                    controller: 'SurveysController'
+                })
                 .when('/surveys/', {
                     templateUrl: '/static/js/templates/Surveys.html',
                     controller: 'SurveysController'
