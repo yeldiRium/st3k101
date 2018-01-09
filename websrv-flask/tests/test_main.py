@@ -61,5 +61,10 @@ if __name__ == "__main__":
         print("")
         print(test_result.text)
 
+    if "j" in flags:
+        print(test_result.text)
+        sys.exit(0)
+
+    print("")
     test_result = json.loads(test_result.text)["result"]
     print_results(test_result)

@@ -1,5 +1,6 @@
 import inspect
 import pkgutil
+import traceback
 from typing import List, Tuple, Any, Dict
 
 import sys
@@ -44,9 +45,14 @@ class TestUnit(object):
                 results.append(TestResult(True, "", name, self.name))
 
             except TestAssertFailed as a:
-                results.append(TestResult(False, a.message, name, self.name))
+                tb_lines = traceback.format_exc().splitlines(keepends=True)
+                tb = ''.join(tb_lines[3:-3])
+                error_message = tb + "\n" + a.message
+                results.append(TestResult(False, error_message, name, self.name))
             except Exception as e:
-                results.append(TestResult(False, e.__repr__(), name, self.name))
+                tb_lines = traceback.format_exc().splitlines(keepends=True)
+                tb = ''.join(tb_lines[3:])
+                results.append(TestResult(False, tb, name, self.name))
 
         return results
 
@@ -68,6 +74,10 @@ class TestUnit(object):
         assert predicate is not None
         if not predicate:
             raise TestAssertFailed(failure_message)
+
+    @staticmethod
+    def fail(message="Fail called explicitly."):
+        raise TestAssertFailed(message)
 
 
 def _discover_test_modules() -> List[Any]:

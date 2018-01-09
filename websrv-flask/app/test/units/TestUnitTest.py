@@ -2,10 +2,10 @@ import inspect
 
 from test import TestUnit
 
-class OneSimpleTest(TestUnit):
-    """
+class OneSimpleTest(): pass
+"""
     The mother of all tests ;)
-    """
+    
 
     def one_simple_testcase(self):
         self.test_assert(True == True, "Better get yourself a new set of axioms")
@@ -24,12 +24,12 @@ class OneSimpleTest(TestUnit):
 
     def pass_b(self):
         self.test_assert(not [n for n in [1, 2, 3, 4, 5] if 17 % n ==  0], "~~(//)8>")
+"""
 
-
-class TwoSimpleTest(TestUnit):
-    """
+class TwoSimpleTest(): pass
+"""
     This is madness!
-    """
+    
 
     def one_simple_testcase(self):
         self.test_assert(True == True, "Better get yourself a new set of axioms")
@@ -48,3 +48,4 @@ class TwoSimpleTest(TestUnit):
 
     def pass_b(self):
         self.test_assert(not [n for n in [1, 2, 3, 4, 5] if 17 % n ==  0], "~~(//)8>")
+"""
