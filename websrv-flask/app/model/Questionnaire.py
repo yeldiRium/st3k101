@@ -2,7 +2,7 @@ from framework.exceptions import *
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
-from model import Question
+from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 
 
@@ -20,6 +20,22 @@ class Questionnaire(DataObject):
         question_group.remove_question(question)
         self.question_count -= 1
         return question_group
+
+    @staticmethod
+    def get_efla_student_template():
+        template = Questionnaire.one_from_query({"name": "efla_student_template"})
+        if template is None:
+            pass  # TODO: create template
+        else:
+            return template
+
+    @staticmethod
+    def get_efla_teacher_template():
+        template = Questionnaire.one_from_query({"name": "efla_teacher_template"})
+        if template is None:
+            pass  # TODO: create template
+        else:
+            return template
 
 
 Questionnaire.name = DataAttribute(Questionnaire, "name")

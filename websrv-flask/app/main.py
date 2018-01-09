@@ -132,7 +132,8 @@ def logout():
     """
     Logout Route
     """
-    return render_template("home_base.html")
+    users.logout()
+    return make_response(redirect('/'))
 
 
 # USER BACKEND
@@ -213,8 +214,9 @@ def survey_submit(questionnaire_uuid):
                 current_answer = QuestionResult()
                 current_answer.data_subject = data_subject
                 current_answer.question = question
+                question.add_question_result(current_answer)
             current_answer.answer_value = request.form["question_" + question.uuid]
-
+            question.statistic.update()
     questionnaire.answer_count += 1
 
     return render_template("survey_thanks.html", email=request.form["email"])
@@ -224,7 +226,11 @@ def survey_submit(questionnaire_uuid):
 
 @app.route("/api/survey", methods=["GET"])
 def api_survey_list():
-    surveys = Survey.many_from_query({})
+    if g._current_user is not None:
+        surveys = []
+        surveys.extend(g._current_user.surveys)
+    else:
+        surveys = Survey.many_from_query({})
     return jsonify(surveys)
 
 
@@ -233,6 +239,9 @@ def api_survey_create():
     data = request.get_json()
     survey = Survey()
     survey.name = data["name"]
+
+    if g._current_user is not None:
+        g._current_user.surveys.add(survey)
 
     return jsonify({
         "result": "Survey created.",
@@ -245,6 +254,13 @@ def api_survey_update():
     data = request.get_json()
     try:
         survey = Survey(data["uuid"])
+
+        if g._current_user is not None and survey not in g._current_user.surveys:
+            return jsonify({
+                "result": "Error",
+                "reason": "Survey with given uuid does not belong to you."
+            }, 400)
+
         survey.name = data["name"]
         return jsonify({
             "result": "Survey updated.",
@@ -261,6 +277,11 @@ def api_survey_delete():
     data = request.get_json()
     try:
         survey = Survey(data["uuid"])
+        if g._current_user is not None and survey not in g._current_user.surveys:
+            return jsonify({
+                "result": "Error",
+                "reason": "Survey with given uuid does not belong to you."
+            }, 400)
         # TODO: delete subobjects
         survey.remove()
         return jsonify({
@@ -283,28 +304,45 @@ def api_questionnaire_get_single(questionnaire_uuid):
         }), 400)
 
 
+@app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv", methods=["GET"])
+def api_questionnaire_download_csv(questionnaire_uuid):
+    try:
+        csv = "question_group,question_text,answer_value,data_subject\n"
+        questionnaire = Questionnaire(questionnaire_uuid)
+        for question_group in questionnaire.questiongroups:
+            for question in question_group.questions:
+                for result in question.results:
+                    csv += question_group.name + "," + question.text + "," + result.answer_value + "," + result.data_subject.email + "\n"
+
+        response = make_response(
+            csv
+        )
+        response.headers["Content-Disposition"] = "attachment; filename=" + questionnaire_uuid + ".csv"
+        response.headers["Content-type"] = "text/csv"
+
+        return response
+    except ObjectDoesntExistException as e:
+        return make_response(jsonify({
+            "result": "Questionnaire doesn't exist."
+        }), 400)
+
+
 @app.route("/api/questionnaire", methods=["POST"])
 def api_questionnaire_create():
     data = request.get_json()
     survey = Survey(data["survey"])
+    if g._current_user is not None and survey not in g._current_user.surveys:
+        return jsonify({
+            "result": "Error",
+            "reason": "Survey with given uuid does not belong to you."
+        }, 400)
     try:
         if "template" in data["questionnaire"]:
-            if data["questionnaire"]["template"] == "efla_teacher":
-                questionnaire = survey.add_new_questionnaire_from_efla_teacher(
-                    data["questionnaire"]["name"],
-                    data["questionnaire"]["description"]
-                )
-            elif data["questionnaire"]["template"] == "efla_student":
-                questionnaire = survey.add_new_questionnaire_from_efla_student(
-                    data["questionnaire"]["name"],
-                    data["questionnaire"]["description"]
-                )
-            else:
-                questionnaire = survey.add_new_questionnaire_from_template(
-                    data["questionnaire"]["name"],
-                    data["questionnaire"]["description"],
-                    Questionnaire(data["questionnaire"]["template"])
-                )
+            questionnaire = survey.add_new_questionnaire_from_template(
+                data["questionnaire"]["name"],
+                data["questionnaire"]["description"],
+                data["questionnaire"]["template"]
+            )
         else:
             questionnaire = survey.add_new_questionnaire(
                 data["questionnaire"]["name"],
@@ -344,6 +382,11 @@ def api_questionnaire_delete():
     data = request.get_json()
     try:
         survey = Survey(data["survey"])
+        if g._current_user is not None and survey not in g._current_user.surveys:
+            return jsonify({
+                "result": "Error",
+                "reason": "Survey with given uuid does not belong to you."
+            }, 400)
         questionnaire = Questionnaire(data["uuid"])
         survey.remove_questionnaire(questionnaire)
         return jsonify({
@@ -464,9 +507,22 @@ def api_question_delete():
             "result": "Question doesn't exist."
         }, 400)
 
+
+@app.route("/api/question/<string:question_uuid>/statistic", methods=["GET"])
+def api_question_statistic(question_uuid):
+    try:
+        question = Question(question_uuid)
+        return jsonify(question.statistic)
+    except ObjectDoesntExistException as e:
+        return jsonify({
+            "result": "Question doesn't exist."
+        }, 400)
+
+
 @app.route("/test/runall", methods=["POST"])
 def api_test_runall():
-    # if g._current_user is None:  FIXME: remove in production
+    # FIXME: remove (WHOLE METHOD) in production
+    # if g._current_user is None:
     #    return abort(403)
 
     return jsonify({

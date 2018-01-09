@@ -22,14 +22,21 @@ class Survey(DataObject):
         return questionnaire
 
     def add_new_questionnaire_from_template(
-            self, name: str, description: str, template: Questionnaire
+            self, name: str, description: str, template: str
     ) -> Questionnaire:
         """
         Creates a new Questionnaire by copying all settings from a given
         Questionnaire.
         """
+        if template == "efla_teacher":
+            template_questionnaire = Questionnaire.get_efla_teacher_template()
+        elif template == "efla_student":
+            template_questionnaire = Questionnaire.get_efla_student_template()
+        else:
+            template_questionnaire = Questionnaire(template)
+
         questionnaire = self.add_new_questionnaire(name, description)
-        for template_group in template.questiongroups:
+        for template_group in template_questionnaire.questiongroups:
             new_group = QuestionGroup()
             new_group.name = template_group.name
             new_group.color = template_group.color
@@ -37,28 +44,6 @@ class Survey(DataObject):
             questionnaire.questiongroups.add(new_group)
             for question in template_group.questions:
                 questionnaire.add_question_to_group(new_group, question.text)
-        return questionnaire
-
-    def add_new_questionnaire_from_efla_student(
-            self, name: str, description: str
-    ) -> Questionnaire:
-        """
-        Alias for add_new_questionnaire_from_template with template for default
-        efla_student questionnaire.
-        """
-        efla_student_template = None
-        questionnaire = self.add_new_questionnaire_from_template(name, description, efla_student_template)
-        return questionnaire
-
-    def add_new_questionnaire_from_efla_teacher(
-            self, name: str, description: str
-    ) -> Questionnaire:
-        """
-        Alias for add_new_questionnaire_from_template with template for default
-        efla_teacher questionnaire.
-        """
-        efla_teacher_template = None
-        questionnaire = self.add_new_questionnaire_from_template(name, description, efla_teacher_template)
         return questionnaire
 
     def remove_questionnaire(self, questionnaire: Questionnaire) -> None:
