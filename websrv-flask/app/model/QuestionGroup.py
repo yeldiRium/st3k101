@@ -1,9 +1,11 @@
 from framework.exceptions import *
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceSet
+from framework.odm.DataObject import DataObject
+from framework.odm.DataPointerSet import DataPointerSet
+from framework.odm.DataAttribute import DataAttribute
 from model.Question import Question
 
 
-class QuestionGroup(PersistentObject):
+class QuestionGroup(DataObject):
     def add_new_question(self, text: str) -> Question:
         question = Question()
         question.text = text
@@ -17,7 +19,7 @@ class QuestionGroup(PersistentObject):
         except KeyError as _:
             raise QuestionNotFoundException(self.name, question.text)
 
-QuestionGroup.name = PersistentAttribute(QuestionGroup, "name")
-QuestionGroup.color = PersistentAttribute(QuestionGroup, "color")
-QuestionGroup.text_color = PersistentAttribute(QuestionGroup, "text_color")
-QuestionGroup.questions = PersistentReferenceSet(QuestionGroup, "questions", Question)
+QuestionGroup.name = DataAttribute(QuestionGroup, "name")
+QuestionGroup.color = DataAttribute(QuestionGroup, "color")
+QuestionGroup.text_color = DataAttribute(QuestionGroup, "text_color")
+QuestionGroup.questions = DataPointerSet(QuestionGroup, "questions", Question)

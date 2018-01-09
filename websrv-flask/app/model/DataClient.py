@@ -1,12 +1,14 @@
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceSet
+from framework.odm.DataObject import DataObject
+from framework.odm.DataPointerSet import DataPointerSet
+from framework.odm.DataAttribute import DataAttribute
 from model.Survey import Survey
 
 
-class DataClient(PersistentObject): pass
+class DataClient(DataObject): pass
 
 
-DataClient.email = PersistentAttribute(DataClient, "email")
-DataClient.activated = PersistentAttribute(DataClient, "activated")
-DataClient.password_salt = PersistentAttribute(DataClient, "password_salt")
-DataClient.password_hash = PersistentAttribute(DataClient, "password_hash")
-DataClient.surveys = PersistentReferenceSet(DataClient, "surveys", Survey)
+DataClient.email = DataAttribute(DataClient, "email")
+DataClient.activated = DataAttribute(DataClient, "activated")
+DataClient.password_salt = DataAttribute(DataClient, "password_salt")
+DataClient.password_hash = DataAttribute(DataClient, "password_hash")
+DataClient.surveys = DataPointerSet(DataClient, "surveys", Survey)

@@ -1,11 +1,13 @@
-from framework.odm.PersistentObject import PersistentObject, PersistentReference, PersistentAttribute
+from framework.odm.DataObject import DataObject
+from framework.odm.DataPointer import DataPointer
+from framework.odm.DataAttribute import DataAttribute
 from model.DataSubject import DataSubject
 from model.Question import Question
 
 
-class QuestionResult(PersistentObject): pass
+class QuestionResult(DataObject): pass
 
 
-QuestionResult.question = PersistentReference(QuestionResult, "question", Question)
-QuestionResult.data_subject = PersistentReference(QuestionResult, "data_subject", DataSubject)
-QuestionResult.answer_value = PersistentAttribute(QuestionResult, "answer_value")
+QuestionResult.question = DataPointer(QuestionResult, "question", Question)
+QuestionResult.data_subject = DataPointer(QuestionResult, "data_subject", DataSubject)
+QuestionResult.answer_value = DataAttribute(QuestionResult, "answer_value")

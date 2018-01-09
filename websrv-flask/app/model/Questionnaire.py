@@ -1,10 +1,12 @@
 from framework.exceptions import *
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceSet
+from framework.odm.DataObject import DataObject
+from framework.odm.DataPointerSet import DataPointerSet
+from framework.odm.DataAttribute import DataAttribute
 from model import Question
 from model.QuestionGroup import QuestionGroup
 
 
-class Questionnaire(PersistentObject):
+class Questionnaire(DataObject):
     def add_question_to_group(self, question_group: QuestionGroup, text: str) -> QuestionGroup:
         if question_group not in self.questiongroups:
             raise QuestionGroupNotFoundException
@@ -20,8 +22,8 @@ class Questionnaire(PersistentObject):
         return question_group
 
 
-Questionnaire.name = PersistentAttribute(Questionnaire, "name")
-Questionnaire.description = PersistentAttribute(Questionnaire, "description")
-Questionnaire.questiongroups = PersistentReferenceSet(Questionnaire, "questiongroups", QuestionGroup)
-Questionnaire.question_count = PersistentAttribute(Questionnaire, "question_count")
-Questionnaire.answer_count = PersistentAttribute(Questionnaire, "answer_count")
+Questionnaire.name = DataAttribute(Questionnaire, "name")
+Questionnaire.description = DataAttribute(Questionnaire, "description")
+Questionnaire.questiongroups = DataPointerSet(Questionnaire, "questiongroups", QuestionGroup)
+Questionnaire.question_count = DataAttribute(Questionnaire, "question_count")
+Questionnaire.answer_count = DataAttribute(Questionnaire, "answer_count")

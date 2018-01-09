@@ -1,7 +1,8 @@
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute
+from framework.odm.DataObject import DataObject
+from framework.odm.DataAttribute import DataAttribute
 
 
-class Question(PersistentObject): pass
+class Question(DataObject): pass
 
 
-Question.text = PersistentAttribute(Question, "text")
+Question.text = DataAttribute(Question, "text")

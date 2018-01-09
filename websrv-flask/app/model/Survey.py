@@ -1,10 +1,12 @@
 from framework.exceptions import *
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReferenceSet
+from framework.odm.DataObject import DataObject
+from framework.odm.DataPointerSet import DataPointerSet
+from framework.odm.DataAttribute import DataAttribute
 from model.QuestionGroup import QuestionGroup
 from model.Questionnaire import Questionnaire
 
 
-class Survey(PersistentObject):
+class Survey(DataObject):
     def add_new_questionnaire(self, name: str, description: str) -> Questionnaire:
         questionnaire = next((x for x in self.questionnaires if x.name == name), None)
         if questionnaire is not None:
@@ -67,6 +69,6 @@ class Survey(PersistentObject):
             raise QuestionnaireNotFoundException(self.name, questionnaire.name)
 
 
-Survey.name = PersistentAttribute(Survey, "name")
-Survey.date_created = PersistentAttribute(Survey, "date_created")
-Survey.questionnaires = PersistentReferenceSet(Survey, "questionnaires", Questionnaire)
+Survey.name = DataAttribute(Survey, "name")
+Survey.date_created = DataAttribute(Survey, "date_created")
+Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)

@@ -1,7 +1,8 @@
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute
+from framework.odm.DataObject import DataObject
+from framework.odm.DataAttribute import DataAttribute
 
 
-class DataSubject(PersistentObject): pass
+class DataSubject(DataObject): pass
 
 
-DataSubject.email = PersistentAttribute(DataSubject, "email")
+DataSubject.email = DataAttribute(DataSubject, "email")
