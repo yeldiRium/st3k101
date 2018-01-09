@@ -1,5 +1,7 @@
 from collections import Iterator
 
+from framework.odm import PointerType
+
 
 class SetProxyIter(Iterator):
 
@@ -17,10 +19,11 @@ class SetProxyIter(Iterator):
 
 class SetProxy():
 
-    def __init__(self, obj, attr_name, klass):
+    def __init__(self, obj, attr_name, klass, reference_type: PointerType = PointerType.WEAK):
         self.__instance = obj
         self.__attr_name = attr_name
         self._klass = klass
+        self.__reference_type = reference_type
 
     def _get_proxee(self) -> list:
         return getattr(self.__instance, self.__attr_name)
@@ -67,11 +70,15 @@ class SetProxy():
     def add(self, item):
         if not item.uuid in self._get_proxee():
             self._get_proxee().append(item.uuid)
+            if self.__reference_type == PointerType.STRONG:
+                item.inc_refcount()
             self.__instance._set_member(self.__attr_name, self._get_proxee())
 
     def discard(self, item):
         try:
             self._get_proxee().remove(item.uuid)
+            if self.__reference_type == PointerType.STRONG:
+                item.dec_refcount()
             self.__instance._set_member(self.__attr_name, self._get_proxee())
         except: pass
 
@@ -79,4 +86,6 @@ class SetProxy():
         if not item.uuid in self._get_proxee():
             raise KeyError
         self._get_proxee().remove(item.uuid)
+        if self.__reference_type == PointerType.STRONG:
+            item.dec_refcount()
         self.__instance._set_member(self.__attr_name, self._get_proxee())

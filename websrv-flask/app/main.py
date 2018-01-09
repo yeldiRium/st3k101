@@ -5,7 +5,7 @@ import auth
 import businesslogic.users as users
 import test
 from framework.exceptions import *
-from framework.odm.PersistentObjectEncoder import PersistentObjectEncoder
+from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
 from model.DataSubject import DataSubject
 from model.Question import Question
@@ -16,7 +16,7 @@ from model.Survey import Survey
 
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
-app.json_encoder = PersistentObjectEncoder
+app.json_encoder = DataObjectEncoder
 
 
 # before and after request foo

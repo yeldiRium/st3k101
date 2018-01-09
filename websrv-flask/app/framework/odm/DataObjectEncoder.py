@@ -1,11 +1,13 @@
 import json
 
 from framework import classname
-from framework.odm.PersistentObject import PersistentObject, PersistentAttribute, PersistentReference, \
-    PersistentReferenceSet
+from framework.odm.DataObject import DataObject
+from framework.odm.DataPointerSet import DataPointerSet
+from framework.odm.DataPointer import DataPointer
+from framework.odm.DataAttribute import DataAttribute
 
 
-class PersistentObjectEncoder(json.JSONEncoder):
+class DataObjectEncoder(json.JSONEncoder):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -13,7 +15,7 @@ class PersistentObjectEncoder(json.JSONEncoder):
 
     def default(self, o):
 
-        if PersistentObject in o.__class__.__mro__:
+        if DataObject in o.__class__.__mro__:
 
             obj_dict = {
                 "uuid": o.uuid,
@@ -27,13 +29,13 @@ class PersistentObjectEncoder(json.JSONEncoder):
             self.__seen.add(o.uuid)
 
             for name, a in o.persistent_members().items():
-                if type(a) == PersistentAttribute:
+                if type(a) == DataAttribute:
                     obj_dict["fields"][name] = a.__get__(o)
 
-                elif type(a) == PersistentReference:
+                elif type(a) == DataPointer:
                     obj_dict["fields"][name] = self.default(a.__get__(o))
 
-                elif type(a) == PersistentReferenceSet:
+                elif type(a) == DataPointerSet:
                     reflist = []
                     for ref_obj in a.__get__(o):
                         reflist.append(self.default(ref_obj))
