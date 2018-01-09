@@ -307,16 +307,14 @@ def api_questionnaire_get_single(questionnaire_uuid):
 @app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv", methods=["GET"])
 def api_questionnaire_download_csv(questionnaire_uuid):
     try:
-        csv = "question_group,question_text,answer_value,data_subject\n"
+        csv = "question_group,question_text,answer_value\n"
         questionnaire = Questionnaire(questionnaire_uuid)
         for question_group in questionnaire.questiongroups:
             for question in question_group.questions:
                 for result in question.results:
-                    csv += question_group.name + "," + question.text + "," + result.answer_value + "," + result.data_subject.email + "\n"
+                    csv += "{},{},{}\n".format(question_group.name, question.text, result.answer_value)
 
-        response = make_response(
-            csv
-        )
+        response = make_response(csv)
         response.headers["Content-Disposition"] = "attachment; filename=" + questionnaire_uuid + ".csv"
         response.headers["Content-type"] = "text/csv"
 
