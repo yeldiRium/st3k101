@@ -9,22 +9,22 @@ class DataPointerSet(object):
     """
     Emulate PyProperty_Type() in Objects/descrobject.c
     This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
-    PersistentObject attributes, which are lists of references to other PersistentObjects.
-    Use cls.attribute_name = PersistentAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
-    erence list to some other PersistentObject.
+    DataObject attributes, which are sets of references to other DataObjects.
+    Use cls.attribute_name = DataAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
+    erence sets to some other DataObject.
     """
 
     def __init__(self, cls: type, name: str, other_class: type, cascading_delete: bool = False, pointer_type: PointerType = PointerType.WEAK):
         """
-        :param cls: type See documentation for PersistentAttribute.
-        :param name: str See documentation for PersistentAttribute.
-        :param other_class: See documentation for PersistentReference
+        :param cls: type See documentation for DataAttribute.
+        :param name: str See documentation for DataAttribute.
+        :param other_class: See documentation for DataPointer
         """
-        if not hasattr(cls, "persistent_reference_sets"):
-            cls.persistent_references = dict({})
-        cls.persistent_references[name] = self
+        if not hasattr(cls, "data_pointer_sets"):
+            cls.data_pointer_sets = dict({})
+        cls.data_pointer_sets[name] = self
         self.__external_name = name
-        self.__name = "__persistent_refset_{}".format(name)
+        self.__name = "__data_pointer_set_{}".format(name)
         self.__other_class = other_class
         self.__cascading_delete = cascading_delete
         self.__reference_type = pointer_type

@@ -64,9 +64,14 @@ def client_ip_changed(error):
 def page_not_found(error):
     """
     Called on HTTP 404
-    :param error: 
+    :param error: L'Error
     """
     return make_response("This is not the url you're looking for.", 404)
+
+
+@app.errorhandler(AccessControlException)
+def handle_access_control_violation(error):
+    abort(404)
 
 
 @app.route("/", methods=["GET"])

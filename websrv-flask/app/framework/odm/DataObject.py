@@ -1,35 +1,40 @@
 import random
-import sys
 import time
 from typing import Any
 
 from bson.objectid import ObjectId
 from flask import g
 
-from framework.exceptions import ObjectDoesntExistException, BadQueryException
+from framework.exceptions import ObjectDoesntExistException, BadQueryException, AccessControlException
 from framework.memcached import get_memcache
 from framework.mongodb import get_db
 from framework.odm.UniqueObject import UniqueObject, UniqueHandle
 
 
 class DataObject(UniqueObject, metaclass=UniqueHandle):
+
+    # Indicates whether ownership model should be used & enforced
+    has_owner = True
+
     @classmethod
     def _collection(cls):
         """
         Returns the name of the mongodb collection used for persisting instances of cls.
         The collection name will be Python's representation of the class name, including containing parent modules.
-        This class, for example, will use 'model.PersistentObject.PersistentObject' as collection name.
+        This class, for example, will use 'model.DataObject.DataObject' as collection name.
         :return: str
         """
         db = get_db()
         return db[str(cls)[8:-2]]  # same as framework.classname(o) method
 
-    def __init__(self, uuid: str = None):
+    def __init__(self, uuid: str = None, owner: object = None):
         """
         :param uuid: str If passed, self will be a representant of the object with the given uuid. Important: If two
         instances of the same PersistentObject are created, the instances do not update each other, when values are
         changed. Only one request context may access the same uuid at once. As a consequence, the constructor may be 
         deferred until the database resource becomes available.
+        :param owner: DataObject The user object who will own this object. When this is not passed, the owner
+        defaults to the currently logged in user.
         """
         self.deleted = False
         self.initialized = False
@@ -42,9 +47,23 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                 raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
             self.__from_document(document)
 
-        else:  # create a new mongodb document for self
+            if not self.accessible():  # enforce access control on existing objects
+                raise AccessControlException(
+                    "{} {} may not be accessed by the current user.".format(self.__class__.__name__, uuid))
+
+        else:  # create a new mongodb document for self. Init members here.
             self._id = self._collection().insert_one(self._document_skeleton()).inserted_id
             setattr(self, "__ref_count", 0)
+
+            # Init ownership related data
+            owner_uuid = None  # defaults to None, which means no ownership is enforced
+            if self.has_owner:  # if ownership is enforced,
+                if owner is None:
+                    current_uuid = g._current_user.uuid if g._current_user is not None else None
+                    owner_uuid = current_uuid  # the owner is either g._current_user
+                else:
+                    owner_uuid = owner.uuid  # or it is the user that was explicitly passed
+            self._set_member("__owner_uuid", owner_uuid)  # don't forget to make owner persistent
 
         # lock object by shared mutex in memcached while object is alive
         # only one app context may access a PersistentObject at a time.
@@ -184,9 +203,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         if self.ref_count > 0:
             return
 
-        # TODO: Handle references and delete if cascading_delete
-        if hasattr(self, "persistent_references"):
-            for name, ref in self.persistent_references.items():
+        if hasattr(self, "data_pointers"):
+            for name, ref in self.data_pointers.items():
 
                 other = None
                 if ref.cascading_delete:  # get referenced obj if we need to delete it later
@@ -197,8 +215,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                 if other:
                     other.remove()  # do cascading delete
 
-        if hasattr(self, "persistent_reference_sets"):
-            for name, refset in self.persistent_reference_sets.items():
+        if hasattr(self, "data_pointer_sets"):
+            for name, refset in self.data_pointer_sets.items():
 
                 others = []
                 if refset.cascading_delete:
@@ -210,6 +228,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                 if others:
                     for other in others:
                         other.remove()
+
+        # TODO: handle mixed pointer sets
 
         self._collection().delete_one({u'_id': self._id})
         del g._persistent_objects[self.uuid]
@@ -235,14 +255,14 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         :return: dict
         """
         pers_attrs = {}
-        if hasattr(cls, "persistent_attributes"):
-            pers_attrs.update(cls.persistent_attributes)
+        if hasattr(cls, "data_attributes"):
+            pers_attrs.update(cls.data_attributes)
 
-        if hasattr(cls, "persistent_references"):
-            pers_attrs.update(cls.persistent_references)
+        if hasattr(cls, "data_pointers"):
+            pers_attrs.update(cls.data_pointers)
 
-        if hasattr(cls, "persistent_reference_sets"):
-            pers_attrs.update(cls.persistent_reference_sets)
+        if hasattr(cls, "data_pointer_sets"):
+            pers_attrs.update(cls.data_pointer_sets)
 
         return pers_attrs
 
@@ -257,4 +277,29 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         persistent_members.update({"__ref_count": 0})
         return persistent_members
 
+    def accessible_by(self, user: object) -> bool:
+        """
+        Indicates whether a given user DataObject is allowed to
+        access this object.
+        If somebody owns this object, only the owner is allowed to access.
+        If there's no owner, or ownership is disabled in a subclass by setting
+        has_owner to false, this will always return true.
+        :param user: DataObject An user.
+        :return: bool Whether the ǵiven user may access this object.
+        """
+        owner_uuid = getattr(self, "__owner_uuid")
 
+        if owner_uuid is None:
+            return True
+
+        user_uuid = user.uuid if user is not None else None
+
+        return user_uuid == owner_uuid
+
+    def accessible(self):
+        """
+        Indicates whether the currently logged in user may access this object.
+        Always returns true if no ownership is enforced.
+        :return: bool Whether the currently logged in user may access this object.
+        """
+        return self.accessible_by(g._current_user)
