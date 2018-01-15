@@ -32,7 +32,7 @@
                         <div class="question-text">
                             {{ question.text }}
                         </div>
-                        <div class="question-answer-container">
+                        <div class="question-answer-container {% if 'question_'~question.uuid in error %}bg-danger{% endif %}">
                             <div class="question-left-text">
                                 <span class="glyphicon glyphicon-arrow-left hidden-md hidden-lg" aria-hidden="true"></span>
                                 Strongly Disagree
@@ -40,7 +40,6 @@
 
                             {% for i in range(0,11) %}
                             <div class="question-answer">
-                            {{ values['question_'~question.uuid] }}
                                 <div class="question-answer-label">{{ i }}</div>
                                 <input class="question-answer-radio" type="radio" name="question_{{ question.uuid }}" id="question_someid" value="{{ i }}" title="Value {{ i }}" {% if ('question_'~question.uuid in values) and (values['question_'~question.uuid] == ""~i) %}checked{% endif %}>
                             </div>

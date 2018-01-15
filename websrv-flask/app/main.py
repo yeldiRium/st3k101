@@ -209,12 +209,19 @@ def survey_submit(questionnaire_uuid):
     The field with the error must be a key on the error dict. The value is an
     optional message.
     """
-    error = False
+    questionnaire = Questionnaire(questionnaire_uuid)
+    error = {}
+    if "email" not in request.form or request.form["email"] == "":
+        error["email"] = "Please enter an E-Mail."
+        # TODO: check if email is valid
     if "agb" not in request.form:
-        error = error or {}
         error["agb"] = ""
+    for question_group in questionnaire.questiongroups:
+        for question in question_group.questions:
+            if ("question_" + question.uuid) not in request.form:
+                error["question_" + question.uuid] = "Please choose a value."
 
-    if error:
+    if error != {}:
         try:
             questionnaire = Questionnaire(questionnaire_uuid)
             return render_template(
@@ -231,8 +238,6 @@ def survey_submit(questionnaire_uuid):
     if data_subject is None:
         data_subject = DataSubject()
         data_subject.email = request.form["email"]
-
-    questionnaire = Questionnaire(questionnaire_uuid)
 
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
