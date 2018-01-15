@@ -50,14 +50,14 @@
             <rect
                     x="0px"
                     y="{{ getY($index) }}px"
-                    width="{{ properties.graph_width - 0 }}px"
+                    width="{{ properties.graph_width }}px"
                     height="{{ properties.bar_height }}px"
                     fill="white"
                     class="bar_bg"
             ></rect>
             <text
                     x="{{ properties.text_padding_left }}px"
-                    y="{{ getY($index) + (properties.bar_height / 2) }}px"
+                    y="{{ getY($index) + (properties.bar_height / 2) + 3 }}px"
             >{{ question.text }}</text>
             <line
                     x1="{{ getX(question.statistic.smallest) }}px"
@@ -94,6 +94,10 @@
                     y2="{{ getY($index) + properties.bar_height }}px"
                     class="line_center_vertical"
             ></line>
+            <text
+                    x="{{ properties.graph_width - properties.text_padding_right }}px"
+                    y="{{ getY($index) + (properties.bar_height / 2) + 3 }}px"
+            >{{ question.answers }} Answers</text>
         </g>
     </g>
     <g class="scale lower">

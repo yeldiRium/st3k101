@@ -704,8 +704,9 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 'graph_width': window.innerWidth - 400,
                 'graph_height': 60, // 2 * bar_padding as default
                 'graph_padding_left': 100,
-                'graph_padding_right': 20,
+                'graph_padding_right': 100,
                 'text_padding_left': 5,
+                'text_padding_right': 80,
                 'bar_height': 50,
                 'bar_padding': 30,
                 'upper_scale_line_upper_y': '20',
@@ -733,6 +734,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                             $.each(questionGroup.fields.questions, function(index, question) {
                                 var questionObject = {
                                     'text': $scope.cutQuestionText(question.fields.text),
+                                    'answers': question.fields.results.length,
                                     'statistic': null
                                 };
                                 questionGroupObject.questions.push(questionObject);
