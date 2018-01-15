@@ -57,12 +57,9 @@
             {% endfor %}
         </div>
         <div class="row text-center survey-form-footer">
-            <div class="form-check {% if error['agb'] is defined %}bg-danger{% endif %}">
-                <input type="checkbox" class="form-check-input" name="agb" id="agb">
-                <label class="form-check-label" for="agb">
-                    I have read and accept the <a href="{{ url_for('disclaimer') }}">privacy-disclaimer</a>
-                </label>
-            </div>
+            {% for qac_template in qac_templates %}
+                {{ qac_template|safe }}
+            {% endfor %}
             <div class="input-group">
                 <input type="email" class="form-control" name="email" placeholder="E-Mail" {% if 'email' in values %}value={{ values['email'] }}{% endif %} />
                 <div class="input-group-btn">

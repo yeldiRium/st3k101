@@ -4,6 +4,7 @@ from flask import Flask, render_template, g, request, make_response, redirect, \
 import auth
 import businesslogic.users as users
 import test
+from businesslogic.QACFactory import create_qac_module
 from framework.exceptions import *
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
@@ -190,10 +191,17 @@ def survey_test():
 def survey(questionnaire_uuid):
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
+
+        # generate templates for qacs without any error parameters
+        qac_templates = []
+        for qac_module in questionnaire.get_qac_modules():
+            qac_templates.append(qac_module.get_survey_template({}))
+
         return render_template(
             "survey_survey.html",
             uuid=questionnaire_uuid,
             questionnaire=questionnaire,
+            qac_templates=[],
             values={},
             error={}
         )
@@ -219,12 +227,19 @@ def survey_submit(questionnaire_uuid):
     if "email" not in request.form or request.form["email"] == "":
         error["email"] = "Please enter an E-Mail."
         # TODO: check if email is valid
-    if "agb" not in request.form:
-        error["agb"] = ""
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
             if ("question_" + question.uuid) not in request.form:
                 error["question_" + question.uuid] = "Please choose a value."
+
+    # control all qacs and generate possibly error containing templates
+    qac_templates = []
+    for qac_module in questionnaire.get_qac_modules():
+        errors = qac_module.control()
+        qac_templates.append(qac_module.get_survey_template(errors))
+        if errors != {}:
+            # Just set any value to true, so that the template is rendered
+            error["qac"] = True
 
     if error != {}:
         try:
@@ -233,6 +248,7 @@ def survey_submit(questionnaire_uuid):
                 "survey_survey.html",
                 uuid=questionnaire_uuid,
                 questionnaire=questionnaire,
+                qac_templates=qac_templates,
                 values=request.form,
                 error=error
             )
@@ -442,6 +458,94 @@ def api_questionnaire_delete():
             "result": "Questionnaire deleted."
         })
     except ObjectDoesntExistException as e:
+        return make_response(jsonify({
+            "result": "Questionnaire doesn't exist."
+        }), 400)
+
+
+@app.route("/api/qac_module", method=["GET"])
+def api_qac_modules():
+    return make_response({
+        "qacModules": ["AGBQAC"]
+    })
+
+@app.route(
+    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    methods=["POST"]
+)
+def api_qac_enable(questionnaire_uuid, qac_name):
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        qac_module = create_qac_module(qac_name)
+        if qac_module is None:
+            return make_response(jsonify({
+                "result": "QACModule \"" + qac_name + "\" doesn't exist."
+            }), 400)
+        questionnaire.add_qac_module(qac_module)
+        return make_response({
+            "result": "QACModule \"" + qac_name + "\" added to questionnaire.",
+            "questionnaire": jsonify(questionnaire)
+        })
+    except ObjectDoesntExistException as _:
+        return make_response(jsonify({
+            "result": "Questionnaire doesn't exist."
+        }), 400)
+
+
+@app.route(
+    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    methods=["PUT"]
+)
+def api_qac_configure(questionnaire_uuid, qac_name):
+    data = request.get_json()
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        qac_module = questionnaire.get_qac_module(qac_name)
+        if qac_module is None:
+            return make_response(jsonify({
+                "result": "QACModule \"" + qac_name + "\" doesn't exist on " +
+                          "the requested questionnaire."
+            }), 400)
+
+        missing_params = []
+        for key in qac_module.get_required_config_fields():
+            if key not in data:
+                missing_params.append(key)
+
+        if missing_params != []:
+            return make_response({
+                "result": "Parameters were missing; QACModule \"" + qac_name +
+                          "\" was not updated.",
+                "missingParams": missing_params
+            }, 400)
+
+        for key in qac_module.get_required_config_fields():
+            qac_module.set_config_value(key, data[key])
+
+        return make_response({
+            "result": "QACModule \"" + qac_name + "\" updated.",
+            "qacModule": jsonify(qac_module)
+        })
+    except ObjectDoesntExistException as _:
+        return make_response(jsonify({
+            "result": "Questionnaire doesn't exist."
+        }), 400)
+
+
+@app.route(
+    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    methods=["DELETE"]
+)
+def api_qac_disable(questionnaire_uuid, qac_name):
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        questionnaire.remove_qac_module(qac_name)
+        return make_response({
+            "result": "QACModule \"" + qac_name + "\" removed from questionna" +
+                      "ire.",
+            "questionnaire": jsonify(questionnaire)
+        })
+    except ObjectDoesntExistException as _:
         return make_response(jsonify({
             "result": "Questionnaire doesn't exist."
         }), 400)

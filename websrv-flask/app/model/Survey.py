@@ -18,6 +18,7 @@ class Survey(DataObject):
         questionnaire.questiongroups = []
         questionnaire.question_count = 0
         questionnaire.answer_count = 0
+        questionnaire.qac_modules = []
         self.questionnaires.add(questionnaire)
         return questionnaire
 
@@ -44,6 +45,8 @@ class Survey(DataObject):
             questionnaire.questiongroups.add(new_group)
             for question in template_group.questions:
                 questionnaire.add_question_to_group(new_group, question.text)
+        for qac_module in template_questionnaire.qac_modules:
+            questionnaire.add_qac_module(qac_module)
         return questionnaire
 
     def remove_questionnaire(self, questionnaire: Questionnaire) -> None:
