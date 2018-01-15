@@ -156,7 +156,12 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         if not document:
             return None
 
-        return cls(document['_id'])
+        try:
+            the_object = cls(document['_id'])
+        except AccessControlException:
+            the_object = None
+
+        return the_object
 
     @classmethod
     def many_from_query(cls, query: dict):
@@ -178,7 +183,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         results = []
 
         for doc in documents:
-            results.append(cls(doc['_id']))
+            try:
+                results.append(cls(doc['_id']))
+            except AccessControlException: pass
 
         return results
 
@@ -223,17 +230,29 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                     for other in getattr(self, name):
                         others.append(other)
 
-                delattr(self, name)
+                delattr(self, name)  # decrease refcount
 
                 if others:
                     for other in others:
                         other.remove()
 
-        # TODO: handle mixed pointer sets
+        if hasattr(self, "mixed_data_pointer_sets"):
+            for name, refset in self.mixed_data_pointer_sets.items():
+
+                others = []
+                if refset.cascading_delete:
+                    for other in getattr(self, name):
+                        others.append(other)
+
+                delattr(self, name)  # decrease refcount
+
+                if others:
+                    for other in others:
+                        other.remove()
 
         self._collection().delete_one({u'_id': self._id})
         del g._persistent_objects[self.uuid]
-        self.__del__() # TODO: called del here to free mutex, since object is gone now
+        self.__del__()
 
     def __from_document(self, document: dict):
         """
@@ -263,6 +282,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
 
         if hasattr(cls, "data_pointer_sets"):
             pers_attrs.update(cls.data_pointer_sets)
+
+        if hasattr(cls, "mixed_data_pointer_sets"):
+            pers_attrs.update(cls.mixed_data_pointer_sets)
 
         return pers_attrs
 

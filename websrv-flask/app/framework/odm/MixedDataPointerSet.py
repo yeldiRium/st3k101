@@ -2,30 +2,30 @@ from typing import List
 
 from framework.odm import PointerType
 from framework.odm.DataObject import DataObject
-from framework.odm.SetProxy import SetProxy
+from framework.odm.MixedSetProxy import MixedSetProxy, instantiate_by_name
 
 
-class DataPointerSet(object):
+class MixedDataPointerSet(object):
     """
     Emulate PyProperty_Type() in Objects/descrobject.c
     This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
-    DataObject attributes, which are sets of references to other DataObjects.
-    Use cls.attribute_name = DataAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
-    erence sets to some other DataObject.
+    PersistentObject attributes, which are lists of references to other PersistentObjects.
+    Use cls.attribute_name = PersistentAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
+    erence list to some other PersistentObject.
     """
 
-    def __init__(self, cls: type, name: str, other_class: type, cascading_delete: bool = False, pointer_type: PointerType = PointerType.WEAK):
+    def __init__(self, cls: type, name: str, cascading_delete: bool = False, pointer_type: PointerType = PointerType.WEAK):
         """
-        :param cls: type See documentation for DataAttribute.
-        :param name: str See documentation for DataAttribute.
-        :param other_class: See documentation for DataPointer
+        :param cls: type See documentation for PersistentAttribute.
+        :param name: str See documentation for PersistentAttribute.
+        :param other_class: See documentation for PersistentReference
         """
-        if not hasattr(cls, "data_pointer_sets"):
-            cls.data_pointer_sets = dict({})
-        cls.data_pointer_sets[name] = self
+
+        if not hasattr(cls, "mixed_data_pointer_sets"):
+            cls.mixed_data_pointer_sets = dict({})
+        cls.mixed_data_pointer_sets[name] = self
         self.__external_name = name
-        self.__name = "__data_pointer_set_{}".format(name)
-        self.__other_class = other_class
+        self.__name = "__mixed_data_pointer_set_{}".format(name)
         self.__cascading_delete = cascading_delete
         self.__reference_type = pointer_type
 
@@ -54,22 +54,22 @@ class DataPointerSet(object):
         if obj is None:
             return self
 
-        value = getattr(obj, self.__name, None)  # stores list of uuids
+        value = getattr(obj, self.__name, None)  # stores list of (module_name, class_name, uuid)
         if not value:
             obj._set_member(self.__name, [])
-        return SetProxy(obj, self.__name, self.__other_class, reference_type=self.__reference_type)
+        return MixedSetProxy(obj, self.__name, reference_type=self.__reference_type)
 
     def __set__(self, obj: DataObject, value: List[DataObject]):
         """
         Called when attribute is set.
         See Python's descriptor protocol.
         """
-        self.__delete__(obj)  # decreases refcount of previously set objects
-        uuids = [e.uuid for e in value]
+        self.__delete__(obj)
+        instance_references = [(e.__module__, e.__class__.__name__, e.uuid) for e in value]
         if self.__reference_type == PointerType.STRONG:
             for o in value:
                 o.inc_refcount()
-        obj._set_member(self.__name, uuids)
+        obj._set_member(self.__name, instance_references)
 
     def __delete__(self, obj):
         """
@@ -77,7 +77,7 @@ class DataPointerSet(object):
         See Python's descriptor protocol.
         """
         if self.__reference_type == PointerType.STRONG:
-            uuids = getattr(self, self.__name, [])
-            for uuid in uuids:
-                self.__other_class(uuid).dec_refcount()
+            instance_references = getattr(self, self.__name, [])  # type [(module_name, class_name, uuid)]
+            for m, c, uuid in instance_references:
+                instantiate_by_name(m, c, uuid) .dec_refcount()
         obj._set_member(self.__name, None)

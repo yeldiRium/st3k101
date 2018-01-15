@@ -5,6 +5,7 @@ from framework.odm.DataObject import DataObject
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataAttribute import DataAttribute
+from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 
 
 class DataObjectEncoder(json.JSONEncoder):
@@ -35,7 +36,7 @@ class DataObjectEncoder(json.JSONEncoder):
                 elif type(a) == DataPointer:
                     obj_dict["fields"][name] = self.default(a.__get__(o))
 
-                elif type(a) == DataPointerSet:
+                elif type(a) in (DataPointerSet, MixedDataPointerSet):
                     reflist = []
                     for ref_obj in a.__get__(o):
                         reflist.append(self.default(ref_obj))
