@@ -1,11 +1,8 @@
 import math
 
+from framework.exceptions import QuestionStatisticHasNoQuestionException
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
-
-
-class QuestionStatisticHasNoQuestionException(Exception):
-    pass
 
 
 class QuestionStatistic(DataObject):
