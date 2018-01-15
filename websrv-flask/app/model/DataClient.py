@@ -4,7 +4,8 @@ from framework.odm.DataAttribute import DataAttribute
 from model.Survey import Survey
 
 
-class DataClient(DataObject): pass
+class DataClient(DataObject):
+    has_owner = False
 
 
 DataClient.email = DataAttribute(DataClient, "email")

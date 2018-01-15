@@ -35,3 +35,6 @@ class QuestionnaireNotFoundException(Exception): pass
 
 
 class DuplicateQuestionnaireNameException(Exception): pass
+
+
+class AccessControlException(Exception): pass
