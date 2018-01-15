@@ -6,24 +6,24 @@ class DataPointer(object):
     """
     Emulate PyProperty_Type() in Objects/descrobject.c
     This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
-    PersistentObject attributes, which are references to other PersistentObject.
-    Use cls.attribute_name = PersistentAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
-    erence to ome other PersistentObject.
+    DataObject attributes, which are references to other DataObject.
+    Use cls.attribute_name = DataAttribute(cls, "attribute_name", other_cls) to add a database persistent ref-
+    erence to ome other DataObject.
     """
 
     def __init__(self, cls: type, name: str, other_class: type, cascading_delete: bool = False,
                  pointer_type: PointerType = PointerType.WEAK):
         """
-        :param cls: type See documentation for PersistentAttribute.
-        :param name: str See documentation for PersistentAttribute.
+        :param cls: type See documentation for DataAttribute.
+        :param name: str See documentation for DataAttribute.
         :param other_class: type The class that is referenced by this attribute. Needed to instantiate other_class
         when this attribute is accessed.
         """
-        if not hasattr(cls, "persistent_references"):
-            cls.persistent_references = dict({})
-        cls.persistent_references[name] = self
+        if not hasattr(cls, "data_pointers"):
+            cls.data_pointers = dict({})
+        cls.data_pointers[name] = self
         self.__external_name = name
-        self.__name = "__persistent_ref_{}".format(name)
+        self.__name = "__data_pointer_{}".format(name)
         self.__other_class = other_class
         self.__cascading_delete = cascading_delete
         self.__reference_type = pointer_type
@@ -56,7 +56,7 @@ class DataPointer(object):
         value = getattr(obj, self.__name, None)  # only stores uuid
         if value is None:
             return None
-        return self.__other_class(value)  # instantiate referenced PersistentObject by it's uuid
+        return self.__other_class(value)  # instantiate referenced DataObject by it's uuid
 
     def __set__(self, obj: DataObject, value: DataObject):
         """

@@ -5,22 +5,22 @@ class DataAttribute(object):
     """
     Emulate PyProperty_Type() in Objects/descrobject.c
     This class uses the descriptor pattern used in Python, to implement the database persistent behavior of
-    PersistentObject attributes. Use cls.attribute_name = PersistentAttribute(cls, "attribute_name") to add a
+    DataObject attributes. Use cls.attribute_name = DataAttribute(cls, "attribute_name") to add a
     database persistent attribute to some class cls.
     """
 
     def __init__(self, cls: type, name: str):
         """
         :param cls: type The class to which to add the attribute. This argument is needed to keep the target class
-         aware of which PersistentAttributes exist, to automatically make subclasses of PersistentObject json
+         aware of which DataAttributes exist, to automatically make subclasses of DataObject json
          serializable.
-        :param name: str The name of the PersistentAttribute. This is how it will show up in the database and in json.
+        :param name: str The name of the DataAttribute. This is how it will show up in the database and in json.
         """
-        if not hasattr(cls, "persistent_attributes"):
-            cls.persistent_attributes = dict({})  # let cls keep track of all persistent attributed
-        cls.persistent_attributes[name] = self
+        if not hasattr(cls, "data_attributes"):
+            cls.data_attributes = dict({})  # let cls keep track of all persistent attributes
+        cls.data_attributes[name] = self
         self.__external_name = name
-        self.__name = "__persistent_attr_{}".format(name)
+        self.__name = "__data_attr_{}".format(name)
 
     @property
     def name(self):

@@ -21,7 +21,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         """
         Returns the name of the mongodb collection used for persisting instances of cls.
         The collection name will be Python's representation of the class name, including containing parent modules.
-        This class, for example, will use 'model.PersistentObject.PersistentObject' as collection name.
+        This class, for example, will use 'model.DataObject.DataObject' as collection name.
         :return: str
         """
         db = get_db()
@@ -203,9 +203,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         if self.ref_count > 0:
             return
 
-        # TODO: Handle references and delete if cascading_delete
-        if hasattr(self, "persistent_references"):
-            for name, ref in self.persistent_references.items():
+        if hasattr(self, "data_pointers"):
+            for name, ref in self.data_pointers.items():
 
                 other = None
                 if ref.cascading_delete:  # get referenced obj if we need to delete it later
@@ -216,8 +215,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                 if other:
                     other.remove()  # do cascading delete
 
-        if hasattr(self, "persistent_reference_sets"):
-            for name, refset in self.persistent_reference_sets.items():
+        if hasattr(self, "data_pointer_sets"):
+            for name, refset in self.data_pointer_sets.items():
 
                 others = []
                 if refset.cascading_delete:
@@ -229,6 +228,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                 if others:
                     for other in others:
                         other.remove()
+
+        # TODO: handle mixed pointer sets
 
         self._collection().delete_one({u'_id': self._id})
         del g._persistent_objects[self.uuid]
@@ -254,14 +255,14 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         :return: dict
         """
         pers_attrs = {}
-        if hasattr(cls, "persistent_attributes"):
-            pers_attrs.update(cls.persistent_attributes)
+        if hasattr(cls, "data_attributes"):
+            pers_attrs.update(cls.data_attributes)
 
-        if hasattr(cls, "persistent_references"):
-            pers_attrs.update(cls.persistent_references)
+        if hasattr(cls, "data_pointers"):
+            pers_attrs.update(cls.data_pointers)
 
-        if hasattr(cls, "persistent_reference_sets"):
-            pers_attrs.update(cls.persistent_reference_sets)
+        if hasattr(cls, "data_pointer_sets"):
+            pers_attrs.update(cls.data_pointer_sets)
 
         return pers_attrs
 
