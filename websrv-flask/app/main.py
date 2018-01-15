@@ -222,6 +222,10 @@ def survey_submit(questionnaire_uuid):
     return render_template("survey_thanks.html", email=request.form["email"])
 
 
+@app.route("/disclaimer")
+def disclaimer():
+    return render_template("home_disclaimer.html")
+
 # APIs
 
 @app.route("/api/survey", methods=["GET"])
