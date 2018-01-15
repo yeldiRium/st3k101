@@ -34,7 +34,8 @@ def before_request():
 
     g._current_user = None
     if session_token:
-        if auth.activity(session_token):  # also validates token, raises ClientIpChangedException if IP pinning fails
+        if auth.activity(
+                session_token):  # also validates token, raises ClientIpChangedException if IP pinning fails
             g._current_user = DataClient(auth.who_is(session_token))
             g._current_session_token = session_token
 
@@ -45,7 +46,7 @@ def shutdown_session(exception=None):
     Called after request is handled, before app context is deleted
     :param exception: Exception Did an exception happen?
     """
-    #app.log_exception(exception)
+    # app.log_exception(exception)
     pass
 
 
@@ -98,7 +99,8 @@ def registration_post():
         )
 
     try:
-        data_client = users.register(request.form["email"], request.form["password"])
+        data_client = users.register(request.form["email"],
+                                     request.form["password"])
         return render_template(
             "home_registration_successful.html",
             data_client=data_client
@@ -106,7 +108,8 @@ def registration_post():
     except UserExistsException as e:
         return render_template(
             "home_registration.html",
-            reason="User with E-Mail " + request.form["email"] + "already exists."
+            reason="User with E-Mail " + request.form[
+                "email"] + "already exists."
         )
 
 
@@ -118,7 +121,8 @@ def login():
     Takes login parameters via POST and starts session.
     """
     try:
-        session_token = users.login(request.form["email"], request.form["password"])
+        session_token = users.login(request.form["email"],
+                                    request.form["password"])
         response = make_response(redirect('/be/'))
         response.set_cookie('session_token', session_token)
         return response
@@ -167,7 +171,8 @@ def survey_test():
     questionnaire.questiongroups.add(questiongroup_1)
 
     questionnaire.add_question_to_group(questiongroup_1, "This is a question.")
-    questionnaire.add_question_to_group(questiongroup_1, "This is not a question.")
+    questionnaire.add_question_to_group(questiongroup_1,
+                                        "This is not a question.")
 
     return render_template(
         "survey_survey.html",
@@ -183,7 +188,9 @@ def survey(questionnaire_uuid):
         return render_template(
             "survey_survey.html",
             uuid=questionnaire_uuid,
-            questionnaire=questionnaire
+            questionnaire=questionnaire,
+            values={},
+            error={}
         )
     except ObjectDoesntExistException as _:
         return make_response(redirect("/"))
@@ -196,7 +203,30 @@ def survey_submit(questionnaire_uuid):
 
     This endpoint receives survey data via POST and persists them. Then redi-
     rects to a thank-you page.
+
+    In the first step errors are caught. If any is found, the survey template
+    is returned again, with error messages injected.
+    The field with the error must be a key on the error dict. The value is an
+    optional message.
     """
+    error = False
+    if "agb" not in request.form:
+        error = error or {}
+        error["agb"] = ""
+
+    if error:
+        try:
+            questionnaire = Questionnaire(questionnaire_uuid)
+            return render_template(
+                "survey_survey.html",
+                uuid=questionnaire_uuid,
+                questionnaire=questionnaire,
+                values=request.form,
+                error=error
+            )
+        except ObjectDoesntExistException as _:
+            return make_response(redirect("/"))
+
     data_subject = DataSubject.one_from_query({"email": request.form["email"]})
     if data_subject is None:
         data_subject = DataSubject()
@@ -215,7 +245,8 @@ def survey_submit(questionnaire_uuid):
                 current_answer.data_subject = data_subject
                 current_answer.question = question
                 question.add_question_result(current_answer)
-            current_answer.answer_value = request.form["question_" + question.uuid]
+            current_answer.answer_value = request.form[
+                "question_" + question.uuid]
             question.statistic.update()
     questionnaire.answer_count += 1
 
@@ -225,6 +256,7 @@ def survey_submit(questionnaire_uuid):
 @app.route("/disclaimer")
 def disclaimer():
     return render_template("home_disclaimer.html")
+
 
 # APIs
 
@@ -308,7 +340,8 @@ def api_questionnaire_get_single(questionnaire_uuid):
         }), 400)
 
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv", methods=["GET"])
+@app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv",
+           methods=["GET"])
 def api_questionnaire_download_csv(questionnaire_uuid):
     try:
         csv = "question_group,question_text,answer_value\n"
@@ -316,10 +349,13 @@ def api_questionnaire_download_csv(questionnaire_uuid):
         for question_group in questionnaire.questiongroups:
             for question in question_group.questions:
                 for result in question.results:
-                    csv += "{},{},{}\n".format(question_group.name, question.text, result.answer_value)
+                    csv += "{},{},{}\n".format(question_group.name,
+                                               question.text,
+                                               result.answer_value)
 
         response = make_response(csv)
-        response.headers["Content-Disposition"] = "attachment; filename=" + questionnaire_uuid + ".csv"
+        response.headers[
+            "Content-Disposition"] = "attachment; filename=" + questionnaire_uuid + ".csv"
         response.headers["Content-type"] = "text/csv"
 
         return response
@@ -356,7 +392,8 @@ def api_questionnaire_create():
         })
     except DuplicateQuestionnaireNameException as e:
         return jsonify({
-            "error": "Questionnaire with name \"" + data["questionnaire"]["name"] + "\" already exists."
+            "error": "Questionnaire with name \"" + data["questionnaire"][
+                "name"] + "\" already exists."
         }, 400)
 
 
@@ -465,7 +502,8 @@ def api_question_create():
     try:
         questionnaire = Questionnaire(data["questionnaire"])
         question_group = QuestionGroup(data["question_group"])
-        question = questionnaire.add_question_to_group(question_group, data["text"])
+        question = questionnaire.add_question_to_group(question_group,
+                                                       data["text"])
         return jsonify({
             "result": "Question created.",
             "question": question
