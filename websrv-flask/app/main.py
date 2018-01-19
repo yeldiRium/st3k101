@@ -244,6 +244,7 @@ def survey_submit(questionnaire_uuid):
         data_subject = DataSubject()
         data_subject.email = request.form["email"]
 
+    answer_overwritten = False
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
             current_answer = QuestionResult.one_from_query({
@@ -255,10 +256,13 @@ def survey_submit(questionnaire_uuid):
                 current_answer.data_subject = data_subject
                 current_answer.question = question
                 question.add_question_result(current_answer)
+            else:
+                answer_overwritten = True
             current_answer.answer_value = request.form[
                 "question_" + question.uuid]
             question.statistic.update()
-    questionnaire.answer_count += 1
+    if not answer_overwritten:
+        questionnaire.answer_count += 1
 
     return render_template("survey_thanks.html", email=request.form["email"])
 
