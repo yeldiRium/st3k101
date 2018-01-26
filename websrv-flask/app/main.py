@@ -626,10 +626,15 @@ def api_question_create():
             "result": "Question created.",
             "question": question
         })
-    except ObjectDoesntExistException as e:
+    except (ObjectDoesntExistException, QuestionGroupNotFoundException) as e:
         return jsonify({
             "result": "QuestionGroup doesn't exist."
         }, 400)
+    except DuplicateQuestionNameException as e:
+        return jsonify({
+            "result": "A Question with name \"" + data["text"] + "\" already " +
+                      "exists"
+        })
 
 
 @app.route("/api/question", methods=["PUT"])

@@ -1,9 +1,9 @@
 from typing import List
 
 from framework.exceptions import *
+from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointerSet import DataPointerSet
-from framework.odm.DataAttribute import DataAttribute
 from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.query_access_control.QACModule import QACModule
@@ -14,6 +14,9 @@ class Questionnaire(DataObject):
                               text: str) -> QuestionGroup:
         if question_group not in self.questiongroups:
             raise QuestionGroupNotFoundException
+        for question in question_group.questions:
+            if question.text == text:
+                raise DuplicateQuestionNameException()
         question_group.add_new_question(text)
         self.question_count += 1
         return question_group
