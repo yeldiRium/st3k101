@@ -13,6 +13,9 @@ class QuestionStatistic(DataObject):
         result_list = list(self.question.results)
         list.sort(result_list, key=lambda x: x.answer_value)
 
+        self.smallest = None
+        self.biggest = None
+
         for result in result_list:
             if self.smallest is None or result.answer_value < self.smallest:
                 self.smallest = result.answer_value
