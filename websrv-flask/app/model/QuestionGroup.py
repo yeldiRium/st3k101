@@ -1,7 +1,10 @@
+from flask import g
+
 from framework.exceptions import *
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
+from model.I15dString import I15dString
 from model.Question import Question
 from model.QuestionStatistic import QuestionStatistic
 
@@ -9,7 +12,8 @@ from model.QuestionStatistic import QuestionStatistic
 class QuestionGroup(DataObject):
     def add_new_question(self, text: str) -> Question:
         question = Question()
-        question.text = text
+        question.i15d_text = I15dString()
+        question.i15d_text.add_locale(g._current_user.locale, text)
 
         question_statistic = QuestionStatistic()
         question_statistic.question = question
