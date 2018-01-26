@@ -467,7 +467,7 @@ def api_questionnaire_delete():
         }), 400)
 
 
-@app.route("/api/qac_module", method=["GET"])
+@app.route("/api/qac_module", methods=["GET"])
 def api_qac_modules():
     return make_response({
         "qacModules": ["AGBQAC"]
