@@ -6,4 +6,4 @@ class DataSubject(DataObject):
     has_owner = False
 
 
-DataSubject.email = DataAttribute(DataSubject, "email")
+DataSubject.email = DataAttribute(DataSubject, "email")  # TODO hash this as soon as email is confirmed

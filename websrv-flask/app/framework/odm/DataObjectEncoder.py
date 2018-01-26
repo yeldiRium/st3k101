@@ -30,6 +30,10 @@ class DataObjectEncoder(json.JSONEncoder):
             self.__seen.add(o.uuid)
 
             for name, a in o.persistent_members().items():
+
+                if not a.serialize:
+                    continue
+
                 if type(a) == DataAttribute:
                     obj_dict["fields"][name] = a.__get__(o)
 
@@ -41,6 +45,9 @@ class DataObjectEncoder(json.JSONEncoder):
                     for ref_obj in a.__get__(o):
                         reflist.append(self.default(ref_obj))
                     obj_dict["fields"][name] = reflist
+
+            for name in o.exposed_properties:
+                obj_dict["fields"][name] = getattr(o, name)
 
             return obj_dict
 

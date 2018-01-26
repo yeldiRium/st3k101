@@ -9,18 +9,20 @@ class DataAttribute(object):
     database persistent attribute to some class cls.
     """
 
-    def __init__(self, cls: type, name: str):
+    def __init__(self, cls: type, name: str, serialize: bool=True):
         """
         :param cls: type The class to which to add the attribute. This argument is needed to keep the target class
          aware of which DataAttributes exist, to automatically make subclasses of DataObject json
          serializable.
         :param name: str The name of the DataAttribute. This is how it will show up in the database and in json.
+        :param serialize: bool whether the object encoder should automatically serialize this attribute
         """
         if not hasattr(cls, "data_attributes"):
             cls.data_attributes = dict({})  # let cls keep track of all persistent attributes
         cls.data_attributes[name] = self
         self.__external_name = name
         self.__name = "__data_attr_{}".format(name)
+        self.__serialize = serialize
 
     @property
     def name(self):
@@ -34,6 +36,10 @@ class DataAttribute(object):
         :return: 
         """
         return self.__name
+
+    @property
+    def serialize(self):
+        return self.__serialize
 
     def __get__(self, obj, obj_type=None):
         """

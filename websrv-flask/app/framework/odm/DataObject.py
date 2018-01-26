@@ -16,6 +16,10 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
     # Indicates whether ownership model should be used & enforced
     has_owner = True
 
+    # Set of properties that should also be serialized. Useful for hiding a database persistent attribute behind an
+    # accessor method
+    exposed_properties = set({})
+
     @classmethod
     def _collection(cls):
         """

@@ -24,6 +24,7 @@ def register(email: str, password: str) -> DataClient:
     client.email = email
     client.password_salt = os.urandom(g._config['AUTH_SALT_LENGTH']).hex()
     client.password_hash = argon2.argon2_hash(password, client.password_salt)
+    client.locale = g._locale
 
     return client
 

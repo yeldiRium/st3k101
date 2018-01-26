@@ -14,11 +14,17 @@ class DataPointerSet(object):
     erence sets to some other DataObject.
     """
 
-    def __init__(self, cls: type, name: str, other_class: type, cascading_delete: bool = False, pointer_type: PointerType = PointerType.WEAK):
+    def __init__(self, cls: type, name: str, other_class: type, serialize:bool=True,
+                 cascading_delete: bool = False, pointer_type: PointerType = PointerType.WEAK):
         """
         :param cls: type See documentation for DataAttribute.
         :param name: str See documentation for DataAttribute.
         :param other_class: See documentation for DataPointer
+        :param serialize: bool whether the object encoder should automatically serialize this attribute
+        :param cascading_delete: bool whether the object pointed to should be deleted when the last strong pointer to it
+        is deleted
+        :param pointer_type: PointerType the type of pointer, strong pointers to objects stop objects from being deleted
+        during a cascading delete. Weak pointers do not count into the reference count of objects.
         """
         if not hasattr(cls, "data_pointer_sets"):
             cls.data_pointer_sets = dict({})
@@ -26,6 +32,7 @@ class DataPointerSet(object):
         self.__external_name = name
         self.__name = "__data_pointer_set_{}".format(name)
         self.__other_class = other_class
+        self.__serialize = serialize
         self.__cascading_delete = cascading_delete
         self.__reference_type = pointer_type
 
@@ -45,6 +52,10 @@ class DataPointerSet(object):
         :return: 
         """
         return self.__name
+
+    @property
+    def serialize(self):
+        return self.__serialize
 
     def __get__(self, obj, obj_type=None):
         """

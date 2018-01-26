@@ -2,20 +2,29 @@ from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
+from model.I15dString import I15dString
 from model.QuestionResult import QuestionResult
 from model.QuestionStatistic import QuestionStatistic
 
 
 class Question(DataObject):
+
+    exposed_properties = {
+        "text"
+    }
+
     def add_question_result(self, question_result: QuestionResult):
         self.results.add(question_result)
+
+    @property
+    def text(self):
+        return self.i15d_text.get()
 
 
 # These are here to prevent circular dependencies in QuestionStatistic and
 # QuestionResult modules
 QuestionStatistic.question = DataPointer(QuestionStatistic, "question", Question)
 QuestionResult.question = DataPointer(QuestionResult, "question", Question)
-
-Question.text = DataAttribute(Question, "text")
-Question.statistic = DataPointer(Question, "statistic", QuestionStatistic)
-Question.results = DataPointerSet(Question, "results", QuestionResult)
+Question.i15d_text = DataPointer(Question, "i15d_text", I15dString)
+Question.statistic = DataPointer(Question, "statistic", QuestionStatistic, cascading_delete=True)
+Question.results = DataPointerSet(Question, "results", QuestionResult, cascading_delete=True)

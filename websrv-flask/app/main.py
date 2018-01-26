@@ -6,6 +6,7 @@ import businesslogic.users as users
 import test
 from businesslogic.QACFactory import create_qac_module
 from framework.exceptions import *
+from framework.internationalization.languages import Language
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
 from model.DataSubject import DataSubject
@@ -25,7 +26,7 @@ app.json_encoder = DataObjectEncoder
 def before_request():
     """
     Called before each request, when the app context is initialized
-    Automatically sets g._current_user
+    Automatically sets g._current_user, g._locale
     """
     g._config = app.config
 
@@ -40,6 +41,27 @@ def before_request():
             g._current_user = DataClient(auth.who_is(session_token))
             g._current_session_token = session_token
 
+    # Setting the locale for the current request
+    g._locale = g._config["DEFAULT_LOCALE"]  # use default locale if all else fails
+
+    http_locale = request.accept_languages.best_match((l.name.lower() for l in Language))  # check HTTP accept-language
+    if http_locale is not None:  # try to match available locales against HTTP header
+        g._locale = Language[http_locale.upper()]
+
+    if g._current_user:  # if user is logged in, set locale based on user preferences, override HTTP header
+        g._locale = g._current_user.locale
+
+    # Allow frontend to override locale set by browser or user. This is needed to show locales to the user, even if the
+    # locale doesn't match the above settings. Otherwise, a german user wouldn't be able to see a french survey, even if
+    # they spoke french. The frontend may prompt the user if they want to see a locale that they mightn't understand.
+    requested_locale = request.args.get("locale")
+    if requested_locale is not None:
+        try:
+            requested_locale = Language[requested_locale]
+            g._locale = requested_locale
+        except (AttributeError, KeyError):
+            # TODO: log error
+            pass  # use previously set locale if malformed locale was requested
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -69,6 +91,11 @@ def page_not_found(error):
     """
     return make_response("This is not the url you're looking for.", 404)
 
+@app.errorhandler(500)
+def internal_server_error_handler(error):
+    # free all mutexes
+    for o in g._persistent_objects.values():
+        o.__del__()  # FIXME: dis ain't avoiding deadlocks at all
 
 @app.errorhandler(AccessControlException)
 def handle_access_control_violation(error):

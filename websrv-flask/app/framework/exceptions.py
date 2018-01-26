@@ -60,3 +60,6 @@ class QuestionStatisticHasNoQuestionException(Exception):
 
 class DuplicateQuestionNameException(Exception):
     pass
+
+class LocaleNotFoundException(Exception):
+    pass
