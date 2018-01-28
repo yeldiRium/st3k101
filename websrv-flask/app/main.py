@@ -4,6 +4,8 @@ from flask import Flask, render_template, g, request, make_response, redirect, \
 import auth
 import businesslogic.users as users
 import test
+import io
+import csv
 from businesslogic.QACFactory import create_qac_module
 from framework.exceptions import *
 from framework.internationalization.languages import Language
@@ -401,16 +403,18 @@ def api_questionnaire_get_single(questionnaire_uuid):
            methods=["GET"])
 def api_questionnaire_download_csv(questionnaire_uuid):
     try:
-        csv = "question_group,question_text,answer_value\n"
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["question_group", "question_text", "answer_value"])
         questionnaire = Questionnaire(questionnaire_uuid)
         for question_group in questionnaire.questiongroups:
             for question in question_group.questions:
                 for result in question.results:
-                    csv += "{},{},{}\n".format(question_group.name,
-                                               question.text,
-                                               result.answer_value)
+                    writer.writerow([question_group.name,
+                                     question.text,
+                                     result.answer_value])
 
-        response = make_response(csv)
+        response = make_response(output.getvalue())
         response.headers[
             "Content-Disposition"] = "attachment; filename=" + questionnaire_uuid + ".csv"
         response.headers["Content-type"] = "text/csv"
@@ -499,6 +503,7 @@ def api_qac_modules():
     return make_response({
         "qacModules": ["AGBQAC"]
     })
+
 
 @app.route(
     "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
