@@ -11,6 +11,10 @@ from model.QuestionStatistic import QuestionStatistic
 
 
 class QuestionGroup(DataObject):
+    exposed_properties = {
+        "name"
+    }
+
     @staticmethod
     def create_question_group(name: str):
         question_group = QuestionGroup()
@@ -46,7 +50,9 @@ class QuestionGroup(DataObject):
     def name(self, name: str):
         self.i15d_name.add_locale(g._current_user._locale, name)
 
-QuestionGroup.i15d_name = DataPointer(QuestionGroup, "name", I15dString)
+
+QuestionGroup.i15d_name = DataPointer(QuestionGroup, "name", I15dString,
+                                      serialize=False)
 QuestionGroup.color = DataAttribute(QuestionGroup, "color")
 QuestionGroup.text_color = DataAttribute(QuestionGroup, "text_color")
 QuestionGroup.questions = DataPointerSet(QuestionGroup, "questions", Question)

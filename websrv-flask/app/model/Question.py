@@ -27,8 +27,12 @@ class Question(DataObject):
 
 # These are here to prevent circular dependencies in QuestionStatistic and
 # QuestionResult modules
-QuestionStatistic.question = DataPointer(QuestionStatistic, "question", Question)
+QuestionStatistic.question = DataPointer(QuestionStatistic, "question",
+                                         Question)
 QuestionResult.question = DataPointer(QuestionResult, "question", Question)
-Question.i15d_text = DataPointer(Question, "i15d_text", I15dString)
-Question.statistic = DataPointer(Question, "statistic", QuestionStatistic, cascading_delete=True)
-Question.results = DataPointerSet(Question, "results", QuestionResult, cascading_delete=True)
+Question.i15d_text = DataPointer(Question, "i15d_text", I15dString,
+                                 serialize=False)
+Question.statistic = DataPointer(Question, "statistic", QuestionStatistic,
+                                 cascading_delete=True)
+Question.results = DataPointerSet(Question, "results", QuestionResult,
+                                  cascading_delete=True)

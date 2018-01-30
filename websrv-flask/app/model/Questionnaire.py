@@ -1,5 +1,7 @@
 from typing import List
 
+from flask import g
+
 from framework.exceptions import *
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
@@ -12,6 +14,11 @@ from model.query_access_control.QACModule import QACModule
 
 
 class Questionnaire(DataObject):
+    exposed_properties = {
+        "name",
+        "description"
+    }
+
     @staticmethod
     def create_questionnaire(name: str, description: str):
         questionnaire = Questionnaire()
@@ -115,9 +122,10 @@ class Questionnaire(DataObject):
         self.i15d_description.add_locale(g._current_user._locale, description)
 
 
-Questionnaire.i15d_name = DataPointer(Questionnaire, "i15d_name", I15dString)
+Questionnaire.i15d_name = DataPointer(Questionnaire, "i15d_name", I15dString,
+                                      serialize=False)
 Questionnaire.i15d_description = DataPointer(Questionnaire, "description",
-                                             I15dString)
+                                             I15dString, serialize=False)
 Questionnaire.questiongroups = DataPointerSet(
     Questionnaire, "questiongroups", QuestionGroup
 )

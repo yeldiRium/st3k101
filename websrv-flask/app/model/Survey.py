@@ -12,6 +12,10 @@ from model.Questionnaire import Questionnaire
 
 
 class Survey(DataObject):
+    exposed_properties = {
+        "name"
+    }
+
     @staticmethod
     def create_survey(name: str):
         survey = Survey()
@@ -19,7 +23,8 @@ class Survey(DataObject):
         survey.date_created = datetime()
         return survey
 
-    def add_new_questionnaire(self, name: str, description: str) -> Questionnaire:
+    def add_new_questionnaire(self, name: str,
+                              description: str) -> Questionnaire:
         if next((x for x in self.questionnaires if x.name == name),
                 None) is not None:
             raise DuplicateQuestionnaireNameException(self.name, name)
@@ -69,6 +74,6 @@ class Survey(DataObject):
         self.i15d_name.add_locale(g._current_user._locale, name)
 
 
-Survey.i15d_name = DataPointer(Survey, "i15d_name", I15dString)
+Survey.i15d_name = DataPointer(Survey, "i15d_name", I15dString, serialize=False)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)
