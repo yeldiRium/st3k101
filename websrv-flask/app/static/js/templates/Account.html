@@ -1,16 +1,13 @@
 <div class="jumbotron">Account</div>
 
 <div>
-    E-Mail: {{ account.email }}<br />
-    Locale: {{ locales[account.locale] }}
-
     <form class="form-horizontal">
         <div class="form-group">
             <label for="inputEmail" class="col-sm-2 control-label">E-Mail</label>
             <div class="col-sm-8">
                 <input type="text" class="form-control" id="inputEmail" ng-model="account.email" ng-enter="updateEmail()">
             </div>
-            <input class="btn btn-default col-sm-2" type="button" value="Update E-Mail">
+            <input class="btn btn-default col-sm-2" type="button" value="Update E-Mail" ng-click="updateEmail()">
         </div>
         <div class="form-group">
             <label for="inputLocale" class="col-sm-2 control-label">Language</label>
@@ -19,7 +16,7 @@
                     <option ng-repeat="(short, long) in locales" ng-selected="{{ short == locale }}" value="{{ short }}">{{ long }}</option>
                 </select>
             </div>
-            <input class="btn btn-default col-sm-2" type="button" value="Update Language">
+            <input class="btn btn-default col-sm-2" type="button" value="Update Language"ng-click="updateLocale()">
         </div>
     </form>
 </div>

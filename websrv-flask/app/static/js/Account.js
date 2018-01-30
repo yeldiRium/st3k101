@@ -21,8 +21,8 @@ angular.module('Account', ['ngRoute'])
             }
         }
     }])
-    .controller('AccountController', ['$scope', 'Flash', 'Account', 'Locales',
-        function ($scope, Flash, Account, Locales) {
+    .controller('AccountController', ['$scope', '$http', 'Flash', 'Account', 'Locales',
+        function ($scope, $http, Flash, Account, Locales) {
             $scope.getLocales = function() {
                 return Locales.query().then(
                     function success(result) {
@@ -45,6 +45,44 @@ angular.module('Account', ['ngRoute'])
                         Flash.create('danger', error.data.result);
                     }
                 )
+            };
+
+            $scope.updateEmail = function() {
+                $http({
+                    method: 'PUT',
+                    url: '/api/account/' + $scope.account.uuid,
+                    data: JSON.stringify({
+                        email: $scope.account.email
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(
+                    function success(result) {
+                        Flash.create('success', 'Email updated.');
+                    }, function fail(result) {
+                        Flash.create('danger', result.data.error);
+                    }
+                );
+            };
+
+            $scope.updateLocale = function() {
+                $http({
+                    method: 'PUT',
+                    url: '/api/account/' + $scope.account.uuid,
+                    data: JSON.stringify({
+                        locale: $scope.account.locale
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(
+                    function success(result) {
+                        Flash.create('success', 'Language updated.');
+                    }, function fail(result) {
+                        Flash.create('danger', result.data.error);
+                    }
+                );
             };
 
             $scope.getLocales();

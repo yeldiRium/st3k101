@@ -793,8 +793,11 @@ def api_account_update(account_uuid: str):
 
         if "email" in data:
             client.email = data["email"]
-        if "locale" in data and data["locale"] in Language:
-            client.locale = data["locale"]
+
+        try:
+            client.locale = Language[data["locale"]]
+        except KeyError:
+            pass
 
         return make_response(jsonify({
             "result": "Account updated.",
