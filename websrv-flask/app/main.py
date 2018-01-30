@@ -1,6 +1,7 @@
 import sys
 from flask import Flask, render_template, g, request, make_response, redirect, \
     jsonify, abort
+from werkzeug.wrappers import Response
 
 import auth
 import businesslogic.users as users
@@ -54,10 +55,13 @@ def before_request():
     if g._current_user:  # if user is logged in, set locale based on user preferences, override HTTP header
         g._locale = g._current_user.locale
 
+    if request.cookies.get('locale'):
+        g._locale = Language[request.cookies.get('locale')]
+
     # Allow frontend to override locale set by browser or user. This is needed to show locales to the user, even if the
     # locale doesn't match the above settings. Otherwise, a german user wouldn't be able to see a french survey, even if
     # they spoke french. The frontend may prompt the user if they want to see a locale that they mightn't understand.
-    requested_locale = request.args.get("locale")
+    requested_locale = request.args.get('locale')
     if requested_locale is not None:
         try:
             requested_locale = Language[requested_locale]
@@ -66,6 +70,12 @@ def before_request():
             # TODO: log error
             pass  # use previously set locale if malformed locale was requested
     print(g._locale, file=sys.stderr)
+
+@app.after_request
+def after_request(response: Response):
+    if request.args.get('locale'):
+        response.set_cookie('locale', g._locale.name)
+    return response
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
