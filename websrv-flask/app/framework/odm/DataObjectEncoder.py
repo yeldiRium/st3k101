@@ -6,6 +6,7 @@ from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
+from framework.odm.SetProxy import SetProxy
 
 
 class DataObjectEncoder(json.JSONEncoder):
@@ -50,5 +51,8 @@ class DataObjectEncoder(json.JSONEncoder):
                 obj_dict["fields"][name] = getattr(o, name)
 
             return obj_dict
+
+        if type(o) is SetProxy:
+            return [self.default(x) for x in o]
 
         return json.JSONEncoder.default(self, o)
