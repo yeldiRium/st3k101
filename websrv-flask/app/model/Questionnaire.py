@@ -113,7 +113,7 @@ class Questionnaire(DataObject):
 
     @name.setter
     def name(self, name: str):
-        self.i15d_name.add_locale(g._current_user._locale, name)
+        self.i15d_name.add_locale(g._locale, name)
 
     @property
     def description(self):
@@ -121,7 +121,7 @@ class Questionnaire(DataObject):
 
     @description.setter
     def description(self, description: str):
-        self.i15d_description.add_locale(g._current_user._locale, description)
+        self.i15d_description.add_locale(g._locale, description)
 
 
 Questionnaire.i15d_name = DataPointer(Questionnaire, "i15d_name", I15dString,

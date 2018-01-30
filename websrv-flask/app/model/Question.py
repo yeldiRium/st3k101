@@ -34,7 +34,7 @@ class Question(DataObject):
 
     @text.setter
     def text(self, text: str):
-        self.i15d_text.add_locale(g._current_user._locale, text)
+        self.i15d_text.add_locale(g._locale, text)
 
 
 # These are here to prevent circular dependencies in QuestionStatistic and

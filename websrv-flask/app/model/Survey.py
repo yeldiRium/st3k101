@@ -72,7 +72,7 @@ class Survey(DataObject):
 
     @name.setter
     def name(self, name: str):
-        self.i15d_name.add_locale(g._current_user._locale, name)
+        self.i15d_name.add_locale(g._locale, name)
 
 
 Survey.i15d_name = DataPointer(Survey, "i15d_name", I15dString, serialize=False)

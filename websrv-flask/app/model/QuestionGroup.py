@@ -43,7 +43,7 @@ class QuestionGroup(DataObject):
 
     @name.setter
     def name(self, name: str):
-        self.i15d_name.add_locale(g._current_user._locale, name)
+        self.i15d_name.add_locale(g._locale, name)
 
 
 QuestionGroup.i15d_name = DataPointer(QuestionGroup, "name", I15dString,
