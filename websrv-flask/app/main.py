@@ -759,6 +759,54 @@ def api_question_statistic(question_uuid):
         }), 400)
 
 
+@app.route("/api/account/current", methods=["GET"])
+def api_account_current():
+    if g._current_user:
+        return make_response(jsonify(
+            g._current_user
+        ))
+    else:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "No user logged in."
+        }), 404)
+
+
+@app.route("/api/account/<string:account_uuid>", methods=["GET"])
+def api_account(account_uuid: str):
+    try:
+        return make_response(jsonify(
+            DataClient(account_uuid)
+        ))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Account doesn't exist."
+        }), 404)
+
+
+@app.route("/api/account/<string:account_uuid>", methods=["PUT"])
+def api_account_update(account_uuid: str):
+    data = request.get_json()
+    try:
+        client = DataClient(account_uuid)
+
+        if "email" in data:
+            client.email = data["email"]
+        if "locale" in data and data["locale"] in Language:
+            client.locale = data["locale"]
+
+        return make_response(jsonify({
+            "result": "Account updated.",
+            "account": client
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Account doesn't exist."
+        }), 404)
+
+
 @app.route("/test/runall", methods=["POST"])
 def api_test_runall():
     # FIXME: remove (WHOLE METHOD) in production
