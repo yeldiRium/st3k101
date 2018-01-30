@@ -337,8 +337,7 @@ def disclaimer():
 @app.route("/api/survey", methods=["GET"])
 def api_survey_list():
     if g._current_user is not None:
-        surveys = []
-        surveys.extend(g._current_user.surveys)
+        surveys = g._current_user.surveys
     else:
         surveys = Survey.many_from_query({})
     return make_response(jsonify(surveys))
