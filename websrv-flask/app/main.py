@@ -807,6 +807,12 @@ def api_account_update(account_uuid: str):
         }), 404)
 
 
+@app.route("/api/locales", methods=["GET"])
+def api_locales():
+    localeDict = {enumElement.name: enumElement.value for enumElement in Language}
+    return make_response(jsonify(localeDict))
+
+
 @app.route("/test/runall", methods=["POST"])
 def api_test_runall():
     # FIXME: remove (WHOLE METHOD) in production
