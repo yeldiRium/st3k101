@@ -1,6 +1,7 @@
 from typing import List, Dict
 
 import sys
+import re
 from flask import g
 
 from framework.exceptions import LocaleNotFoundException
@@ -48,6 +49,10 @@ class I15dString(DataObject):
         """
         if locale is None:  # use current auto detected locale if no other locale is requested
             locale = g._locale
+
+        if locale == Language.ZXX:
+            some_locale = next((v for v in self.locales.values()))
+            return re.sub(r'[^\s]', "☃", some_locale)
 
         if locale.name not in self.locales:  # requested locale not found
             print("Requested locale \"{}\" not found. Falling back to default locale.".format(locale), file=sys.stderr)

@@ -392,6 +392,7 @@ def api_survey_delete():
                 "error": "Survey with given uuid does not belong to you."
             }), 400)
         # TODO: delete subobjects
+        g._current_user.surveys.discard(survey)
         survey.remove()
         return make_response(jsonify({
             "result": "Survey deleted."
