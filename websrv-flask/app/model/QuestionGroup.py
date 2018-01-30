@@ -18,6 +18,7 @@ class QuestionGroup(DataObject):
     @staticmethod
     def create_question_group(name: str):
         question_group = QuestionGroup()
+        question_group.i15d_name = I15dString()
         question_group.name = name
         question_group.color = "#FFFFFF"
         question_group.text_color = "#000000"
@@ -25,13 +26,7 @@ class QuestionGroup(DataObject):
         return question_group
 
     def add_new_question(self, text: str) -> Question:
-        question = Question()
-        question.i15d_text = I15dString()
-        question.i15d_text.add_locale(g._current_user.locale, text)
-
-        question_statistic = QuestionStatistic()
-        question_statistic.question = question
-        question.statistic = question_statistic
+        question = Question.create_question()
         self.questions.add(question)
         return question
 

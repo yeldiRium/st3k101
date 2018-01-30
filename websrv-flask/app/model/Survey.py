@@ -19,6 +19,7 @@ class Survey(DataObject):
     @staticmethod
     def create_survey(name: str):
         survey = Survey()
+        survey.i15d_name = I15dString()
         survey.name = name
         survey.date_created = datetime()
         return survey

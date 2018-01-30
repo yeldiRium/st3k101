@@ -22,7 +22,9 @@ class Questionnaire(DataObject):
     @staticmethod
     def create_questionnaire(name: str, description: str):
         questionnaire = Questionnaire()
+        questionnaire.i15d_name = I15dString()
         questionnaire.name = name
+        questionnaire.i15d_description = I15dString()
         questionnaire.description = description
         questionnaire.questiongroups = []
         questionnaire.question_count = 0

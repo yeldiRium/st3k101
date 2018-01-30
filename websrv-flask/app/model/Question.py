@@ -13,6 +13,18 @@ class Question(DataObject):
         "text"
     }
 
+    @staticmethod
+    def create_question(text: str):
+        question = Question()
+        question.i15d_text = I15dString()
+        question.text = text
+
+        question_statistic = QuestionStatistic()
+        question_statistic.question = question
+        question.statistic = question_statistic
+
+        return question
+
     def add_question_result(self, question_result: QuestionResult):
         self.results.add(question_result)
 
