@@ -63,3 +63,7 @@ class DuplicateQuestionNameException(Exception):
 
 class LocaleNotFoundException(Exception):
     pass
+
+
+class DuplicateQuestionGroupNameException(Exception):
+    pass

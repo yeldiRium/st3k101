@@ -8,7 +8,6 @@ from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
 from model.I15dString import I15dString
-from model.QuestionGroup import QuestionGroup
 from model.Questionnaire import Questionnaire
 
 
@@ -45,11 +44,9 @@ class Survey(DataObject):
 
         questionnaire = self.add_new_questionnaire(name, description)
         for template_group in template_questionnaire.questiongroups:
-            new_group = QuestionGroup()
-            new_group.name = template_group.name
+            new_group = questionnaire.add_question_group(template_group.name)
             new_group.color = template_group.color
             new_group.text_color = template_group.text_color
-            questionnaire.questiongroups.add(new_group)
             for question in template_group.questions:
                 questionnaire.add_question_to_group(new_group, question.text)
         for qac_module in template_questionnaire.qac_modules:

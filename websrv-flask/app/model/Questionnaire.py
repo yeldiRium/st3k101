@@ -23,6 +23,15 @@ class Questionnaire(DataObject):
         questionnaire.qac_modules = []
         return questionnaire
 
+    def add_question_group(self, name):
+        if next((x for x in self.questiongroups if x.name == name),
+                None) is not None:
+            raise DuplicateQuestionGroupNameException()
+
+        question_group = QuestionGroup.create_question_group(name)
+        self.questiongroups.add(question_group)
+        return question_group
+
     def add_question_to_group(self, question_group: QuestionGroup,
                               text: str) -> QuestionGroup:
         if question_group not in self.questiongroups:
