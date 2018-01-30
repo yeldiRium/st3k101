@@ -336,8 +336,7 @@ def api_survey_list():
 @app.route("/api/survey", methods=["Post"])
 def api_survey_create():
     data = request.get_json()
-    survey = Survey()
-    survey.name = data["name"]
+    survey = Survey.create_survey(data["name"])
 
     if g._current_user is not None:
         g._current_user.surveys.add(survey)

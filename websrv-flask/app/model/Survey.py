@@ -1,12 +1,25 @@
+from flask import g
+
+from datetime import datetime
+
 from framework.exceptions import *
 from framework.odm.DataObject import DataObject
+from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
+from model.I15dString import I15dString
 from model.QuestionGroup import QuestionGroup
 from model.Questionnaire import Questionnaire
 
 
 class Survey(DataObject):
+    @staticmethod
+    def create_survey(name: str):
+        survey = Survey()
+        survey.name = name
+        survey.date_created = datetime()
+        return survey
+
     def add_new_questionnaire(self, name: str, description: str) -> Questionnaire:
         questionnaire = next((x for x in self.questionnaires if x.name == name), None)
         if questionnaire is not None:
@@ -56,7 +69,15 @@ class Survey(DataObject):
         except KeyError as e:
             raise QuestionnaireNotFoundException(self.name, questionnaire.name)
 
+    @property
+    def name(self):
+        return self.i15d_name.get()
 
-Survey.name = DataAttribute(Survey, "name")
+    @name.setter
+    def name(self, name: str):
+        self.i15d_name.add_locale(g._current_user._locale, name)
+
+
+Survey.i15d_name = DataPointer(Survey, "i15d_name", I15dString)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)
