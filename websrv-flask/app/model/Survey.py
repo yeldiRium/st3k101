@@ -21,17 +21,11 @@ class Survey(DataObject):
         return survey
 
     def add_new_questionnaire(self, name: str, description: str) -> Questionnaire:
-        questionnaire = next((x for x in self.questionnaires if x.name == name), None)
-        if questionnaire is not None:
+        if next((x for x in self.questionnaires if x.name == name),
+                None) is not None:
             raise DuplicateQuestionnaireNameException(self.name, name)
 
-        questionnaire = Questionnaire()
-        questionnaire.name = name
-        questionnaire.description = description
-        questionnaire.questiongroups = []
-        questionnaire.question_count = 0
-        questionnaire.answer_count = 0
-        questionnaire.qac_modules = []
+        questionnaire = Questionnaire.create_questionnaire(name, description)
         self.questionnaires.add(questionnaire)
         return questionnaire
 

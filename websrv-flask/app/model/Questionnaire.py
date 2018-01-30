@@ -3,13 +3,26 @@ from typing import List
 from framework.exceptions import *
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
+from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
+from model.I15dString import I15dString
 from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.query_access_control.QACModule import QACModule
 
 
 class Questionnaire(DataObject):
+    @staticmethod
+    def create_questionnaire(name: str, description: str):
+        questionnaire = Questionnaire()
+        questionnaire.name = name
+        questionnaire.description = description
+        questionnaire.questiongroups = []
+        questionnaire.question_count = 0
+        questionnaire.answer_count = 0
+        questionnaire.qac_modules = []
+        return questionnaire
+
     def add_question_to_group(self, question_group: QuestionGroup,
                               text: str) -> QuestionGroup:
         if question_group not in self.questiongroups:
@@ -49,7 +62,7 @@ class Questionnaire(DataObject):
             if qac_module.get_name() == name:
                 self.qac_modules.remove(qac_module)
 
-    def get_qac_module(self, name:str) -> QACModule:
+    def get_qac_module(self, name: str) -> QACModule:
         """
         Returns the QACModule for the given name or None, if none exists.
         """
@@ -76,9 +89,26 @@ class Questionnaire(DataObject):
         else:
             return template
 
+    @property
+    def name(self):
+        return self.i15d_name.get()
 
-Questionnaire.name = DataAttribute(Questionnaire, "name")
-Questionnaire.description = DataAttribute(Questionnaire, "description")
+    @name.setter
+    def name(self, name: str):
+        self.i15d_name.add_locale(g._current_user._locale, name)
+
+    @property
+    def description(self):
+        return self.i15d_description.get()
+
+    @description.setter
+    def description(self, description: str):
+        self.i15d_description.add_locale(g._current_user._locale, description)
+
+
+Questionnaire.i15d_name = DataPointer(Questionnaire, "i15d_name", I15dString)
+Questionnaire.i15d_description = DataPointer(Questionnaire, "description",
+                                             I15dString)
 Questionnaire.questiongroups = DataPointerSet(
     Questionnaire, "questiongroups", QuestionGroup
 )
