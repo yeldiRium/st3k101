@@ -1,4 +1,5 @@
-from framework.odm.DataAttribute import DataAttribute
+from flask import g
+
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
@@ -8,7 +9,6 @@ from model.QuestionStatistic import QuestionStatistic
 
 
 class Question(DataObject):
-
     exposed_properties = {
         "text"
     }
@@ -19,6 +19,10 @@ class Question(DataObject):
     @property
     def text(self):
         return self.i15d_text.get()
+
+    @text.setter
+    def text(self, text: str):
+        self.i15d_text.add_locale(g._current_user._locale, text)
 
 
 # These are here to prevent circular dependencies in QuestionStatistic and
