@@ -1,49 +1,56 @@
-from typing import Dict
-from typing import List
+from abc import abstractmethod
+from typing import Dict, Any, Optional
 
-from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
+from framework.odm.DataPointer import DataPointer
+from framework.odm.MixedDataPointerSet import MixedDataPointerSet
+from model.I15dString import I15dString
 
 
 class QACModule(DataObject):
-    def get_name(self) -> str:
-        """
-        Statically returns the name of the module.
-        """
-        raise NotImplementedError()
+    exposed_properties = {
+        "name",
+        "description"
+    }
 
-    def get_survey_template(self, errors: Dict[str, str]) -> str:
+    @property
+    def name(self) -> str:
         """
-        Returns an html-snippet that expects to be embedded in a form.
+        :return: str The name of the module, localized.
         """
-        raise NotImplementedError()
+        return self.i15d_name.get()
 
-    def get_required_config_fields(self) -> List[str]:
+    @property
+    def description(self):
         """
-        Returns a static list of config filed names.
+        :return: str A description of the module, localized.
         """
-        raise NotImplementedError()
+        return self.i15d_description.get()
 
-    def get_config(self) -> Dict[str, str]:
+    @abstractmethod
+    def set_config_value(self, param_uuid: str, value: Any) -> Optional[str]:
         """
-        Returns the persisted config values.
+        Sets a QACParameter of the QACModule.
+        :param param_uuid: str The DataObject uuid of the parameter to set
+        :param value: Any The value (as given by the user in http serialized
+        form) to set the parameter to
+        :returns: Optional[str] An error message, if the config param couldn't
+        be set for some reason
         """
-        return self.config
-
-    def set_config_value(self, key: str, value):
-        """
-        Sets a value in the persisted config dict. Only works, if the key
-        is contained in the output of get_required_config_fields.
-        """
-        if key in self.get_required_config_fields():
-            self.config[key] = value
+        pass
 
     def control(self) -> Dict[str, str]:
         """
         Tests the flask request parameters against the persisted config params.
-        Returns a dictionary with all found errors of the form key -> message.
+        Returns a dictionary with all found errors of the form param_uuid ->
+        message.
         An empty dictionary means there was no error.
         """
         raise NotImplementedError()
 
-QACModule.config = DataAttribute(QACModule, "config")
+
+QACModule.i15d_name = DataPointer(QACModule, "i15d_name", I15dString,
+                                  serialize=False)
+QACModule.i15d_description = DataPointer(QACModule, "i15d_module", I15dString,
+                                         serialize=False)
+QACModule.parameters = MixedDataPointerSet(QACModule, "parameters")
