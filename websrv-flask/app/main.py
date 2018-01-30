@@ -184,7 +184,7 @@ def backend():
     return render_template("backend.html")
 
 
-# SURVEY FOR DATA SUBJECT
+# SURVEY FOR DATA SUBJECT FIXME: remove
 @app.route("/survey_test", methods=["GET"])
 def survey_test():
     """
@@ -309,6 +309,10 @@ def survey_submit(questionnaire_uuid):
 
     return render_template("survey_thanks.html", email=request.form["email"])
 
+
+@app.route("/survey/<string:questionnaire_uuid>/confirm/<string:confirmation_token>")
+def survey_confirm_submission(questionnaire_uuid, confirmation_token):
+    pass
 
 @app.route("/disclaimer")
 def disclaimer():
@@ -497,7 +501,7 @@ def api_questionnaire_delete():
 @app.route("/api/qac_module", methods=["GET"])
 def api_qac_modules():
     return make_response({
-        "qacModules": ["AGBQAC"]
+        "qacModules": ["AGBQAC"]  # TODO: Enumerate somewhere else
     })
 
 @app.route(
@@ -557,7 +561,7 @@ def api_qac_configure(questionnaire_uuid, qac_name):
             "result": "QACModule \"" + qac_name + "\" updated.",
             "qacModule": jsonify(qac_module)
         })
-    except ObjectDoesntExistException as _:
+    except ObjectDoesntExistException:
         return make_response(jsonify({
             "result": "Questionnaire doesn't exist."
         }), 400)
