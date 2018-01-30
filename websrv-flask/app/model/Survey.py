@@ -21,7 +21,7 @@ class Survey(DataObject):
         survey = Survey()
         survey.i15d_name = I15dString()
         survey.name = name
-        survey.date_created = datetime()
+        survey.date_created = datetime.now().timestamp()
         return survey
 
     def add_new_questionnaire(self, name: str,
