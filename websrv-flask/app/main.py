@@ -69,7 +69,6 @@ def before_request():
         except (AttributeError, KeyError):
             # TODO: log error
             pass  # use previously set locale if malformed locale was requested
-    print(g._locale, file=sys.stderr)
 
 @app.after_request
 def after_request(response: Response):
