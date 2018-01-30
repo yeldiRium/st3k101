@@ -26,7 +26,7 @@ class QuestionGroup(DataObject):
         return question_group
 
     def add_new_question(self, text: str) -> Question:
-        question = Question.create_question()
+        question = Question.create_question(text)
         self.questions.add(question)
         return question
 
