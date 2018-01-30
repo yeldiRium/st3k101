@@ -6,4 +6,6 @@ class DataSubject(DataObject):
     has_owner = False
 
 
-DataSubject.email = DataAttribute(DataSubject, "email")  # TODO hash this as soon as email is confirmed
+DataSubject.confirmation_token = DataAttribute(DataSubject, "confirmation_token", serialize=False)
+DataSubject.email_hash = DataAttribute(DataSubject, "email_hash")  # TODO hash this
+DataSubject.ip_hash = DataAttribute(DataSubject, "ip_hash")
