@@ -295,7 +295,7 @@ def survey_submit(questionnaire_uuid):
         except ObjectDoesntExistException as _:
             return make_response(redirect("/"))
 
-    data_subject = DataSubject.one_from_query({"email": request.form["email"]})
+    data_subject = DataSubject.one_from_query({"email_hash": request.form["email"]})
     if data_subject is None:
         data_subject = DataSubject()
         data_subject.email = request.form["email"]
