@@ -26,7 +26,7 @@ angular.module('Account', ['ngRoute'])
             $scope.getLocales = function() {
                 return Locales.query().then(
                     function success(result) {
-                        $scope.locales = result
+                        $scope.locales = result;
                     }, function fail(error) {
                         Flash.create('danger', error.data.result);
                     }
