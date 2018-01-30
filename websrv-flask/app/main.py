@@ -1,3 +1,4 @@
+import sys
 from flask import Flask, render_template, g, request, make_response, redirect, \
     jsonify, abort
 
@@ -64,6 +65,7 @@ def before_request():
         except (AttributeError, KeyError):
             # TODO: log error
             pass  # use previously set locale if malformed locale was requested
+    print(g._locale, file=sys.stderr)
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -330,7 +332,7 @@ def api_survey_list():
         surveys.extend(g._current_user.surveys)
     else:
         surveys = Survey.many_from_query({})
-    return jsonify(surveys)
+    return make_response(jsonify(surveys))
 
 
 @app.route("/api/survey", methods=["Post"])
@@ -341,10 +343,10 @@ def api_survey_create():
     if g._current_user is not None:
         g._current_user.surveys.add(survey)
 
-    return jsonify({
+    return make_response(jsonify({
         "result": "Survey created.",
         "survey": survey
-    })
+    }))
 
 
 @app.route("/api/survey", methods=["PUT"])
@@ -354,20 +356,21 @@ def api_survey_update():
         survey = Survey(data["uuid"])
 
         if g._current_user is not None and survey not in g._current_user.surveys:
-            return jsonify({
-                "result": "Error",
-                "reason": "Survey with given uuid does not belong to you."
-            }, 400)
+            return make_response(jsonify({
+                "result": "error",
+                "error": "Survey with given uuid does not belong to you."
+            }), 400)
 
         survey.name = data["name"]
-        return jsonify({
+        return make_response(jsonify({
             "result": "Survey updated.",
             "survey": survey
-        })
+        }))
     except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "Survey doesn't exist."
-        }, 400)
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Survey doesn't exist."
+        }), 400)
 
 
 @app.route("/api/survey", methods=["DELETE"])
@@ -376,29 +379,31 @@ def api_survey_delete():
     try:
         survey = Survey(data["uuid"])
         if g._current_user is not None and survey not in g._current_user.surveys:
-            return jsonify({
-                "result": "Error",
-                "reason": "Survey with given uuid does not belong to you."
-            }, 400)
+            return make_response(jsonify({
+                "result": "error",
+                "error": "Survey with given uuid does not belong to you."
+            }), 400)
         # TODO: delete subobjects
         survey.remove()
-        return jsonify({
+        return make_response(jsonify({
             "result": "Survey deleted."
-        })
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "Survey doesn't exist."
-        }, 400)
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Survey doesn't exist."
+        }), 400)
 
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["GET"])
 def api_questionnaire_get_single(questionnaire_uuid):
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
-        return jsonify(questionnaire)
-    except ObjectDoesntExistException as e:
+        return make_response(jsonify(questionnaire))
+    except ObjectDoesntExistException:
         return make_response(jsonify({
-            "result": "Questionnaire doesn't exist."
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
         }), 400)
 
 
@@ -423,22 +428,23 @@ def api_questionnaire_download_csv(questionnaire_uuid):
         response.headers["Content-type"] = "text/csv"
 
         return response
-    except ObjectDoesntExistException as e:
+    except ObjectDoesntExistException:
         return make_response(jsonify({
-            "result": "Questionnaire doesn't exist."
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
         }), 400)
 
 
 @app.route("/api/questionnaire", methods=["POST"])
 def api_questionnaire_create():
     data = request.get_json()
-    survey = Survey(data["survey"])
-    if g._current_user is not None and survey not in g._current_user.surveys:
-        return jsonify({
-            "result": "Error",
-            "reason": "Survey with given uuid does not belong to you."
-        }, 400)
     try:
+        survey = Survey(data["survey"])
+        if g._current_user is not None and survey not in g._current_user.surveys:
+            return make_response(jsonify({
+                "result": "error",
+                "error": "Survey with given uuid does not belong to you."
+            }), 400)
         if "template" in data["questionnaire"]:
             questionnaire = survey.add_new_questionnaire_from_template(
                 data["questionnaire"]["name"],
@@ -450,15 +456,21 @@ def api_questionnaire_create():
                 data["questionnaire"]["name"],
                 data["questionnaire"]["description"]
             )
-        return jsonify({
+        return make_response(jsonify({
             "result": "Questionnaire created.",
             "questionnaire": questionnaire
-        })
-    except DuplicateQuestionnaireNameException as e:
-        return jsonify({
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Survey doesn't exist."
+        }), 400)
+    except DuplicateQuestionnaireNameException:
+        return make_response(jsonify({
+            "result": "error",
             "error": "Questionnaire with name \"" + data["questionnaire"][
                 "name"] + "\" already exists."
-        }, 400)
+        }), 400)
 
 
 @app.route("/api/questionnaire", methods=["PUT"])
@@ -470,14 +482,15 @@ def api_questionnaire_update():
             questionnaire.name = data["name"]
         if "description" in data:
             questionnaire.description = data["description"]
-        return jsonify({
+        return make_response(jsonify({
             "result": "Questionnaire updated.",
             "questionnaire": questionnaire
-        })
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "Questionnaire doesn't exist."
-        }, 400)
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
+        }), 400)
 
 
 @app.route("/api/questionnaire", methods=["DELETE"])
@@ -486,18 +499,19 @@ def api_questionnaire_delete():
     try:
         survey = Survey(data["survey"])
         if g._current_user is not None and survey not in g._current_user.surveys:
-            return jsonify({
-                "result": "Error",
+            return make_response(jsonify({
+                "result": "error",
                 "reason": "Survey with given uuid does not belong to you."
-            }, 400)
+            }), 400)
         questionnaire = Questionnaire(data["uuid"])
         survey.remove_questionnaire(questionnaire)
-        return jsonify({
-            "result": "Questionnaire deleted."
-        })
-    except ObjectDoesntExistException as e:
         return make_response(jsonify({
-            "result": "Questionnaire doesn't exist."
+            "result": "Questionnaire deleted."
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
         }), 400)
 
 
@@ -518,16 +532,18 @@ def api_qac_enable(questionnaire_uuid, qac_name):
         qac_module = create_qac_module(qac_name)
         if qac_module is None:
             return make_response(jsonify({
-                "result": "QACModule \"" + qac_name + "\" doesn't exist."
+                "result": "error",
+                "error": "QACModule \"" + qac_name + "\" doesn't exist."
             }), 400)
         questionnaire.add_qac_module(qac_module)
         return make_response({
             "result": "QACModule \"" + qac_name + "\" added to questionnaire.",
             "questionnaire": jsonify(questionnaire)
         })
-    except ObjectDoesntExistException as _:
+    except ObjectDoesntExistException:
         return make_response(jsonify({
-            "result": "Questionnaire doesn't exist."
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
         }), 400)
 
 
@@ -542,7 +558,8 @@ def api_qac_configure(questionnaire_uuid, qac_name):
         qac_module = questionnaire.get_qac_module(qac_name)
         if qac_module is None:
             return make_response(jsonify({
-                "result": "QACModule \"" + qac_name + "\" doesn't exist on " +
+                "result": "error",
+                "error": "QACModule \"" + qac_name + "\" doesn't exist on " +
                           "the requested questionnaire."
             }), 400)
 
@@ -552,11 +569,12 @@ def api_qac_configure(questionnaire_uuid, qac_name):
                 missing_params.append(key)
 
         if missing_params != []:
-            return make_response({
-                "result": "Parameters were missing; QACModule \"" + qac_name +
+            return make_response(jsonify({
+                "result": "error",
+                "error": "Parameters were missing; QACModule \"" + qac_name +
                           "\" was not updated.",
                 "missingParams": missing_params
-            }, 400)
+            }), 400)
 
         for key in qac_module.get_required_config_fields():
             qac_module.set_config_value(key, data[key])
@@ -567,7 +585,8 @@ def api_qac_configure(questionnaire_uuid, qac_name):
         })
     except ObjectDoesntExistException:
         return make_response(jsonify({
-            "result": "Questionnaire doesn't exist."
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
         }), 400)
 
 
@@ -584,9 +603,10 @@ def api_qac_disable(questionnaire_uuid, qac_name):
                       "ire.",
             "questionnaire": jsonify(questionnaire)
         })
-    except ObjectDoesntExistException as _:
+    except ObjectDoesntExistException:
         return make_response(jsonify({
-            "result": "Questionnaire doesn't exist."
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
         }), 400)
 
 
@@ -597,14 +617,21 @@ def api_questiongroup_create():
         questionnaire = Questionnaire(data["questionnaire"])
         question_group = questionnaire.add_question_group(data["name"])
         questionnaire.questiongroups.add(question_group)
-        return jsonify({
+        return make_response(jsonify({
             "result": "QuestionGroup created.",
             "question_group": question_group
-        })
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "Questionnaire doesn't exist."
-        }, 400)
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Questionnaire doesn't exist."
+        }), 400)
+    except DuplicateQuestionGroupNameException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "QuestionGroup with name \"" +
+                      data["name"] + "\" already exists."
+        }), 400)
 
 
 @app.route("/api/question_group", methods=["PUT"])
@@ -618,14 +645,15 @@ def api_questiongroup_update():
             question_group.color = data["color"]
         if "text_color" in data:
             question_group.text_color = data["text_color"]
-        return jsonify({
+        return make_response(jsonify({
             "result": "QuestionGroup updated.",
             "question_group": question_group
-        })
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "QuestionGroup doesn't exist."
-        }, 400)
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "QuestionGroup doesn't exist."
+        }), 400)
 
 
 @app.route("/api/question_group", methods=["DELETE"])
@@ -637,13 +665,14 @@ def api_questiongroup_delete():
         questionnaire.questiongroups.remove(question_group)
         # TODO: delete subobjects. MEMORY LEAK
         question_group.remove()
-        return jsonify({
+        return make_response(jsonify({
             "result": "QuestionGroup deleted."
-        })
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "QuestionGroup doesn't exist."
-        }, 400)
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "QuestionGroup doesn't exist."
+        }), 400)
 
 
 @app.route("/api/question", methods=["POST"])
@@ -652,21 +681,26 @@ def api_question_create():
     try:
         questionnaire = Questionnaire(data["questionnaire"])
         question_group = QuestionGroup(data["question_group"])
-        question = questionnaire.add_question_to_group(question_group,
-                                                       data["text"])
-        return jsonify({
-            "result": "Question created.",
-            "question": question
-        })
-    except (ObjectDoesntExistException, QuestionGroupNotFoundException) as e:
-        return jsonify({
-            "result": "QuestionGroup doesn't exist."
-        }, 400)
-    except DuplicateQuestionNameException as e:
-        return jsonify({
-            "result": "A Question with name \"" + data["text"] + "\" already " +
-                      "exists"
-        })
+
+        try:
+            question = questionnaire.add_question_to_group(question_group,
+                                                           data["text"])
+            return make_response(jsonify({
+                "result": "Question created.",
+                "question": question
+            }))
+        except DuplicateQuestionNameException:
+            return make_response(jsonify({
+                "result": "error",
+                "error": "A Question with name \"" + data["text"] + "\" alrea" +
+                         "dy exists on QuestionGroup \"" + question_group.name +
+                         "\"."
+            }), 400)
+    except (ObjectDoesntExistException, QuestionGroupNotFoundException):
+        return make_response(jsonify({
+            "result": "error",
+            "error": "QuestionGroup doesn't exist."
+        }), 400)
 
 
 @app.route("/api/question", methods=["PUT"])
@@ -675,14 +709,15 @@ def api_question_update():
     try:
         question = Question(data["uuid"])
         question.text = data["text"]
-        return jsonify({
+        return make_response(jsonify({
             "result": "Question updated.",
             "question": Question
-        })
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "Question doesn't exist."
-        }, 400)
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Question doesn't exist."
+        }), 400)
 
 
 @app.route("/api/question", methods=["DELETE"])
@@ -694,24 +729,26 @@ def api_question_delete():
         questionnaire = Questionnaire(data["questionnaire"])
         questionnaire.remove_question_from_group(question_group, question)
         # TODO: remove all answers to deleted question
-        return jsonify({
+        return make_response(jsonify({
             "result": "Question deleted."
-        })
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "Question doesn't exist."
-        }, 400)
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Question doesn't exist."
+        }), 400)
 
 
 @app.route("/api/question/<string:question_uuid>/statistic", methods=["GET"])
 def api_question_statistic(question_uuid):
     try:
         question = Question(question_uuid)
-        return jsonify(question.statistic)
-    except ObjectDoesntExistException as e:
-        return jsonify({
-            "result": "Question doesn't exist."
-        }, 400)
+        return make_response(jsonify(question.statistic))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Question doesn't exist."
+        }), 400)
 
 
 @app.route("/test/runall", methods=["POST"])
@@ -720,6 +757,6 @@ def api_test_runall():
     # if g._current_user is None:
     #    return abort(403)
 
-    return jsonify({
+    return make_response(jsonify({
         "result": test.run_all()
-    })
+    }))

@@ -116,7 +116,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     },
                     function(error) {
                         $scope.surveys = null;
-                        Flash.create('danger', error);
+                        Flash.create('danger', error.data.error);
                     }
                 );
             };
@@ -153,7 +153,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 if (win) {
                     win.focus();
                 } else {
-                    Flash.create('danger', "Tried to open the survey at '" + url + "', but the popup was blocked.");
+                    Flash.create('danger', 'Tried to open the survey at "' + url + '", but the popup was blocked.');
                 }
             };
 
@@ -226,16 +226,17 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     .then(
                         function success(result) {
                             if (result.status == 200
-                                && result.data.result == "Questionnaire created.") {
+                                && result.data.result == 'Questionnaire created.') {
                                 $scope.resetEditing();
                                 Flash.create('success', 'Questionnaire successfully created.');
                                 $scope.query();
                             } else {
-                                Flash.create('danger', "Something went wrong. Please try again!");
+                                Flash.create('danger', result.data.error);
                             }
                         },
                         function failure(error) {
-                            Flash.create('danger', error);
+                            console.log(error)
+                            Flash.create('danger', error.data.error);
                         }
                     )
             };
@@ -315,11 +316,11 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                                 Flash.create('success', 'Survey successfully created.');
                                 $scope.query();
                             } else {
-                                Flash.create('danger', "Something went wrong. Please try again!");
+                                Flash.create('danger', result.data.error);
                             }
                         },
                         function failure(error) {
-                            Flash.create('danger', error);
+                            Flash.create('danger', error.data.error);
                         }
                     )
             };
@@ -344,7 +345,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                         Flash.create('success', 'Survey successfully deleted.');
                     },
                     function fail(error) {
-                        Flash.create('danger', "Survey could not be deleted. Please try again.");
+                        Flash.create('danger', 'Survey could not be deleted. Please try again.');
                     }
                 )
             };
@@ -386,7 +387,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     },
                     function fail(error) {
                         $scope.questionnaire = null;
-                        Flash.create('danger', error);
+                        Flash.create('danger', error.data.error);
                     }
                 )
             };
@@ -421,7 +422,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 if (win) {
                     win.focus();
                 } else {
-                    Flash.create('danger', "Tried to open the questionnaire at '" + url + "', but the popup was blocked.");
+                    Flash.create('danger', 'Tried to open the questionnaire at "' + url + '", but the popup was blocked.');
                 }
             };
 
@@ -445,7 +446,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                         Flash.create('success', 'Questionnaire updated!');
                     },
                     function fail(error) {
-                        Flash.create('danger', error);
+                        Flash.create('danger', error.data.error);
                     }
                 )
             };
@@ -514,16 +515,16 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     .then(
                         function success(result) {
                             if (result.status == 200
-                                && result.data.result == "Question created.") {
+                                && result.data.result == 'Question created.') {
                                 $scope.resetEditing();
                                 Flash.create('success', 'Question successfully created.');
                                 $scope.query();
                             } else {
-                                Flash.create('danger', "Something went wrong. Please try again!");
+                                Flash.create('danger', result.data.error);
                             }
                         },
                         function failure(error) {
-                            Flash.create('danger', error);
+                            Flash.create('danger', error.data.error);
                         }
                     )
             };
@@ -600,16 +601,16 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     .then(
                         function success(result) {
                             if (result.status == 200
-                                && result.data.result == "QuestionGroup created.") {
+                                && result.data.result == 'QuestionGroup created.') {
                                 $scope.resetEditing();
                                 Flash.create('success', 'QuestionGroup successfully created.');
                                 $scope.query();
                             } else {
-                                Flash.create('danger', "Something went wrong. Please try again!");
+                                Flash.create('danger', result.data.error);
                             }
                         },
                         function failure(error) {
-                            Flash.create('danger', error);
+                            Flash.create('danger', error.data.error);
                         }
                     )
             };
@@ -637,7 +638,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                         );
                     },
                     function fail(error) {
-                        Flash.create('danger', "QuestionGroup could not be deleted. Please try again.");
+                        Flash.create('danger', 'QuestionGroup could not be deleted. Please try again.');
                     }
                 )
             };
@@ -659,7 +660,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                             questionGroup.fields.color = color;
                             Flash.create('success', 'QuestionGroup color was updated!');
                         } else {
-                            Flash.create('danger', 'QuestionGroup color could not be updated. Please try again.');
+                            Flash.create('danger', result.data.error);
                         }
                     },
                     function fail(error) {
@@ -685,7 +686,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                             questionGroup.fields.text_color = color;
                             Flash.create('success', 'QuestionGroup text color was updated!');
                         } else {
-                            Flash.create('danger', 'QuestionGroup text color could not be updated. Please try again.');
+                            Flash.create('danger', result.data.error);
                         }
                     },
                     function fail(error) {
@@ -750,7 +751,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                                         }
                                     },
                                     function fail(error) {
-                                        Flash.create('danger', error);
+                                        Flash.create('danger', error.data.error);
                                     }
                                 );
                             });
@@ -764,7 +765,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     function fail(error) {
                         $scope.questionnaire = null;
                         $scope.statistics = null;
-                        Flash.create('danger', error);
+                        Flash.create('danger', error.data.error);
                     }
                 )
             };
