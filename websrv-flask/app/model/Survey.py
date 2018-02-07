@@ -22,6 +22,7 @@ class Survey(DataObject):
         survey.i15d_name = I15dString()
         survey.name = name
         survey.date_created = datetime.now().timestamp()
+        survey.original_locale = g._locale.name
         return survey
 
     def add_new_questionnaire(self, name: str,
@@ -75,6 +76,7 @@ class Survey(DataObject):
         self.i15d_name.add_locale(g._locale, name)
 
 
+Survey.original_locale = DataAttribute(Survey, "original_locale")
 Survey.i15d_name = DataPointer(Survey, "i15d_name", I15dString, serialize=False)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)
