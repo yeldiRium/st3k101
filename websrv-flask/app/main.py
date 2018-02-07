@@ -121,7 +121,7 @@ def inject_languages():
     """
     language = {
         "current": g._locale.value,
-        "languages": {enumElement.name: enumElement.value for enumElement in Language}
+        "languages": Language.list_sorted_by_long_name()
     }
     return dict(language=language)
 
@@ -824,8 +824,7 @@ def api_account_update(account_uuid: str):
 
 @app.route("/api/locales", methods=["GET"])
 def api_locales():
-    localeDict = {enumElement.name: enumElement.value for enumElement in Language}
-    return make_response(jsonify(localeDict))
+    return make_response(jsonify(Language.list_sorted_by_long_name()))
 
 
 @app.route("/test/runall", methods=["POST"])

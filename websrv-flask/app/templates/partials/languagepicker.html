@@ -3,7 +3,7 @@
         {{ language.current }} <span class="caret"></span>
     </button>
     <ul class="dropdown-menu scrollable-menu">
-        {% for key, name in language.languages.items() %}
+        {% for key, name in language.languages %}
         <li><a class="language_button" data-target-language="{{ key }}">{{ name }}</a></li>
         {% endfor %}
     </ul>

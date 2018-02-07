@@ -13,10 +13,10 @@
             <label for="inputLocale" class="col-sm-2 control-label">Language</label>
             <div class="col-sm-8">
                 <select style="width: 100%" ng-model="account.locale">
-                    <option ng-repeat="(short, long) in locales" ng-selected="{{ short == locale }}" value="{{ short }}">{{ long }}</option>
+                    <option ng-repeat="locale_elem in locales" ng-selected="{{ locale_elem[0] == locale }}" value="{{ locale_elem[0] }}">{{ locale_elem[1] }}</option>
                 </select>
             </div>
-            <input class="btn btn-default col-sm-2" type="button" value="Update Language"ng-click="updateLocale()">
+            <input class="btn btn-default col-sm-2" type="button" value="Update Language" ng-click="updateLocale()">
         </div>
     </form>
 </div>
