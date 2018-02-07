@@ -1,0 +1,7 @@
+<div class="form-check {% if error %}bg-danger{% endif %}">
+    <input type="checkbox" class="form-check-input" name="tos" id="tos">
+    <label class="form-check-label" for="tos">
+        {{ agb_agreement_text }} <br/>
+        <a href="{{ url_for('disclaimer') }}">{{  default_disclaimer_text }}</a>
+    </label>
+</div>

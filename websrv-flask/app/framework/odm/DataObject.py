@@ -281,6 +281,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         if hasattr(cls, "data_attributes"):
             pers_attrs.update(cls.data_attributes)
 
+        if hasattr(cls, "data_strings"):
+            pers_attrs.update(cls.data_strings)
+
         if hasattr(cls, "data_pointers"):
             pers_attrs.update(cls.data_pointers)
 

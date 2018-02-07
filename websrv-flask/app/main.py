@@ -1,4 +1,5 @@
 import sys
+from flask.ext.babel import Babel
 from flask import Flask, render_template, g, request, make_response, redirect, \
     jsonify, abort
 from werkzeug.wrappers import Response
@@ -8,7 +9,9 @@ import businesslogic.users as users
 import test
 import io
 import csv
-from businesslogic.QACFactory import create_qac_module
+
+from businesslogic.QAC import QAC
+from framework import make_error
 from framework.exceptions import *
 from framework.internationalization.languages import Language
 from framework.odm.DataObjectEncoder import DataObjectEncoder
@@ -19,10 +22,28 @@ from model.QuestionGroup import QuestionGroup
 from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
 from model.Survey import Survey
+from model.query_access_control.QACModule import QACModule
+
 
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
 app.json_encoder = DataObjectEncoder
+babel = Babel(app)
+
+
+@babel.localeselector
+def get_locale():
+    """
+    Uses the sanest locale according to g._locale, that is set in before_request
+    :return: str The locale that should be used for the current request
+    by babel
+    """
+    return g._locale.name.lower()
+
+
+@babel.timezoneselector
+def get_timezone():
+    return "Europe/Berlin"
 
 
 # before and after request foo
@@ -41,26 +62,32 @@ def before_request():
     g._current_user = None
     if session_token:
         if auth.activity(
-                session_token):  # also validates token, raises ClientIpChangedException if IP pinning fails
+                session_token):
+            # also validates token, raises ClientIpChangedException if
+            # IP pinning fails
             g._current_user = DataClient(auth.who_is(session_token))
             g._current_session_token = session_token
 
     # Setting the locale for the current request
-    g._locale = g._config["DEFAULT_LOCALE"]  # use default locale if all else fails
+    g._locale = g._config["DEFAULT_LOCALE"]  # use default locale if all fails
 
-    http_locale = request.accept_languages.best_match((l.name.lower() for l in Language))  # check HTTP accept-language
-    if http_locale is not None:  # try to match available locales against HTTP header
+    http_locale = request.accept_languages.best_match(
+        (l.name.lower() for l in Language))  # check HTTP accept-language
+    if http_locale is not None:  # match available locales against HTTP header
         g._locale = Language[http_locale.upper()]
 
-    if g._current_user:  # if user is logged in, set locale based on user preferences, override HTTP header
+    # if user is logged in, set locale based on user prefs, override HTTP header
+    if g._current_user:
         g._locale = g._current_user.locale
 
     if request.cookies.get('locale'):
         g._locale = Language[request.cookies.get('locale')]
 
-    # Allow frontend to override locale set by browser or user. This is needed to show locales to the user, even if the
-    # locale doesn't match the above settings. Otherwise, a german user wouldn't be able to see a french survey, even if
-    # they spoke french. The frontend may prompt the user if they want to see a locale that they mightn't understand.
+    # Allow frontend to override locale set by browser or user.
+    # This is needed to show locales to the user, even if the locale doesn't
+    # match the above settings. Otherwise, a german user wouldn't be able to see
+    # a french survey, even if they spoke french. The frontend may prompt the
+    # user if they want to see a locale that they mightn't understand.
     requested_locale = request.args.get('locale')
     if requested_locale is not None:
         try:
@@ -70,11 +97,13 @@ def before_request():
             # TODO: log error
             pass  # use previously set locale if malformed locale was requested
 
+
 @app.after_request
 def after_request(response: Response):
     if request.args.get('locale'):
         response.set_cookie('locale', g._locale.name)
     return response
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -104,11 +133,13 @@ def page_not_found(error):
     """
     return make_response("This is not the url you're looking for.", 404)
 
+
 @app.errorhandler(500)
 def internal_server_error_handler(error):
     # free all mutexes
     for o in g._persistent_objects.values():
         o.__del__()  # FIXME: dis ain't avoiding deadlocks at all
+
 
 @app.errorhandler(AccessControlException)
 def handle_access_control_violation(error):
@@ -197,36 +228,6 @@ def backend():
     return render_template("backend.html")
 
 
-# SURVEY FOR DATA SUBJECT FIXME: remove
-@app.route("/survey_test", methods=["GET"])
-def survey_test():
-    """
-    test Survey, always generates a new questionnaire
-    """
-    survey = Survey()
-    survey.name = "New Test Survey"
-    questionnaire = survey.add_new_questionnaire(
-        "Teacher's thingy 2",
-        "This is an example questionnaire which is hopefully not persisted yet."
-    )
-
-    questiongroup_1 = QuestionGroup()
-    questiongroup_1.name = "Data"
-    questiongroup_1.color = "#000000"
-    questiongroup_1.text_color = "#FFFFFF"
-    questionnaire.questiongroups.add(questiongroup_1)
-
-    questionnaire.add_question_to_group(questiongroup_1, "This is a question.")
-    questionnaire.add_question_to_group(questiongroup_1,
-                                        "This is not a question.")
-
-    return render_template(
-        "survey_survey.html",
-        uuid=questionnaire.uuid,
-        questionnaire=questionnaire
-    )
-
-
 @app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
 def survey(questionnaire_uuid):
     try:
@@ -235,13 +236,15 @@ def survey(questionnaire_uuid):
         # generate templates for qacs without any error parameters
         qac_templates = []
         for qac_module in questionnaire.get_qac_modules():
-            qac_templates.append(qac_module.get_survey_template({}))
+            qac_templates.append(qac_module.render_questionnaire_template([]))
+
+        print(qac_templates, file=sys.stderr)
 
         return render_template(
             "survey_survey.html",
             uuid=questionnaire_uuid,
             questionnaire=questionnaire,
-            qac_templates=[],
+            qac_templates=qac_templates,
             values={},
             error={}
         )
@@ -275,13 +278,13 @@ def survey_submit(questionnaire_uuid):
     # control all qacs and generate possibly error containing templates
     qac_templates = []
     for qac_module in questionnaire.get_qac_modules():
-        errors = qac_module.control()
-        qac_templates.append(qac_module.get_survey_template(errors))
-        if errors != {}:
+        qac_errors = qac_module.control()
+        qac_templates.append(qac_module.render_questionnaire_template(qac_errors))
+        if qac_errors:
             # Just set any value to true, so that the template is rendered
             error["qac"] = True
 
-    if error != {}:
+    if error:
         try:
             questionnaire = Questionnaire(questionnaire_uuid)
             return render_template(
@@ -295,7 +298,8 @@ def survey_submit(questionnaire_uuid):
         except ObjectDoesntExistException as _:
             return make_response(redirect("/"))
 
-    data_subject = DataSubject.one_from_query({"email_hash": request.form["email"]})
+    data_subject = DataSubject.one_from_query(
+        {"email_hash": request.form["email"]})
     if data_subject is None:
         data_subject = DataSubject()
         data_subject.email = request.form["email"]
@@ -323,9 +327,11 @@ def survey_submit(questionnaire_uuid):
     return render_template("survey_thanks.html", email=request.form["email"])
 
 
-@app.route("/survey/<string:questionnaire_uuid>/confirm/<string:confirmation_token>")
+@app.route(
+    "/survey/<string:questionnaire_uuid>/confirm/<string:confirmation_token>")
 def survey_confirm_submission(questionnaire_uuid, confirmation_token):
     pass
+
 
 @app.route("/disclaimer")
 def disclaimer():
@@ -525,9 +531,33 @@ def api_questionnaire_delete():
 
 @app.route("/api/qac_module", methods=["GET"])
 def api_qac_modules():
-    return make_response({
-        "qacModules": ["AGBQAC"]  # TODO: Enumerate somewhere else
+    return jsonify({
+        "qacModules": [qac.name for qac in QAC]
     })
+
+
+@app.route("/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+           methods=["GET"])
+def api_questionnaire_get_qac(questionnaire_uuid, qac_name):
+    try:
+        qac_module = QAC[qac_name]  # type: QACModule
+
+    except KeyError:
+        return make_error("QACModule {} doesn't exist.".format(qac_name), 404)
+
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+
+    except ObjectDoesntExistException:
+        return make_error("Questionnaire {} doesn't "
+                          "exist.".format(questionnaire_uuid), 404)
+
+    qac_instance = questionnaire.get_qac_module(qac_name)
+    if qac_instance is None:
+        return make_error("QACModule {} doesn't exist on the requested "
+                          "questionnaire.".format(qac_name), 404)
+
+    return jsonify(qac_instance)
 
 
 @app.route(
@@ -536,23 +566,25 @@ def api_qac_modules():
 )
 def api_qac_enable(questionnaire_uuid, qac_name):
     try:
+        qac_module = QAC[qac_name]  # type: QACModule
+    except KeyError:
+        return make_error("QACModule {} doesn't exist.".format(qac_name), 404)
+
+    try:
         questionnaire = Questionnaire(questionnaire_uuid)
-        qac_module = create_qac_module(qac_name)
-        if qac_module is None:
-            return make_response(jsonify({
-                "result": "error",
-                "error": "QACModule \"" + qac_name + "\" doesn't exist."
-            }), 400)
-        questionnaire.add_qac_module(qac_module)
+    except ObjectDoesntExistException:
+        return make_error("Questionnaire {} doesn't "
+                          "exist.".format(questionnaire_uuid), 404)
+
+    try:
+        questionnaire.add_qac_module(qac_module.new())
         return make_response({
-            "result": "QACModule \"" + qac_name + "\" added to questionnaire.",
+            "result": "QACModule {} added to questionnaire.".format(qac_name),
             "questionnaire": jsonify(questionnaire)
         })
-    except ObjectDoesntExistException:
-        return make_response(jsonify({
-            "result": "error",
-            "error": "Questionnaire doesn't exist."
-        }), 400)
+    except QACAlreadyEnabledException:
+        return make_error("QACModule {} is already enabled on Questionnaire "
+                          "{}".format(qac_name, questionnaire_uuid), 400)
 
 
 @app.route(
@@ -560,42 +592,54 @@ def api_qac_enable(questionnaire_uuid, qac_name):
     methods=["PUT"]
 )
 def api_qac_configure(questionnaire_uuid, qac_name):
-    data = request.get_json()
+    """
+    Format of request data: 
+    {
+        QACParam.name: "some_value",
+        ...
+    }
+    """
+    request_data = request.get_json()
+
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
-        qac_module = questionnaire.get_qac_module(qac_name)
-        if qac_module is None:
-            return make_response(jsonify({
-                "result": "error",
-                "error": "QACModule \"" + qac_name + "\" doesn't exist on " +
-                          "the requested questionnaire."
-            }), 400)
-
-        missing_params = []
-        for key in qac_module.get_required_config_fields():
-            if key not in data:
-                missing_params.append(key)
-
-        if missing_params != []:
-            return make_response(jsonify({
-                "result": "error",
-                "error": "Parameters were missing; QACModule \"" + qac_name +
-                          "\" was not updated.",
-                "missingParams": missing_params
-            }), 400)
-
-        for key in qac_module.get_required_config_fields():
-            qac_module.set_config_value(key, data[key])
-
-        return make_response({
-            "result": "QACModule \"" + qac_name + "\" updated.",
-            "qacModule": jsonify(qac_module)
-        })
     except ObjectDoesntExistException:
-        return make_response(jsonify({
-            "result": "error",
-            "error": "Questionnaire doesn't exist."
-        }), 400)
+        return make_error("Questionnaire {} doesn't "
+                          "exist.".format(questionnaire_uuid), 404)
+
+    qac_module = questionnaire.get_qac_module(qac_name)
+    if qac_module is None:
+        return make_error("QACModule {} doesn't exist on the requested "
+                          "questionnaire.".format(qac_name), 404)
+
+    updated_params = []
+    errors = []
+
+    for p in qac_module.parameters:
+        if p.name not in request_data:
+            return make_error("Missing parameter \"{}\"".format(p.name), 400)
+
+    for p in qac_module.parameters:
+        err = qac_module.set_config_value(p.uuid, request_data[p.name])
+        if err:
+            errors.append({
+                "parameter": p.name,
+                "error": err
+            })
+        else:
+            updated_params.append(p.name)
+
+    # foo to determine error message etc
+    status = 400 if not updated_params else 207
+    status = 200 if not errors else 207
+    success = "" if status == 200 else "partially" if status == 207 else "not"
+    result = "QACModule \"{}\" was {}updated.".format(qac_name, success)
+
+    return make_response({
+            "result": result,
+            "errors": errors,
+            "qacModule": jsonify(qac_module)
+        }, status)
 
 
 @app.route(
@@ -605,17 +649,19 @@ def api_qac_configure(questionnaire_uuid, qac_name):
 def api_qac_disable(questionnaire_uuid, qac_name):
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
+    except ObjectDoesntExistException:
+        return make_error("Questionnaire doesn't exist.", 400)
+
+    try:
         questionnaire.remove_qac_module(qac_name)
         return make_response({
-            "result": "QACModule \"" + qac_name + "\" removed from questionna" +
-                      "ire.",
+            "result": "QACModule \"{}\" removed from questionnaire "
+                      "{}.".format(qac_name, questionnaire_uuid),
             "questionnaire": jsonify(questionnaire)
         })
-    except ObjectDoesntExistException:
-        return make_response(jsonify({
-            "result": "error",
-            "error": "Questionnaire doesn't exist."
-        }), 400)
+    except QACNotEnabledException:
+        return make_error("No QACModule \"{}\" is enabled for Questionnaire "
+                          "{}".format(qac_name, questionnaire_uuid), 400)
 
 
 @app.route("/api/question_group", methods=["POST"])
@@ -638,7 +684,7 @@ def api_questiongroup_create():
         return make_response(jsonify({
             "result": "error",
             "error": "QuestionGroup with name \"" +
-                      data["name"] + "\" already exists."
+                     data["name"] + "\" already exists."
         }), 400)
 
 

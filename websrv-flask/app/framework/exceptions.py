@@ -61,9 +61,18 @@ class QuestionStatisticHasNoQuestionException(Exception):
 class DuplicateQuestionNameException(Exception):
     pass
 
+
 class LocaleNotFoundException(Exception):
     pass
 
 
 class DuplicateQuestionGroupNameException(Exception):
+    pass
+
+
+class QACAlreadyEnabledException(Exception):
+    pass
+
+
+class QACNotEnabledException(Exception):
     pass

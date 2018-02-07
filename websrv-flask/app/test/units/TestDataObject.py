@@ -10,7 +10,8 @@ from framework.odm.DataPointerSet import DataPointerSet
 from test import TestUnit
 
 
-class TestObject(DataObject): pass
+class TestObject(DataObject):
+    has_owner = False
 
 # for testing DataAttribute
 TestObject.some_attribute = DataAttribute(TestObject, "some_attribute")

@@ -1,16 +1,19 @@
-from typing import List
+from typing import List, Optional
 
 from flask import g
 
+from businesslogic.QAC import QAC
 from framework.exceptions import *
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
+from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 from model.I15dString import I15dString
 from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.query_access_control.QACModule import QACModule
+from model.query_access_control.QACModules.TOSQAC import TOSQAC
 
 
 class Questionnaire(DataObject):
@@ -29,7 +32,7 @@ class Questionnaire(DataObject):
         questionnaire.questiongroups = []
         questionnaire.question_count = 0
         questionnaire.answer_count = 0
-        questionnaire.qac_modules = []
+        questionnaire.qac_modules = [TOSQAC.new()]
         return questionnaire
 
     def add_question_group(self, name):
@@ -66,26 +69,38 @@ class Questionnaire(DataObject):
     def add_qac_module(self, qac_module: QACModule):
         """
         Adds a new qac module, if none with the same name exists.
+        Raises QACAlreadyEnabledException if QAC already exists on this
+        Questionnaire.
         """
-        if qac_module.get_name() not in [x.get_name() for x in
-                                         self.qac_modules]:
+        if qac_module.name.msgid not in [qac.name.msgid for qac in self.qac_modules]:
             self.qac_modules.add(qac_module)
+        else:
+            qac_module.remove()  # clean up unneeded quac_module from db
+            raise QACAlreadyEnabledException()
 
     def remove_qac_module(self, name: str):
         """
         Removes a qac module with the given name, if one exists.
         Actually removes all that fit, but it should always at most be one.
+        Raises QACNotEnabledException when no matching QACModule was enabled
+        on this Questionnaire.
         """
+        deleted_count = 0
         for qac_module in self.qac_modules:
-            if qac_module.get_name() == name:
+            if qac_module.name.msgid == name:
                 self.qac_modules.remove(qac_module)
+                qac_module.remove()  # delete qac_module from database
+                deleted_count += 1
 
-    def get_qac_module(self, name: str) -> QACModule:
+        if deleted_count < 1:
+            raise QACNotEnabledException()
+
+    def get_qac_module(self, name: str) -> Optional[QACModule]:
         """
         Returns the QACModule for the given name or None, if none exists.
         """
         for qac_module in self.qac_modules:
-            if qac_module.get_name() == name:
+            if qac_module.name.msgid == name:
                 return qac_module
         return None
 
@@ -133,6 +148,4 @@ Questionnaire.questiongroups = DataPointerSet(
 )
 Questionnaire.question_count = DataAttribute(Questionnaire, "question_count")
 Questionnaire.answer_count = DataAttribute(Questionnaire, "answer_count")
-Questionnaire.qac_modules = DataPointerSet(
-    Questionnaire, "qac_modules", QACModule
-)
+Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules")

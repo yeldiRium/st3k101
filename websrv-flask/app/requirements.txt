@@ -1,3 +1,4 @@
 python-binary-memcached
 pymongo
 argon2
+Flask-Babel
