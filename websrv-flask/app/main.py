@@ -73,7 +73,8 @@ def before_request():
 @app.after_request
 def after_request(response: Response):
     if request.args.get('locale'):
-        response.set_cookie('locale', g._locale.name)
+        if request.args.get('locale_cookie', 1) == 1:
+            response.set_cookie('locale', g._locale.name)
     return response
 
 @app.teardown_appcontext
