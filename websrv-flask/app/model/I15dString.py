@@ -47,9 +47,6 @@ class I15dString(DataObject):
         :param locale: Language The requested locale, optional
         :return: str The i15d version of the string 
         """
-        if locale == Language.ZXX:
-            some_locale = next((v for v in self.locales.values()))
-            return len(some_locale) * "☃︎"
 
         if locale is None:  # use current auto detected locale if no other locale is requested
             locale = g._locale
