@@ -145,6 +145,17 @@ def internal_server_error_handler(error):
 def handle_access_control_violation(error):
     abort(404)
 
+@app.context_processor
+def inject_languages():
+    """
+    Inject languages parameters into all templates.
+    """
+    language = {
+        "current": g._locale.value,
+        "languages": Language.list_sorted_by_long_name()
+    }
+    return dict(language=language)
+
 
 @app.route("/", methods=["GET"])
 def home():
@@ -398,6 +409,7 @@ def api_survey_delete():
                 "error": "Survey with given uuid does not belong to you."
             }), 400)
         # TODO: delete subobjects
+        g._current_user.surveys.discard(survey)
         survey.remove()
         return make_response(jsonify({
             "result": "Survey deleted."
@@ -803,6 +815,62 @@ def api_question_statistic(question_uuid):
             "result": "error",
             "error": "Question doesn't exist."
         }), 400)
+
+
+@app.route("/api/account/current", methods=["GET"])
+def api_account_current():
+    if g._current_user:
+        return make_response(jsonify(
+            g._current_user
+        ))
+    else:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "No user logged in."
+        }), 404)
+
+
+@app.route("/api/account/<string:account_uuid>", methods=["GET"])
+def api_account(account_uuid: str):
+    try:
+        return make_response(jsonify(
+            DataClient(account_uuid)
+        ))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Account doesn't exist."
+        }), 404)
+
+
+@app.route("/api/account/<string:account_uuid>", methods=["PUT"])
+def api_account_update(account_uuid: str):
+    data = request.get_json()
+    try:
+        client = DataClient(account_uuid)
+
+        if "email" in data:
+            client.email = data["email"]
+
+        try:
+            client.locale = Language[data["locale"]]
+        except KeyError:
+            pass
+
+        return make_response(jsonify({
+            "result": "Account updated.",
+            "account": client
+        }))
+    except ObjectDoesntExistException:
+        return make_response(jsonify({
+            "result": "error",
+            "error": "Account doesn't exist."
+        }), 404)
+
+
+@app.route("/api/locales", methods=["GET"])
+def api_locales():
+    return make_response(jsonify(Language.list_sorted_by_long_name()))
 
 
 @app.route("/test/runall", methods=["POST"])

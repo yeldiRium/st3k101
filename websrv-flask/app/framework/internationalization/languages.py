@@ -2,6 +2,12 @@ from enum import Enum
 
 
 class Language(Enum):
+    @staticmethod
+    def list_sorted_by_long_name():
+        """
+        Returns a list of tuples of the form (ShortName, LongName).
+        """
+        return sorted([(enumElement.name, enumElement.value) for enumElement in Language], key=lambda aTuple: aTuple[1])
 
     AA = "Afar"
     AAR = "Afar"

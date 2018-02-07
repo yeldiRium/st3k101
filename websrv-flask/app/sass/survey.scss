@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'general.scss';
 
 .question-group-container {
   width: 90%;
@@ -67,6 +68,10 @@
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 20px;
+}
+
+.languagepicker_container {
+  margin: 8px 0 8px 0;
 }
 
 @media screen and (min-width: 992px) {

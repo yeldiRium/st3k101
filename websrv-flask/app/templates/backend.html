@@ -9,7 +9,9 @@
 </head>
 <body>
     <div class="nav-side-menu">
-        <div class="brand">ST3K101</div>
+        <div class="brand">
+            ST3K101
+        </div>
         <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
         <div class="menu-list">
             <ul id="menu-content" class="menu-content collapse out">
@@ -32,6 +34,9 @@
         </div>
     </div>
     <div class="container-fluid" id="content">
+        <div class="row text-center languagepicker_container">
+            {% include 'partials/languagepicker.html' %}
+        </div>
         <flash-message></flash-message>
         <ng-view></ng-view>
     </div>
@@ -46,5 +51,6 @@
     <script src="{{ url_for('static', filename='js/Surveys.js') }}"></script>
     <script src="{{ url_for('static', filename='js/Account.js') }}"></script>
     <script src="{{ url_for('static', filename='js/App.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/languagepicker.js') }}"></script>
 </body>
 </html>

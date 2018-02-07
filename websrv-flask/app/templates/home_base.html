@@ -11,6 +11,9 @@
                 <a class="navbar-brand" href="{{ url_for('home') }}">ST3K101</a>
             </div>
 
+            <div class="languagepicker_container navbar-right navbar-text">
+                {% include 'partials/languagepicker.html' %}
+            </div>
             <form class="navbar-form navbar-right register-link" method="GET" action="{{ url_for('registration') }}">
                 <button type="submit" class="btn btn-link" id="submit">or Register</button>
             </form>
