@@ -10,7 +10,6 @@ import io
 import csv
 from businesslogic.QACFactory import create_qac_module
 from framework.exceptions import *
-from framework.internationalization import languages
 from framework.internationalization.languages import Language
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
@@ -115,6 +114,17 @@ def internal_server_error_handler(error):
 def handle_access_control_violation(error):
     abort(404)
 
+@app.context_processor
+def inject_languages():
+    """
+    Inject languages parameters into all templates.
+    """
+    language = {
+        "current": g._locale.value,
+        "languages": {enumElement.name: enumElement.value for enumElement in Language}
+    }
+    return dict(language=language)
+
 
 @app.route("/", methods=["GET"])
 def home():
@@ -193,13 +203,9 @@ def backend():
     """
     Dashboard for users
     """
-    language = {
-        "current": g._locale.value,
-        "languages": {enumElement.name: enumElement.value for enumElement in Language}
-    }
     if not g._current_user:
         return render_template('home_index.html', not_logged_in=True)
-    return render_template("backend.html", language=language)
+    return render_template("backend.html")
 
 
 # SURVEY FOR DATA SUBJECT FIXME: remove
