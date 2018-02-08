@@ -329,6 +329,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         """
         Indicates whether the currently logged in user may access this object.
         Always returns true if no ownership is enforced.
+        This is also false, if anonymous readonly use is allowed.
         :return: bool Whether the currently logged in user may access this object.
         """
         return self.accessible_by(g._current_user)

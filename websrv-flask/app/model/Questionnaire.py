@@ -148,4 +148,4 @@ Questionnaire.questiongroups = DataPointerSet(
 )
 Questionnaire.question_count = DataAttribute(Questionnaire, "question_count")
 Questionnaire.answer_count = DataAttribute(Questionnaire, "answer_count")
-Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules")
+Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules", serialize=False)
