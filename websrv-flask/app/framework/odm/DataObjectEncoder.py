@@ -5,6 +5,7 @@ from framework.odm.DataObject import DataObject
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataAttribute import DataAttribute
+from framework.odm.DataString import DataString, I18n
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 from framework.odm.SetProxy import SetProxy
 
@@ -16,6 +17,12 @@ class DataObjectEncoder(json.JSONEncoder):
         self.__seen = set({})
 
     def default(self, o):
+
+        if type(o) == I18n:
+            return {
+                "msgid": o.msgid,
+                "text": o.text
+            }
 
         if DataObject in o.__class__.__mro__:
 
@@ -37,6 +44,9 @@ class DataObjectEncoder(json.JSONEncoder):
 
                 if type(a) == DataAttribute:
                     obj_dict["fields"][name] = a.__get__(o)
+
+                if type(a) == DataString:
+                    obj_dict["fields"][name] = self.default(a.__get__(o))
 
                 elif type(a) == DataPointer:
                     obj_dict["fields"][name] = self.default(a.__get__(o))

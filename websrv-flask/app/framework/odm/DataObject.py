@@ -281,6 +281,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         if hasattr(cls, "data_attributes"):
             pers_attrs.update(cls.data_attributes)
 
+        if hasattr(cls, "data_strings"):
+            pers_attrs.update(cls.data_strings)
+
         if hasattr(cls, "data_pointers"):
             pers_attrs.update(cls.data_pointers)
 
@@ -326,6 +329,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         """
         Indicates whether the currently logged in user may access this object.
         Always returns true if no ownership is enforced.
+        This is also false, if anonymous readonly use is allowed.
         :return: bool Whether the currently logged in user may access this object.
         """
         return self.accessible_by(g._current_user)

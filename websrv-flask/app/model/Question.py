@@ -45,6 +45,6 @@ QuestionResult.question = DataPointer(QuestionResult, "question", Question)
 Question.i15d_text = DataPointer(Question, "i15d_text", I15dString,
                                  serialize=False)
 Question.statistic = DataPointer(Question, "statistic", QuestionStatistic,
-                                 cascading_delete=True)
+                                 cascading_delete=True, serialize=False)
 Question.results = DataPointerSet(Question, "results", QuestionResult,
-                                  cascading_delete=True)
+                                  cascading_delete=True, serialize=False)

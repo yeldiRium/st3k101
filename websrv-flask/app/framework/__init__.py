@@ -1,4 +1,6 @@
-from flask import request
+from typing import Any
+
+from flask import request, make_response, jsonify
 
 
 def get_client_ip():
@@ -18,3 +20,10 @@ def classname(o):
     :return: str
     """
     return str(o.__class__)[8:-2]
+
+
+def make_error(message: Any, status_code: int=400):
+    return make_response(jsonify({
+        "result": "error",
+        "error": message
+    }), status_code)
