@@ -45,6 +45,9 @@ def api_account_update(account_uuid: str, email=None, locale=None):
     except (AccessControlException, ObjectDoesntExistException):
         return make_error(_("Not found."), 404)
 
+    if g._current_user is None:
+        return make_error(_("Lacking credentials"), 403)
+
     if g._current_user.uuid != account_uuid:
         return make_error(_("Lacking credentials"), 403)
 

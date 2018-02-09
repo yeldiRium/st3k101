@@ -38,7 +38,7 @@ class QuestionGroup(DataObject):
             raise QuestionNotFoundException(self.name, question.text)
 
     @property
-    def name(self):
+    def name(self):  # TODO: return {'msgstr':'', 'locale':''}
         return self.i15d_name.get()
 
     @name.setter

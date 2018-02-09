@@ -5,7 +5,7 @@ from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 
 from model.query_access_control.QACModule import QACModule
-from flask import request, render_template
+from flask import request, render_template, g
 
 from model.query_access_control.QACTextParameter import QACTextParameter
 
@@ -49,9 +49,7 @@ class TOSQAC(QACModule):
         return render_template(
             "TOSQAC.html",
             error=[e.text for e in errors],
-            agb_agreement_text=agb_agreement_text,
-            default_disclaimer_text=_("I have also read and agree to the TOS of"
-                                      " the EFLA survey platform.")
+            agb_agreement_text=agb_agreement_text
         )
 
     def control(self) -> List[I18n]:
