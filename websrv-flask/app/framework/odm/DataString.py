@@ -14,6 +14,11 @@ class I18n(object):
     def text(self):
         return _(self.msgid)
 
+    def __eq__(self, other):
+        if not type(other) == I18n:
+            return False
+        return self.msgid == other.msgid
+
 
 class DataString(object):
     """

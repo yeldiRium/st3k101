@@ -1,6 +1,7 @@
 import json
 
 from framework import classname
+from framework.exceptions import AccessControlException
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataPointer import DataPointer
@@ -49,12 +50,23 @@ class DataObjectEncoder(json.JSONEncoder):
                     obj_dict["fields"][name] = self.default(a.__get__(o))
 
                 elif type(a) == DataPointer:
-                    obj_dict["fields"][name] = self.default(a.__get__(o))
+                    try:
+                        obj_dict["fields"][name] = self.default(a.__get__(o))
+
+                    except AccessControlException:
+                        if not o.readonly:
+                            raise AccessControlException()
 
                 elif type(a) in (DataPointerSet, MixedDataPointerSet):
                     reflist = []
-                    for ref_obj in a.__get__(o):
-                        reflist.append(self.default(ref_obj))
+                    try:
+                        for ref_obj in a.__get__(o):
+                            reflist.append(self.default(ref_obj))
+
+                    except AccessControlException:
+                        if not o.readonly:
+                            raise AccessControlException()
+
                     obj_dict["fields"][name] = reflist
 
             for name in o.exposed_properties:
@@ -63,6 +75,13 @@ class DataObjectEncoder(json.JSONEncoder):
             return obj_dict
 
         if type(o) is SetProxy:
-            return [self.default(x) for x in o]
+            result = []
+            for e in o:
+                try:
+                    result.append(self.default(e))
+                except AccessControlException:
+                    pass
+
+            return result
 
         return json.JSONEncoder.default(self, o)
