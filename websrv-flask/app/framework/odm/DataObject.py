@@ -16,6 +16,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
     # Indicates whether ownership model should be used & enforced
     has_owner = True
 
+    # TODO: document
+    readable_by_anonymous = False
+
     # Set of properties that should also be serialized. Useful for hiding a database persistent attribute behind an
     # accessor method
     exposed_properties = set({})
@@ -42,6 +45,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         """
         self.deleted = False
         self.initialized = False
+        self.__readonly = False
         super().__init__(uuid)
         self.__memcached_client = get_memcache()
 
@@ -51,9 +55,16 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                 raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
             self.__from_document(document)
 
-            if not self.accessible():  # enforce access control on existing objects
-                raise AccessControlException(
-                    "{} {} may not be accessed by the current user.".format(self.__class__.__name__, uuid))
+            # enforce access control on existing objects
+            if not self.accessible():
+
+                if not self.readable_by_anonymous:
+                    raise AccessControlException(
+                        "{} {} may not be accessed by the current "
+                        "user.".format(self.__class__.__name__, uuid)
+                    )
+
+                self.__readonly = True
 
         else:  # create a new mongodb document for self. Init members here.
             self._id = self._collection().insert_one(self._document_skeleton()).inserted_id
@@ -200,6 +211,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         :param member: The member / field name
         :return: None
         """
+        if self.readonly:
+            raise AccessControlException()
+
         setattr(self, member, value)
         self._collection().update_one(
             {u'_id': self._id},
@@ -211,6 +225,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         Removes the database entry represented by self from mongodb.
         :return: None
         """
+        if self.readonly:
+            raise AccessControlException()
+
         if self.ref_count > 0:
             return
 
@@ -248,7 +265,10 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                     for other in getattr(self, name):
                         others.append(other)
 
-                delattr(self, name)  # decrease refcount
+                try:
+                    delattr(self, name)  # decrease refcount
+                except Exception:
+                    pass  # TODO
 
                 if others:
                     for other in others:
@@ -333,3 +353,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         :return: bool Whether the currently logged in user may access this object.
         """
         return self.accessible_by(g._current_user)
+
+
+    @property
+    def readonly(self):
+        return self.__readonly == True

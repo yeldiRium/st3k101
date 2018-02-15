@@ -5,9 +5,9 @@ from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 
 from model.query_access_control.QACModule import QACModule
-from flask import request, render_template
+from flask import request, render_template, g
 
-from model.query_access_control.QACTextParameter import QACTextParameter
+from model.query_access_control.QACTextParameter import QACI15dTextParameter
 
 
 
@@ -28,11 +28,11 @@ class TOSQAC(QACModule):
             if param.uuid != param_uuid:
                 continue
 
-            if type(param) is QACTextParameter:
+            if type(param) is QACI15dTextParameter:
                 if type(value) is not str:
                     return  _("QACParameter has wrong type")
 
-                param.value = value
+                param.text.add_locale(g._locale, value)
                 updated = True
 
         if not updated:
@@ -49,9 +49,7 @@ class TOSQAC(QACModule):
         return render_template(
             "TOSQAC.html",
             error=[e.text for e in errors],
-            agb_agreement_text=agb_agreement_text,
-            default_disclaimer_text=_("I have also read and agree to the TOS of"
-                                      " the EFLA survey platform.")
+            agb_agreement_text=agb_agreement_text
         )
 
     def control(self) -> List[I18n]:
@@ -73,10 +71,10 @@ class TOSQAC(QACModule):
         """
 
         # Set up parameters for QAC
-        tos_text = QACTextParameter()
+        tos_text = QACI15dTextParameter()
         tos_text.name = I18n("TOS Text")
         tos_text.description = I18n("The text that is displayed to the user "
-                                        "as the terms of service.")
+                                    "as the terms of service.")
 
         # Set up new QAC instance
         the_new_qac = TOSQAC()

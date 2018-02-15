@@ -36,7 +36,7 @@ def registration_post():
             "home_registration_successful.html",
             data_client=data_client
         )
-    except UserExistsException as e:
+    except UserExistsException:
         return render_template(
             "home_registration.html",
             reason="User with E-Mail " + request.form[

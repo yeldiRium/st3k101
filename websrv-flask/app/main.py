@@ -1,3 +1,6 @@
+import sys
+import traceback
+
 from flask import Flask, render_template, g, request, make_response, \
     jsonify, abort
 from flask.ext.babel import Babel
@@ -7,6 +10,7 @@ import auth
 import test
 from framework.exceptions import *
 from framework.internationalization.languages import Language
+from framework.memcached import get_memcache
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
 
@@ -48,10 +52,9 @@ def before_request():
 
     g._current_user = None
     if session_token:
-        if auth.activity(
-                session_token):
-            # also validates token, raises ClientIpChangedException if
-            # IP pinning fails
+        # also validates token, raises ClientIpChangedException if
+        # IP pinning fails
+        if auth.validate_activity(session_token):
             g._current_user = DataClient(auth.who_is(session_token))
             g._current_session_token = session_token
 
@@ -67,6 +70,7 @@ def before_request():
     if g._current_user:
         g._locale = g._current_user.locale
 
+    # we also hand out a cookie the first time a locale is set and just
     if request.cookies.get('locale'):
         g._locale = Language[request.cookies.get('locale')]
 
@@ -87,6 +91,7 @@ def before_request():
 
 @app.after_request
 def after_request(response: Response):
+
     if request.args.get('locale'):
         if request.args.get('locale_cookie', 1) == 1:
             response.set_cookie('locale', g._locale.name)
@@ -99,9 +104,7 @@ def shutdown_session(exception=None):
     Called after request is handled, before app context is deleted
     :param exception: Exception Did an exception happen?
     """
-    # app.log_exception(exception)
     pass
-
 
 # error handlers for common errors, in case we didn't catch one
 @app.errorhandler(ClientIpChangedException)
@@ -125,12 +128,18 @@ def page_not_found(error):
 @app.errorhandler(500)
 def internal_server_error_handler(error):
     # free all mutexes
-    for o in g._persistent_objects.values():
-        o.__del__()  # FIXME: dis ain't avoiding deadlocks at all
-
+    if hasattr(g, "_local_mutexes"):
+        for mutex_uuid in g._local_mutexes:
+            get_memcache().delete(mutex_uuid)
+            print("Freeing {}".format(mutex_uuid), file=sys.stderr)
+    else:
+        print("No mutexes to free.", file=sys.stderr)
+    abort(500)
 
 @app.errorhandler(AccessControlException)
 def handle_access_control_violation(error):
+    print("Access Control Exception:", file=sys.stderr)
+    print(traceback.format_exc(), file=sys.stderr)
     abort(404)
 
 @app.context_processor

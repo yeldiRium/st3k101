@@ -73,7 +73,7 @@ def invalidate(session_token: str) -> bool:
     return mc.delete(_get_session_record_id(session_token))
 
 
-def activity(session_token: str) -> bool:
+def validate_activity(session_token: str) -> bool:
     """
     Refreshes the last_seen timestamp for the given token.
     Also removes old sessions (auto logout)
