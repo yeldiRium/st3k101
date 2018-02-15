@@ -22,7 +22,7 @@ class Survey(DataObject):
         survey.i15d_name = I15dString()
         survey.name = name
         survey.date_created = datetime.now().timestamp()
-        survey.original_locale = g._locale.name
+        survey.original_locale = g._locale
         return survey
 
     def add_new_questionnaire(self, name: str,

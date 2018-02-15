@@ -32,7 +32,7 @@ class Questionnaire(DataObject):
         questionnaire.question_count = 0
         questionnaire.answer_count = 0
         questionnaire.qac_modules = [TOSQAC.new()]
-        questionnaire.original_locale = g._locale.name
+        questionnaire.original_locale = g._locale
         return questionnaire
 
     def add_question_group(self, name):

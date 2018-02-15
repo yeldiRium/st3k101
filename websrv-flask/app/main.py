@@ -9,7 +9,8 @@ from werkzeug.wrappers import Response
 import auth
 import test
 from framework.exceptions import *
-from framework.internationalization.languages import Language
+from framework.internationalization import list_sorted_by_long_name, \
+    HTTP_LANGUAGE_TAGS
 from framework.memcached import get_memcache
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
@@ -29,7 +30,7 @@ def get_locale():
     :return: str The locale that should be used for the current request
     by babel
     """
-    return g._locale.name.lower()
+    return g._locale.lower()
 
 
 @babel.timezoneselector
@@ -62,9 +63,9 @@ def before_request():
     g._locale = g._config["DEFAULT_LOCALE"]  # use default locale if all fails
 
     http_locale = request.accept_languages.best_match(
-        (l.name.lower() for l in Language))  # check HTTP accept-language
+        (l.lower() for l in HTTP_LANGUAGE_TAGS.keys()))  # check HTTP accept-language
     if http_locale is not None:  # match available locales against HTTP header
-        g._locale = Language[http_locale.upper()]
+        g._locale = http_locale.lower()
 
     # if user is logged in, set locale based on user prefs, override HTTP header
     if g._current_user:
@@ -72,7 +73,7 @@ def before_request():
 
     # we also hand out a cookie the first time a locale is set and just
     if request.cookies.get('locale'):
-        g._locale = Language[request.cookies.get('locale')]
+        g._locale = request.cookies.get('locale').lower()
 
     # Allow frontend to override locale set by browser or user.
     # This is needed to show locales to the user, even if the locale doesn't
@@ -82,7 +83,7 @@ def before_request():
     requested_locale = request.args.get('locale')
     if requested_locale is not None:
         try:
-            requested_locale = Language[requested_locale]
+            requested_locale = requested_locale.lower()
             g._locale = requested_locale
         except (AttributeError, KeyError):
             # TODO: log error
@@ -94,7 +95,8 @@ def after_request(response: Response):
 
     if request.args.get('locale'):
         if request.args.get('locale_cookie', 1) == 1:
-            response.set_cookie('locale', g._locale.name)
+            response.set_cookie('locale', g._locale.lower())
+    response.headers['Content-Language'] = g._locale.lower()
     return response
 
 
@@ -148,8 +150,8 @@ def inject_languages():
     Inject languages parameters into all templates.
     """
     language = {
-        "current": g._locale.value,
-        "languages": Language.list_sorted_by_long_name()
+        "current": g._locale,
+        "languages": list_sorted_by_long_name()
     }
     return dict(language=language)
 

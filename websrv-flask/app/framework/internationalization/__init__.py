@@ -8249,3 +8249,9 @@ COUNTRY_INFO_BY_NAME = {
         "sub-region-code": "154"
     }
 }
+
+
+def list_sorted_by_long_name():
+    return sorted(
+        [(key, value["native"]) for key, value in HTTP_LANGUAGE_TAGS.items()],
+        key=lambda aTuple: aTuple[1])
