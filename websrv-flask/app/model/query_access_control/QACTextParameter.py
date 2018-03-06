@@ -26,6 +26,6 @@ class QACI15dTextParameter(QACParameter):
                                "replace it to your liking."), g._locale)
 
 
-QACTextParameter.name = DataString(QACTextParameter, "name")
-QACTextParameter.description = DataString(QACTextParameter, "description")
-QACTextParameter.text = DataPointer(QACTextParameter, "text", I15dString)
+QACI15dTextParameter.name = DataString(QACI15dTextParameter, "name")
+QACI15dTextParameter.description = DataString(QACI15dTextParameter, "description")
+QACI15dTextParameter.text = DataPointer(QACI15dTextParameter, "text", I15dString)
