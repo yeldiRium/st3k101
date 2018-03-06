@@ -16,7 +16,7 @@ def expect(*arguments: List[Tuple[str, type]]):
 
             for arg_name, arg_type in arguments:
                 data = request.get_json()
-                if arg_name not in data:
+                if data is None or arg_name not in data:
                     return make_error(
                         _("Missing parameter ") + "'{}'".format(arg_name),
                         400
@@ -51,7 +51,7 @@ def expect_optional(*arguments: List[Tuple[str, type]]):
 
             for arg_name, arg_type in arguments:
                 data = request.get_json()
-                if arg_name not in data:
+                if data is None or arg_name not in data:
                     continue
 
                 argument = data[arg_name]
