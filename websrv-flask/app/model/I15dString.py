@@ -42,14 +42,17 @@ class I15dString(DataObject):
     def get(self, locale: str = None) -> str:
         """
         Return the localized version of the string for the requested locale.
-        If the requested locale doesn't exist, it falls back to the DEFAULT_LOCALE set in flask.cfg.
-        If even the DEFAULT_LOCALE doesn't exist, it raises LocaleNotFoundException.
-        If no locale is passed, it uses g._locale, which is automatically set before each request.
+        If the requested locale doesn't exist, it falls back to the
+        BABEL_DEFAULT_LOCALE set in flask.cfg. If even the BABEL_DEFAULT_LOCALE
+        doesn't exist, it raises LocaleNotFoundException. If no locale is
+        passed, it uses g._locale, which is automatically set before each
+        request.
         :param locale: str The requested locale, optional
         :return: str The i15d version of the string 
         """
 
-        if locale is None:  # use current auto detected locale if no other locale is requested
+        # use current auto detected locale if no other locale is requested
+        if locale is None:
             locale = g._locale
 
         if locale == "zxx":
@@ -61,7 +64,7 @@ class I15dString(DataObject):
                 "Requested locale \"{}\" not found. Falling back to default "
                 "locale.".format(
                     locale), file=sys.stderr)
-            locale = HTTP_LANGUAGE_TAGS[g._config["DEFAULT_LOCALE"]][
+            locale = HTTP_LANGUAGE_TAGS[g._config["BABEL_DEFAULT_LOCALE"]][
                 "native"]  # try default locale
             if locale not in self.locales:  # give up, we can't just show any language to the user
                 error_message = "Locale {} not found for string. Available " \
