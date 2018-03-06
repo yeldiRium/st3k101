@@ -28,4 +28,5 @@ DataClient.password_hash = DataAttribute(DataClient, "password_hash",
                                          serialize=False)
 DataClient.locale_name = DataAttribute(DataClient,
                                        "locale_name")  # Language.name of the preferred locale
-DataClient.surveys = DataPointerSet(DataClient, "surveys", Survey)
+DataClient.surveys = DataPointerSet(DataClient, "surveys", Survey,
+                                    serialize=False)
