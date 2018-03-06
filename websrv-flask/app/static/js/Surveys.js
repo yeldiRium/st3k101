@@ -5,8 +5,10 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
     }])
     .factory('Surveys', ['$http', function($http) {
         return {
-            query: function() {
-                return $http.get('/api/survey').then(
+            query: function(locale = "") {
+                var path = "/api/survey";
+                path += (locale == "") ? "" : "?locale_cookie=0&locale=" + locale;
+                return $http.get(path).then(
                     function(result) {
                         return new Promise(function(resolve, reject) {
                             resolve(result.data);
@@ -23,11 +25,13 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
     }])
     .factory('Questionnaire', ['$http', function($http) {
         return {
-            query: function(uuid) {
-                return $http.get('/api/questionnaire/' + uuid).then(
+            query: function(uuid, locale = "") {
+                var path = "/api/questionnaire/" + uuid;
+                path += (locale == "") ? "" : "?locale_cookie=0&locale=" + locale;
+                return $http.get(path).then(
                     function success(result) {
                         return new Promise(function(resolve, reject) {
-                            resolve(result.data);
+                            resolve({result: result.data, locale: result.headers("Content-Language")});
                         })
                     },
                     function fail(error) {
@@ -361,8 +365,10 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * nothing else.
              */
             $scope.query = function() {
-                Questionnaire.query($routeParams.questionnaire).then(
-                    function success(result) {
+                return Questionnaire.query($routeParams.questionnaire).then(
+                    function success(resolved) {
+                        var result = resolved.result;
+                        var locale = resolved.locale;
                         $.each(result.fields.questiongroups, function(index, questiongroup) {
                             setTimeout(
                                 function() {
@@ -384,12 +390,24 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                                 }, 0);
                         });
                         $scope.questionnaire = result;
+                        if (result.fields.original_locale.toLowerCase() != locale.toLowerCase())
+                        {
+                            return Questionnaire.query($routeParams.questionnaire, result.fields.original_locale).then(
+                                function success(resolved) {
+                                    $scope.questionnaire_original = resolved.result;
+                                },
+                                function fail(error) {
+                                    $scope.questionnaire_original = null;
+                                    Flash.create("danger", error.data.error);
+                                }
+                            );
+                        }
                     },
                     function fail(error) {
                         $scope.questionnaire = null;
                         Flash.create('danger', error.data.error);
                     }
-                )
+                );
             };
 
             /**
@@ -411,6 +429,8 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     questions: {},
                     count: 0
                 };
+
+                $scope.edit = {};
             };
 
             /**
@@ -426,10 +446,69 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 }
             };
 
+            $scope.startEditing = function(name, event, opt = null) {
+                $scope.edit = {};
+                var element = $(event.target);
+                $scope.edit.name = name;
+                $scope.edit.element = element;
+                $scope.edit.old_value = (opt != null) ? opt : element.text();
+            };
+
+            $scope.isEditing = function(name) {
+                return $scope.edit.name == name;
+            };
+
+            $scope.abortEditing = function(name, event, opt = null) {
+                if ($scope.edit.name == name)
+                {
+                    if (name == 'questionnairename') {
+                        opt.fields.name = $scope.edit.old_value;
+                    } else if (name == 'questionnairedescription') {
+                        opt.fields.description = $scope.edit.old_value;
+                    } else if (name.indexOf("questiongroup") !== -1) {
+                        opt.fields.name = $scope.edit.old_value;
+                    } else if (name.indexOf("singlequestion") !== -1) {
+                        opt.fields.text = $scope.edit.old_value;
+                    }
+                    $scope.edit = {};
+                }
+            };
+
+            $scope.stopEditing = function(name, event, opt = null) {
+                if ($scope.edit.name == name)
+                {
+                    var element = $(event.target);
+                    var success;
+                    if (name == 'questionnairename' || name == 'questionnairedescription')
+                    {
+                        success = $scope.updateQuestionnaire();
+                    }
+                    if (name.indexOf("questiongroup") !== -1)
+                    {
+                        success = $scope.updateQuestionGroup(element.data("uuid"), element[0].value);
+                    }
+                    if (name.indexOf("singlequestion") !== -1)
+                    {
+                        success = $scope.updateQuestion(element.data("uuid"), element[0].value);
+                    }
+
+                    if (success)
+                        $scope.edit = {};
+                    else
+                        $scope.abortEditing(name, event, opt);
+                }
+            };
+
             /**
              * Sends updates with current questionnaire data
              */
             $scope.updateQuestionnaire = function() {
+                if ($scope.questionnaire.fields.name == "" ||
+                    $scope.questionnaire.fields.description == "")
+                {
+                    Flash.create("danger", "Name and description can't be empty!");
+                    return false;
+                }
                 $http({
                     method: 'PUT',
                     url: '/api/questionnaire',
@@ -448,7 +527,70 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     function fail(error) {
                         Flash.create('danger', error.data.error);
                     }
-                )
+                );
+                return true;
+            };
+
+            /**
+             * Updates a question_group's name based on the stored values in
+             * $scope.edit.
+             */
+            $scope.updateQuestionGroup = function(uuid, name) {
+                if (name == "")
+                {
+                    Flash.create("danger", "Name can't be empty!");
+                    return false;
+                }
+                $http({
+                    method: "PUT",
+                    url: "/api/question_group",
+                    data: {
+                        uuid: uuid,
+                        name: name
+                    },
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(
+                    function success(result) {
+                        Flash.create("success", "QuestionGroup updated!");
+                    },
+                    function fail(error) {
+                        Flash.create("danger", error.data.error);
+                    }
+                );
+                return true;
+            };
+
+            /**
+             * Updates a question's name based on the stored values in
+             * $scope.edit.
+             */
+            $scope.updateQuestion = function(uuid, text) {
+                if (text == "")
+                {
+                    Flash.create("danger", "Text can't be empty!");
+                    return false;
+                }
+                $http({
+                    method: "PUT",
+                    url: "/api/question",
+                    data: {
+                        uuid: uuid,
+                        text: text
+                    },
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(
+                    function success(result) {
+                        Flash.create("success", "Question updated!");
+                    },
+                    function fail(error) {
+                        Flash.create("danger", error.data.error);
+                    }
+                );
+                return true;
             };
 
 
@@ -696,7 +838,15 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             };
 
             $scope.resetEditing();
-            $scope.query();
+            $scope.query().then(function success(result) {
+                console.log(result);
+                $(".as-checkbox").each(function (index, element) {
+                    var e = $(element);
+                    console.log(e.height());
+                    console.log(e.sibling(".selectable").height());
+                    e.height(e.sibling(".selectable").height());
+                });
+            });
         }])
     .controller('QuestionnaireStatisticController', ['$scope', '$http', '$routeParams', '$timeout', 'Questionnaire', 'QuestionStatistic',
         function($scope, $http, $routeParams, $timeout, Questionnaire, QuestionStatistic) {

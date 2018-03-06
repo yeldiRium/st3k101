@@ -2,7 +2,6 @@ from typing import List, Optional
 
 from flask import g
 
-from businesslogic.QAC import QAC
 from framework.exceptions import *
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
@@ -33,6 +32,7 @@ class Questionnaire(DataObject):
         questionnaire.question_count = 0
         questionnaire.answer_count = 0
         questionnaire.qac_modules = [TOSQAC.new()]
+        questionnaire.original_locale = g._locale
         return questionnaire
 
     def add_question_group(self, name):
@@ -139,6 +139,7 @@ class Questionnaire(DataObject):
         self.i15d_description.add_locale(g._locale, description)
 
 
+Questionnaire.original_locale = DataAttribute(Questionnaire, "original_locale")
 Questionnaire.i15d_name = DataPointer(Questionnaire, "i15d_name", I15dString,
                                       serialize=False)
 Questionnaire.i15d_description = DataPointer(Questionnaire, "description",
