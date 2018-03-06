@@ -8,7 +8,8 @@ from framework.exceptions import ObjectDoesntExistException, \
     AccessControlException
 from framework.internationalization import _
 from main import app
-from model import DataSubject
+from model.DataClient import DataClient
+from model.DataSubject import DataSubject
 from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
 
@@ -99,7 +100,8 @@ def survey_submit(questionnaire_uuid):
                 "question": question.uuid
             })
             if current_answer is None:
-                current_answer = QuestionResult()
+                current_answer = QuestionResult(
+                    owner=DataClient(question.owner_uuid))
                 current_answer.data_subject = data_subject
                 current_answer.question = question
                 question.add_question_result(current_answer)

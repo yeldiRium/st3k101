@@ -16,18 +16,16 @@ from model.query_access_control.QACModules.TOSQAC import TOSQAC
 
 
 class Questionnaire(DataObject):
-    exposed_properties = {
-        "name",
-        "description"
-    }
+
+    readable_by_anonymous = True
 
     @staticmethod
     def create_questionnaire(name: str, description: str):
         questionnaire = Questionnaire()
-        questionnaire.i15d_name = I15dString()
-        questionnaire.name = name
-        questionnaire.i15d_description = I15dString()
-        questionnaire.description = description
+        questionnaire.name = I15dString()
+        questionnaire.name.set_locale(name)
+        questionnaire.description = I15dString()
+        questionnaire.description.set_locale(description)
         questionnaire.questiongroups = []
         questionnaire.question_count = 0
         questionnaire.answer_count = 0
@@ -36,7 +34,7 @@ class Questionnaire(DataObject):
         return questionnaire
 
     def add_question_group(self, name):
-        if next((x for x in self.questiongroups if x.name == name),
+        if next((x for x in self.questiongroups if x.name.get_default_text() == name),
                 None) is not None:
             raise DuplicateQuestionGroupNameException()
 
@@ -46,10 +44,14 @@ class Questionnaire(DataObject):
 
     def add_question_to_group(self, question_group: QuestionGroup,
                               text: str) -> QuestionGroup:
+        # text is always in surveys default locale
+        # since adding new items to the survey is disabled in frontend
+        # when user has switched to a different locale then the survey's
+        # default locale
         if question_group not in self.questiongroups:
             raise QuestionGroupNotFoundException
         for question in question_group.questions:
-            if question.text == text:
+            if question.text.get_default_text() == text:
                 raise DuplicateQuestionNameException()
         question_group.add_new_question(text)
         self.question_count += 1
@@ -122,31 +124,15 @@ class Questionnaire(DataObject):
         else:
             return template
 
-    @property
-    def name(self):
-        return self.i15d_name.get()
-
-    @name.setter
-    def name(self, name: str):
-        self.i15d_name.add_locale(g._locale, name)
-
-    @property
-    def description(self):
-        return self.i15d_description.get()
-
-    @description.setter
-    def description(self, description: str):
-        self.i15d_description.add_locale(g._locale, description)
-
 
 Questionnaire.original_locale = DataAttribute(Questionnaire, "original_locale")
-Questionnaire.i15d_name = DataPointer(Questionnaire, "i15d_name", I15dString,
-                                      serialize=False)
-Questionnaire.i15d_description = DataPointer(Questionnaire, "description",
-                                             I15dString, serialize=False)
+Questionnaire.name = DataPointer(Questionnaire, "name", I15dString)
+Questionnaire.description = DataPointer(Questionnaire, "description",
+                                             I15dString)
 Questionnaire.questiongroups = DataPointerSet(
     Questionnaire, "questiongroups", QuestionGroup
 )
 Questionnaire.question_count = DataAttribute(Questionnaire, "question_count")
 Questionnaire.answer_count = DataAttribute(Questionnaire, "answer_count")
-Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules", serialize=False)
+Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules",
+                                                serialize=False)

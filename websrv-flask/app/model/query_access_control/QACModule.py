@@ -8,6 +8,8 @@ from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 
 class QACModule(DataObject):
 
+    readable_by_anonymous = True
+
     @abstractmethod
     def set_config_value(self, param_uuid: str, value: Any) -> Optional[str]:
         """

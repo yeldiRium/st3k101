@@ -7,29 +7,32 @@ from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
+from framework.internationalization import _
 from model.I15dString import I15dString
 from model.Questionnaire import Questionnaire
 
 
 class Survey(DataObject):
-    exposed_properties = {
-        "name"
-    }
 
     @staticmethod
     def create_survey(name: str):
+        for survey in g._current_user.surveys:
+            if survey.name.get_default_text() == name:
+                raise DuplicateSurveyNameException(name)
+
         survey = Survey()
-        survey.i15d_name = I15dString()
-        survey.name = name
+        survey.name = I15dString()
+        survey.name.set_locale(name)
         survey.date_created = datetime.now().timestamp()
         survey.original_locale = g._locale
         return survey
 
     def add_new_questionnaire(self, name: str,
                               description: str) -> Questionnaire:
-        if next((x for x in self.questionnaires if x.name == name),
-                None) is not None:
-            raise DuplicateQuestionnaireNameException(self.name, name)
+        for questionnaire in self.questionnaires:
+            if questionnaire.name.get_default_text() == name:
+                raise DuplicateQuestionnaireNameException(
+                    self.name.get_default_text(), name)
 
         questionnaire = Questionnaire.create_questionnaire(name, description)
         self.questionnaires.add(questionnaire)
@@ -49,13 +52,34 @@ class Survey(DataObject):
         else:
             template_questionnaire = Questionnaire(template)
 
+        foreign_template = template_questionnaire.original_locale != g._locale
+        template_locale = template_questionnaire.original_locale
+        if foreign_template:
+            name = _("From template: ") + name + " ({})".format(template_locale)
+            description = _("From template: ") + description + " ({})".format(
+                template_locale)
+
         questionnaire = self.add_new_questionnaire(name, description)
+
         for template_group in template_questionnaire.questiongroups:
-            new_group = questionnaire.add_question_group(template_group.name)
+
+            group_name = template_group.name.get_default_text()
+            if foreign_template:
+                group_name = _("From template: ") + group_name + "({})".format(
+                    template_locale)
+
+            new_group = questionnaire.add_question_group(group_name)
             new_group.color = template_group.color
             new_group.text_color = template_group.text_color
+
             for question in template_group.questions:
-                questionnaire.add_question_to_group(new_group, question.text)
+                question_text = question.text.get_default_text()
+                if foreign_template:
+                    question_text = _("From template: ") + question_text + \
+                                    "({})".format(template_locale)
+
+                questionnaire.add_question_to_group(new_group, question_text)
+
         for qac_module in template_questionnaire.qac_modules:
             questionnaire.add_qac_module(qac_module)
         return questionnaire
@@ -64,19 +88,12 @@ class Survey(DataObject):
         try:
             self.questionnaires.remove(questionnaire)
             questionnaire.remove()
-        except KeyError as e:
-            raise QuestionnaireNotFoundException(self.name, questionnaire.name)
-
-    @property
-    def name(self):
-        return self.i15d_name.get()
-
-    @name.setter
-    def name(self, name: str):
-        self.i15d_name.add_locale(g._locale, name)
+        except KeyError as _:
+            raise QuestionnaireNotFoundException(
+                self.name.get_default_text(), questionnaire.name.get_default_text())
 
 
 Survey.original_locale = DataAttribute(Survey, "original_locale")
-Survey.i15d_name = DataPointer(Survey, "i15d_name", I15dString, serialize=False)
+Survey.name = DataPointer(Survey, "name", I15dString)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)

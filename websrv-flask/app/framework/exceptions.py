@@ -62,6 +62,10 @@ class DuplicateQuestionNameException(Exception):
     pass
 
 
+class DuplicateSurveyNameException(Exception):
+    pass
+
+
 class LocaleNotFoundException(Exception):
     pass
 

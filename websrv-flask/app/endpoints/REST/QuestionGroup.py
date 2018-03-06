@@ -3,7 +3,7 @@
     
 """
 
-from flask import make_response, g
+from flask import g
 from flask.json import jsonify
 
 from framework import make_error
@@ -56,7 +56,7 @@ def api_questiongroup_update(uuid='', name=None, color=None, text_color=None):
 
     try:
         if name is not None:
-            question_group.name = name
+            question_group.name.set_locale(name)
         if color is not None:
             question_group.color = color
         if text_color is not None:

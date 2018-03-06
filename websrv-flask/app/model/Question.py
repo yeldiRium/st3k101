@@ -9,15 +9,14 @@ from model.QuestionStatistic import QuestionStatistic
 
 
 class Question(DataObject):
-    exposed_properties = {
-        "text"
-    }
+
+    readable_by_anonymous = True
 
     @staticmethod
     def create_question(text: str):
         question = Question()
-        question.i15d_text = I15dString()
-        question.text = text
+        question.text = I15dString()
+        question.text.set_locale(text, g._locale)
 
         question_statistic = QuestionStatistic()
         question_statistic.question = question
@@ -28,22 +27,13 @@ class Question(DataObject):
     def add_question_result(self, question_result: QuestionResult):
         self.results.add(question_result)
 
-    @property
-    def text(self):
-        return self.i15d_text.get()
-
-    @text.setter
-    def text(self, text: str):
-        self.i15d_text.add_locale(g._locale, text)
-
 
 # These are here to prevent circular dependencies in QuestionStatistic and
 # QuestionResult modules
 QuestionStatistic.question = DataPointer(QuestionStatistic, "question",
                                          Question)
 QuestionResult.question = DataPointer(QuestionResult, "question", Question)
-Question.i15d_text = DataPointer(Question, "i15d_text", I15dString,
-                                 serialize=False)
+Question.text = DataPointer(Question, "text", I15dString)
 Question.statistic = DataPointer(Question, "statistic", QuestionStatistic,
                                  cascading_delete=True, serialize=False)
 Question.results = DataPointerSet(Question, "results", QuestionResult,
