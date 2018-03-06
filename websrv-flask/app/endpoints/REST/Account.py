@@ -17,28 +17,82 @@ from model.DataClient import DataClient
 
 @app.route("/api/account/current", methods=["GET"])
 def api_account_current():
+    """
+    Parameters:
+        None.
+    TODO: update error to return 403 and Not Authorized error
+
+    Response Codes:
+        200: If a user is currently logged in, their account data is returned.
+        404: If no user is logged in.
+
+    Response class:
+    200: {
+            "class": "model.DataClient.DataClient",
+            "fields": {
+                "email": String
+                "locale_name": String
+            },
+            "uuid": String
+        }
+    404: {
+            "error": "Not found."
+            "result": "error"
+        }
+
+    Explanation:
+        locale_name is a 2/3-character shorthand for a babel language.
+    """
     if not g._current_user:
         return make_error(_("Not found."), 404)
-
     return jsonify(g._current_user)
-
-# FIXME: why? you should always be able to just use /api/account/current imo
-#@app.route("/api/account/<string:account_uuid>", methods=["GET"])
-#def api_account(account_uuid: str):
-#    try:
-#        return make_response(jsonify(
-#            DataClient(account_uuid)
-#        ))
-#    except ObjectDoesntExistException:
-#        return make_response(jsonify({
-#            "result": "error",
-#            "error": "Account doesn't exist."
-#        }), 404)
 
 
 @app.route("/api/account/<string:account_uuid>", methods=["PUT"])
 @expect_optional(('email', str), ('locale', str))
 def api_account_update(account_uuid: str, email=None, locale=None):
+    """
+    Edits the currently logged in user's account by updating optionally email or
+    locale.
+    TODO: update signature, remove uuid parameter
+
+    Parameters:
+        account_uuid: String uuid for the account that should be updated.
+        email: String The new email for the account.
+        locale: String The new locale for the account. 2/3-character shorthand.
+
+    Response Codes:
+        200: If the account was updated accordingly. Returns the updated account
+            data.
+        403: If authorization failed.
+        404: If the given account_uuid does not belong to an account.
+
+    Response Class:
+    200: {
+            "account": {
+                "class": "model.DataClient.DataClient",
+                "fields": {
+                    "email": String,
+                    "locale_name": String
+                },
+                "uuid": String
+            },
+            "result": "Account updated."
+        }
+
+    403: {
+            "error": "Lacking credentials",
+            "result": "error"
+        }
+
+    404: {
+            "error": "Not found.",
+            "result": "error"
+        }
+
+    Explanation:
+        locale_name is a 2/3-character shorthand for a babel language.
+    """
     try:
         client = DataClient(account_uuid)
 
