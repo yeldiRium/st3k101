@@ -9,6 +9,7 @@ from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataString import DataString, I18n
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 from framework.odm.SetProxy import SetProxy
+from framework.odm.MixedSetProxy import MixedSetProxy
 
 
 class DataObjectEncoder(json.JSONEncoder):
@@ -74,7 +75,7 @@ class DataObjectEncoder(json.JSONEncoder):
 
             return obj_dict
 
-        if type(o) is SetProxy:
+        if type(o) is SetProxy or type(o) is MixedSetProxy:
             result = []
             for e in o:
                 try:
