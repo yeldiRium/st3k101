@@ -27,7 +27,6 @@ angular.module('Account', ['ngRoute'])
                 return Locales.query().then(
                     function success(result) {
                         $scope.locales = result;
-                        console.log(result);
                     }, function fail(error) {
                         Flash.create('danger', error.data.result);
                     }
@@ -41,7 +40,7 @@ angular.module('Account', ['ngRoute'])
                             uuid: result.uuid,
                             email: result.fields.email,
                             locale: result.fields.locale_name
-                        }
+                        };
                     }, function fail(error) {
                         Flash.create('danger', error.data.result);
                     }

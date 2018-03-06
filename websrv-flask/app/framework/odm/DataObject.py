@@ -2,6 +2,7 @@ import random
 import time
 from typing import Any
 
+from bson.errors import InvalidId
 from bson.objectid import ObjectId
 from flask import g
 
@@ -50,22 +51,24 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         self.__memcached_client = get_memcache()
 
         if uuid:  # initialize self from mongodb document with the given uuid
-            document = self._collection().find_one({u'_id': ObjectId(uuid)})
-            if not document:
+            try:
+                document = self._collection().find_one({u'_id': ObjectId(uuid)})
+                if not document:
+                    raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
+
+                self.__from_document(document)
+
+                # enforce access control on existing objects
+                if not self.accessible():
+                    if not self.readable_by_anonymous:
+                        raise AccessControlException(
+                            "{} {} may not be accessed by the current "
+                            "user.".format(self.__class__.__name__, uuid)
+                        )
+
+                    self.__readonly = True
+            except InvalidId as e:
                 raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
-            self.__from_document(document)
-
-            # enforce access control on existing objects
-            if not self.accessible():
-
-                if not self.readable_by_anonymous:
-                    raise AccessControlException(
-                        "{} {} may not be accessed by the current "
-                        "user.".format(self.__class__.__name__, uuid)
-                    )
-
-                self.__readonly = True
-
         else:  # create a new mongodb document for self. Init members here.
             self._id = self._collection().insert_one(self._document_skeleton()).inserted_id
             setattr(self, "__ref_count", 0)

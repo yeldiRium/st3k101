@@ -1,5 +1,5 @@
 from flask.ext.babel import lazy_gettext
-
+from .babel_languages import babel_languages
 
 _ = lambda msg: str(lazy_gettext(msg))
 
@@ -8252,6 +8252,4 @@ COUNTRY_INFO_BY_NAME = {
 
 
 def list_sorted_by_long_name():
-    return sorted(
-        [(key, value["native"]) for key, value in HTTP_LANGUAGE_TAGS.items()],
-        key=lambda aTuple: aTuple[1])
+    return sorted(babel_languages.items(), key=lambda aTuple: aTuple[1])

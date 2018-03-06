@@ -11,6 +11,7 @@ import test
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, \
     HTTP_LANGUAGE_TAGS
+from framework.internationalization.babel_languages import babel_languages
 from framework.memcached import get_memcache
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
@@ -60,10 +61,10 @@ def before_request():
             g._current_session_token = session_token
 
     # Setting the locale for the current request
-    g._locale = g._config["DEFAULT_LOCALE"]  # use default locale if all fails
+    g._locale = g._config["BABEL_DEFAULT_LOCALE"]  # use default locale if all fails
 
-    http_locale = request.accept_languages.best_match(
-        (l.lower() for l in HTTP_LANGUAGE_TAGS.keys()))  # check HTTP accept-language
+    # check HTTP accept-language
+    http_locale = request.accept_languages.best_match(babel_languages.keys())
     if http_locale is not None:  # match available locales against HTTP header
         g._locale = http_locale.lower()
 
