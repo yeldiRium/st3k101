@@ -53,8 +53,8 @@ def api_questionnaire_download_csv(questionnaire_uuid):
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
             for result in question.results:
-                writer.writerow([question_group.name,
-                                 question.text,
+                writer.writerow([question_group.name.get_default_text(),
+                                 question.text.get_default_text(),
                                  result.answer_value])
 
     filename = "{}.csv".format(questionnaire_uuid)
@@ -70,7 +70,7 @@ def api_questionnaire_download_csv(questionnaire_uuid):
 def api_questionnaire_create(survey='', questionnaire=None):
 
     if g._current_user is None:
-        return make_error(_("lacking credentials"), 403)
+        return make_error(_("Lacking credentials"), 403)
 
     try:
         the_survey = Survey(survey)
@@ -114,10 +114,10 @@ def api_questionnaire_update(uuid='', name=None, description=None):
 
         # writing to readonly object will raise AccessControlException
         if name is not None:
-            questionnaire.name = name
+            questionnaire.name.set_locale(name)
 
         if description is not None:
-            questionnaire.description = description
+            questionnaire.description.set_locale(description)
 
     except (AccessControlException, ObjectDoesntExistException):
         return make_error(_("Not found."), 404)

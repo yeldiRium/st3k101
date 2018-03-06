@@ -329,6 +329,11 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         persistent_members.update({"__ref_count": 0})
         return persistent_members
 
+    @property
+    def owner_uuid(self):
+        return getattr(self, "__owner_uuid")
+
+
     def accessible_by(self, user: object) -> bool:
         """
         Indicates whether a given user DataObject is allowed to

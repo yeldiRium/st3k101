@@ -32,7 +32,7 @@ class TOSQAC(QACModule):
                 if type(value) is not str:
                     return  _("QACParameter has wrong type")
 
-                param.text.add_locale(g._locale, value)
+                param.text.set_locale(value, g._locale)
                 updated = True
 
         if not updated:

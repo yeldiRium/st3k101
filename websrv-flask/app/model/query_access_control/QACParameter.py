@@ -3,7 +3,7 @@ from framework.odm.DataString import DataString
 
 
 class QACParameter(DataObject):
-    pass
+    readable_by_anonymous = True
 
 
 QACParameter.name = DataString(QACParameter, "name")

@@ -33,7 +33,6 @@ def api_question_create(questionnaire='', question_group='', text=''):
     if not the_questionnaire.accessible():
         return make_error(_("Lacking credentials"), 403)
 
-
     try:
         question = the_questionnaire.add_question_to_group(
             the_question_group, text)
@@ -54,7 +53,7 @@ def api_question_update(uuid='', text=''):
 
     try:
         question = Question(uuid)
-        question.text = text
+        question.text.set_locale(text)
 
     except (AccessControlException, ObjectDoesntExistException):
         return make_error(_("Not found."), 404)
@@ -81,7 +80,6 @@ def api_question_delete(uuid='', question_group='', questionnaire=''):
         return make_error(_("Lacking credentials"), 403)
 
     the_questionnaire.remove_question_from_group(the_question_group, question)
-    # TODO: remove all answers to deleted question
 
     return jsonify({"result": _("Question deleted.")})
 

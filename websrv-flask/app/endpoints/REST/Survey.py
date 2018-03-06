@@ -7,7 +7,7 @@ from flask.json import jsonify
 
 from framework import make_error
 from framework.exceptions import AccessControlException, \
-    ObjectDoesntExistException
+    ObjectDoesntExistException, DuplicateSurveyNameException
 from framework.internationalization import _
 from main import app
 from framework.flask_request import expect
@@ -37,7 +37,11 @@ def api_survey_create(name=''):
     if g._current_user is None:
         return make_error(_("Lacking credentials"), 403)
 
-    survey = Survey.create_survey(name)
+    try:
+        survey = Survey.create_survey(name)
+    except DuplicateSurveyNameException:
+        return make_error(_("A survey with that name already exists."), 400)
+
     g._current_user.surveys.add(survey)
 
     return jsonify({

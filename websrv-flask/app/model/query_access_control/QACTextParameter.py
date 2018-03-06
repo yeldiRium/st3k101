@@ -22,8 +22,8 @@ class QACI15dTextParameter(QACParameter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text = I15dString()
-        self.text.add_locale(g._locale, _("This is a placeholder text, "
-                                              "replace it to your liking."))
+        self.text.set_locale(_("This is a placeholder text, "
+                               "replace it to your liking."), g._locale)
 
 
 QACTextParameter.name = DataString(QACTextParameter, "name")
