@@ -25,7 +25,7 @@ from model.Questionnaire import Questionnaire
 def api_question_create(
         questionnaire_uuid: str='',
         question_group_uuid: str='',
-        text:str =''
+        text: str =''
 ):
     """
     Parameters:
@@ -166,6 +166,9 @@ def api_question_update(question_uuid: str, text: str=''):
     except AccessControlException:
         return make_error(_("Lacking credentials."), 403)
 
+    if not question.accessible():
+        return make_error(_("Lacking credentials"), 403)
+
     return jsonify({
         "result": _("Question updated."),
         "question": question
@@ -225,7 +228,7 @@ def api_question_delete(
     except AccessControlException:
         return make_error(_("Lacking credentials."), 403)
 
-    if not the_question_group.accessible():
+    if not the_questionnaire.accessible():
         return make_error(_("Lacking credentials"), 403)
 
     the_questionnaire.remove_question_from_group(the_question_group, question)

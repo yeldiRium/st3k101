@@ -68,7 +68,7 @@ def api_questiongroup_create(questionnaire_uuid='', name=''):
 
 
 @app.route("/api/question_group/<string:question_group_uuid>", methods=["GET"])
-def api_questiongroup_get_single(question_group_uuid: str=''):
+def api_questiongroup_get(question_group_uuid: str= ''):
     """
     Parameters:
         question_group_uuid: String The uuid for the QuestionGroup to retrieve.
@@ -157,10 +157,12 @@ def api_questiongroup_update(
     """
     try:
         question_group = QuestionGroup(question_group_uuid)
-
     except ObjectDoesntExistException:
         return make_error(_("No such QuestionGroup."), 404)
     except AccessControlException:
+        return make_error(_("Lacking credentials"), 403)
+
+    if not question_group.accessible():
         return make_error(_("Lacking credentials"), 403)
 
     try:
@@ -216,7 +218,6 @@ def api_questiongroup_delete(question_group_uuid='', questionnaire_uuid=''):
     try:
         question_group = QuestionGroup(question_group_uuid)
         the_questionnaire = Questionnaire(questionnaire_uuid)
-
     except ObjectDoesntExistException as e:
         if e.args[1] is "QuestionGroup":
             return make_error(_("No such QuestionGroup."), 404)

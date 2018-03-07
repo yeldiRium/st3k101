@@ -37,7 +37,10 @@ def api_qac_modules():
     })
 
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>/qac", methods=["GET"])
+@app.route(
+    "/api/questionnaire/<string:questionnaire_uuid>/qac",
+    methods=["GET"]
+)
 def api_questionnaire_list_qacs(questionnaire_uuid: str):
     """
     Parameters:
@@ -83,8 +86,10 @@ def api_questionnaire_list_qacs(questionnaire_uuid: str):
     return jsonify(questionnaire.get_qac_modules())
 
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
-           methods=["GET"])
+@app.route(
+    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    methods=["GET"]
+)
 def api_questionnaire_get_qac(questionnaire_uuid: str, qac_name: str):
     """
     Parameters:

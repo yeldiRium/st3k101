@@ -20,11 +20,10 @@ def api_account_current():
     """
     Parameters:
         None.
-    TODO: update error to return 403 and Not Authorized error
 
     Response Codes:
         200: If a user is currently logged in, their account data is returned.
-        404: If no user is logged in.
+        403: If no user is logged in.
 
     Response class:
         200: {
@@ -35,8 +34,8 @@ def api_account_current():
             },
             "uuid": String
         }
-        404: {
-            "error": "Not found."
+        403: {
+            "error": "Lacking credentials."
             "result": "error"
         }
 
@@ -44,26 +43,25 @@ def api_account_current():
         locale_name is a 2/3-character shorthand for a babel language.
     """
     if not g._current_user:
-        return make_error(_("Not found."), 404)
+        return make_error(_("Lacking credentials."), 403)
     return jsonify(g._current_user)
 
 
-@app.route("/api/account/<string:account_uuid>", methods=["PUT"])
+@app.route("/api/account/current", methods=["PUT"])
 @expect_optional(('email', str), ('locale', str))
-def api_account_update(account_uuid: str, email: str='', locale: str=''):
+def api_account_update(email: str='', locale: str=''):
     """
     Edits the currently logged in user's account by updating optionally email or
     locale.
-    TODO: update signature, remove uuid parameter
 
     Parameters:
-        account_uuid: String uuid for the account that should be updated.
         email: String The new email for the account.
         locale: String The new locale for the account. 2/3-character shorthand.
 
     Response Codes:
         200: If the account was updated accordingly. Returns the updated account
             data.
+        400: If the given locale is not a valid shorthand.
         403: If authorization failed.
         404: If the given account_uuid does not belong to an account.
 
@@ -72,12 +70,14 @@ def api_account_update(account_uuid: str, email: str='', locale: str=''):
             "account": DataClient (see GET /api/account/current)
             "result": "Account updated."
         }
-
+        400: {
+            "error": "Invalid locale.",
+            "result": "error
+        }
         403: {
             "error": "Lacking credentials",
             "result": "error"
         }
-
         404: {
             "error": "Not found.",
             "result": "error"
@@ -86,28 +86,19 @@ def api_account_update(account_uuid: str, email: str='', locale: str=''):
     Explanation:
         locale_name is a 2/3-character shorthand for a babel language.
     """
-    try:
-        client = DataClient(account_uuid)
-
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_error(_("Not found."), 404)
-
-    if g._current_user is None:
-        return make_error(_("Lacking credentials"), 403)
-
-    if g._current_user.uuid != account_uuid:
-        return make_error(_("Lacking credentials"), 403)
+    if not g._current_user:
+        return make_error(_("Lacking credentials."), 403)
 
     if email is not None:
-        client.email = email
+        g._current_user.email = email
 
     if locale is not None:
         try:
-            client.locale = Language[locale]
+            g._current_user.locale = Language[locale]
         except KeyError:
-            pass
+            return make_error(_("Invalid locale."), 400)
 
     return jsonify({
         "result": _("Account updated."),
-        "account": client
+        "account": g._current_user
     })

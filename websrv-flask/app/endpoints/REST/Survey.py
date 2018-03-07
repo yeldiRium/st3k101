@@ -7,7 +7,7 @@ from flask.json import jsonify
 
 from framework import make_error
 from framework.exceptions import AccessControlException, \
-    ObjectDoesntExistException, DuplicateSurveyNameException
+    ObjectDoesntExistException
 from framework.internationalization import _
 from main import app
 from framework.flask_request import expect
