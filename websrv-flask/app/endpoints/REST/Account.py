@@ -27,7 +27,7 @@ def api_account_current():
         404: If no user is logged in.
 
     Response class:
-    200: {
+        200: {
             "class": "model.DataClient.DataClient",
             "fields": {
                 "email": String
@@ -35,7 +35,7 @@ def api_account_current():
             },
             "uuid": String
         }
-    404: {
+        404: {
             "error": "Not found."
             "result": "error"
         }
@@ -68,24 +68,17 @@ def api_account_update(account_uuid: str, email=None, locale=None):
         404: If the given account_uuid does not belong to an account.
 
     Response Class:
-    200: {
-            "account": {
-                "class": "model.DataClient.DataClient",
-                "fields": {
-                    "email": String,
-                    "locale_name": String
-                },
-                "uuid": String
-            },
+        200: {
+            "account": DataClient (see GET /api/account/current)
             "result": "Account updated."
         }
 
-    403: {
+        403: {
             "error": "Lacking credentials",
             "result": "error"
         }
 
-    404: {
+        404: {
             "error": "Not found.",
             "result": "error"
         }

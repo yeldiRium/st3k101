@@ -13,21 +13,20 @@ def instantiate_by_name(module_name: str, class_name: str, uuid: str) -> DataObj
 
 
 class MixedSetProxyIter(Iterator):
-
     def __init__(self, proxy):
         self.__proxy = proxy
         self.__i = 0
 
     def __next__(self):
         if self.__i < len(self.__proxy):
-            module_name, class_name, uuid  = self.__proxy._get_proxee()[self.__i]
+            module_name, class_name, uuid = self.__proxy._get_proxee()[self.__i]
             self.__i += 1
             return instantiate_by_name(module_name, class_name, uuid)
         else:
             raise StopIteration
 
-class MixedSetProxy():
 
+class MixedSetProxy():
     def __init__(self, obj, attr_name, reference_type: PointerType = PointerType.WEAK):
         self.__instance = obj
         self.__attr_name = attr_name
@@ -77,14 +76,14 @@ class MixedSetProxy():
 
     def add(self, item):
         if item not in self:
-            instance_record = (item.__module__, item.__class__.__name__, item.uuid)
+            instance_record = [item.__module__, item.__class__.__name__, item.uuid]
             self._get_proxee().append(instance_record)
             if self.__reference_type == PointerType.STRONG:
                 item.inc_refcount()
             self.__instance._set_member(self.__attr_name, self._get_proxee())
 
     def discard(self, item):
-        instance_record = (item.__module__, item.__class__.__name__, item.uuid)
+        instance_record = [item.__module__, item.__class__.__name__, item.uuid]
         try:
             self._get_proxee().remove(instance_record)
             if self.__reference_type == PointerType.STRONG:
@@ -93,8 +92,8 @@ class MixedSetProxy():
         except: pass
 
     def remove(self, item):
-        instance_record = (item.__module__, item.__class__.__name__, item.uuid)
-        if not instance_record in self._get_proxee():
+        instance_record = [item.__module__, item.__class__.__name__, item.uuid]
+        if instance_record not in self._get_proxee():
             raise KeyError
         self._get_proxee().remove(instance_record)
         if self.__reference_type == PointerType.STRONG:

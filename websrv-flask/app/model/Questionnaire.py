@@ -50,9 +50,6 @@ class Questionnaire(DataObject):
         # default locale
         if question_group not in self.questiongroups:
             raise QuestionGroupNotFoundException
-        for question in question_group.questions:
-            if question.text.get_default_text() == text:
-                raise DuplicateQuestionNameException()
         question_group.add_new_question(text)
         self.question_count += 1
         return question_group
