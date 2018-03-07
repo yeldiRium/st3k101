@@ -50,7 +50,7 @@ def api_account_current():
 
 @app.route("/api/account/<string:account_uuid>", methods=["PUT"])
 @expect_optional(('email', str), ('locale', str))
-def api_account_update(account_uuid: str, email=None, locale=None):
+def api_account_update(account_uuid: str, email: str='', locale: str=''):
     """
     Edits the currently logged in user's account by updating optionally email or
     locale.

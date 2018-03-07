@@ -38,7 +38,7 @@ def api_qac_modules():
 
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>/qac", methods=["GET"])
-def api_questionnaire_list_qacs(questionnaire_uuid):
+def api_questionnaire_list_qacs(questionnaire_uuid: str):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire whose qacs
@@ -85,7 +85,7 @@ def api_questionnaire_list_qacs(questionnaire_uuid):
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
            methods=["GET"])
-def api_questionnaire_get_qac(questionnaire_uuid, qac_name):
+def api_questionnaire_get_qac(questionnaire_uuid: str, qac_name: str):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire whose qac is
@@ -153,7 +153,7 @@ def api_questionnaire_get_qac(questionnaire_uuid, qac_name):
     "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
     methods=["POST"]
 )
-def api_qac_enable(questionnaire_uuid, qac_name):
+def api_qac_enable(questionnaire_uuid: str, qac_name: str):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire in question.
@@ -212,7 +212,7 @@ def api_qac_enable(questionnaire_uuid, qac_name):
     "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
     methods=["PUT"]
 )
-def api_qac_configure(questionnaire_uuid, qac_name):
+def api_qac_configure(questionnaire_uuid: str, qac_name: str):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire in question.
@@ -320,7 +320,7 @@ def api_qac_configure(questionnaire_uuid, qac_name):
     "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
     methods=["DELETE"]
 )
-def api_qac_disable(questionnaire_uuid, qac_name):
+def api_qac_disable(questionnaire_uuid: str, qac_name: str):
     """
     TODO: throws 500
 

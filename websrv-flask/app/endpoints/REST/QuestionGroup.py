@@ -67,13 +67,43 @@ def api_questiongroup_create(questionnaire_uuid='', name=''):
     })
 
 
-@app.route("/api/question_group/<question_group_uuid>", methods=["PUT"])
+@app.route("/api/question_group/<string:qeustion_group_uuid>", methods=["GET"])
+def api_questiongroup_get_single(question_group_uuid: str=''):
+    """
+    """
+    try:
+        question_group = QuestionGroup(question_group_uuid)
+
+    except ObjectDoesntExistException:
+        return make_error(_("No such QuestionGroup."), 404)
+    except AccessControlException:
+        return make_error(_("Lacking credentials"), 403)
+
+    try:
+        if name is not None:
+            question_group.set_name(name)
+        if color is not None:
+            question_group.set_color(color)
+        if text_color is not None:
+            question_group.text_color = text_color
+    except ValueError as e:
+        return make_error(
+            _("Parameter malformatted: {}".format(e.args[0])),
+            400
+        )
+    except AccessControlException:
+        return make_error(_("Lacking credentials"), 403)
+
+    return jsonify(question_group)
+
+
+@app.route("/api/question_group/<string:question_group_uuid>", methods=["PUT"])
 @expect_optional(('name', str), ('color', str), ('text_color', str))
 def api_questiongroup_update(
-        question_group_uuid='',
-        name=None,
-        color=None,
-        text_color=None
+        question_group_uuid: str='',
+        name: str=None,
+        color: str=None,
+        text_color: str=None
 ):
     """
     Parameters:

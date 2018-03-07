@@ -31,7 +31,7 @@ def api_survey_list():
 
 @app.route("/api/survey", methods=["POST"])
 @expect(('name', str))
-def api_survey_create(name=''):
+def api_survey_create(name: str=''):
 
     # do not create a survey if the user is not logged in
     if g._current_user is None:
@@ -52,7 +52,7 @@ def api_survey_create(name=''):
 
 @app.route("/api/survey", methods=["PUT"])
 @expect(('uuid', str), ('name', str))
-def api_survey_update(uuid="", name=""):
+def api_survey_update(uuid: str="", name: str=""):
 
     try:
         survey = Survey(uuid)
@@ -69,7 +69,7 @@ def api_survey_update(uuid="", name=""):
 
 @app.route("/api/survey", methods=["DELETE"])
 @expect(('uuid', str))
-def api_survey_delete(uuid=''):
+def api_survey_delete(uuid: str=''):
     try:
         survey = Survey(uuid)
         # TODO: delete subobjects

@@ -22,7 +22,7 @@ from model.Survey import Survey
 
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["GET"])
-def api_questionnaire_get_single(questionnaire_uuid):
+def api_questionnaire_get_single(questionnaire_uuid: str):
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
         return jsonify(questionnaire)
@@ -33,10 +33,9 @@ def api_questionnaire_get_single(questionnaire_uuid):
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv",
            methods=["GET"])
-def api_questionnaire_download_csv(questionnaire_uuid):
+def api_questionnaire_download_csv(questionnaire_uuid: str):
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
-
     except (AccessControlException, ObjectDoesntExistException):
         return make_error(_("Not found."), 404)
 
@@ -67,14 +66,12 @@ def api_questionnaire_download_csv(questionnaire_uuid):
 
 @app.route("/api/questionnaire", methods=["POST"])
 @expect(('survey', str), ('questionnaire', Any))
-def api_questionnaire_create(survey='', questionnaire=None):
-
+def api_questionnaire_create(survey: str='', questionnaire: str=''):
     if g._current_user is None:
         return make_error(_("Lacking credentials"), 403)
 
     try:
         the_survey = Survey(survey)
-
     except (AccessControlException, ObjectDoesntExistException):
         return make_error(_("Not Found."), 404)
 
@@ -108,7 +105,7 @@ def api_questionnaire_create(survey='', questionnaire=None):
 @app.route("/api/questionnaire", methods=["PUT"])
 @expect(('uuid', str))
 @expect_optional(('name', str), ('description', str))
-def api_questionnaire_update(uuid='', name=None, description=None):
+def api_questionnaire_update(uuid:str ='', name: str='', description: str=''):
     try:
         questionnaire = Questionnaire(uuid)
 
@@ -130,7 +127,7 @@ def api_questionnaire_update(uuid='', name=None, description=None):
 
 @app.route("/api/questionnaire", methods=["DELETE"])
 @expect(('uuid', str), ('survey', str))
-def api_questionnaire_delete(uuid='', survey=''):
+def api_questionnaire_delete(uuid: str='', survey: str=''):
     try:
         the_survey = Survey(survey)
         questionnaire = Questionnaire(uuid)
