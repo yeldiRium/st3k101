@@ -69,14 +69,7 @@ def api_account_update(account_uuid: str, email=None, locale=None):
 
     Response Class:
         200: {
-            "account": {
-                "class": "model.DataClient.DataClient",
-                "fields": {
-                    "email": String,
-                    "locale_name": String
-                },
-                "uuid": String
-            },
+            "account": DataClient (see GET /api/account/current)
             "result": "Account updated."
         }
 

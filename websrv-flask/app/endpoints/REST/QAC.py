@@ -51,22 +51,8 @@ def api_questionnaire_list_qacs(questionnaire_uuid):
         404: If the uuid does not belong to a Questionnaire.
 
     Response Class:
-        200: [{
-            "class": "model.query_access_control.QACModules." + QAC type,
-            "fields": {
-                "description": DataString,
-                "name": DataString,
-                "parameters": [{
-                    "class": "model.query_access_control." + QAC parameter type,
-                    "fields": {
-                        "description": DataString,
-                        "name": DataString
-                    },
-                    "uuid": String
-                }]
-            },
-            "uuid": String
-        }]
+        200: [QACModule] (See GET
+            /api/questionnaire/questionnaire_uuid/qac/qac_name)
         403: {
             "error": "Lacking credentials",
             "result": "error"
@@ -114,7 +100,7 @@ def api_questionnaire_get_qac(questionnaire_uuid, qac_name):
             not belong to a QAC object on the Questionnaire.
 
     Response Class:
-        200: {
+        200: QACMOdule: {
             "class": "model.query_access_control.QACModules." + qac type,
             "fields": {
                 "description": DataString,
@@ -184,7 +170,7 @@ def api_qac_enable(questionnaire_uuid, qac_name):
     Response Class:
         200: {
             "questionnaire": Questionnaire
-                (see /api/questionnaire/questionnaire_uuid)
+                (see GET /api/questionnaire/questionnaire_uuid)
             "result": "QACModule added to Questionnaire."
         }
         403: {
@@ -254,7 +240,7 @@ def api_qac_configure(questionnaire_uuid, qac_name):
         200: {
             "errors": [String],
             "qacModule": QACModule (see
-                /api/questionnaire/questionnaire_uuid/qac/qac_name),
+                GET /api/questionnaire/questionnaire_uuid/qac/qac_name),
             "result": "QACModule updated." / "Nothing updated."
                 / "Partially updated."
         }
@@ -354,7 +340,7 @@ def api_qac_disable(questionnaire_uuid, qac_name):
     Response Class:
         200: {
             "questionnaire": Questionnaire
-                (see /api/questionnaire/questionnaire_uuid)
+                (see GET /api/questionnaire/questionnaire_uuid)
             "result": "QACModule disabled."
         }
         403: {

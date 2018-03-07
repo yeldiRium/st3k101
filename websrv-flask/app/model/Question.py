@@ -27,6 +27,9 @@ class Question(DataObject):
     def add_question_result(self, question_result: QuestionResult):
         self.results.add(question_result)
 
+    def update_text(self, text):
+        self.text.set_locale(text)
+
 
 # These are here to prevent circular dependencies in QuestionStatistic and
 # QuestionResult modules
