@@ -15,7 +15,6 @@ from framework.memcached import get_memcache
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
 
-
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
 app.json_encoder = DataObjectEncoder
@@ -60,7 +59,8 @@ def before_request():
             g._current_session_token = session_token
 
     # Setting the locale for the current request
-    g._locale = g._config["BABEL_DEFAULT_LOCALE"]  # use default locale if all fails
+    g._locale = g._config[
+        "BABEL_DEFAULT_LOCALE"]  # use default locale if all fails
 
     # check HTTP accept-language
     http_locale = request.accept_languages.best_match(babel_languages.keys())
@@ -92,7 +92,6 @@ def before_request():
 
 @app.after_request
 def after_request(response: Response):
-
     if request.args.get('locale'):
         if request.args.get('locale_cookie', 1) == 1:
             response.set_cookie('locale', g._locale.lower())
@@ -107,6 +106,7 @@ def shutdown_session(exception=None):
     :param exception: Exception Did an exception happen?
     """
     pass
+
 
 # error handlers for common errors, in case we didn't catch one
 @app.errorhandler(ClientIpChangedException)
@@ -138,11 +138,13 @@ def internal_server_error_handler(error):
         print("No mutexes to free.", file=sys.stderr)
     abort(500)
 
+
 @app.errorhandler(AccessControlException)
 def handle_access_control_violation(error):
     print("Access Control Exception:", file=sys.stderr)
     print(traceback.format_exc(), file=sys.stderr)
     abort(404)
+
 
 @app.context_processor
 def inject_languages():
@@ -164,6 +166,7 @@ def home():
     """
     return render_template("home_index.html")
 
+
 # Dashboard / Backend for DataClients
 @app.route("/be/", methods=["GET"])
 def backend():
@@ -173,6 +176,7 @@ def backend():
     if not g._current_user:
         return render_template('home_index.html', not_logged_in=True)
     return render_template("backend.html")
+
 
 # Survey Frontend, what DataSubject sees
 import endpoints.SurveyFrontend
@@ -188,6 +192,7 @@ import endpoints.REST.Question
 import endpoints.REST.QAC
 import endpoints.REST.Account
 import endpoints.REST.Locale
+
 
 @app.route("/test/runall", methods=["POST"])
 def api_test_runall():
