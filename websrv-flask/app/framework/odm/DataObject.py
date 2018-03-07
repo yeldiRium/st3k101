@@ -54,7 +54,10 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
             try:
                 document = self._collection().find_one({u'_id': ObjectId(uuid)})
                 if not document:
-                    raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
+                    raise ObjectDoesntExistException(
+                        "No PersistentObject with uuid {}".format(uuid),
+                        self.__class__.__name__
+                    )
 
                 self.__from_document(document)
 
@@ -68,7 +71,10 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
 
                     self.__readonly = True
             except InvalidId as e:
-                raise ObjectDoesntExistException("No PersistentObject with uuid {}".format(uuid))
+                raise ObjectDoesntExistException(
+                    "No PersistentObject with uuid {}".format(uuid),
+                        self.__class__.__name__
+                )
         else:  # create a new mongodb document for self. Init members here.
             self._id = self._collection().insert_one(self._document_skeleton()).inserted_id
             setattr(self, "__ref_count", 0)
