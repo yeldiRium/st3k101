@@ -34,13 +34,13 @@ class Questionnaire(DataObject):
         return questionnaire
 
     def add_question_group(self, name):
-        if next((x for x in self.questiongroups if x.name.get_default_text() == name),
-                None) is not None:
-            raise DuplicateQuestionGroupNameException()
-
         question_group = QuestionGroup.create_question_group(name)
         self.questiongroups.add(question_group)
         return question_group
+
+    def remove_question_group(self, question_group: QuestionGroup):
+        self.questiongroups.remove(question_group)
+        question_group.remove()
 
     def add_question_to_group(self, question_group: QuestionGroup,
                               text: str) -> QuestionGroup:
