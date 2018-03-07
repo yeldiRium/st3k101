@@ -23,27 +23,93 @@ from model.Survey import Survey
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["GET"])
 def api_questionnaire_get_single(questionnaire_uuid: str):
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-        return jsonify(questionnaire)
+    """
+    Parameters:
+        questionnaire_uuid: String The uuid for the Questionnaire to retrieve.
 
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_error(_("Not found.", 404))
+    Response Codes:
+        200: Questionnaire is returned.
+        404: The questionnaire_uuid doesn't belong to a valid Questionnaire.
+
+    Response Class:
+        200: Questionnaire {
+            "class": "model.Questionnaire.Questionnaire",
+            "fields": {
+                "answer_count": Integer,
+                "description": {
+                    "class": "model.I15dString.I15dString",
+                    "fields": {
+                        "default_locale": language_shorthand: String,
+                        "locales": {
+                            language_shorthand: questionnaire_description: String
+                        }
+                    },
+                    "uuid": String
+                },
+                "name": {
+                    "class": "model.I15dString.I15dString",
+                    "fields": {
+                        "default_locale": language_shorthand: String,
+                        "locales": {
+                            language_shorthand: questionnaire_name: String
+                        }
+                    },
+                    "uuid": String
+                },
+                "original_locale": language_shorthand: String,
+                "question_count": Integer,
+                "questiongroups": [QuestionGroup] (see GET
+                    /api/question_group/question_group_uuid)
+            },
+            "uuid": String
+        }
+        404: {
+            "error": "No such Questionnaire.",
+            "result": "error"
+        }
+    """
+    try:
+        return jsonify(Questionnaire(questionnaire_uuid))
+    except ObjectDoesntExistException:
+        return make_error(_("Not found."), 404)
 
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv",
            methods=["GET"])
 def api_questionnaire_download_csv(questionnaire_uuid: str):
+    """
+    Parameters:
+        questionnaire_uuid: String The uuid for the Questionnaire for which to
+            generate a statistics csv.
+
+    Response Codes:
+        200: Questionnaire's statistic is returned.
+        403: No user is logged in
+        404: The questionnaire_uuid doesn't belong to a valid Questionnaire.
+
+    Response Class:
+        200: .csv file
+        403: {
+            "error": "Lacking credentials",
+            "result": "error"
+        }
+        404: {
+            "error": "No such Questionnaire.",
+            "result": "error"
+        }
+    """
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_error(_("Not found."), 404)
+    except ObjectDoesntExistException:
+        return make_error(_("No such Questionnaire."), 404)
+    except AccessControlException:
+        return make_error(_("Lacking credentials."), 403)
 
     # QuestionResults are not readable_by_anonymous, so the following code
     # will fail if Questionnaire was accessed anonymously
     # In other words: only the real owner may download results
     if not questionnaire.accessible():
-        return make_error(_("Not found"), 404)
+        return make_error(_("Lacking credentials."), 403)
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -65,36 +131,71 @@ def api_questionnaire_download_csv(questionnaire_uuid: str):
 
 
 @app.route("/api/questionnaire", methods=["POST"])
-@expect(('survey', str), ('questionnaire', Any))
-def api_questionnaire_create(survey: str='', questionnaire: str=''):
+@expect(
+    ('survey_uuid', str),
+    ('questionnaire', Any)
+)
+def api_questionnaire_create(survey_uuid: str='', questionnaire: Any=None):
+    """
+    Parameters:
+        survey_uuid: String The uuid for the Survey to create a Questionnaire
+            on.
+        questionnaire: Object A JSON object with different parameters for the
+            Questionnaire.
+
+    Response Codes:
+        200: Questionnaire is successfully created.
+        400: Some parameter is missing. Only questionnaire.name and
+            questionnaire.description are required. The API doesn't tell you,
+            which one is missing.
+        403: No user is logged in or the current user doesn't have permission
+            to create a Questionnaire on the given Survey.
+        404: The survey_uuid doesn't belong to a valid Survey.
+
+    Response Class:
+        200: {
+            "questionnaire": Questionnaire (see GET
+                /api/questionnaire/questionnaire_uuid)
+            "result": "Questionnaire created."
+        }
+        400: {
+            "error": "Missing parameter.",
+            "result": "error"
+        }
+        403: {
+            "error": "Lacking credentials",
+            "result": "error"
+        }
+        404: {
+            "error": "No such Questionnaire.",
+            "result": "error"
+        }
+    """
     if g._current_user is None:
         return make_error(_("Lacking credentials"), 403)
 
     try:
-        the_survey = Survey(survey)
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_error(_("Not Found."), 404)
+        the_survey = Survey(survey_uuid)
+    except ObjectDoesntExistException:
+        return make_error(_("No such Survey."), 404)
+    except AccessControlException:
+        return make_error(_("Lacking credentials."), 403)
 
     required_args = {"name", "description"}
     if not all((arg in questionnaire for arg in required_args)):
-        return make_error(_("Missing parameter "), 400)
+        return make_error(_("Missing parameter."), 400)
 
-    try:
-        if "template" in questionnaire:
-            the_questionnaire = the_survey.add_new_questionnaire_from_template(
-                questionnaire["name"],
-                questionnaire["description"],
-                questionnaire["template"]
-            )
-        else:
-            the_questionnaire = the_survey.add_new_questionnaire(
-                questionnaire["name"],
-                questionnaire["description"]
-            )
-
-    except DuplicateQuestionnaireNameException:
-        return make_error(
-            _("A Questionnaire with that name already exists"), 400)
+    if "template" in questionnaire:
+        the_questionnaire = the_survey.add_new_questionnaire_from_template(
+            questionnaire["name"],
+            questionnaire["description"],
+            questionnaire["template"]
+        )
+    else:
+        the_questionnaire = the_survey.add_new_questionnaire(
+            questionnaire["name"],
+            questionnaire["description"]
+        )
 
     return jsonify({
         "result": "Questionnaire created.",
@@ -102,22 +203,53 @@ def api_questionnaire_create(survey: str='', questionnaire: str=''):
     })
 
 
-@app.route("/api/questionnaire", methods=["PUT"])
-@expect(('uuid', str))
+@app.route("/api/questionnaire/<questionnaire_uuid>", methods=["PUT"])
 @expect_optional(('name', str), ('description', str))
-def api_questionnaire_update(uuid:str ='', name: str='', description: str=''):
+def api_questionnaire_update(
+        questionnaire_uuid: str= '',
+        name: str= '',
+        description: str= ''
+):
+    """
+    Parameters:
+        questionnaire_uuid: String The uuid for the Questionnaire to update.
+        name: String The new name for thie Questionnaire.
+        description: String The new description for the Questionnaire.
+
+    Sets name and description for the currently set locale.
+
+    Response Codes:
+        200: Questionnaire is successfully updated.
+        403: No user is logged in or the current user doesn't have permission
+            to update the given Questionnaire.
+        404: The questionnaire_uuid doesn't belong to a valid Questionnaire.
+
+    Response Class:
+        200: {
+            "questionnaire": Questionnaire (see GET
+                /api/questionnaire/questionnaire_uuid)
+            "result": "Questionnaire updated."
+        }
+        403: {
+            "error": "Lacking credentials",
+            "result": "error"
+        }
+        404: {
+            "error": "No such Questionnaire.",
+            "result": "error"
+        }
+    """
     try:
-        questionnaire = Questionnaire(uuid)
+        questionnaire = Questionnaire(questionnaire_uuid)
 
-        # writing to readonly object will raise AccessControlException
         if name is not None:
-            questionnaire.name.set_locale(name)
-
+            questionnaire.set_name(name)
         if description is not None:
-            questionnaire.description.set_locale(description)
-
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_error(_("Not found."), 404)
+            questionnaire.set_description(description)
+    except ObjectDoesntExistException:
+        return make_error(_("No such Questionnaire."), 404)
+    except AccessControlException:
+        return make_error(_("Lacking credentials."), 403)
 
     return jsonify({
             "result": _("Questionnaire updated."),
@@ -125,18 +257,47 @@ def api_questionnaire_update(uuid:str ='', name: str='', description: str=''):
         })
 
 
-@app.route("/api/questionnaire", methods=["DELETE"])
-@expect(('uuid', str), ('survey', str))
-def api_questionnaire_delete(uuid: str='', survey: str=''):
+@app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["DELETE"])
+@expect(('survey_uuid', str))
+def api_questionnaire_delete(questionnaire_uuid: str='', survey_uuid: str=''):
+    """
+    Parameters:
+        questionnaire_uuid: String The uuid for the Questionnaire to update.
+        survey_uuid: String The uuid for the Survey on which to delete the
+            Questionnaire.
+
+    Response Codes:
+        200: Questionnaire is successfully deleted.
+        403: No user is logged in or the current user doesn't have permission
+            to delete the given Questionnaire.
+        404: The questionnaire_uuid or survey_uuid doesn't belong to a valid
+            Questionnaire.
+
+    Response Class:
+        200: {
+            "result": "Questionnaire deleted."
+        }
+        403: {
+            "error": "Lacking credentials",
+            "result": "error"
+        }
+        404: {
+            "error": "No such Questionnaire." / "No such Survey.",
+            "result": "error"
+        }
+    """
     try:
-        the_survey = Survey(survey)
-        questionnaire = Questionnaire(uuid)
+        the_survey = Survey(survey_uuid)
+        questionnaire = Questionnaire(questionnaire_uuid)
 
         # might raise AccessControlException if readonly
         the_survey.remove_questionnaire(questionnaire)
-        questionnaire.remove()
-
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_error(_("Not found."), 404)
+    except ObjectDoesntExistException as e:
+        if e.args[1] == "Questionnaire":
+            return make_error(_("No such Questionnaire."), 404)
+        else:
+            return make_error(_("No such Survey."), 404)
+    except AccessControlException:
+        return make_error(_("Lacking credentials."), 403)
 
     return jsonify({"result": _("Questionnaire deleted.")})

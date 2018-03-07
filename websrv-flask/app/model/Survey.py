@@ -29,11 +29,6 @@ class Survey(DataObject):
 
     def add_new_questionnaire(self, name: str,
                               description: str) -> Questionnaire:
-        for questionnaire in self.questionnaires:
-            if questionnaire.name.get_default_text() == name:
-                raise DuplicateQuestionnaireNameException(
-                    self.name.get_default_text(), name)
-
         questionnaire = Questionnaire.create_questionnaire(name, description)
         self.questionnaires.add(questionnaire)
         return questionnaire

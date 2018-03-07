@@ -33,6 +33,12 @@ class Questionnaire(DataObject):
         questionnaire.original_locale = g._locale
         return questionnaire
 
+    def set_name(self, name):
+        self.name.set_locale(name)
+
+    def set_description(self, description):
+        self.description.set_locale(description)
+
     def add_question_group(self, name):
         question_group = QuestionGroup.create_question_group(name)
         self.questiongroups.add(question_group)
