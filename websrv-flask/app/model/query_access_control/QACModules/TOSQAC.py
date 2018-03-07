@@ -13,31 +13,6 @@ from model.query_access_control.QACTextParameter import QACI15dTextParameter
 
 class TOSQAC(QACModule):
 
-    def set_config_value(self, param_uuid: str, value: str) -> Optional[str]:
-        """
-        Sets a QACParameter of the QACModule.
-        :param param_uuid: str The QACParameter.uuid of the parameter to set
-        :param value: str The value (as given by the user in http serialized
-        form) to set the parameter to
-        :returns: Optional[str] An error message, if the config param couldn't
-        be set for some reason
-        """
-        updated = False
-
-        for param in self.parameters:
-            if param.uuid != param_uuid:
-                continue
-
-            if type(param) is QACI15dTextParameter:
-                if type(value) is not str:
-                    return  _("QACParameter has wrong type")
-
-                param.text.set_locale(value, g._locale)
-                updated = True
-
-        if not updated:
-            return _("QACParameter not found")
-
     def render_questionnaire_template(self, errors: List[I18n]) -> str:
 
         agb_agreement_text = None

@@ -9,8 +9,7 @@ from werkzeug.wrappers import Response
 import auth
 import test
 from framework.exceptions import *
-from framework.internationalization import list_sorted_by_long_name, \
-    HTTP_LANGUAGE_TAGS
+from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages
 from framework.memcached import get_memcache
 from framework.odm.DataObjectEncoder import DataObjectEncoder
@@ -116,7 +115,7 @@ def client_ip_changed(error):
     Called when IP pinning indicates a changed client ip between sessions
     :param error: Exception The exception object
     """
-    return "LUL you're a fake and I know it"
+    return make_response(_("U been doin bad stuff"), 403)
 
 
 @app.errorhandler(404)
@@ -125,7 +124,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: L'Error
     """
-    return make_response("This is not the url you're looking for.", 404)
+    return make_response(_("U do not kno de wae"), 404)
 
 
 @app.errorhandler(500)

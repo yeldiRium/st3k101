@@ -5,7 +5,7 @@
 from flask import make_response, request
 from flask.json import jsonify
 
-from businesslogic.QAC import QAC
+from model.query_access_control.QACModules import QAC
 from framework import make_error
 from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException, QACAlreadyEnabledException, \
