@@ -16,16 +16,15 @@ class Survey(DataObject):
 
     @staticmethod
     def create_survey(name: str):
-        for survey in g._current_user.surveys:
-            if survey.name.get_default_text() == name:
-                raise DuplicateSurveyNameException(name)
-
         survey = Survey()
         survey.name = I15dString()
         survey.name.set_locale(name)
         survey.date_created = datetime.now().timestamp()
         survey.original_locale = g._locale
         return survey
+
+    def set_name(self, name):
+        self.name.set_locale(name)
 
     def add_new_questionnaire(self, name: str,
                               description: str) -> Questionnaire:
