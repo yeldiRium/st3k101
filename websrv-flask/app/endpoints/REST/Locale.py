@@ -19,7 +19,7 @@ def api_locales():
         200: Returns a list of tuples of all used locales and their native name.
 
     Response class:
-    200: [
+        200: [
             [
                 Shorthand locale name: String,
                 Native locale name: String
