@@ -78,7 +78,25 @@ def api_questiongroup_get_single(question_group_uuid: str=''):
         404: The question_group_uuid doesn't belong to a valid QuestionGroup.
 
     Response Class:
-        200:  QuestionGroup (see GET /api/question_group/question_group_uuid)
+        200:  QuestionGroup {
+            "class": "model.QuestionGroup.QuestionGroup",
+            "fields": {
+                "color": String,
+                "name": {
+                    "class": "model.I15dString.I15dString",
+                    "fields": {
+                        "default_locale": language_shorthand: String,
+                        "locales": {
+                            language_shorthand: question_group_name: String
+                        }
+                    },
+                    "uuid": String
+                },
+                "questions": [Question], (see GET /api/question/question_uuid)
+                "text_color": String
+            },
+            "uuid": String
+        }
         404: {
             "error": "No such QuestionGroup.",
             "result": "error"
