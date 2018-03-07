@@ -4,7 +4,7 @@ from typing import Any
 
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
-from flask import g, jsonify
+from flask import g
 
 from framework.exceptions import ObjectDoesntExistException, BadQueryException, AccessControlException
 from framework.memcached import get_memcache
@@ -361,11 +361,6 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         :return: bool Whether the currently logged in user may access this object.
         """
         return self.accessible_by(g._current_user)
-
-
-    def __repr__(self):
-        return jsonify(self)
-
 
     @property
     def readonly(self):
