@@ -35,7 +35,7 @@ def get_locale():
 
 @babel.timezoneselector
 def get_timezone():
-    return "Europe/Berlin"
+    return g._config["BABEL_DEFAULT_TIMEZONE"]
 
 
 # before and after request foo, things to do before or after each request
