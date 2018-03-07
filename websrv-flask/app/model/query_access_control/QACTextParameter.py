@@ -9,28 +9,61 @@ from model.query_access_control.QACParameter import QACParameter
 
 
 class QACTextParameter(QACParameter):
+
+    exposed_properties = {
+        "text"
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.text is None:
-            self.text = _(
-                "This is a placeholder text, replace it to your liking."
-            )
+            self.text = _("This is a placeholder text, replace it to your "
+                          "liking.")
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text: str):
+        if type(text) is not str:
+            raise TypeError
+
+        self._text = text
 
 
 QACTextParameter.name = DataString(QACTextParameter, "name")
 QACTextParameter.description = DataString(QACTextParameter, "description")
-QACTextParameter.text = DataAttribute(QACTextParameter, "text")
+QACTextParameter._text = DataAttribute(QACTextParameter, "_text",
+                                       serialize=False)
 
 
 class QACI15dTextParameter(QACParameter):
+
+    exposed_properties = {
+        "text"
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.text is None:
             self.text = I15dString()
-            self.text.set_locale(_("This is a placeholder text, "
-                                   "replace it to your liking."), g._locale)
+            self.text.set_locale(_("This is a placeholder text, replace it to "
+                                   "your liking."))
+
+        @property
+        def text(self):
+            return self._text
+
+        @text.setter
+        def text(self, text: str):
+            if type(text) is not str:
+                raise TypeError
+
+            self.text.set_locale(text)
 
 
 QACI15dTextParameter.name = DataString(QACI15dTextParameter, "name")
 QACI15dTextParameter.description = DataString(QACI15dTextParameter, "description")
-QACI15dTextParameter.text = DataPointer(QACI15dTextParameter, "text", I15dString)
+QACI15dTextParameter._text = DataPointer(QACI15dTextParameter, "_text",
+                                         I15dString, serialize=False)

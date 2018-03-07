@@ -4,10 +4,24 @@ from model.query_access_control.QACParameter import QACParameter
 
 
 class QACCheckboxParameter(QACParameter):
-    pass
+    exposed_properties = {
+        "value"
+    }
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, le_value):
+        if type(le_value) is not bool:
+            raise TypeError
+
+        self._value = le_value
 
 
 QACCheckboxParameter.name = DataString(QACCheckboxParameter, "name")
 QACCheckboxParameter.description = DataString(QACCheckboxParameter,
                                               "description")
-QACCheckboxParameter.value = DataAttribute(QACCheckboxParameter, "value")
+QACCheckboxParameter._value = DataAttribute(QACCheckboxParameter, "_value",
+                                            serialize=False)
