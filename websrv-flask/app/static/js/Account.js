@@ -5,22 +5,19 @@ angular.module('Account', ['ngRoute', 'API', 'Utility'])
     }])
     .controller('AccountController', ['$scope', '$http', 'Flash', 'Account', 'Locales',
         function ($scope, $http, Flash, Account, Locales) {
-            $scope.loading = "init";
+            $scope.loading = "loading";
 
             $scope.$watch("loading", new_value => {
-                console.log(new_value);
                 $scope.loading = new_value;
             });
 
             Account.current().fork(data => {
-                $scope.loading = "error";
+                $scope.$apply(() => $scope.loading = "error");
                 console.error(data)
             }, data => {
-                $scope.loading = "done";
+                $scope.$apply(() => $scope.loading = "done");
                 console.log(data)
             });
-
-            $scope.loading = "loading";
 
             Account.update({"email": "blub@blub.blub"}).fork(console.error, console.log);
 
