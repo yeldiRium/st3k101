@@ -1,7 +1,21 @@
 angular.module("API", [])
-    .factory("Account", [function() {
+    .factory("ResultHandling", ["Flash", function (Flash) {
         return {
-            current: function() {
+            // Flashes the resulting error message.
+            "flashError": function (error) {
+                Flash.create("danger", error.responseJSON.error);
+                return Fluture.of(error);
+            },
+            // Flashes the resulting success message.
+            "flashSuccess": function (data) {
+                Flash.create("success", data.result);
+                return Fluture.of(data);
+            }
+        }
+    }])
+    .factory("Account", [function () {
+        return {
+            current: function () {
                 return Fluture.tryP(() => $.ajax({
                     "accepts": "application/json",
                     "method": "GET",
