@@ -30,24 +30,6 @@ Promise.waitAll = function (iterable) {
 };
 
 angular.module('Utility', [])
-    .factory('Locales', ['$http', function ($http) {
-        return {
-            query: function () {
-                return $http.get('/api/locales').then(
-                    function (result) {
-                        return new Promise(function (resolve, reject) {
-                            resolve(result.data);
-                        });
-                    },
-                    function (error) {
-                        return new Promise(function (resolve, reject) {
-                            reject(error);
-                        });
-                    }
-                );
-            }
-        }
-    }])
     .directive('ngEnter', function() {
         return function(scope, element, attrs) {
             element.bind("keydown keypress", function(event) {
