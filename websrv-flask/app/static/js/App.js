@@ -1,1 +1,1 @@
-angular.module('App', ['Surveys', 'Account', 'Utility']);
+angular.module('App', ['Surveys', 'Account', 'Utility', 'API']);

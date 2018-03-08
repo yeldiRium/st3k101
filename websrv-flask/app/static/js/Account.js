@@ -1,28 +1,30 @@
-angular.module('Account', ['ngRoute'])
+angular.module('Account', ['ngRoute', 'API', 'Utility'])
     .config(['FlashProvider', function (FlashProvider) {
         FlashProvider.setTimeout(5000);
         FlashProvider.setShowClose(true);
     }])
-    .factory('Account', ['$http', function ($http) {
-        return {
-            query: function () {
-                return $http.get('/api/account/current').then(
-                    function (result) {
-                        return new Promise(function (resolve, reject) {
-                            resolve(result.data);
-                        });
-                    },
-                    function (error) {
-                        return new Promise(function (resolve, reject) {
-                            reject(error);
-                        });
-                    }
-                );
-            }
-        }
-    }])
     .controller('AccountController', ['$scope', '$http', 'Flash', 'Account', 'Locales',
         function ($scope, $http, Flash, Account, Locales) {
+            $scope.loading = "init";
+
+            $scope.$watch("loading", new_value => {
+                console.log(new_value);
+                $scope.loading = new_value;
+            });
+
+            Account.current().fork(data => {
+                $scope.loading = "error";
+                console.error(data)
+            }, data => {
+                $scope.loading = "done";
+                console.log(data)
+            });
+
+            $scope.loading = "loading";
+
+            Account.update({"email": "blub@blub.blub"}).fork(console.error, console.log);
+
+/*
             $scope.getLocales = function() {
                 return Locales.query().then(
                     function success(result) {
@@ -87,6 +89,7 @@ angular.module('Account', ['ngRoute'])
 
             $scope.getLocales();
             $scope.query();
+            */
         }])
     .config(['$routeProvider', '$locationProvider',
         function ($routeProvider, $locationProvider) {
