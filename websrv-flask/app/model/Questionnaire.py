@@ -32,6 +32,7 @@ class Questionnaire(DataObject):
         questionnaire.answer_count = 0
         questionnaire.qac_modules = [TOSQAC.new(), EMailVerificationQAC.new()]
         questionnaire.original_locale = g._locale
+        questionnaire.published = False  # TODO: add endpoint to (un)publish
         return questionnaire
 
     def set_name(self, name):
@@ -140,5 +141,6 @@ Questionnaire.question_count = DataAttribute(Questionnaire, "question_count")
 Questionnaire.answer_count = DataAttribute(Questionnaire, "answer_count")
 Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules",
                                                 serialize=False)
+Questionnaire.published = DataAttribute(Questionnaire, "published")
 
 Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire)

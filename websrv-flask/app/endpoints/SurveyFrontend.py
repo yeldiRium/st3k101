@@ -21,6 +21,9 @@ def survey(questionnaire_uuid):
     except (AccessControlException, ObjectDoesntExistException):
         return make_response(redirect("/"))
 
+    if not questionnaire.published:
+        return make_response(redirect("/"))
+
     # generate templates for qacs without any error parameters
     qac_templates = []
     for qac_module in questionnaire.get_qac_modules():
@@ -52,6 +55,9 @@ def survey_submit(questionnaire_uuid):
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
     except (AccessControlException, ObjectDoesntExistException):
+        return make_response(redirect("/"))
+
+    if not questionnaire.published:
         return make_response(redirect("/"))
 
     # check if email address was entered and all questions were answered

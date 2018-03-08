@@ -252,6 +252,93 @@ def api_questionnaire_delete(questionnaire_uuid: str='', survey_uuid: str=''):
     return jsonify({"result": _("Questionnaire deleted.")})
 
 
+@app.route("/api/questionnaire/<string:questionnaire_uuid>/publish",
+           methods=["PATCH"])
+def api_questionnaire_publish(questionnaire_uuid: str):
+    """
+    Parameters:
+        questionnaire_uuid: String The uuid for the Questionnaire to update.
+
+    Publishes the questionnaire so it is visible for outside users.
+
+    Response Codes:
+        200: Questionnaire is successfully updated.
+        403: No user is logged in or the current user doesn't have permission
+            to update the given Questionnaire.
+        404: The questionnaire_uuid doesn't belong to a valid Questionnaire.
+
+    Response Class:
+        200: {
+            "questionnaire": Questionnaire (see GET
+                /api/questionnaire/questionnaire_uuid)
+            "result": "Questionnaire updated."
+        }
+        403: {
+            "error": "Lacking credentials",
+            "result": "error"
+        }
+        404: {
+            "error": "No such Questionnaire.",
+            "result": "error"
+        }
+    """
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        questionnaire.published = True
+    except ObjectDoesntExistException:
+        return make_error(_("No such Questionnaire."), 404)
+    except AccessControlException:
+        return make_error(_("Lacking credentials."), 403)
+
+    return jsonify({
+            "result": _("Questionnaire updated."),
+            "questionnaire": questionnaire
+        })
+
+@app.route("/api/questionnaire/<string:questionnaire_uuid>/unpublish",
+           methods=["PATCH"])
+def api_questionnaire_unpublish(questionnaire_uuid: str):
+    """
+    Parameters:
+        questionnaire_uuid: String The uuid for the Questionnaire to update.
+
+    Unpublishes the questionnaire so it is not visible for outside users.
+
+    Response Codes:
+        200: Questionnaire is successfully updated.
+        403: No user is logged in or the current user doesn't have permission
+            to update the given Questionnaire.
+        404: The questionnaire_uuid doesn't belong to a valid Questionnaire.
+
+    Response Class:
+        200: {
+            "questionnaire": Questionnaire (see GET
+                /api/questionnaire/questionnaire_uuid)
+            "result": "Questionnaire updated."
+        }
+        403: {
+            "error": "Lacking credentials",
+            "result": "error"
+        }
+        404: {
+            "error": "No such Questionnaire.",
+            "result": "error"
+        }
+    """
+    try:
+        questionnaire = Questionnaire(questionnaire_uuid)
+        questionnaire.published = False
+    except ObjectDoesntExistException:
+        return make_error(_("No such Questionnaire."), 404)
+    except AccessControlException:
+        return make_error(_("Lacking credentials."), 403)
+
+    return jsonify({
+            "result": _("Questionnaire updated."),
+            "questionnaire": questionnaire
+        })
+
+
 @app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv",
            methods=["GET"])
 def api_questionnaire_download_csv(questionnaire_uuid: str):

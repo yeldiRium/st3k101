@@ -93,5 +93,6 @@ Survey.name = DataPointer(Survey, "name", I15dString)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)
 
+# here to avoid cyclic import
 DataClient.surveys = DataPointerSet(DataClient, "surveys", Survey,
                                     serialize=False)
