@@ -1,13 +1,17 @@
-from typing import List, Optional
+import os
+from typing import List, Optional, Dict
 
+import yaml
 from flask import g
 
 from framework.exceptions import *
+from framework.exceptions import YAMLTemplateInvalidException
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
+from framework.internationalization import _, babel_languages
 from model.I15dString import I15dString
 from model.Question import Question
 from model.QuestionGroup import QuestionGroup
@@ -32,7 +36,7 @@ class Questionnaire(DataObject):
         questionnaire.answer_count = 0
         questionnaire.qac_modules = [TOSQAC.new(), EMailVerificationQAC.new()]
         questionnaire.original_locale = g._locale
-        questionnaire.published = False  # TODO: add endpoint to (un)publish
+        questionnaire.published = False
         return questionnaire
 
     def set_name(self, name):
@@ -112,22 +116,51 @@ class Questionnaire(DataObject):
         return None
 
     @staticmethod
-    def get_efla_student_template():
-        template = Questionnaire.one_from_query(
-            {"name": "efla_student_template"})
-        if template is None:
-            pass  # TODO: create template
-        else:
-            return template
+    def get_available_templates() -> Dict[str, List[str]]:
+        template_files = {}
+        for dirname, sdn, filenames in os.walk(
+                g._config["SURVEY_TEMPLATE_PATH"]):
+            for filename in filenames:
+                template_files[filename] = os.path.join(dirname, filename)
+        return template_files
 
     @staticmethod
-    def get_efla_teacher_template():
-        template = Questionnaire.one_from_query(
-            {"name": "efla_teacher_template"})
-        if template is None:
-            pass  # TODO: create template
-        else:
-            return template
+    def from_yaml(path_to_yaml: str):
+        schema = {
+            "name": str,
+            "language": str,
+            "questions": dict
+        }
+        with open(path_to_yaml) as fd:
+            contents = yaml.load(fd)
+        try:
+            if type(contents) != type(schema):
+                raise Exception(_("Template needs to be a dictionary"))
+            for k, v in schema.items():
+                if k not in contents:
+                    raise Exception(_("Missing argument in template: ") + k)
+                if type(v) != type(contents[k]):
+                    raise Exception(_("Argument has wrong type: ") + k +
+                                    _(" Expected: ") + type(v) + _(" Got: ") +
+                                    type(contents[k]))
+        except Exception as e:
+            raise YAMLTemplateInvalidException(e.args[0])
+
+        language = contents["language"]
+        if language not in babel_languages.keys():
+            raise YAMLTemplateInvalidException(_("Invalid language specified"))
+
+        name = contents["name"]
+        if len(name) < 1:
+            raise YAMLTemplateInvalidException(_("Empty name specified"))
+
+        new_questionnaire = Questionnaire()
+        for group_name, questions in contents["questions"].items():
+            new_group = new_questionnaire.add_question_group(group_name)
+            for question in questions:
+                new_group.add_new_question(question)
+
+        return new_questionnaire
 
 
 Questionnaire.original_locale = DataAttribute(Questionnaire, "original_locale")

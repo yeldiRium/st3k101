@@ -1,3 +1,5 @@
+import os
+
 from flask import g
 
 from datetime import datetime
@@ -40,10 +42,14 @@ class Survey(DataObject):
         Creates a new Questionnaire by copying all settings from a given
         Questionnaire.
         """
-        if template == "efla_teacher":
-            template_questionnaire = Questionnaire.get_efla_teacher_template()
-        elif template == "efla_student":
-            template_questionnaire = Questionnaire.get_efla_student_template()
+
+        # first look in local template path
+        # then try getting by uuid
+        template_files = Questionnaire.get_available_templates()
+
+        if template in template_files:
+            template_path = template_files[template]
+            template_questionnaire = Questionnaire.from_yaml(template_path)
         else:
             template_questionnaire = Questionnaire(template)
 

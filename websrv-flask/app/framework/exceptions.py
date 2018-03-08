@@ -80,3 +80,7 @@ class QACAlreadyEnabledException(Exception):
 
 class QACNotEnabledException(Exception):
     pass
+
+
+class YAMLTemplateInvalidException(Exception):
+    pass
