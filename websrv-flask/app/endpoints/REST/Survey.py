@@ -47,7 +47,7 @@ def api_survey_list():
 
 @app.route("/api/survey", methods=["POST"])
 @expect(('name', str))
-def api_survey_create(name: str=''):
+def api_survey_create(name: str=None):
     """
     Parameters:
         name: String The name for the new Survey.

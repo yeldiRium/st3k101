@@ -23,9 +23,9 @@ from model.Questionnaire import Questionnaire
     ('text', str)
 )
 def api_question_create(
-        questionnaire_uuid: str='',
-        question_group_uuid: str='',
-        text: str =''
+        questionnaire_uuid: str=None,
+        question_group_uuid: str=None,
+        text: str =None
 ):
     """
     Parameters:
@@ -126,7 +126,7 @@ def api_question_get(question_uuid: str):
 
 @app.route("/api/question/<string:question_uuid>", methods=["PUT"])
 @expect(('text', str))
-def api_question_update(question_uuid: str, text: str=''):
+def api_question_update(question_uuid: str, text: str=None):
     """
     Parameters:
         question_uuid: String The uuid for the Question to update.
@@ -182,8 +182,8 @@ def api_question_update(question_uuid: str, text: str=''):
 )
 def api_question_delete(
         question_uuid: str,
-        question_group_uuid: str='',
-        questionnaire_uuid: str=''
+        question_group_uuid: str=None,
+        questionnaire_uuid: str=None
 ):
     """
     Parameters:

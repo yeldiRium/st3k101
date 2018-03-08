@@ -113,7 +113,7 @@ def api_questiongroup_get(question_group_uuid: str= ''):
 @app.route("/api/question_group/<string:question_group_uuid>", methods=["PUT"])
 @expect_optional(('name', str), ('color', str), ('text_color', str))
 def api_questiongroup_update(
-        question_group_uuid: str='',
+        question_group_uuid: str=None,
         name: str=None,
         color: str=None,
         text_color: str=None
