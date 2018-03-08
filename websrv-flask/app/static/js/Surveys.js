@@ -1,81 +1,21 @@
-angular.module('Surveys', ['ngRoute', 'ngFlash'])
-    .config(['FlashProvider', function(FlashProvider) {
+angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
+    .config(['FlashProvider', function (FlashProvider) {
         FlashProvider.setTimeout(5000);
         FlashProvider.setShowClose(true);
     }])
-    .factory('Surveys', ['$http', function($http) {
-        return {
-            query: function(locale = "") {
-                var path = "/api/survey";
-                path += (locale == "") ? "" : "?locale_cookie=0&locale=" + locale;
-                return $http.get(path).then(
-                    function(result) {
-                        return new Promise(function(resolve, reject) {
-                            resolve(result.data);
-                        });
-                    },
-                    function(error) {
-                        return new Promise(function(resolve, reject) {
-                            reject(error);
-                        });
-                    }
-                );
-            }
-        }
-    }])
-    .factory('Questionnaire', ['$http', function($http) {
-        return {
-            query: function(uuid, locale = "") {
-                var path = "/api/questionnaire/" + uuid;
-                path += (locale == "") ? "" : "?locale_cookie=0&locale=" + locale;
-                return $http.get(path).then(
-                    function success(result) {
-                        return new Promise(function(resolve, reject) {
-                            resolve({result: result.data, locale: result.headers("Content-Language")});
-                        })
-                    },
-                    function fail(error) {
-                        return new Promise(function(resolve, reject) {
-                            reject(error);
-                        });
-                    }
-                )
-            }
-        }
-    }])
-    .factory('QuestionStatistic', ['$http', function($http) {
-        return {
-            query: function(uuid) {
-                return $http.get('/api/question/' + uuid + '/statistic').then(
-                    function success(result) {
-                        return new Promise(function(resolve, reject) {
-                            var statistic = {
-                                'biggest': result.data.fields.biggest,
-                                'smallest': result.data.fields.smallest,
-                                'q1': result.data.fields.q1,
-                                'q2': result.data.fields.q2,
-                                'q3': result.data.fields.q3
-                            };
-                            resolve(statistic);
-                        })
-                    },
-                    function fail(error) {
-                        return new Promise(function(resolve, reject) {
-                            reject(error);
-                        });
-                    }
-                )
-            }
-        }
-    }])
-    .controller('SurveysController', ['$scope', '$http', '$timeout', 'Flash', 'Surveys',
-        function($scope, $http, $timeout, Flash, Surveys) {
+    .controller('SurveysController', [
+        "$scope", "$http", "$timeout", "Flash", "Surveys", "ResultHandling",
+        "LanguageHandling",
+        function ($scope, $http, $timeout, Flash, Surveys, ResultHandling,
+                  LanguageHandling) {
+            $scope.loading = "loading";
+
             /**
              * Queries surveys and writes them into $scope.surveys.
              * If something goes wrong, $scope.error will be set.
              * @returns Promise
              */
-            $scope.query = function() {
+            $scope.query = function () {
                 /**
                  * Queries for surveys and creates a list of templates that
                  * can be used for new questionnaires based on the surveys
@@ -86,49 +26,102 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                  * If something goes wrong, an error message is set and nothing
                  * else displayed.
                  */
-                return Surveys.query().then(
-                    function(result) {
-                        $scope.surveys = result;
-                        $scope.templates = [
-                            {
-                                value: null,
-                                name: 'You can optionally create a questionnaire from a template. Select one here.'
-                            },
-                            {
-                                value: 'efla_teacher',
-                                name: 'EFLA Teacher'
-                            },
-                            {
-                                value: 'efla_student',
-                                name: 'EFLA Student'
-                            }
-                        ];
-                        $.each(result, function(index, survey) {
-                            if (survey.fields.questionnaires.length > 0) {
-                                $scope.templates.push({
-                                    value: null,
-                                    name: '-- from Survey ' + survey.fields.name + ' --'
-                                });
-                                $.each(survey.fields.questionnaires, function(index, questionnaire) {
-                                    $scope.templates.push({
-                                        value: questionnaire.uuid,
-                                        name: questionnaire.fields.name
-                                    })
-                                });
-                            }
-                        })
-                    },
-                    function(error) {
-                        $scope.surveys = null;
-                        Flash.create('danger', error.data.error);
-                    }
-                );
+                return Surveys.all()
+                    .chainRej(ResultHandling.flashError($scope))
+                    .fork(
+                        () => {
+                            $scope.$apply(() => {
+                                $scope.loading = "error";
+                                $scope.surveys = null
+                            });
+                        },
+                        $scope.prepareView
+                    );
             };
+
+            /**
+             * Stores and optionally parses the given data for Surveys, Ques-
+             * tionnaires and Templates.
+             *
+             * @param data
+             * @param locale
+             */
+            $scope.prepareView = function ({data, locale}) {
+                $scope.$apply(() => {
+                    $scope.loading = "done";
+                    $scope.surveys = R.map(
+                        LanguageHandling.getSurveyTranslation(locale), data
+                    );
+                    $scope.templates = $scope.prepareTemplates(
+                        locale, $scope.surveys
+                    );
+                });
+            };
+
+            /**
+             * Returns a function which takes a parsed Survey and:
+             *
+             * Generates the template options for the select field.
+             *
+             * At the beginning a dummy element and the efla templates are
+             * added.
+             *
+             * For each Survey which has Questionnaires a paragraph is generated
+             * which starts with the Survey's name and contains a list of all
+             * Questionnaires.
+             *
+             * @param locale
+             */
+            $scope.prepareTemplates = R.pipe(
+                R.filter(survey =>
+                    R.path(["fields", "questionnaires", "length"], survey)
+                ),
+                // Extract Questionnaires from Survey.
+                R.map(survey => [
+                    R.path(["fields", "name"], survey),
+                    R.path(["fields", "questionnaires"], survey)
+                ]),
+                // Format them for use in a select field.
+                R.map(([name, questionnaires]) => ([
+                    name,
+                    R.map(
+                        questionnaire => ({
+                            "value": R.path(["uuid"], questionnaire),
+                            "name": R.path(
+                                ["fields", "name"], questionnaire
+                            )
+                        }),
+                        questionnaires
+                    )
+                ])),
+                // Prepend a spacer element with the Survey name and return
+                // only resulting list of select elements.
+                R.map(([name, questionnaires]) => R.prepend(
+                    {
+                        "value": null,
+                        "name": "-- from Survey " + name + " --"
+                    },
+                    questionnaires
+                )),
+                R.flatten,
+                R.prepend({
+                    "value": "efla_student",
+                    "name": "EFLA Student"
+                }),
+                R.prepend({
+                    "value": "efla_teacher",
+                    "name": "EFLA Teacher"
+                }),
+                R.prepend({
+                    "value": null,
+                    "name": "You can optionally create a questionnaire from a template. Select one here."
+                })
+            );
 
             /**
              * Resets all editing forms and all temporary data.
              */
-            $scope.resetEditing = function() {
+            $scope.resetEditing = function () {
                 $scope.new = {
                     questionnaire: {
                         survey: null,
@@ -140,7 +133,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     }
                 };
 
-                $scope.selection =  {
+                $scope.selection = {
                     survey: null,
                     questionnaires: {},
                     count: 0
@@ -151,13 +144,13 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Navigates to the frontend view of a Questionnaire.
              * @param questionnaire
              */
-            $scope.gotoQuestionnaire = function(questionnaire) {
-                var url = '/survey/' + questionnaire.uuid;
-                var win = window.open('/survey/' + questionnaire.uuid, '_blank');
+            $scope.gotoQuestionnaire = function (questionnaire) {
+                var url = `/survey/${questionnaire.uuid}`;
+                var win = window.open(`/survey/${questionnaire.uuid}_blank`);
                 if (win) {
                     win.focus();
                 } else {
-                    Flash.create('danger', 'Tried to open the survey at "' + url + '", but the popup was blocked.');
+                    Flash.create('danger', `Tried to open the survey at "${url}", but the popup was blocked.`);
                 }
             };
 
@@ -170,7 +163,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * @param survey
              * @param questionnaire
              */
-            $scope.toggleSelect = function(survey, questionnaire) {
+            $scope.toggleSelect = function (survey, questionnaire) {
                 if ($scope.selection.survey != survey) {
                     $scope.resetEditing();
                 }
@@ -192,7 +185,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * default values.
              * @param survey
              */
-            $scope.newQuestionnaire = function(survey) {
+            $scope.newQuestionnaire = function (survey) {
                 $scope.resetEditing();
                 $scope.new.questionnaire.survey = survey;
                 $scope.new.questionnaire.data = {
@@ -207,7 +200,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Uses the current temporary data, which is bound to the template
              * form.
              */
-            $scope.createQuestionnaire = function() {
+            $scope.createQuestionnaire = function () {
                 if (($scope.new.questionnaire.survey == null)
                     || $scope.new.questionnaire.data == null) {
                     return;
@@ -249,9 +242,9 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Sends delete requests for all currently selected questionnaires.
              * TODO: Error handling.
              */
-            $scope.deleteQuestionnaires = function() {
+            $scope.deleteQuestionnaires = function () {
                 promises = [];
-                $.each($scope.selection.questionnaires, function(uuid, shouldDelete) {
+                $.each($scope.selection.questionnaires, function (uuid, shouldDelete) {
                     if (shouldDelete == true) {
                         promises.push(
                             $http({
@@ -274,7 +267,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     },
                     function fail(results) {
                         Flash.create('danger', 'Something went wrong with one of the Questionnaires:');
-                        $.each(results, function(index, result) {
+                        $.each(results, function (index, result) {
                             if (result.status != 200) {
                                 Flash.create('danger', results.data);
                             }
@@ -287,7 +280,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Opens a form for a new Survey by setting temporary data to
              * default values.
              */
-            $scope.newSurvey = function() {
+            $scope.newSurvey = function () {
                 $scope.resetEditing();
                 $scope.new.survey.data = {
                     name: "name"
@@ -298,7 +291,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Sends a create request for a new Survey with the current tempora-
              * ry data.
              */
-            $scope.createSurvey = function() {
+            $scope.createSurvey = function () {
                 if ($scope.new.survey.data == null) {
                     return;
                 }
@@ -333,7 +326,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Sends a delete request for a specific survey.
              * @param survey
              */
-            $scope.deleteSurvey = function(survey) {
+            $scope.deleteSurvey = function (survey) {
                 $http({
                     method: 'DELETE',
                     url: '/api/survey',
@@ -358,40 +351,39 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             $scope.query();
         }])
     .controller('EditQuestionnaireController', ['$scope', '$http', '$timeout', 'Flash', '$routeParams', 'Questionnaire',
-        function($scope, $http, $timeout, Flash, $routeParams, Questionnaire) {
+        function ($scope, $http, $timeout, Flash, $routeParams, Questionnaire) {
             /**
              * Queries the current questionnaire and stores its data.
              * If something goes wrong, an error message is displayed and
              * nothing else.
              */
-            $scope.query = function() {
+            $scope.query = function () {
                 return Questionnaire.query($routeParams.questionnaire).then(
                     function success(resolved) {
                         var result = resolved.result;
                         var locale = resolved.locale;
-                        $.each(result.fields.questiongroups, function(index, questiongroup) {
+                        $.each(result.fields.questiongroups, function (index, questiongroup) {
                             setTimeout(
-                                function() {
+                                function () {
                                     $('#colorPicker_' + questiongroup.uuid).spectrum({
                                         color: questiongroup.fields.color,
-                                        change: function(color) {
+                                        change: function (color) {
                                             $scope.updateColor(color.toHexString(), questiongroup);
                                         }
                                     });
                                 }, 0);
                             setTimeout(
-                                function() {
+                                function () {
                                     $('#textColorPicker_' + questiongroup.uuid).spectrum({
                                         color: questiongroup.fields.text_color,
-                                        change: function(color) {
+                                        change: function (color) {
                                             $scope.updateTextColor(color.toHexString(), questiongroup);
                                         }
                                     });
                                 }, 0);
                         });
                         $scope.questionnaire = result;
-                        if (result.fields.original_locale.toLowerCase() != locale.toLowerCase())
-                        {
+                        if (result.fields.original_locale.toLowerCase() != locale.toLowerCase()) {
                             return Questionnaire.query($routeParams.questionnaire, result.fields.original_locale).then(
                                 function success(resolved) {
                                     $scope.questionnaire_original = resolved.result;
@@ -413,7 +405,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             /**
              * Resets all editing forms and all temporary data.
              */
-            $scope.resetEditing = function() {
+            $scope.resetEditing = function () {
                 $scope.new = {
                     question: {
                         questionGroup: null,
@@ -424,7 +416,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     }
                 };
 
-                $scope.selection =  {
+                $scope.selection = {
                     questionGroup: null,
                     questions: {},
                     count: 0
@@ -436,7 +428,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             /**
              * Navigates to the frontend view of a Questionnaire.
              */
-            $scope.gotoQuestionnaire = function() {
+            $scope.gotoQuestionnaire = function () {
                 var url = '/survey/' + $scope.questionnaire.uuid;
                 var win = window.open('/survey/' + $scope.questionnaire.uuid, '_blank');
                 if (win) {
@@ -446,7 +438,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 }
             };
 
-            $scope.startEditing = function(name, event, opt = null) {
+            $scope.startEditing = function (name, event, opt = null) {
                 $scope.edit = {};
                 var element = $(event.target);
                 $scope.edit.name = name;
@@ -454,13 +446,12 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 $scope.edit.old_value = (opt != null) ? opt : element.text();
             };
 
-            $scope.isEditing = function(name) {
+            $scope.isEditing = function (name) {
                 return $scope.edit.name == name;
             };
 
-            $scope.abortEditing = function(name, event, opt = null) {
-                if ($scope.edit.name == name)
-                {
+            $scope.abortEditing = function (name, event, opt = null) {
+                if ($scope.edit.name == name) {
                     if (name == 'questionnairename') {
                         opt.fields.name = $scope.edit.old_value;
                     } else if (name == 'questionnairedescription') {
@@ -474,21 +465,17 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 }
             };
 
-            $scope.stopEditing = function(name, event, opt = null) {
-                if ($scope.edit.name == name)
-                {
+            $scope.stopEditing = function (name, event, opt = null) {
+                if ($scope.edit.name == name) {
                     var element = $(event.target);
                     var success;
-                    if (name == 'questionnairename' || name == 'questionnairedescription')
-                    {
+                    if (name == 'questionnairename' || name == 'questionnairedescription') {
                         success = $scope.updateQuestionnaire();
                     }
-                    if (name.indexOf("questiongroup") !== -1)
-                    {
+                    if (name.indexOf("questiongroup") !== -1) {
                         success = $scope.updateQuestionGroup(element.data("uuid"), element[0].value);
                     }
-                    if (name.indexOf("singlequestion") !== -1)
-                    {
+                    if (name.indexOf("singlequestion") !== -1) {
                         success = $scope.updateQuestion(element.data("uuid"), element[0].value);
                     }
 
@@ -502,10 +489,9 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             /**
              * Sends updates with current questionnaire data
              */
-            $scope.updateQuestionnaire = function() {
+            $scope.updateQuestionnaire = function () {
                 if ($scope.questionnaire.fields.name == "" ||
-                    $scope.questionnaire.fields.description == "")
-                {
+                    $scope.questionnaire.fields.description == "") {
                     Flash.create("danger", "Name and description can't be empty!");
                     return false;
                 }
@@ -535,9 +521,8 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Updates a question_group's name based on the stored values in
              * $scope.edit.
              */
-            $scope.updateQuestionGroup = function(uuid, name) {
-                if (name == "")
-                {
+            $scope.updateQuestionGroup = function (uuid, name) {
+                if (name == "") {
                     Flash.create("danger", "Name can't be empty!");
                     return false;
                 }
@@ -566,9 +551,8 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Updates a question's name based on the stored values in
              * $scope.edit.
              */
-            $scope.updateQuestion = function(uuid, text) {
-                if (text == "")
-                {
+            $scope.updateQuestion = function (uuid, text) {
+                if (text == "") {
                     Flash.create("danger", "Text can't be empty!");
                     return false;
                 }
@@ -604,7 +588,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * @param questionGroup
              * @param question
              */
-            $scope.toggleSelect = function(questionGroup, question) {
+            $scope.toggleSelect = function (questionGroup, question) {
                 if ($scope.selection.questionGroup != questionGroup) {
                     $scope.resetEditing();
                 }
@@ -625,7 +609,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Opens a form for a new Question by setting temporary data to
              * default values.
              */
-            $scope.newQuestion = function(questiongroup) {
+            $scope.newQuestion = function (questiongroup) {
                 $scope.resetEditing();
                 $scope.new.question.questionGroup = questiongroup;
                 $scope.new.question.data = {
@@ -637,7 +621,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Sends a create request for a new Question with the current tempora-
              * ry data.
              */
-            $scope.createQuestion = function() {
+            $scope.createQuestion = function () {
                 if (($scope.new.question.questionGroup == null)
                     || $scope.new.question.data == null) {
                     return;
@@ -675,9 +659,9 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Sends a delete request for each currently selected Question.
              * TODO: error handling
              */
-            $scope.deleteQuestions = function() {
+            $scope.deleteQuestions = function () {
                 promises = [];
-                $.each($scope.selection.questions, function(uuid, shouldDelete) {
+                $.each($scope.selection.questions, function (uuid, shouldDelete) {
                     if (shouldDelete == true) {
                         promises.push(
                             $http({
@@ -701,7 +685,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                     },
                     function fail(results) {
                         Flash.create('danger', 'Something went wrong with one of the Questions:');
-                        $.each(results, function(index, result) {
+                        $.each(results, function (index, result) {
                             if (result.status != 200) {
                                 Flash.create('danger', results.data);
                             }
@@ -714,7 +698,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Opens a form for a new QuestionGroup by setting temporary data to
              * default values.
              */
-            $scope.newQuestionGroup = function() {
+            $scope.newQuestionGroup = function () {
                 $scope.resetEditing();
                 $scope.new.questionGroup.data = {
                     name: "name"
@@ -725,7 +709,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              * Sends a create request for a new QuestionGroup with the current
              * temporary data.
              */
-            $scope.createQuestionGroup = function() {
+            $scope.createQuestionGroup = function () {
                 if ($scope.new.questionGroup.data == null) {
                     return;
                 }
@@ -760,7 +744,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             /**
              * Sends a delete request for a specific QuestionGroup.
              */
-            $scope.deleteQuestionGroup = function(questionGroup) {
+            $scope.deleteQuestionGroup = function (questionGroup) {
                 $http({
                     method: 'DELETE',
                     url: '/api/question_group',
@@ -785,7 +769,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 )
             };
 
-            $scope.updateColor = function(color, questionGroup) {
+            $scope.updateColor = function (color, questionGroup) {
                 $http({
                     method: 'PUT',
                     url: '/api/question_group',
@@ -811,7 +795,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 )
             };
 
-            $scope.updateTextColor = function(color, questionGroup) {
+            $scope.updateTextColor = function (color, questionGroup) {
                 $http({
                     method: 'PUT',
                     url: '/api/question_group',
@@ -849,7 +833,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             });
         }])
     .controller('QuestionnaireStatisticController', ['$scope', '$http', '$routeParams', '$timeout', 'Questionnaire', 'QuestionStatistic',
-        function($scope, $http, $routeParams, $timeout, Questionnaire, QuestionStatistic) {
+        function ($scope, $http, $routeParams, $timeout, Questionnaire, QuestionStatistic) {
             $scope.properties = {
                 'questionnaire_uuid': null,
                 'graph_width': window.innerWidth - 400,
@@ -868,21 +852,21 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 'lower_scale_text_y': '5'
             };
 
-            $scope.query = function() {
+            $scope.query = function () {
                 Questionnaire.query($routeParams.questionnaire).then(
                     function success(result) {
                         $scope.statistics = {
                             'questionGroups': []
                         };
                         $scope.properties.questionnaire_uuid = result.uuid;
-                        $.each(result.fields.questiongroups, function(index, questionGroup) {
+                        $.each(result.fields.questiongroups, function (index, questionGroup) {
                             var questionGroupObject = {
                                 'name': questionGroup.fields.name,
                                 'color': questionGroup.fields.color,
                                 'text_color': questionGroup.fields.text_color,
                                 'questions': []
                             };
-                            $.each(questionGroup.fields.questions, function(index, question) {
+                            $.each(questionGroup.fields.questions, function (index, question) {
                                 var questionObject = {
                                     'text': $scope.cutQuestionText(question.fields.text),
                                     'answers': question.fields.results.length,
@@ -894,7 +878,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                                 QuestionStatistic.query(question.uuid).then(
                                     function success(result) {
                                         questionObject.statistic = result;
-                                        if($scope.properties.graph_height == 0) {
+                                        if ($scope.properties.graph_height == 0) {
                                             $scope.properties.graph_height += $scope.properties.bar_height;
                                         } else {
                                             $scope.properties.graph_height += $scope.properties.bar_height + $scope.properties.bar_padding;
@@ -907,7 +891,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                             });
                             $scope.statistics.questionGroups.push(questionGroupObject);
                         });
-                        setTimeout(function() {
+                        setTimeout(function () {
                         }, 0);
                         console.log($scope.statistics);
                         return $scope.statistics;
@@ -920,30 +904,30 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
                 )
             };
 
-            $scope.getX = function(value) {
+            $scope.getX = function (value) {
                 var maxValue = 11;
                 var effectiveWidth = $scope.properties.graph_width - $scope.properties.graph_padding_left - $scope.properties.graph_padding_right;
 
                 return $scope.properties.graph_padding_left + effectiveWidth * value / maxValue;
             };
 
-            $scope.getY = function(index) {
+            $scope.getY = function (index) {
                 var result = $scope.properties.bar_padding;
-                if(index != 0) {
+                if (index != 0) {
                     result += index * ($scope.properties.bar_height + $scope.properties.bar_padding)
                 }
                 return result;
             };
 
-            $scope.cutQuestionText = function(text) {
+            $scope.cutQuestionText = function (text) {
                 var width = $scope.getTextWidth(text, "12pt Arial");
                 var cuts = 0;
-                while(width > ($scope.properties.graph_padding_left - 2 * $scope.properties.text_padding_left)) {
+                while (width > ($scope.properties.graph_padding_left - 2 * $scope.properties.text_padding_left)) {
                     text = text.slice(0, -1);
                     width = $scope.getTextWidth(text, "12pt Arial");
                     cuts++;
                 }
-                if(cuts > 0) {
+                if (cuts > 0) {
                     text = text.slice(0, -3);
                     return text + '...';
                 }
@@ -958,7 +942,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
              *
              * @see https://stackoverflow.com/questions/118241/calculate-text-width-with-javascript/21015393#21015393
              */
-            $scope.getTextWidth = function(text, font) {
+            $scope.getTextWidth = function (text, font) {
                 // re-use canvas object for better performance
                 var canvas = $scope.getTextWidth.canvas || ($scope.getTextWidth.canvas = document.createElement("canvas"));
                 var context = canvas.getContext("2d");
@@ -970,7 +954,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash'])
             $scope.query();
         }])
     .config(['$routeProvider', '$locationProvider',
-        function($routeProvider, $locationProvider) {
+        function ($routeProvider, $locationProvider) {
             $locationProvider.hashPrefix('');
             $routeProvider
                 .when('/', {

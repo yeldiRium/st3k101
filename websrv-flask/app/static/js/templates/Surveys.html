@@ -1,77 +1,79 @@
-<div class="row" ng-if="(!surveys || (surveys.length == 0)) && !error">
-    <div class="alert alert-info">You have no surveys yet!</div>
-</div>
-<div class="row" ng-repeat="survey in surveys">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{{ survey.fields.name }}</h3>
-        </div>
-        <div class="panel-body">
-            <div class="list-group">
-                <a class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires" ng-click="toggleSelect(survey, questionnaire)" ng-class="{'list-group-item-info': selection.questionnaires[questionnaire.uuid] == true}">
-                    <button type="button" class="pull-left btn btn-default" click-go="/surveys/{{ questionnaire.uuid }}/statistic">{{ questionnaire.fields.answer_count || 0 }} Results</button>
-                    <button type="button" class="pull-left btn btn-default" ng-click="gotoQuestionnaire(questionnaire)">Open</button>
-                    <button type="button" class="pull-left btn btn-default edit-button" click-go="/surveys/{{ questionnaire.uuid }}">Edit</button>
-                    <h4 class="list-group-item-heading">{{ questionnaire.fields.name }}</h4>
-                    <p class="list-group-item-text">{{ questionnaire.fields.description }}</p>
-                </a>
+<ew-load loading="loading">
+    <div class="row" ng-if="(!surveys || (surveys.length == 0)) && !error">
+        <div class="alert alert-info">You have no surveys yet!</div>
+    </div>
+    <div class="row" ng-repeat="survey in surveys">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{ survey.fields.name }}</h3>
+            </div>
+            <div class="panel-body">
+                <div class="list-group">
+                    <a class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires" ng-click="toggleSelect(survey, questionnaire)" ng-class="{'list-group-item-info': selection.questionnaires[questionnaire.uuid] == true}">
+                        <button type="button" class="pull-left btn btn-default" click-go="/surveys/{{ questionnaire.uuid }}/statistic">{{ questionnaire.fields.answer_count || 0 }} Results</button>
+                        <button type="button" class="pull-left btn btn-default" ng-click="gotoQuestionnaire(questionnaire)">Open</button>
+                        <button type="button" class="pull-left btn btn-default edit-button" click-go="/surveys/{{ questionnaire.uuid }}">Edit</button>
+                        <h4 class="list-group-item-heading">{{ questionnaire.fields.name }}</h4>
+                        <p class="list-group-item-text">{{ questionnaire.fields.description }}</p>
+                    </a>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <form class="form-horizontal" ng-if="new.questionnaire.survey == survey">
+                    <div class="form-group">
+                        <label for="inputQuestionnaireName" class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="new.questionnaire.data.name" ng-enter="createQuestionnaire()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputQuestionnaireDescription" class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="new.questionnaire.data.description" ng-enter="createQuestionnaire()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="selectQuestionnaireTemplate" class="col-sm-2 control-label">Use Template</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="selectQuestionnaireTemplate" ng-model="new.questionnaire.data.template">
+                                <option ng-repeat="template in templates" value="{{ template.value }}">{{ template.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="buttonQuestionnaireCreate" class="col-sm-2 control-label"></label>
+                        <div class="col-sm-2">
+                            <button type="button" id="buttonQuestionnaireCreate" class="form-control btn btn-default" ng-click="createQuestionnaire()">Create</button>
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" id="buttonQuestionnaireCancel" class="form-control btn btn-default" ng-click="resetEditing()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+                <button type="button" class="btn btn-default btn-success" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
+                    Add new Questionnaire to this survey...
+                </button>
+                <button type="button" class="btn btn-default btn-warning" mw-confirm-click="deleteQuestionnaires(survey)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questionnaires?" ng-if="selection.survey == survey">
+                    Remove the selected {{ selection.count }} Questionnaires from this Survey...
+                </button>
+                <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteSurvey(survey)" mw-confirm-message="Are you sure you want to delete the survey '{{ survey.fields.name }}'?">
+                    Delete this Survey...
+                </button>
             </div>
         </div>
-        <div class="panel-footer">
-            <form class="form-horizontal" ng-if="new.questionnaire.survey == survey">
-                <div class="form-group">
-                    <label for="inputQuestionnaireName" class="col-sm-2 control-label">Name</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="new.questionnaire.data.name" ng-enter="createQuestionnaire()">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputQuestionnaireDescription" class="col-sm-2 control-label">Description</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="new.questionnaire.data.description" ng-enter="createQuestionnaire()">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="selectQuestionnaireTemplate" class="col-sm-2 control-label">Use Template</label>
-                    <div class="col-sm-10">
-                        <select class="form-control" id="selectQuestionnaireTemplate" ng-model="new.questionnaire.data.template">
-                            <option ng-repeat="template in templates" value="{{ template.value }}">{{ template.name }}</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="buttonQuestionnaireCreate" class="col-sm-2 control-label"></label>
-                    <div class="col-sm-2">
-                        <button type="button" id="buttonQuestionnaireCreate" class="form-control btn btn-default" ng-click="createQuestionnaire()">Create</button>
-                    </div>
-                    <div class="col-sm-2">
-                        <button type="button" id="buttonQuestionnaireCancel" class="form-control btn btn-default" ng-click="resetEditing()">Cancel</button>
-                    </div>
-                </div>
-            </form>
-            <button type="button" class="btn btn-default btn-success" ng-click="newQuestionnaire(survey)" ng-if="new.questionnaire.survey != survey">
-                Add new Questionnaire to this survey...
-            </button>
-            <button type="button" class="btn btn-default btn-warning" mw-confirm-click="deleteQuestionnaires(survey)" mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questionnaires?" ng-if="selection.survey == survey">
-                Remove the selected {{ selection.count }} Questionnaires from this Survey...
-            </button>
-            <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteSurvey(survey)" mw-confirm-message="Are you sure you want to delete the survey '{{ survey.fields.name }}'?">
-                Delete this Survey...
-            </button>
+    </div>
+    <div class="row">
+        <div class="input-group" ng-if="new.survey.data != null">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="createSurvey()">Create</button>
+            </span>
+            <input type="text" class="form-control" ng-model="new.survey.data.name" ng-enter="createSurvey()" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" ng-click="resetEditing()">Cancel</button>
+            </span>
         </div>
+        <button type="button" class="btn btn-default" ng-click="newSurvey()" ng-if="new.survey.data == null">
+            Add new Survey...
+        </button>
     </div>
-</div>
-<div class="row">
-    <div class="input-group" ng-if="new.survey.data != null">
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button" ng-click="createSurvey()">Create</button>
-        </span>
-        <input type="text" class="form-control" ng-model="new.survey.data.name" ng-enter="createSurvey()" />
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button" ng-click="resetEditing()">Cancel</button>
-        </span>
-    </div>
-    <button type="button" class="btn btn-default" ng-click="newSurvey()" ng-if="new.survey.data == null">
-        Add new Survey...
-    </button>
-</div>
+</ew-load>
