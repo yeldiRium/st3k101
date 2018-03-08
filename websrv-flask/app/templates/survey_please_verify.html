@@ -1,0 +1,9 @@
+{% extends 'survey_base.html' %}
+
+{% block subcontent %}
+    <div class="row text-center">
+        <p>{{ _("Thank you,") }} {{ email }} {{ _("for participating in our survey.") }}</p>
+        <p>{{ _("For your answers to be counted, please click on the link we've sent to your email account: ") }} {{ email }}</p>
+        <p>{{ _("If you've entered the wrong email address, please retake the survey and enter an email address you've got access to.") }}</p>
+    </div>
+{% endblock %}

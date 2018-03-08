@@ -10,7 +10,8 @@ class QuestionStatistic(DataObject):
         if self.question is None:
             raise QuestionStatisticHasNoQuestionException()
 
-        result_list = list(self.question.results)
+        result_list = list(filter(lambda x: x.verified,
+                                  list(self.question.results)))
         list.sort(result_list, key=lambda x: x.answer_value)
 
         self.smallest = None

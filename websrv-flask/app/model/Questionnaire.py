@@ -12,6 +12,7 @@ from model.I15dString import I15dString
 from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.query_access_control.QACModule import QACModule
+from model.query_access_control.QACModules import EMailVerificationQAC
 from model.query_access_control.QACModules.TOSQAC import TOSQAC
 
 
@@ -29,8 +30,9 @@ class Questionnaire(DataObject):
         questionnaire.questiongroups = []
         questionnaire.question_count = 0
         questionnaire.answer_count = 0
-        questionnaire.qac_modules = [TOSQAC.new()]
+        questionnaire.qac_modules = [TOSQAC.new(), EMailVerificationQAC.new()]
         questionnaire.original_locale = g._locale
+        questionnaire.published = False  # TODO: add endpoint to (un)publish
         return questionnaire
 
     def set_name(self, name):
@@ -139,3 +141,6 @@ Questionnaire.question_count = DataAttribute(Questionnaire, "question_count")
 Questionnaire.answer_count = DataAttribute(Questionnaire, "answer_count")
 Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules",
                                                 serialize=False)
+Questionnaire.published = DataAttribute(Questionnaire, "published")
+
+Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire)
