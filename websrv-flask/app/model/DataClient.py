@@ -21,7 +21,7 @@ class DataClient(DataObject):
 
 
 DataClient.email = DataAttribute(DataClient, "email")
-DataClient.activated = DataAttribute(DataClient, "activated", serialize=False)
+DataClient.verified = DataAttribute(DataClient, "verified", serialize=False)
 DataClient.password_salt = DataAttribute(DataClient, "password_salt",
                                          serialize=False)
 DataClient.password_hash = DataAttribute(DataClient, "password_hash",

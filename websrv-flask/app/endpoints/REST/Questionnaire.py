@@ -52,7 +52,7 @@ def api_questionnaire_download_csv(questionnaire_uuid):
 
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
-            for result in question.results:
+            for result in filter(lambda x: x.verified, question.results):
                 writer.writerow([question_group.name.get_default_text(),
                                  question.text.get_default_text(),
                                  result.answer_value])
