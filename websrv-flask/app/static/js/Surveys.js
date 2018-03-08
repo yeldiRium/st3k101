@@ -4,10 +4,10 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
         FlashProvider.setShowClose(true);
     }])
     .controller('SurveysController', [
-        "$scope", "$http", "$timeout", "Flash", "Surveys", "ResultHandling",
-        "LanguageHandling",
-        function ($scope, $http, $timeout, Flash, Surveys, ResultHandling,
-                  LanguageHandling) {
+        "$scope", "$http", "$timeout", "Flash", "Surveys", "Questionnaires",
+        "ResultHandling", "LanguageHandling",
+        function ($scope, $http, $timeout, Flash, Surveys, Questionnaires,
+                  ResultHandling, LanguageHandling) {
             $scope.loading = "loading";
 
             /**
@@ -205,75 +205,47 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                     || $scope.new.questionnaire.data == null) {
                     return;
                 }
-                $http({
-                    method: 'POST',
-                    url: '/api/questionnaire',
-                    data: JSON.stringify({
-                        survey: $scope.new.questionnaire.survey.uuid,
-                        questionnaire: {
-                            name: $scope.new.questionnaire.data.name,
-                            description: $scope.new.questionnaire.data.description,
-                            template: $scope.new.questionnaire.data.template
-                        }
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(
-                        function success(result) {
-                            if (result.status == 200
-                                && result.data.result == 'Questionnaire created.') {
-                                $scope.resetEditing();
-                                Flash.create('success', 'Questionnaire successfully created.');
-                                $scope.query();
-                            } else {
-                                Flash.create('danger', result.data.error);
-                            }
-                        },
-                        function failure(error) {
-                            console.log(error)
-                            Flash.create('danger', error.data.error);
-                        }
-                    )
+                Questionnaires.create({
+                        survey_uuid: $scope.new.questionnaire.survey.uuid,
+                        name: $scope.new.questionnaire.data.name,
+                        description: $scope.new.questionnaire.data.description,
+                        template: $scope.new.questionnaire.data.template
+                    })
+                    .chain(data => {
+                        $scope.resetEditing();
+                        $scope.query();
+                        return Fluture.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             /**
              * Sends delete requests for all currently selected questionnaires.
-             * TODO: Error handling.
              */
             $scope.deleteQuestionnaires = function () {
-                promises = [];
-                $.each($scope.selection.questionnaires, function (uuid, shouldDelete) {
-                    if (shouldDelete == true) {
-                        promises.push(
-                            $http({
-                                method: 'DELETE',
-                                url: '/api/questionnaire',
-                                data: {
-                                    uuid: uuid,
-                                    survey: $scope.selection.survey.uuid
-                                },
-                                headers: {'Content-Type': 'application/json'}
-                            })
-                        );
-                    }
-                });
-                Promise.waitAll(promises).then(
-                    function success(results) {
-                        $scope.resetEditing();
-                        Flash.create('success', 'Questionnaire(s) successfully deleted.');
-                        $scope.query();
-                    },
-                    function fail(results) {
-                        Flash.create('danger', 'Something went wrong with one of the Questionnaires:');
-                        $.each(results, function (index, result) {
-                            if (result.status != 200) {
-                                Flash.create('danger', results.data);
-                            }
-                        })
-                    }
+                var survey_uuid = $scope.selection.survey.uuid;
+                var deleteFutures = R.map(
+                    ([questionnaire_uuid, shouldDelete]) =>
+                        Questionnaires.delete(
+                            questionnaire_uuid, survey_uuid
+                        ),
+                    Object.entries($scope.selection.questionnaires)
                 );
+                console.log(deleteFutures);
+                Fluture.parallel(Infinity, deleteFutures)
+                    .chain(data => {
+                            $scope.resetEditing();
+                            $scope.query();
+                            return Fluture.of(data);
+                        }
+                    )
+                    .fork(
+                        R.map(ResultHandling.flashError($scope)),
+                        R.map(ResultHandling.flashSuccess($scope))
+                    );
             };
 
             /**
@@ -326,7 +298,8 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
 
             $scope.resetEditing();
             $scope.query();
-        }])
+        }
+    ])
     .controller('EditQuestionnaireController', ['$scope', '$http', '$timeout', 'Flash', '$routeParams', 'Questionnaire',
         function ($scope, $http, $timeout, Flash, $routeParams, Questionnaire) {
             /**

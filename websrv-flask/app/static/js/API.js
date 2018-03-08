@@ -42,36 +42,69 @@ angular.module("API", [])
             )
         });
 
-        var getSurveyTranslation = R.curry(function (locale, survey) {
-            var name = R.path(["fields", "name"], survey);
-            var questionnaires = R.path(
-                ["fields", "questionnaires"], survey
-            );
-            return R.pipe(
-                R.assocPath(
-                    ["fields", "name"],
-                    getStringLocale(locale, name)
-                ),
-                R.assocPath(
-                    ["fields", "questionnaires"],
-                    R.map(
-                        getQuestionnaireTranslation(locale), questionnaires
+        var getSurveyTranslation = R.curry(
+            function (locale, survey) {
+                var name = R.path(["fields", "name"], survey);
+                var questionnaires = R.path(
+                    ["fields", "questionnaires"], survey
+                );
+                return R.pipe(
+                    R.assocPath(
+                        ["fields", "name"],
+                        getStringLocale(locale, name)
+                    ),
+                    R.assocPath(
+                        ["fields", "questionnaires"],
+                        R.map(
+                            getQuestionnaireTranslation(locale), questionnaires
+                        )
                     )
-                )
-            )(survey)
-        });
+                )(survey);
+            }
+        );
 
         var getQuestionnaireTranslation = R.curry(
             function (locale, questionnaire) {
+                var getString = getStringLocale(locale);
+
+                var name = R.path(["fields", "name"], questionnaire);
+                var description = R.path(
+                    ["fields", "description"], questionnaire
+                );
+                var questionGroups = R.path(
+                    ["fields", "questiongroups"], questionnaire
+                );
+                return R.pipe(
+                    R.assocPath(
+                        ["fields", "name"],
+                        getString(name)
+                    ),
+                    R.assocPath(
+                        ["fields", "description"],
+                        getString(description)
+                    ),
+                    R.assocPath(
+                        ["fields", "questiongroups"],
+                        R.map(
+                            getQuestionGroupTranslation(locale), questionGroups
+                        )
+                    )
+                )(questionnaire);
+            }
+        );
+
+        var getQuestionGroupTranslation = R.curry(
+            function (locale, questionGroup) {
                 // TODO: implement
-                return questionnaire;
+                return questionGroup
             }
         );
 
         return {
             "getStringLocale": getStringLocale,
             "getSurveyTranslation": getSurveyTranslation,
-            "getQuestionnaireTranslation": getQuestionnaireTranslation
+            "getQuestionnaireTranslation": getQuestionnaireTranslation,
+            "getQuestionGroupTranslation": getQuestionGroupTranslation
         }
     }])
     .factory("PathHandling", [function () {
@@ -151,29 +184,62 @@ angular.module("API", [])
                 }
             }
         }])
-    .factory('Questionnaire', ['$http', function ($http) {
-        return {
-            query: function (uuid, locale = "") {
-                var path = "/api/questionnaire/" + uuid;
-                path += (locale == "") ? "" : "?locale_cookie=0&locale=" + locale;
-                return $http.get(path).then(
-                    function success(result) {
-                        return new Promise(function (resolve, reject) {
-                            resolve({
-                                result: result.data,
-                                locale: result.headers("Content-Language")
+    .factory("Questionnaires", ["$http", "PathHandling", "ResultHandling",
+        function ($http, PathHandling, ResultHandling) {
+            return {
+                "create": function (data) {
+                    var {survey_uuid, name, description, template = null} = data;
+                    return Fluture.tryP(() => $http({
+                            "method": "POST",
+                            "url": "/api/questionnaire",
+                            "data": {
+                                "survey_uuid": survey_uuid,
+                                "questionnaire": {
+                                    "name": name,
+                                    "description": description,
+                                    "template": template
+                                }
+                            },
+                            "headers": {
+                                "Content-Type": "application/json"
+                            }
+                        }))
+                        .chain(ResultHandling.extractData)
+                },
+                "delete": function (questionnaire_uuid, survey_uuid) {
+                    return Fluture.tryP(() => $http({
+                            "method": "DELETE",
+                            "url": `/api/questionnaire/${questionnaire_uuid}`,
+                            "data": {
+                                "survey_uuid": survey_uuid
+                            },
+                            "headers": {
+                                "Content-Type": "application/json"
+                            }
+                        }))
+                        .chain(ResultHandling.extractData)
+                },
+                query: function (uuid, locale = "") {
+                    var path = "/api/questionnaire/" + uuid;
+                    path += (locale == "") ? "" : "?locale_cookie=0&locale=" + locale;
+                    return $http.get(path).then(
+                        function success(result) {
+                            return new Promise(function (resolve, reject) {
+                                resolve({
+                                    result: result.data,
+                                    locale: result.headers("Content-Language")
+                                });
+                            })
+                        },
+                        function fail(error) {
+                            return new Promise(function (resolve, reject) {
+                                reject(error);
                             });
-                        })
-                    },
-                    function fail(error) {
-                        return new Promise(function (resolve, reject) {
-                            reject(error);
-                        });
-                    }
-                )
+                        }
+                    )
+                }
             }
-        }
-    }])
+        }])
     .factory('QuestionStatistic', ['$http', function ($http) {
         return {
             query: function (uuid) {
