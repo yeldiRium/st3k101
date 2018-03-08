@@ -18,7 +18,9 @@ def register(email: str, password: str) -> DataClient:
     """
     client = DataClient.one_from_query({'email': email})
     if client:
-        raise UserExistsException("User with email address {} already exists.".format(email))
+        raise UserExistsException(
+            "User with email address {} already exists.".format(email)
+        )
 
     client = DataClient()
     client.email = email
