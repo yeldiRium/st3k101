@@ -3,7 +3,6 @@ from typing import Optional
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
-from model.Survey import Survey
 
 
 class DataClient(DataObject):
@@ -28,5 +27,3 @@ DataClient.password_hash = DataAttribute(DataClient, "password_hash",
                                          serialize=False)
 DataClient.locale_name = DataAttribute(DataClient,
                                        "locale_name")  # Language.name of the preferred locale
-DataClient.surveys = DataPointerSet(DataClient, "surveys", Survey,
-                                    serialize=False)

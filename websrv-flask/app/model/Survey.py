@@ -8,6 +8,7 @@ from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
 from framework.internationalization import _
+from model.DataClient import DataClient
 from model.I15dString import I15dString
 from model.Questionnaire import Questionnaire
 
@@ -91,3 +92,6 @@ Survey.original_locale = DataAttribute(Survey, "original_locale")
 Survey.name = DataPointer(Survey, "name", I15dString)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)
+
+DataClient.surveys = DataPointerSet(DataClient, "surveys", Survey,
+                                    serialize=False)
