@@ -81,13 +81,7 @@ class EMailWhitelistQAC(QACModule):
         the_new_qac = EMailWhitelistQAC()
         the_new_qac.name = I18n("Email whitelist")
         the_new_qac.description = I18n("Only allow users with a certain email"
-                                       "address to submit answers."
-                                       "When submitting a survey, users have"
-                                       "to enter their email address. "
-                                       "For their answers to be counted, users"
-                                       "have to verify their email address by"
-                                       "clicking on a link that is sent out"
-                                       "to them.")
+                                       "address to submit answers.")
 
         the_new_qac.parameters = {
             email_list_str
