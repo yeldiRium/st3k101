@@ -397,4 +397,15 @@ def api_questionnaire_download_csv(questionnaire_uuid: str):
 
 @app.route("/api/questionnaire/templates", methods=["GET"])
 def api_get_questionnaire_templates():
-    return jsonify(Questionnaire.get_available_templates().keys())
+    """
+    Parameters:
+        -
+
+    Response Codes:
+        200: Questionnaire template names are returned.
+
+    Response Class:
+        200: ["template_name", ...]
+    :return: 
+    """
+    return jsonify(list(Questionnaire.get_available_templates().keys()))
