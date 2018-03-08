@@ -295,31 +295,15 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                 if ($scope.new.survey.data == null) {
                     return;
                 }
-                $http({
-                    method: 'POST',
-                    url: '/api/survey',
-                    data: JSON.stringify({
-                        name: $scope.new.survey.data.name
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(
-                        function success(result) {
-                            if (result.status == 200
-                                && result.data.result == "Survey created.") {
-                                $scope.resetEditing();
-                                Flash.create('success', 'Survey successfully created.');
-                                $scope.query();
-                            } else {
-                                Flash.create('danger', result.data.error);
-                            }
-                        },
-                        function failure(error) {
-                            Flash.create('danger', error.data.error);
-                        }
-                    )
+                Surveys.create($scope.new.survey.data.name)
+                    .chain(data => {
+                        $scope.query();
+                        return Fluture.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             /**
@@ -327,24 +311,17 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * @param survey
              */
             $scope.deleteSurvey = function (survey) {
-                $http({
-                    method: 'DELETE',
-                    url: '/api/survey',
-                    data: {
-                        uuid: survey.uuid
-                    },
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(
-                    function success(result) {
-                        $scope.surveys.splice($scope.surveys.indexOf(survey), 1);
-                        Flash.create('success', 'Survey successfully deleted.');
-                    },
-                    function fail(error) {
-                        Flash.create('danger', 'Survey could not be deleted. Please try again.');
-                    }
-                )
+                Surveys.delete(survey.uuid)
+                    .chain(data => {
+                        $scope.surveys.splice(
+                            $scope.surveys.indexOf(survey), 1
+                        );
+                        return Fluture.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             $scope.resetEditing();

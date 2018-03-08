@@ -129,22 +129,25 @@ angular.module("API", [])
                     return Fluture.tryP(() => $http.get(path))
                         .chain(ResultHandling.extractDataAndLocale);
                 },
-                "query": function (locale = "") {
-                    var path = PathHandling.pathMaybeWithLocale(
-                        "/api/survey", locale
-                    );
-                    return $http.get(path).then(
-                        function (result) {
-                            return new Promise(function (resolve, reject) {
-                                resolve(result.data);
-                            });
-                        },
-                        function (error) {
-                            return new Promise(function (resolve, reject) {
-                                reject(error);
-                            });
-                        }
-                    );
+                "create": function (name) {
+                    return Fluture.tryP(() => $http({
+                            "method": "POST",
+                            "url": "/api/survey",
+                            "data": {
+                                "name": name
+                            },
+                            "headers": {
+                                "Content-Type": "application/json"
+                            }
+                        }))
+                        .chain(ResultHandling.extractData);
+                },
+                "delete": function (uuid) {
+                    return Fluture.tryP(() => $http({
+                            "method": "DELETE",
+                            "url": `/api/survey/${uuid}`
+                        }))
+                        .chain(ResultHandling.extractData)
                 }
             }
         }])
