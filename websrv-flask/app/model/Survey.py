@@ -44,14 +44,16 @@ class Survey(DataObject):
         """
 
         # first look in local template path
-        # then try getting by uuid
         template_files = Questionnaire.get_available_templates()
 
         if template in template_files:
             template_path = template_files[template]
-            template_questionnaire = Questionnaire.from_yaml(template_path)
-        else:
-            template_questionnaire = Questionnaire(template)
+            questionnaire = Questionnaire.from_yaml(template_path)
+            self.questionnaires.add(questionnaire)
+            return questionnaire
+
+        # then try getting by uuid
+        template_questionnaire = Questionnaire(template)
 
         foreign_template = template_questionnaire.original_locale != g._locale
         template_locale = template_questionnaire.original_locale
