@@ -57,13 +57,7 @@ class EMailBlacklistQAC(QACModule):
         the_new_qac = EMailBlacklistQAC()
         the_new_qac.name = I18n("Email blacklist")
         the_new_qac.description = I18n("Block users with a certain email"
-                                       "address from submitting answers."
-                                       "When submitting a survey, users have"
-                                       "to enter their email address. "
-                                       "For their answers to be counted, users"
-                                       "have to verify their email address by"
-                                       "clicking on a link that is sent out"
-                                       "to them.")
+                                       "address from submitting answers.")
 
         the_new_qac.parameters = {
             email_list_str

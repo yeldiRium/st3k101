@@ -1,9 +1,7 @@
 import inspect
 import pkgutil
 import traceback
-from typing import List, Tuple, Any, Dict
-
-import sys
+from typing import List, Tuple, Any
 
 from test import units
 

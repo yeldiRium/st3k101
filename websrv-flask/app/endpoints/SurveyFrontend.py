@@ -4,14 +4,14 @@
 
 from flask import render_template, make_response, redirect, request
 
+import utils
 from framework.exceptions import ObjectDoesntExistException, \
     AccessControlException
 from framework.internationalization import _
 from main import app
-from model.DataClient import DataClient
-from model.DataSubject import DataSubject
-from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
+from model.query_access_control.QACModules import EMailVerificationQAC
+from utils.email import send_mail
 
 
 @app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
@@ -19,6 +19,9 @@ def survey(questionnaire_uuid):
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
     except (AccessControlException, ObjectDoesntExistException):
+        return make_response(redirect("/"))
+
+    if not questionnaire.published:
         return make_response(redirect("/"))
 
     # generate templates for qacs without any error parameters
@@ -54,10 +57,13 @@ def survey_submit(questionnaire_uuid):
     except (AccessControlException, ObjectDoesntExistException):
         return make_response(redirect("/"))
 
+    if not questionnaire.published:
+        return make_response(redirect("/"))
+
+    # check if email address was entered and all questions were answered
     error = {}
     if "email" not in request.form or request.form["email"] == "":
         error["email"] = _("Please enter an E-Mail.")
-        # TODO: check if email is valid
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
             if ("question_" + question.uuid) not in request.form:
@@ -67,11 +73,13 @@ def survey_submit(questionnaire_uuid):
     qac_templates = []
     for qac_module in questionnaire.get_qac_modules():
         qac_errors = qac_module.control()
-        qac_templates.append(qac_module.render_questionnaire_template(qac_errors))
+        qac_templates.append(qac_module.render_questionnaire_template(
+            qac_errors))
         if qac_errors:
             # Just set any value to true, so that the template is rendered
             error["qac"] = True
 
+    # display errors in frontend
     if error:
         try:
             questionnaire = Questionnaire(questionnaire_uuid)
@@ -86,40 +94,37 @@ def survey_submit(questionnaire_uuid):
         except (AccessControlException, ObjectDoesntExistException):
             return make_response(redirect("/"))
 
-    data_subject = DataSubject.one_from_query(
-        {"email_hash": request.form["email"]})
-    if data_subject is None:
-        data_subject = DataSubject()
-        data_subject.email = request.form["email"]
+    needs_verification = False
+    token = utils.generate_verification_token()
+    for qac_module in questionnaire.get_qac_modules():
+        if type(qac_module) is EMailVerificationQAC:
+            needs_verification = True
 
-    answer_overwritten = False
+    # update QuestionResults
+    email = request.form["email"]
+    answer_is_new = False
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
-            current_answer = QuestionResult.one_from_query({
-                "data_subject": data_subject.uuid,
-                "question": question.uuid
-            })
-            if current_answer is None:
-                current_answer = QuestionResult(
-                    owner=DataClient(question.owner_uuid))
-                current_answer.data_subject = data_subject
-                current_answer.question = question
-                question.add_question_result(current_answer)
-            else:
-                answer_overwritten = True
-            current_answer.answer_value = request.form[
-                "question_" + question.uuid]
-            question.statistic.update()
-    if not answer_overwritten:
-        questionnaire.answer_count += 1
 
-    return render_template("survey_thanks.html", email=request.form["email"])
+            answer_value = request.form["question_{}".format(question.uuid)]
+            answer_is_new |= question.add_question_result(answer_value, email,
+                                                          needs_verification,
+                                                          token)
 
+    if answer_is_new and not needs_verification:
+            questionnaire.answer_count += 1
 
-@app.route(
-    "/survey/<string:questionnaire_uuid>/confirm/<string:confirmation_token>")
-def survey_confirm_submission(questionnaire_uuid, confirmation_token):
-    pass
+    if needs_verification:
+        url = utils.generate_verification_url("/verify/survey", token)
+        message = render_template(
+            "mail/verification_mail.txt",
+            verification_url=url,
+            questionnaire_name=questionnaire.name
+        )
+        send_mail(email, _("Please confirm your survey submission"), message)
+        return render_template("survey_please_verify.html", email=email)
+    else:
+        return render_template("survey_thanks.html", email=email)
 
 
 @app.route("/disclaimer")

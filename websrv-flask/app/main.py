@@ -8,6 +8,7 @@ from werkzeug.wrappers import Response
 
 import auth
 import test
+from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages
@@ -34,7 +35,7 @@ def get_locale():
 
 @babel.timezoneselector
 def get_timezone():
-    return "Europe/Berlin"
+    return g._config["BABEL_DEFAULT_TIMEZONE"]
 
 
 # before and after request foo, things to do before or after each request
@@ -92,6 +93,10 @@ def before_request():
 
 @app.after_request
 def after_request(response: Response):
+    # hacky scheduling
+    for job in laziness.LAZY_JOBS:
+        job()
+
     if request.args.get('locale'):
         if request.args.get('locale_cookie', 1) == 1:
             response.set_cookie('locale', g._locale.lower())
