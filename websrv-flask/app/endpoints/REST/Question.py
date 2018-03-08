@@ -22,7 +22,11 @@ from model.Questionnaire import Questionnaire
     ('question_group_uuid', str),
     ('text', str)
 )
-def api_question_create(questionnaire_uuid='', question_group_uuid='', text=''):
+def api_question_create(
+        questionnaire_uuid: str='',
+        question_group_uuid: str='',
+        text: str =''
+):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire on which to
@@ -79,7 +83,7 @@ def api_question_create(questionnaire_uuid='', question_group_uuid='', text=''):
 
 
 @app.route("/api/question/<string:question_uuid>", methods=["GET"])
-def api_question_get(question_uuid=''):
+def api_question_get(question_uuid: str):
     """
     Parameters:
         question_uuid: String The uuid for the Question to retrieve.
@@ -89,8 +93,7 @@ def api_question_get(question_uuid=''):
         404: The uuid doesn't belong to a valid Question.
 
     Response Class:
-        200: {
-            "question": Question: {
+        200: Question: {
                 "class": "model.Question.Question",
                 "fields": {
                     "text": {
@@ -105,9 +108,7 @@ def api_question_get(question_uuid=''):
                     }
                 },
                 "uuid": String
-            },
-            "result": "Question found."
-        }
+            }
         404: {
             "error": "No such Question.",
             "result": "error"
@@ -120,15 +121,12 @@ def api_question_get(question_uuid=''):
     except AccessControlException:
         return make_error(_("Lacking credentials."), 403)
 
-    return jsonify({
-        "result": _("Question found."),
-        "question": question
-    })
+    return jsonify(question)
 
 
 @app.route("/api/question/<string:question_uuid>", methods=["PUT"])
 @expect(('text', str))
-def api_question_update(question_uuid='', text=''):
+def api_question_update(question_uuid: str, text: str=''):
     """
     Parameters:
         question_uuid: String The uuid for the Question to update.
@@ -168,6 +166,9 @@ def api_question_update(question_uuid='', text=''):
     except AccessControlException:
         return make_error(_("Lacking credentials."), 403)
 
+    if not question.accessible():
+        return make_error(_("Lacking credentials"), 403)
+
     return jsonify({
         "result": _("Question updated."),
         "question": question
@@ -180,9 +181,9 @@ def api_question_update(question_uuid='', text=''):
     ('questionnaire_uuid', str)
 )
 def api_question_delete(
-        question_uuid='',
-        question_group_uuid='',
-        questionnaire_uuid=''
+        question_uuid: str,
+        question_group_uuid: str='',
+        questionnaire_uuid: str=''
 ):
     """
     Parameters:
@@ -227,7 +228,7 @@ def api_question_delete(
     except AccessControlException:
         return make_error(_("Lacking credentials."), 403)
 
-    if not the_question_group.accessible():
+    if not the_questionnaire.accessible():
         return make_error(_("Lacking credentials"), 403)
 
     the_questionnaire.remove_question_from_group(the_question_group, question)
@@ -236,7 +237,7 @@ def api_question_delete(
 
 
 @app.route("/api/question/<string:question_uuid>/statistic", methods=["GET"])
-def api_question_statistic(question_uuid):
+def api_question_statistic(question_uuid: str):
     """
     Parameters:
         question_uuid: String The uuid for the Question to retrieve the statis-

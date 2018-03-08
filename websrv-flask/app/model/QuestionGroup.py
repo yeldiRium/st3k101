@@ -1,3 +1,5 @@
+import re
+
 from framework.exceptions import *
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
@@ -7,8 +9,14 @@ from model.I15dString import I15dString
 from model.Question import Question
 
 
-class QuestionGroup(DataObject):
+def check_color(color: str):
+    regex = re.compile(r'^#[0-9a-fA-F]{6}$')
+    if regex.match(color) is None:
+        raise ValueError("'{}' is not a well formatted color value. It must be "
+                         "a hex-string beginning with #.".format(color))
 
+
+class QuestionGroup(DataObject):
     readable_by_anonymous = True
 
     @staticmethod
@@ -33,6 +41,17 @@ class QuestionGroup(DataObject):
         except KeyError as _:
             raise QuestionNotFoundException(self.name.get_default_text(),
                                             question.text.get_default_text())
+
+    def set_name(self, name):
+        self.name.set_locale(name)
+
+    def set_color(self, color):
+        check_color(color)
+        self.color = color
+
+    def set_background_color(self, text_color):
+        check_color(text_color)
+        self.text_color = text_color
 
 
 QuestionGroup.name = DataPointer(QuestionGroup, "name", I15dString)

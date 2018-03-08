@@ -16,9 +16,9 @@ class QACTextParameter(QACParameter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.text is None:
-            self.text = _("This is a placeholder text, replace it to your "
-                          "liking.")
+        if self._text is None:
+            self._text = _("This is a placeholder text, replace it to your "
+                           "liking.")
 
     @property
     def text(self):
@@ -46,9 +46,9 @@ class QACI15dTextParameter(QACParameter):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.text is None:
-            self.text = I15dString()
-            self.text.set_locale(_("This is a placeholder text, replace it to "
+        if self._text is None:
+            self._text = I15dString()
+            self._text.set_locale(_("This is a placeholder text, replace it to "
                                    "your liking."))
 
         @property
@@ -60,7 +60,7 @@ class QACI15dTextParameter(QACParameter):
             if type(text) is not str:
                 raise TypeError
 
-            self.text.set_locale(text)
+            self._text.set_locale(text)
 
 
 QACI15dTextParameter.name = DataString(QACI15dTextParameter, "name")
