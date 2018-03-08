@@ -5,7 +5,7 @@ angular.module("API", [])
             "flashError": function (scope) {
                 return function (error) {
                     scope.$apply(() => {
-                        Flash.create("danger", error.responseJSON.error);
+                        Flash.create("danger", error.data.error);
                     });
                     return Fluture.of(error);
                 }
@@ -98,11 +98,11 @@ angular.module("API", [])
                             "method": "PUT",
                             "url": "/api/account/current",
                             "data": {
-                                "email": email,
-                                "locale": locale
+                                email,
+                                locale
                             },
                             "headers": {
-                                'Content-Type': 'application/json'
+                                "Content-Type": "application/json"
                             }
                         }))
                         .chain(ResultHandling.extractData);

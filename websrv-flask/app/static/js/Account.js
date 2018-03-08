@@ -32,8 +32,8 @@ angular.module('Account', ['ngRoute', 'API', 'Utility'])
             $scope.updateAccount = function (email, locale) {
                 Flash.create("info", "Updating; Please wait a moment...");
                 Account.update({
-                        "email": email,
-                        "locale": locale
+                        email,
+                        locale
                     })
                     .fork(
                         ResultHandling.flashError($scope),
