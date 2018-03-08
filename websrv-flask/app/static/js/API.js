@@ -37,7 +37,18 @@ angular.module("API", [])
             }
         };
     }])
-    .directive("ewLoad", function() {
+    .factory("Locales", [function () {
+        return {
+            "all": function () {
+                return Fluture.tryP(() => $.ajax({
+                    "accepts": "application/json",
+                    "methods": "GET",
+                    "url": "/api/locales"
+                }));
+            }
+        }
+    }])
+    .directive("ewLoad", function () {
         return {
             "restrict": "EA",
             "replace": true,
