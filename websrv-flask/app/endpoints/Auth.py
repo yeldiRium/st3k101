@@ -4,7 +4,7 @@
 
 from flask import render_template, request, make_response, redirect
 
-from businesslogic import users
+from auth import users
 from framework.exceptions import UserExistsException, BadCredentialsException
 from main import app
 
@@ -22,6 +22,7 @@ def registration_post():
     """
     Registration endpoint that takes post information for new account
     """
+    # TODO: make users start out as unverified
     if not (request.form["password"] == request.form["confirmation"]):
         return render_template(
             "home_registration.html",
@@ -51,6 +52,7 @@ def login():
 
     Takes login parameters via POST and starts session.
     """
+    # TODO: disallow login for unverified users
     try:
         session_token = users.login(request.form["email"],
                                     request.form["password"])
@@ -67,5 +69,6 @@ def logout():
     """
     Logout Route
     """
+    # FIXME
     users.logout()
     return make_response(redirect('/'))
