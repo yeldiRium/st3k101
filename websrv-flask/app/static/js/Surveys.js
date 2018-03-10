@@ -290,10 +290,10 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 )(Object.entries($scope.selection.questionnaires));
 
                 Future.parallel(Infinity, deleteFutures)
-                    .chain(data => {
+                    .map(data => {
                             $scope.resetEditing();
                             $scope.init();
-                            return Future.of(data);
+                            return data;
                         }
                     )
                     .fork(
@@ -688,38 +688,27 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * TODO: error handling
              */
             $scope.deleteQuestions = function () {
-                const promises = [];
-                $.each($scope.selection.questions, function (uuid, shouldDelete) {
-                    if (shouldDelete === true) {
-                        promises.push(
-                            $http({
-                                method: "DELETE",
-                                url: "/api/question",
-                                data: {
-                                    questionnaire: $scope.questionnaire.uuid,
-                                    question_group: $scope.selection.questionGroup.uuid,
-                                    uuid: uuid
-                                },
-                                headers: {"Content-Type": "application/json"}
-                            })
-                        );
-                    }
-                });
-                Promise.waitAll(promises).then(
-                    function success(results) {
-                        $scope.resetEditing();
-                        Flash.create("success", "Question(s) successfully deleted.");
-                        $scope.init();
-                    },
-                    function fail(results) {
-                        Flash.create("danger", "Something went wrong with one of the Questions:");
-                        $.each(results, function (index, result) {
-                            if (result.status !== 200) {
-                                Flash.create("danger", results.data);
-                            }
-                        })
-                    }
-                );
+                const questionnaire_uuid = $scope.questionnaire.uuid;
+                const questionGroup_uuid = $scope.selection.questionGroup.uuid;
+                const deleteFutures = R.pipe(
+                    R.filter(([question_uuid, shouldDelete]) => shouldDelete),
+                    R.map(R.head),
+                    R.map(question_uuid => Questions.delete(
+                        question_uuid, questionnaire_uuid, questionGroup_uuid
+                    ))
+                )(Object.entries($scope.selection.questions));
+
+                Future.parallel(Infinity, deleteFutures)
+                    .map(data => {
+                            $scope.resetEditing();
+                            $scope.init();
+                            return data;
+                        }
+                    )
+                    .fork(
+                        R.map(ResultHandling.flashError($scope)),
+                        R.map(ResultHandling.flashSuccess($scope))
+                    );
             };
 
             $scope.resetEditing();

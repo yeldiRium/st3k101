@@ -368,7 +368,22 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
+                },
+                "delete": function (question_uuid, questionnaire_uuid,
+                                    questionGroup_uuid) {
+                    return Future.tryP(() => $http({
+                        "method": "DELETE",
+                        "url": `/api/question/${question_uuid}`,
+                        "data": {
+                            "questionnaire_uuid": questionnaire_uuid,
+                            "question_group_uuid": questionGroup_uuid
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .map(ResultHandling.extractData);
                 }
             }
         }])
