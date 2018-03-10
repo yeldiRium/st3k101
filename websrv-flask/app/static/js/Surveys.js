@@ -39,9 +39,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     .chainRej(ResultHandling.flashError($scope))
                     .fork(
                         () => {
+                            $scope.surveys = null;
                             $scope.$apply(() => {
                                 $scope.loading = "error";
-                                $scope.surveys = null
                             });
                         },
                         $scope.prepareView
@@ -56,14 +56,14 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param locale
              */
             $scope.prepareView = function ({data, locale}) {
+                $scope.surveys = R.map(
+                    LanguageHandling.getSurveyTranslation(locale), data
+                );
+                $scope.templates = $scope.prepareTemplates(
+                    locale, $scope.surveys
+                );
                 $scope.$apply(() => {
                     $scope.loading = "done";
-                    $scope.surveys = R.map(
-                        LanguageHandling.getSurveyTranslation(locale), data
-                    );
-                    $scope.templates = $scope.prepareTemplates(
-                        locale, $scope.surveys
-                    );
                 });
             };
 
@@ -315,6 +315,8 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
         function ($scope, $http, $timeout, Flash, $routeParams,
                   Questionnaires, ResultHandling, LanguageHandling,
                   StyleStuff) {
+            $scope.loading = "loading";
+
             /**
              * Queries the current questionnaire and stores its data.
              * If something goes wrong, an error message is displayed and
@@ -325,9 +327,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     .chainRej(ResultHandling.flashError($scope))
                     .fork(
                         () => {
+                            $scope.questionnaire = null;
                             $scope.$apply(() => {
                                 $scope.loading = "error";
-                                $scope.questionnaire = null;
                             });
                         },
                         prepareView
@@ -349,14 +351,15 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         );
                 }
 
+                $scope.questionnaire = parsed_questionnaire;
+
+                if (parsed_questionnaire_original) {
+                    $scope.questionnaire_original =
+                        parsed_questionnaire_original;
+                }
+
                 $scope.$apply(() => {
                     $scope.loading = "done";
-                    $scope.questionnaire = parsed_questionnaire;
-
-                    if (parsed_questionnaire_original) {
-                        $scope.questionnaire_original =
-                            parsed_questionnaire_original;
-                    }
                 });
 
                 R.forEach(
