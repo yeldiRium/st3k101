@@ -259,7 +259,7 @@ angular.module("API", [])
                         .chain(ResultHandling.extractDataAndLocale);
                 },
                 "update": function (questionnaire_uuid, data) {
-                    const {name=null, description=null} = data;
+                    const {name = null, description = null} = data;
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": `/api/questionnaire/${questionnaire_uuid}`,
@@ -285,6 +285,25 @@ angular.module("API", [])
                         }
                     }))
                         .chain(ResultHandling.extractData)
+                }
+            }
+        }])
+    .factory("QuestionGroups", ["$http", "ResultHandling",
+        function ($http, ResultHandling) {
+            return {
+                "create": function (questionnaire_uuid, name) {
+                    return Future.tryP(() => $http({
+                        "method": "POST",
+                        "url": "/api/question_group",
+                        "data": {
+                            "questionnaire_uuid": questionnaire_uuid,
+                            "name": name,
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .chain(ResultHandling.extractData);
                 }
             }
         }])

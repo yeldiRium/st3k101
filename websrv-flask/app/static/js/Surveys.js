@@ -307,10 +307,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     ])
     .controller("EditQuestionnaireController", [
         "$scope", "$http", "$timeout", "Flash", "$routeParams",
-        "Questionnaires", "ResultHandling", "LanguageHandling", "StyleStuff",
+        "Questionnaires", "QuestionGroups", "ResultHandling",
+        "LanguageHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, $routeParams,
-                  Questionnaires, ResultHandling, LanguageHandling,
-                  StyleStuff) {
+                  Questionnaires, QuestionGroups, ResultHandling,
+                  LanguageHandling, StyleStuff) {
             $scope.loading = "loading";
 
             /**
@@ -535,35 +536,26 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * temporary data.
              */
             $scope.createQuestionGroup = function () {
-                if ($scope.new.questionGroup.data == null) {
+                const name = R.path(
+                    ["new", "questionGroup", "data", "name"], $scope
+                );
+                if (typeof name === "undefined" || name === "" || name === null) {
                     return;
                 }
-                $http({
-                    method: "POST",
-                    url: "/api/question_group",
-                    data: JSON.stringify({
-                        questionnaire: $scope.questionnaire.uuid,
-                        name: $scope.new.questionGroup.data.name,
-                    }),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                })
-                    .then(
-                        function success(result) {
-                            if (result.status === 200
-                                && result.data.result === "QuestionGroup created.") {
-                                $scope.resetEditing();
-                                Flash.create("success", "QuestionGroup successfully created.");
-                                $scope.init();
-                            } else {
-                                Flash.create("danger", result.data.error);
-                            }
-                        },
-                        function failure(error) {
-                            Flash.create("danger", error.data.error);
-                        }
-                    )
+
+                QuestionGroups.create(
+                    $scope.questionnaire.uuid,
+                    $scope.new.questionGroup.data.name
+                )
+                    .chain(data => {
+                        $scope.resetEditing();
+                        $scope.init();
+                        return Future.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             /**
