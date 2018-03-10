@@ -14,9 +14,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     }])
     .controller("SurveysController", [
         "$scope", "$http", "$timeout", "Flash", "Surveys", "Questionnaires",
-        "ResultHandling", "LanguageHandling",
+        "ResultHandling", "LanguageHandling", "PathHandling",
         function ($scope, $http, $timeout, Flash, Surveys, Questionnaires,
-                  ResultHandling, LanguageHandling) {
+                  ResultHandling, LanguageHandling, PathHandling) {
             $scope.loading = "loading";
 
             /**
@@ -44,7 +44,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                                 $scope.loading = "error";
                             });
                         },
-                        $scope.prepareView
+                        prepareView
                     );
             };
 
@@ -55,11 +55,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param data
              * @param locale
              */
-            $scope.prepareView = function ({data, locale}) {
+            let prepareView = function ({data, locale}) {
                 $scope.surveys = R.map(
                     LanguageHandling.getSurveyTranslation(locale), data
                 );
-                $scope.templates = $scope.prepareTemplates(
+                $scope.templates = prepareTemplates(
                     locale, $scope.surveys
                 );
                 $scope.$apply(() => {
@@ -81,7 +81,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              *
              * @param locale
              */
-            $scope.prepareTemplates = R.pipe(
+            let prepareTemplates = R.pipe(
                 R.filter(survey =>
                     R.path(["fields", "questionnaires", "length"], survey)
                 ),
@@ -128,38 +128,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             );
 
             /**
-             * Resets all editing forms and all temporary data.
-             */
-            $scope.resetEditing = function () {
-                $scope.new = {
-                    questionnaire: {
-                        survey: null,
-                        data: null,
-                        template: null
-                    },
-                    survey: {
-                        data: null
-                    }
-                };
-
-                $scope.selection = {
-                    survey: null,
-                    questionnaires: {},
-                    count: 0
-                };
-            };
-
-            /**
              * Navigates to the frontend view of a Questionnaire.
              * @param questionnaire
              */
             $scope.gotoQuestionnaire = function (questionnaire) {
-                const url = `/survey/${questionnaire.uuid}`;
-                const win = window.open(`/survey/${questionnaire.uuid}_blank`);
-                if (win) {
-                    win.focus();
-                } else {
-                    Flash.create("danger", `Tried to open the survey at "${url}", but the popup was blocked.`);
+                if (!PathHandling.gotoQuestionnaire(questionnaire.uuid)) {
+                    Flash.create("danger", `Tried to open the questionnaire, but the popup was blocked.`);
                 }
             };
 
@@ -187,6 +161,76 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 if ($scope.selection.count === 0) {
                     $scope.resetEditing();
                 }
+            };
+
+            /**
+             * Resets all editing forms and all temporary data.
+             */
+            $scope.resetEditing = function () {
+                $scope.new = {
+                    questionnaire: {
+                        survey: null,
+                        data: null,
+                        template: null
+                    },
+                    survey: {
+                        data: null
+                    }
+                };
+
+                $scope.selection = {
+                    survey: null,
+                    questionnaires: {},
+                    count: 0
+                };
+            };
+
+            /**
+             * Opens a form for a new Survey by setting temporary data to
+             * default values.
+             */
+            $scope.newSurvey = function () {
+                $scope.resetEditing();
+                $scope.new.survey.data = {
+                    name: "name"
+                }
+            };
+
+            /**
+             * Sends a create request for a new Survey with the current tempora-
+             * ry data.
+             */
+            $scope.createSurvey = function () {
+                if ($scope.new.survey.data == null) {
+                    return;
+                }
+                Surveys.create($scope.new.survey.data.name)
+                    .chain(data => {
+                        $scope.init();
+                        return Future.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
+            };
+
+            /**
+             * Sends a delete request for a specific survey.
+             * @param survey
+             */
+            $scope.deleteSurvey = function (survey) {
+                Surveys.delete(survey.uuid)
+                    .chain(data => {
+                        $scope.surveys.splice(
+                            $scope.surveys.indexOf(survey), 1
+                        );
+                        return Future.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             /**
@@ -254,54 +298,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     .fork(
                         R.map(ResultHandling.flashError($scope)),
                         R.map(ResultHandling.flashSuccess($scope))
-                    );
-            };
-
-            /**
-             * Opens a form for a new Survey by setting temporary data to
-             * default values.
-             */
-            $scope.newSurvey = function () {
-                $scope.resetEditing();
-                $scope.new.survey.data = {
-                    name: "name"
-                }
-            };
-
-            /**
-             * Sends a create request for a new Survey with the current tempora-
-             * ry data.
-             */
-            $scope.createSurvey = function () {
-                if ($scope.new.survey.data == null) {
-                    return;
-                }
-                Surveys.create($scope.new.survey.data.name)
-                    .chain(data => {
-                        $scope.init();
-                        return Future.of(data);
-                    })
-                    .fork(
-                        ResultHandling.flashError($scope),
-                        ResultHandling.flashSuccess($scope)
-                    );
-            };
-
-            /**
-             * Sends a delete request for a specific survey.
-             * @param survey
-             */
-            $scope.deleteSurvey = function (survey) {
-                Surveys.delete(survey.uuid)
-                    .chain(data => {
-                        $scope.surveys.splice(
-                            $scope.surveys.indexOf(survey), 1
-                        );
-                        return Future.of(data);
-                    })
-                    .fork(
-                        ResultHandling.flashError($scope),
-                        ResultHandling.flashSuccess($scope)
                     );
             };
 
@@ -388,38 +384,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             }
 
             /**
-             * Resets all editing forms and all temporary data.
-             */
-            $scope.resetEditing = function () {
-                $scope.new = {
-                    question: {
-                        questionGroup: null,
-                        data: null
-                    },
-                    questionGroup: {
-                        data: null
-                    }
-                };
-
-                $scope.selection = {
-                    questionGroup: null,
-                    questions: {},
-                    count: 0
-                };
-
-                $scope.edit = {};
-            };
-
-            /**
              * Navigates to the frontend view of a Questionnaire.
              */
             $scope.gotoQuestionnaire = function () {
-                const url = `/survey/${$scope.questionnaire.uuid}`;
-                const win = window.open(`/survey/${$scope.questionnaire.uuid}`, "_blank");
-                if (win) {
-                    win.focus();
-                } else {
-                    Flash.create("danger", `Tried to open the questionnaire at "${url}", but the popup was blocked.`);
+                if (!PathHandling.gotoQuestionnaire($scope.questionnaire.uuid)) {
+                    Flash.create("danger", `Tried to open the questionnaire, but the popup was blocked.`);
                 }
             };
 
@@ -472,6 +441,56 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             /**
+             * Resets all editing forms and all temporary data.
+             */
+            $scope.resetEditing = function () {
+                $scope.new = {
+                    question: {
+                        questionGroup: null,
+                        data: null
+                    },
+                    questionGroup: {
+                        data: null
+                    }
+                };
+
+                $scope.selection = {
+                    questionGroup: null,
+                    questions: {},
+                    count: 0
+                };
+
+                $scope.edit = {};
+            };
+
+            /**
+             * Toggles the selection of a single question.
+             * Selection is questionGroup-based. It is not possible to select
+             * multiple questions across questionGroup.
+             * So the previous selection is reset, if a question on a different
+             * questionGroup is selected.
+             *
+             * @param questionGroup
+             * @param question
+             */
+            $scope.toggleSelect = function (questionGroup, question) {
+                if ($scope.selection.questionGroup !== questionGroup) {
+                    $scope.resetEditing();
+                }
+                $scope.selection.questionGroup = questionGroup;
+                if ($scope.selection.questions[question.uuid] === true) {
+                    $scope.selection.questions[question.uuid] = false;
+                    $scope.selection.count--;
+                } else {
+                    $scope.selection.questions[question.uuid] = true;
+                    $scope.selection.count++;
+                }
+                if ($scope.selection.count === 0) {
+                    $scope.resetEditing();
+                }
+            };
+
+            /**
              * Sends updates with current questionnaire data
              */
             $scope.updateQuestionnaire = function () {
@@ -498,6 +517,53 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         ResultHandling.flashSuccess($scope)
                     );
                 return true;
+            };
+
+            /**
+             * Opens a form for a new QuestionGroup by setting temporary data to
+             * default values.
+             */
+            $scope.newQuestionGroup = function () {
+                $scope.resetEditing();
+                $scope.new.questionGroup.data = {
+                    name: "name"
+                }
+            };
+
+            /**
+             * Sends a create request for a new QuestionGroup with the current
+             * temporary data.
+             */
+            $scope.createQuestionGroup = function () {
+                if ($scope.new.questionGroup.data == null) {
+                    return;
+                }
+                $http({
+                    method: "POST",
+                    url: "/api/question_group",
+                    data: JSON.stringify({
+                        questionnaire: $scope.questionnaire.uuid,
+                        name: $scope.new.questionGroup.data.name,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                    .then(
+                        function success(result) {
+                            if (result.status === 200
+                                && result.data.result === "QuestionGroup created.") {
+                                $scope.resetEditing();
+                                Flash.create("success", "QuestionGroup successfully created.");
+                                $scope.init();
+                            } else {
+                                Flash.create("danger", result.data.error);
+                            }
+                        },
+                        function failure(error) {
+                            Flash.create("danger", error.data.error);
+                        }
+                    )
             };
 
             /**
@@ -530,62 +596,84 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 return true;
             };
 
-            /**
-             * Updates a question's name based on the stored values in
-             * $scope.edit.
-             */
-            $scope.updateQuestion = function (uuid, text) {
-                if (text === "") {
-                    Flash.create("danger", "Text can't be empty!");
-                    return false;
-                }
+            $scope.updateQuestionGroupColor = function (color, questionGroup) {
                 $http({
                     method: "PUT",
-                    url: "/api/question",
+                    url: "/api/question_group",
                     data: {
-                        uuid: uuid,
-                        text: text
+                        uuid: questionGroup.uuid,
+                        color: color
                     },
                     headers: {
                         "Content-Type": "application/json"
                     }
                 }).then(
                     function success(result) {
-                        Flash.create("success", "Question updated!");
+                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
+                            questionGroup.fields.color = color;
+                            Flash.create("success", "QuestionGroup color was updated!");
+                        } else {
+                            Flash.create("danger", result.data.error);
+                        }
                     },
                     function fail(error) {
-                        Flash.create("danger", error.data.error);
+                        Flash.create("danger", "QuestionGroup color could not be updated. Please try again.");
                     }
-                );
-                return true;
+                )
             };
 
+            $scope.updateQuestionGroupTextColor = function (color, questionGroup) {
+                $http({
+                    method: "PUT",
+                    url: "/api/question_group",
+                    data: {
+                        uuid: questionGroup.uuid,
+                        text_color: color
+                    },
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(
+                    function success(result) {
+                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
+                            questionGroup.fields.text_color = color;
+                            Flash.create("success", "QuestionGroup text color was updated!");
+                        } else {
+                            Flash.create('danger', result.data.error);
+                        }
+                    },
+                    function fail(error) {
+                        Flash.create("danger", "QuestionGroup text color could not be updated. Please try again.");
+                    }
+                )
+            };
 
             /**
-             * Toggles the selection of a single question.
-             * Selection is questionGroup-based. It is not possible to select
-             * multiple questions across questionGroup.
-             * So the previous selection is reset, if a question on a different
-             * questionGroup is selected.
-             *
-             * @param questionGroup
-             * @param question
+             * Sends a delete request for a specific QuestionGroup.
              */
-            $scope.toggleSelect = function (questionGroup, question) {
-                if ($scope.selection.questionGroup !== questionGroup) {
-                    $scope.resetEditing();
-                }
-                $scope.selection.questionGroup = questionGroup;
-                if ($scope.selection.questions[question.uuid] === true) {
-                    $scope.selection.questions[question.uuid] = false;
-                    $scope.selection.count--;
-                } else {
-                    $scope.selection.questions[question.uuid] = true;
-                    $scope.selection.count++;
-                }
-                if ($scope.selection.count === 0) {
-                    $scope.resetEditing();
-                }
+            $scope.deleteQuestionGroup = function (questionGroup) {
+                $http({
+                    method: "DELETE",
+                    url: "/api/question_group",
+                    data: {
+                        uuid: questionGroup.uuid,
+                        questionnaire: $scope.questionnaire.uuid
+                    },
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(
+                    function success(result) {
+                        Flash.create("success", "QuestionGroup successfully deleted.");
+                        $scope.questionnaire.fields.questiongroups.splice(
+                            $scope.questionnaire.fields.questiongroups.indexOf(questionGroup),
+                            1
+                        );
+                    },
+                    function fail(error) {
+                        Flash.create("danger", "QuestionGroup could not be deleted. Please try again.");
+                    }
+                )
             };
 
             /**
@@ -639,6 +727,36 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             /**
+             * Updates a question's name based on the stored values in
+             * $scope.edit.
+             */
+            $scope.updateQuestion = function (uuid, text) {
+                if (text === "") {
+                    Flash.create("danger", "Text can't be empty!");
+                    return false;
+                }
+                $http({
+                    method: "PUT",
+                    url: "/api/question",
+                    data: {
+                        uuid: uuid,
+                        text: text
+                    },
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(
+                    function success(result) {
+                        Flash.create("success", "Question updated!");
+                    },
+                    function fail(error) {
+                        Flash.create("danger", error.data.error);
+                    }
+                );
+                return true;
+            };
+
+            /**
              * Sends a delete request for each currently selected Question.
              * TODO: error handling
              */
@@ -675,133 +793,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         })
                     }
                 );
-            };
-
-            /**
-             * Opens a form for a new QuestionGroup by setting temporary data to
-             * default values.
-             */
-            $scope.newQuestionGroup = function () {
-                $scope.resetEditing();
-                $scope.new.questionGroup.data = {
-                    name: "name"
-                }
-            };
-
-            /**
-             * Sends a create request for a new QuestionGroup with the current
-             * temporary data.
-             */
-            $scope.createQuestionGroup = function () {
-                if ($scope.new.questionGroup.data == null) {
-                    return;
-                }
-                $http({
-                    method: "POST",
-                    url: "/api/question_group",
-                    data: JSON.stringify({
-                        questionnaire: $scope.questionnaire.uuid,
-                        name: $scope.new.questionGroup.data.name,
-                    }),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                })
-                    .then(
-                        function success(result) {
-                            if (result.status === 200
-                                && result.data.result === "QuestionGroup created.") {
-                                $scope.resetEditing();
-                                Flash.create("success", "QuestionGroup successfully created.");
-                                $scope.init();
-                            } else {
-                                Flash.create("danger", result.data.error);
-                            }
-                        },
-                        function failure(error) {
-                            Flash.create("danger", error.data.error);
-                        }
-                    )
-            };
-
-            /**
-             * Sends a delete request for a specific QuestionGroup.
-             */
-            $scope.deleteQuestionGroup = function (questionGroup) {
-                $http({
-                    method: "DELETE",
-                    url: "/api/question_group",
-                    data: {
-                        uuid: questionGroup.uuid,
-                        questionnaire: $scope.questionnaire.uuid
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        Flash.create("success", "QuestionGroup successfully deleted.");
-                        $scope.questionnaire.fields.questiongroups.splice(
-                            $scope.questionnaire.fields.questiongroups.indexOf(questionGroup),
-                            1
-                        );
-                    },
-                    function fail(error) {
-                        Flash.create("danger", "QuestionGroup could not be deleted. Please try again.");
-                    }
-                )
-            };
-
-            $scope.updateColor = function (color, questionGroup) {
-                $http({
-                    method: "PUT",
-                    url: "/api/question_group",
-                    data: {
-                        uuid: questionGroup.uuid,
-                        color: color
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
-                            questionGroup.fields.color = color;
-                            Flash.create("success", "QuestionGroup color was updated!");
-                        } else {
-                            Flash.create("danger", result.data.error);
-                        }
-                    },
-                    function fail(error) {
-                        Flash.create("danger", "QuestionGroup color could not be updated. Please try again.");
-                    }
-                )
-            };
-
-            $scope.updateTextColor = function (color, questionGroup) {
-                $http({
-                    method: "PUT",
-                    url: "/api/question_group",
-                    data: {
-                        uuid: questionGroup.uuid,
-                        text_color: color
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
-                            questionGroup.fields.text_color = color;
-                            Flash.create("success", "QuestionGroup text color was updated!");
-                        } else {
-                            Flash.create('danger', result.data.error);
-                        }
-                    },
-                    function fail(error) {
-                        Flash.create("danger", "QuestionGroup text color could not be updated. Please try again.");
-                    }
-                )
             };
 
             $scope.resetEditing();
