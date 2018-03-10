@@ -6,5 +6,5 @@ __pycache__/
 # Frontend
 node_modules/*
 .sass-cache/
-/websrv-flask/app/static/css/*
-/websrv-flask/app/static/vendor/*
+websrv-flask/app/static/css/*
+websrv-flask/app/static/js/bundle.js
