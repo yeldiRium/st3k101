@@ -132,7 +132,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param questionnaire
              */
             $scope.gotoQuestionnaire = function (questionnaire) {
-                if (!PathHandling.gotoQuestionnaire(questionnaire.uuid)) {
+                if (!PathHandling.openQuestionnaire(questionnaire.uuid)) {
                     Flash.create("danger", `Tried to open the questionnaire, but the popup was blocked.`);
                 }
             };
@@ -308,10 +308,10 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     .controller("EditQuestionnaireController", [
         "$scope", "$http", "$timeout", "Flash", "$routeParams",
         "Questionnaires", "QuestionGroups", "ResultHandling",
-        "LanguageHandling", "StyleStuff",
+        "LanguageHandling", "PathHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, $routeParams,
                   Questionnaires, QuestionGroups, ResultHandling,
-                  LanguageHandling, StyleStuff) {
+                  LanguageHandling, PathHandling, StyleStuff) {
             $scope.loading = "loading";
 
             /**
@@ -388,7 +388,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * Navigates to the frontend view of a Questionnaire.
              */
             $scope.gotoQuestionnaire = function () {
-                if (!PathHandling.gotoQuestionnaire($scope.questionnaire.uuid)) {
+                if (!PathHandling.openQuestionnaire($scope.questionnaire.uuid)) {
                     Flash.create("danger", `Tried to open the questionnaire, but the popup was blocked.`);
                 }
             };
