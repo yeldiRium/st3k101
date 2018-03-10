@@ -391,31 +391,25 @@ angular.module("API", [])
                 }
             }
         }])
-    .factory("QuestionStatistic", ["$http", function ($http) {
-        return {
-            query: function (uuid) {
-                return $http.get(`/api/question/${uuid}/statistic`).then(
-                    function success(result) {
-                        return new Promise(function (resolve, reject) {
-                            let statistic = {
-                                "biggest": R.path(["data", "fields", "biggest"], result),
-                                "smallest": R.path(["data", "fields", "smallest"], result),
-                                "q1": R.path(["data", "fields", "q1"], result),
-                                "q2": R.path(["data", "fields", "q2"], result),
-                                "q3": R.path(["data", "fields", "q3"], result)
-                            };
-                            resolve(statistic);
-                        })
-                    },
-                    function fail(error) {
-                        return new Promise(function (resolve, reject) {
-                            reject(error);
-                        });
-                    }
-                )
+    .factory("QuestionStatistics", ["$http", "ResultHandling",
+        function ($http, ResultHandling) {
+            return {
+                "get": function (question_uuid) {
+                    return Future.tryP(() => $http({
+                        "method": "GET",
+                        "url": `/api/question/${question_uuid}/statistic`
+                    }))
+                        .map(ResultHandling.extractData)
+                        .map(result => ({
+                            "biggest": R.path(["data", "fields", "biggest"], result),
+                            "smallest": R.path(["data", "fields", "smallest"], result),
+                            "q1": R.path(["data", "fields", "q1"], result),
+                            "q2": R.path(["data", "fields", "q2"], result),
+                            "q3": R.path(["data", "fields", "q3"], result)
+                        }));
+                }
             }
-        }
-    }])
+        }])
     .directive("ewLoad", function () {
         return {
             "restrict": "EA",
