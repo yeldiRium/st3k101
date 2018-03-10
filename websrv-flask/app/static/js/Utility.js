@@ -1,4 +1,7 @@
 const angular = require("angular");
+const $ = require("jquery");
+
+require("spectrum-colorpicker");
 
 Promise.waitAll = function (iterable) {
     return new Promise(function (resolve, reject) {
@@ -32,6 +35,42 @@ Promise.waitAll = function (iterable) {
 };
 
 angular.module("Utility", [])
+    .factory("StyleStuff", function() {
+        return {
+            /**
+             * Equalizes the heights of checkboxes with the given selectors.
+             *
+             * TODO: doesn't really work yet
+             *
+             * @param checkbox
+             * @param selectable
+             */
+            "equalizeSelectboxes": function(checkbox, selectable) {
+                $(checkbox).each(function (index, element) {
+                    const e = $(element);
+                    e.height(e.sibling(selectable).height());
+                });
+            },
+            /**
+             * Initializes a colorpicker on the given selector with a given ini-
+             * tial value.
+             *
+             * On change the callback is called with the color as a hexstring.
+             *
+             * @param initial
+             * @param selector
+             * @param callback
+             */
+            "colorPicker": function(initial, selector, callback) {
+                $(selector).spectrum({
+                    color: initial,
+                    change: function (color) {
+                        callback(color.toHexString());
+                    }
+                });
+            }
+        }
+    })
     .directive("ngEnter", function () {
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {

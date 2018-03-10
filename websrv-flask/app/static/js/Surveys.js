@@ -310,61 +310,79 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
         }
     ])
     .controller("EditQuestionnaireController", [
-        "$scope", "$http", "$timeout", "Flash", "$routeParams", "Questionnaire",
-        function ($scope, $http, $timeout, Flash, $routeParams, Questionnaire) {
+        "$scope", "$http", "$timeout", "Flash", "$routeParams",
+        "Questionnaires", "ResultHandling", "LanguageHandling", "StyleStuff",
+        function ($scope, $http, $timeout, Flash, $routeParams,
+                  Questionnaires, ResultHandling, LanguageHandling,
+                  StyleStuff) {
             /**
              * Queries the current questionnaire and stores its data.
              * If something goes wrong, an error message is displayed and
              * nothing else.
              */
-            $scope.query = function () {
-                return Questionnaire.query($routeParams.questionnaire).then(
-                    function success(resolved) {
-                        const result = resolved.result;
-                        const locale = resolved.locale;
-                        $.each(
-                            R.path(["fields", "questiongroups"], result),
-                            function (index, questiongroup) {
-                                setTimeout(
-                                    function () {
-                                        $('#colorPicker_' + questiongroup.uuid).spectrum({
-                                            color: R.path(["fields", "color"], questiongroup),
-                                            change: function (color) {
-                                                $scope.updateColor(color.toHexString(), questiongroup);
-                                            }
-                                        });
-                                    }, 0);
-                                setTimeout(
-                                    function () {
-                                        $('#textColorPicker_' + questiongroup.uuid).spectrum({
-                                            color: R.path(["fields", "text_color"], questiongroup),
-                                            change: function (color) {
-                                                $scope.updateTextColor(color.toHexString(), questiongroup);
-                                            }
-                                        });
-                                    }, 0);
+            $scope.init = function () {
+                return Questionnaires.get($routeParams.questionnaire)
+                    .chainRej(ResultHandling.flashError($scope))
+                    .fork(
+                        () => {
+                            $scope.$apply(() => {
+                                $scope.loading = "error";
+                                $scope.questionnaire = null;
                             });
-                        $scope.questionnaire = result;
-
-                        let original_locale = R.path(["fields", "original_locale"], result);
-                        if (original_locale.toLowerCase() !== locale.toLowerCase()) {
-                            return Questionnaire.query($routeParams.questionnaire, original_locale).then(
-                                function success(resolved) {
-                                    $scope.questionnaire_original = resolved.result;
-                                },
-                                function fail(error) {
-                                    $scope.questionnaire_original = null;
-                                    Flash.create("danger", error.data.error);
-                                }
-                            );
-                        }
-                    },
-                    function fail(error) {
-                        $scope.questionnaire = null;
-                        Flash.create("danger", error.data.error);
-                    }
-                );
+                        },
+                        prepareView
+                    );
             };
+
+            function prepareView({data, locale}) {
+                const parsed_questionnaire = LanguageHandling
+                    .getQuestionnaireTranslation(locale, data);
+                const original_locale = R.path(
+                    ["fields", "original_locale"], data
+                );
+                let parsed_questionnaire_original = false;
+
+                if (original_locale.toLowerCase() !== locale.toLowerCase()) {
+                    parsed_questionnaire_original = LanguageHandling
+                        .getQuestionnaireTranslation(
+                            original_locale.toLowerCase(), data
+                        );
+                }
+
+                $scope.$apply(() => {
+                    $scope.loading = "done";
+                    $scope.questionnaire = parsed_questionnaire;
+
+                    if (parsed_questionnaire_original) {
+                        $scope.questionnaire_original =
+                            parsed_questionnaire_original;
+                    }
+                });
+
+                R.forEach(
+                    function (questiongroup) {
+                        setTimeout(StyleStuff.colorPicker(
+                            R.path(["fields", "color"], questiongroup),
+                            `#colorPicker_${questiongroup.uuid}`,
+                            function (color) {
+                                $scope.updateColor(color, questiongroup);
+                            }
+                        ), 0);
+                        setTimeout(StyleStuff.colorPicker(
+                            R.path(["fields", "text_color"], questiongroup),
+                            `#textColorPicker_${questiongroup.uuid}`,
+                            function (color) {
+                                $scope.updateTextColor(color, questiongroup);
+                            }
+                        ), 0);
+                    },
+                    R.path(["fields", "questiongroups"], parsed_questionnaire)
+                );
+
+                StyleStuff.equalizeSelectboxes(
+                    ".as-checkbox", ".selectable"
+                );
+            }
 
             /**
              * Resets all editing forms and all temporary data.
@@ -786,15 +804,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             $scope.resetEditing();
-            $scope.query().then(function success(result) {
-                console.log(result);
-                $(".as-checkbox").each(function (index, element) {
-                    const e = $(element);
-                    console.log(e.height());
-                    console.log(e.sibling(".selectable").height());
-                    e.height(e.sibling(".selectable").height());
-                });
-            });
+            $scope.init();
         }])
     .controller("QuestionnaireStatisticController", [
         "$scope", "$http", "$routeParams", "$timeout", "Questionnaire",

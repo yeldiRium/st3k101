@@ -217,6 +217,13 @@ angular.module("API", [])
                     }))
                         .chain(ResultHandling.extractData)
                 },
+                "get": function (questionnaire_uuid, locale = "") {
+                    const path = PathHandling.pathMaybeWithLocale(
+                        `/api/questionnaire/${questionnaire_uuid}`, locale
+                    );
+                    return Future.tryP(() => $http.get(path))
+                        .chain(ResultHandling.extractDataAndLocale);
+                },
                 "delete": function (questionnaire_uuid, survey_uuid) {
                     return Future.tryP(() => $http({
                         "method": "DELETE",
@@ -229,25 +236,6 @@ angular.module("API", [])
                         }
                     }))
                         .chain(ResultHandling.extractData)
-                },
-                query: function (uuid, locale = "") {
-                    let path = "/api/questionnaire/" + uuid;
-                    path += (locale === "") ? "" : "?locale_cookie=0&locale=" + locale;
-                    return $http.get(path).then(
-                        function success(result) {
-                            return new Promise(function (resolve, reject) {
-                                resolve({
-                                    result: result.data,
-                                    locale: result.headers("Content-Language")
-                                });
-                            })
-                        },
-                        function fail(error) {
-                            return new Promise(function (resolve, reject) {
-                                reject(error);
-                            });
-                        }
-                    )
                 }
             }
         }])
