@@ -35,20 +35,32 @@ Promise.waitAll = function (iterable) {
 };
 
 angular.module("Utility", [])
-    .factory("StyleStuff", function() {
+    .factory("StyleStuff", function () {
         return {
             /**
              * Equalizes the heights of checkboxes with the given selectors.
              *
-             * TODO: doesn't really work yet
+             * Watches, if the selectable's DOM changes and resizes the checkbox
+             * if needed.
              *
              * @param checkbox
              * @param selectable
              */
-            "equalizeSelectboxes": function(checkbox, selectable) {
+            "equalizeSelectboxes": function (checkbox, selectable) {
                 $(checkbox).each(function (index, element) {
                     const e = $(element);
-                    e.height(e.siblings(selectable).height());
+
+                    function resize() {
+                        e.height(e.siblings(selectable).height())
+                    }
+
+                    resize();
+
+                    (new MutationObserver(resize))
+                        .observe(e.siblings(selectable)[0], {
+                            "childList": true,
+                            "subtree": true
+                        });
                 });
             },
             /**
@@ -61,7 +73,7 @@ angular.module("Utility", [])
              * @param selector
              * @param callback
              */
-            "colorPicker": function(initial, selector, callback) {
+            "colorPicker": function (initial, selector, callback) {
                 $(selector).spectrum({
                     color: initial,
                     change: function (color) {
