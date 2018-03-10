@@ -11,6 +11,8 @@
     "angular-flash-alert": "^2.5.0",
     "angular-route": "^1.6.6",
     "bootstrap": "^3.3.7",
+    "browserify": "^16.1.1",
+    "fluture": "^8.0.2",
     "jquery": "^3.2.1",
     "ramda": "^0.25.0",
     "sass": "^1.0.0-beta.3",
@@ -18,15 +20,16 @@
   },
   "scripts": {
     "preinstall": "npm run clearStaticDir",
-    "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run moveNodeModules",
+    "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run compileJS",
     "cleanup": "npm run removeSassModule",
-    "clearStaticDir": "rm -rf websrv-flask/app/static/css && rm -rf websrv-flask/app/static/vendor",
+    "clearStaticDir": "rm -rf websrv-flask/app/static/css",
     "mkCssDir": "mkdir -p websrv-flask/app/static/css",
-    "compileSCSS": "npm run compileSCSSBackend && npm run compileSCSSHome && npm run compileSCSSSurvey",
+    "compileSCSS": "npm run moveVendorCSS && npm run compileSCSSBackend && npm run compileSCSSHome && npm run compileSCSSSurvey",
+    "moveVendorCSS": "cp node_modules/bootstrap/dist/css/bootstrap.min.css websrv-flask/app/static/css/bootstrap.css && cp node_modules/spectrum-colorpicker/spectrum.css websrv-flask/app/static/css/spectrum.css",
     "compileSCSSBackend": "sass websrv-flask/app/sass/backend.scss >> websrv-flask/app/static/css/backend.css",
     "compileSCSSHome": "sass websrv-flask/app/sass/home.scss >> websrv-flask/app/static/css/home.css",
     "compileSCSSSurvey": "sass websrv-flask/app/sass/survey.scss >> websrv-flask/app/static/css/survey.css",
-    "removeSassModule": "rm -rf websrv-flask/app/static/vendor/sass/ && rm -rf websrv-flask/app/static/vendor/.bin/",
-    "moveNodeModules": "mv node_modules/ websrv-flask/app/static/vendor/"
+    "compileJS": "browserify websrv-flask/app/static/js/App.js -o websrv-flask/app/static/js/bundle.js",
+    "removeSassModule": "rm -rf websrv-flask/app/static/vendor/sass/ && rm -rf websrv-flask/app/static/vendor/.bin/"
   }
 }

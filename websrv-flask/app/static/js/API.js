@@ -1,3 +1,9 @@
+const angular = require("angular");
+const Future = require("fluture");
+const R = require("ramda");
+
+require("angular-flash-alert");
+
 angular.module("API", [])
     .factory("ResultHandling", ["Flash", function (Flash) {
         return {
@@ -7,7 +13,7 @@ angular.module("API", [])
                     scope.$apply(() => {
                         Flash.create("danger", error.data.error);
                     });
-                    return Fluture.of(error);
+                    return Future.of(error);
                 }
             },
             // Flashes the resulting success message.
@@ -16,23 +22,23 @@ angular.module("API", [])
                     scope.$apply(() => {
                         Flash.create("success", data.result);
                     });
-                    return Fluture.of(data);
+                    return Future.of(data);
                 }
             },
             "extractDataAndLocale": function (result) {
-                return Fluture.of({
+                return Future.of({
                     "data": result.data,
                     "locale": result.headers("Content-Language")
                 });
             },
             "extractData": function (result) {
-                return Fluture.of(result.data);
+                return Future.of(result.data);
             }
         }
     }])
     .factory("LanguageHandling", [function () {
-        var getStringLocale = R.curry(function (locale, i15dString) {
-            var defaultLocale = R.path(
+        const getStringLocale = R.curry(function (locale, i15dString) {
+            const defaultLocale = R.path(
                 ["fields", "default_locale"], i15dString
             );
             return R.pathOr(
@@ -42,10 +48,10 @@ angular.module("API", [])
             )
         });
 
-        var getSurveyTranslation = R.curry(
+        const getSurveyTranslation = R.curry(
             function (locale, survey) {
-                var name = R.path(["fields", "name"], survey);
-                var questionnaires = R.path(
+                const name = R.path(["fields", "name"], survey);
+                const questionnaires = R.path(
                     ["fields", "questionnaires"], survey
                 );
                 return R.pipe(
@@ -63,15 +69,15 @@ angular.module("API", [])
             }
         );
 
-        var getQuestionnaireTranslation = R.curry(
+        const getQuestionnaireTranslation = R.curry(
             function (locale, questionnaire) {
-                var getString = getStringLocale(locale);
+                const getString = getStringLocale(locale);
 
-                var name = R.path(["fields", "name"], questionnaire);
-                var description = R.path(
+                const name = R.path(["fields", "name"], questionnaire);
+                const description = R.path(
                     ["fields", "description"], questionnaire
                 );
-                var questionGroups = R.path(
+                const questionGroups = R.path(
                     ["fields", "questiongroups"], questionnaire
                 );
                 return R.pipe(
@@ -93,7 +99,7 @@ angular.module("API", [])
             }
         );
 
-        var getQuestionGroupTranslation = R.curry(
+        const getQuestionGroupTranslation = R.curry(
             function (locale, questionGroup) {
                 // TODO: implement
                 return questionGroup
@@ -111,10 +117,10 @@ angular.module("API", [])
         return {
             "pathMaybeWithLocale": function (path, locale = "") {
                 return path + (
-                        (locale == "")
-                            ? ""
-                            : "?locale_cookie=0&locale=" + locale
-                    );
+                    (locale === "")
+                        ? ""
+                        : "?locale_cookie=0&locale=" + locale
+                );
             }
         }
     }])
@@ -122,22 +128,24 @@ angular.module("API", [])
         function ($http, ResultHandling) {
             return {
                 "current": function () {
-                    return Fluture.tryP(() => $http.get("/api/account/current"))
+                    return Future.tryP(() => {
+                        return $http.get("/api/account/current");
+                    })
                         .chain(ResultHandling.extractData);
                 },
                 "update": function (data) {
-                    var {email = null, locale = null} = data;
-                    return Fluture.tryP(() => $http({
-                            "method": "PUT",
-                            "url": "/api/account/current",
-                            "data": {
-                                email,
-                                locale
-                            },
-                            "headers": {
-                                "Content-Type": "application/json"
-                            }
-                        }))
+                    const {email = null, locale = null} = data;
+                    return Future.tryP(() => $http({
+                        "method": "PUT",
+                        "url": "/api/account/current",
+                        "data": {
+                            email,
+                            locale
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
                         .chain(ResultHandling.extractData);
                 }
             };
@@ -147,7 +155,9 @@ angular.module("API", [])
         function ($http, ResultHandling) {
             return {
                 "all": function () {
-                    return Fluture.tryP(() => $http.get("/api/locales"))
+                    return Future.tryP(() => {
+                        return $http.get("/api/locales");
+                    })
                         .chain(ResultHandling.extractData);
                 }
             }
@@ -156,30 +166,30 @@ angular.module("API", [])
         function ($http, PathHandling, ResultHandling) {
             return {
                 "all": function (locale = "") {
-                    var path = PathHandling.pathMaybeWithLocale(
+                    let path = PathHandling.pathMaybeWithLocale(
                         "/api/survey", locale
                     );
-                    return Fluture.tryP(() => $http.get(path))
+                    return Future.tryP(() => $http.get(path))
                         .chain(ResultHandling.extractDataAndLocale);
                 },
                 "create": function (name) {
-                    return Fluture.tryP(() => $http({
-                            "method": "POST",
-                            "url": "/api/survey",
-                            "data": {
-                                "name": name
-                            },
-                            "headers": {
-                                "Content-Type": "application/json"
-                            }
-                        }))
+                    return Future.tryP(() => $http({
+                        "method": "POST",
+                        "url": "/api/survey",
+                        "data": {
+                            "name": name
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
                         .chain(ResultHandling.extractData);
                 },
                 "delete": function (uuid) {
-                    return Fluture.tryP(() => $http({
-                            "method": "DELETE",
-                            "url": `/api/survey/${uuid}`
-                        }))
+                    return Future.tryP(() => $http({
+                        "method": "DELETE",
+                        "url": `/api/survey/${uuid}`
+                    }))
                         .chain(ResultHandling.extractData)
                 }
             }
@@ -188,40 +198,41 @@ angular.module("API", [])
         function ($http, PathHandling, ResultHandling) {
             return {
                 "create": function (data) {
-                    var {survey_uuid, name, description, template = null} = data;
-                    return Fluture.tryP(() => $http({
-                            "method": "POST",
-                            "url": "/api/questionnaire",
-                            "data": {
-                                "survey_uuid": survey_uuid,
-                                "questionnaire": {
-                                    "name": name,
-                                    "description": description,
-                                    "template": template
-                                }
-                            },
-                            "headers": {
-                                "Content-Type": "application/json"
+                    const {survey_uuid, name, description, template = null} =
+                        data;
+                    return Future.tryP(() => $http({
+                        "method": "POST",
+                        "url": "/api/questionnaire",
+                        "data": {
+                            "survey_uuid": survey_uuid,
+                            "questionnaire": {
+                                "name": name,
+                                "description": description,
+                                "template": template
                             }
-                        }))
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
                         .chain(ResultHandling.extractData)
                 },
                 "delete": function (questionnaire_uuid, survey_uuid) {
-                    return Fluture.tryP(() => $http({
-                            "method": "DELETE",
-                            "url": `/api/questionnaire/${questionnaire_uuid}`,
-                            "data": {
-                                "survey_uuid": survey_uuid
-                            },
-                            "headers": {
-                                "Content-Type": "application/json"
-                            }
-                        }))
+                    return Future.tryP(() => $http({
+                        "method": "DELETE",
+                        "url": `/api/questionnaire/${questionnaire_uuid}`,
+                        "data": {
+                            "survey_uuid": survey_uuid
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
                         .chain(ResultHandling.extractData)
                 },
                 query: function (uuid, locale = "") {
-                    var path = "/api/questionnaire/" + uuid;
-                    path += (locale == "") ? "" : "?locale_cookie=0&locale=" + locale;
+                    let path = "/api/questionnaire/" + uuid;
+                    path += (locale === "") ? "" : "?locale_cookie=0&locale=" + locale;
                     return $http.get(path).then(
                         function success(result) {
                             return new Promise(function (resolve, reject) {
@@ -240,18 +251,18 @@ angular.module("API", [])
                 }
             }
         }])
-    .factory('QuestionStatistic', ['$http', function ($http) {
+    .factory("QuestionStatistic", ["$http", function ($http) {
         return {
             query: function (uuid) {
-                return $http.get('/api/question/' + uuid + '/statistic').then(
+                return $http.get(`/api/question/${uuid}/statistic`).then(
                     function success(result) {
                         return new Promise(function (resolve, reject) {
-                            var statistic = {
-                                'biggest': result.data.fields.biggest,
-                                'smallest': result.data.fields.smallest,
-                                'q1': result.data.fields.q1,
-                                'q2': result.data.fields.q2,
-                                'q3': result.data.fields.q3
+                            let statistic = {
+                                "biggest": R.path(["data", "fields", "biggest"], result),
+                                "smallest": R.path(["data", "fields", "smallest"], result),
+                                "q1": R.path(["data", "fields", "q1"], result),
+                                "q2": R.path(["data", "fields", "q2"], result),
+                                "q3": R.path(["data", "fields", "q3"], result)
                             };
                             resolve(statistic);
                         })

@@ -1,7 +1,10 @@
 __pycache__/
-.sass-cache/
 
+# IDE
+.idea/
+
+# Frontend
+node_modules/*
+.sass-cache/
 /websrv-flask/app/static/css/*
 /websrv-flask/app/static/vendor/*
-
-.idea/

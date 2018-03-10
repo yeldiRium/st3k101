@@ -1,15 +1,17 @@
+const angular = require("angular");
+
 Promise.waitAll = function (iterable) {
-    return new Promise(function(resolve, reject) {
-        var waitCount = 0;
-        var results = [];
+    return new Promise(function (resolve, reject) {
+        let waitCount = 0;
+        const results = [];
 
         function checkDone() {
-            if (results.length == waitCount) {
+            if (results.length === waitCount) {
                 resolve(results);
             }
         }
 
-        $.each(iterable, function(index, promise) {
+        $.each(iterable, function (index, promise) {
             waitCount++;
             promise.then(
                 function success(result) {
@@ -29,13 +31,13 @@ Promise.waitAll = function (iterable) {
     });
 };
 
-angular.module('Utility', [])
-    .directive('ngEnter', function() {
-        return function(scope, element, attrs) {
-            element.bind("keydown keypress", function(event) {
-                if(event.which === 13) {
-                    scope.$apply(function(){
-                        scope.$eval(attrs.ngEnter, {'$event': event});
+angular.module("Utility", [])
+    .directive("ngEnter", function () {
+        return function (scope, element, attrs) {
+            element.bind("keydown keypress", function (event) {
+                if (event.which === 13) {
+                    scope.$apply(function () {
+                        scope.$eval(attrs.ngEnter, {"$event": event});
                     });
 
                     event.preventDefault();
@@ -43,18 +45,18 @@ angular.module('Utility', [])
             });
         };
     })
-    .directive( "mwConfirmClick", [
-        function( ) {
+    .directive("mwConfirmClick", [
+        function () {
             return {
                 priority: -1,
-                restrict: 'A',
-                scope: { confirmFunction: "&mwConfirmClick" },
-                link: function( scope, element, attrs ){
-                    element.bind( 'click', function( e ){
+                restrict: "A",
+                scope: {confirmFunction: "&mwConfirmClick"},
+                link: function (scope, element, attrs) {
+                    element.bind("click", function (e) {
                         // message defaults to "Are you sure?"
                         var message = attrs.mwConfirmMessage ? attrs.mwConfirmMessage : "Are you sure?";
                         // confirm() requires jQuery
-                        if( confirm( message ) ) {
+                        if (confirm(message)) {
                             scope.confirmFunction();
                         }
                     });
@@ -62,9 +64,9 @@ angular.module('Utility', [])
             }
         }
     ])
-    .directive("clickGo", ['$location', function($location) {
-        return function(scope, element, attrs) {
-            element.bind('click', function(e) {
+    .directive("clickGo", ["$location", function ($location) {
+        return function (scope, element, attrs) {
+            element.bind("click", function (e) {
                 $location.path(attrs.clickGo);
             })
         }

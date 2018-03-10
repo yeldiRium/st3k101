@@ -1,9 +1,18 @@
-angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
-    .config(['FlashProvider', function (FlashProvider) {
+const angular = require("angular");
+const Future = require("fluture");
+const R = require("ramda");
+const $ = require("jquery");
+
+require("angular-route");
+require("angular-flash-alert");
+require("./API");
+
+angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
+    .config(["FlashProvider", function (FlashProvider) {
         FlashProvider.setTimeout(5000);
         FlashProvider.setShowClose(true);
     }])
-    .controller('SurveysController', [
+    .controller("SurveysController", [
         "$scope", "$http", "$timeout", "Flash", "Surveys", "Questionnaires",
         "ResultHandling", "LanguageHandling",
         function ($scope, $http, $timeout, Flash, Surveys, Questionnaires,
@@ -26,7 +35,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                  * If something goes wrong, an error message is set and nothing
                  * else displayed.
                  */
-                return Surveys.all()
+                Surveys.all()
                     .chainRej(ResultHandling.flashError($scope))
                     .fork(
                         () => {
@@ -145,12 +154,12 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * @param questionnaire
              */
             $scope.gotoQuestionnaire = function (questionnaire) {
-                var url = `/survey/${questionnaire.uuid}`;
-                var win = window.open(`/survey/${questionnaire.uuid}_blank`);
+                const url = `/survey/${questionnaire.uuid}`;
+                const win = window.open(`/survey/${questionnaire.uuid}_blank`);
                 if (win) {
                     win.focus();
                 } else {
-                    Flash.create('danger', `Tried to open the survey at "${url}", but the popup was blocked.`);
+                    Flash.create("danger", `Tried to open the survey at "${url}", but the popup was blocked.`);
                 }
             };
 
@@ -164,18 +173,18 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * @param questionnaire
              */
             $scope.toggleSelect = function (survey, questionnaire) {
-                if ($scope.selection.survey != survey) {
+                if ($scope.selection.survey !== survey) {
                     $scope.resetEditing();
                 }
                 $scope.selection.survey = survey;
-                if ($scope.selection.questionnaires[questionnaire.uuid] == true) {
+                if ($scope.selection.questionnaires[questionnaire.uuid] === true) {
                     $scope.selection.questionnaires[questionnaire.uuid] = false;
                     $scope.selection.count--;
                 } else {
                     $scope.selection.questionnaires[questionnaire.uuid] = true;
                     $scope.selection.count++;
                 }
-                if ($scope.selection.count == 0) {
+                if ($scope.selection.count === 0) {
                     $scope.resetEditing();
                 }
             };
@@ -206,15 +215,15 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                     return;
                 }
                 Questionnaires.create({
-                        survey_uuid: $scope.new.questionnaire.survey.uuid,
-                        name: $scope.new.questionnaire.data.name,
-                        description: $scope.new.questionnaire.data.description,
-                        template: $scope.new.questionnaire.data.template
-                    })
+                    survey_uuid: $scope.new.questionnaire.survey.uuid,
+                    name: $scope.new.questionnaire.data.name,
+                    description: $scope.new.questionnaire.data.description,
+                    template: $scope.new.questionnaire.data.template
+                })
                     .chain(data => {
                         $scope.resetEditing();
                         $scope.query();
-                        return Fluture.of(data);
+                        return Future.of(data);
                     })
                     .fork(
                         ResultHandling.flashError($scope),
@@ -226,20 +235,20 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * Sends delete requests for all currently selected questionnaires.
              */
             $scope.deleteQuestionnaires = function () {
-                var survey_uuid = $scope.selection.survey.uuid;
-                var deleteFutures = R.map(
-                    ([questionnaire_uuid, shouldDelete]) =>
-                        Questionnaires.delete(
-                            questionnaire_uuid, survey_uuid
-                        ),
-                    Object.entries($scope.selection.questionnaires)
-                );
-                console.log(deleteFutures);
-                Fluture.parallel(Infinity, deleteFutures)
+                const survey_uuid = $scope.selection.survey.uuid;
+                const deleteFutures = R.pipe(
+                    R.filter(([questionnaire_uuid, shouldDelete]) => shouldDelete),
+                    R.map(([questionnaire_uuid]) => questionnaire_uuid),
+                    R.map(questionnaire_uuid => Questionnaires.delete(
+                        questionnaire_uuid, survey_uuid
+                    ))
+                )(Object.entries($scope.selection.questionnaires));
+
+                Future.parallel(Infinity, deleteFutures)
                     .chain(data => {
                             $scope.resetEditing();
                             $scope.query();
-                            return Fluture.of(data);
+                            return Future.of(data);
                         }
                     )
                     .fork(
@@ -270,7 +279,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                 Surveys.create($scope.new.survey.data.name)
                     .chain(data => {
                         $scope.query();
-                        return Fluture.of(data);
+                        return Future.of(data);
                     })
                     .fork(
                         ResultHandling.flashError($scope),
@@ -288,7 +297,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                         $scope.surveys.splice(
                             $scope.surveys.indexOf(survey), 1
                         );
-                        return Fluture.of(data);
+                        return Future.of(data);
                     })
                     .fork(
                         ResultHandling.flashError($scope),
@@ -300,7 +309,8 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
             $scope.query();
         }
     ])
-    .controller('EditQuestionnaireController', ['$scope', '$http', '$timeout', 'Flash', '$routeParams', 'Questionnaire',
+    .controller("EditQuestionnaireController", [
+        "$scope", "$http", "$timeout", "Flash", "$routeParams", "Questionnaire",
         function ($scope, $http, $timeout, Flash, $routeParams, Questionnaire) {
             /**
              * Queries the current questionnaire and stores its data.
@@ -310,31 +320,35 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
             $scope.query = function () {
                 return Questionnaire.query($routeParams.questionnaire).then(
                     function success(resolved) {
-                        var result = resolved.result;
-                        var locale = resolved.locale;
-                        $.each(result.fields.questiongroups, function (index, questiongroup) {
-                            setTimeout(
-                                function () {
-                                    $('#colorPicker_' + questiongroup.uuid).spectrum({
-                                        color: questiongroup.fields.color,
-                                        change: function (color) {
-                                            $scope.updateColor(color.toHexString(), questiongroup);
-                                        }
-                                    });
-                                }, 0);
-                            setTimeout(
-                                function () {
-                                    $('#textColorPicker_' + questiongroup.uuid).spectrum({
-                                        color: questiongroup.fields.text_color,
-                                        change: function (color) {
-                                            $scope.updateTextColor(color.toHexString(), questiongroup);
-                                        }
-                                    });
-                                }, 0);
-                        });
+                        const result = resolved.result;
+                        const locale = resolved.locale;
+                        $.each(
+                            R.path(["fields", "questiongroups"], result),
+                            function (index, questiongroup) {
+                                setTimeout(
+                                    function () {
+                                        $('#colorPicker_' + questiongroup.uuid).spectrum({
+                                            color: R.path(["fields", "color"], questiongroup),
+                                            change: function (color) {
+                                                $scope.updateColor(color.toHexString(), questiongroup);
+                                            }
+                                        });
+                                    }, 0);
+                                setTimeout(
+                                    function () {
+                                        $('#textColorPicker_' + questiongroup.uuid).spectrum({
+                                            color: R.path(["fields", "text_color"], questiongroup),
+                                            change: function (color) {
+                                                $scope.updateTextColor(color.toHexString(), questiongroup);
+                                            }
+                                        });
+                                    }, 0);
+                            });
                         $scope.questionnaire = result;
-                        if (result.fields.original_locale.toLowerCase() != locale.toLowerCase()) {
-                            return Questionnaire.query($routeParams.questionnaire, result.fields.original_locale).then(
+
+                        let original_locale = R.path(["fields", "original_locale"], result);
+                        if (original_locale.toLowerCase() !== locale.toLowerCase()) {
+                            return Questionnaire.query($routeParams.questionnaire, original_locale).then(
                                 function success(resolved) {
                                     $scope.questionnaire_original = resolved.result;
                                 },
@@ -347,7 +361,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                     },
                     function fail(error) {
                         $scope.questionnaire = null;
-                        Flash.create('danger', error.data.error);
+                        Flash.create("danger", error.data.error);
                     }
                 );
             };
@@ -379,32 +393,32 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * Navigates to the frontend view of a Questionnaire.
              */
             $scope.gotoQuestionnaire = function () {
-                var url = '/survey/' + $scope.questionnaire.uuid;
-                var win = window.open('/survey/' + $scope.questionnaire.uuid, '_blank');
+                const url = `/survey/${$scope.questionnaire.uuid}`;
+                const win = window.open(`/survey/${$scope.questionnaire.uuid}`, "_blank");
                 if (win) {
                     win.focus();
                 } else {
-                    Flash.create('danger', 'Tried to open the questionnaire at "' + url + '", but the popup was blocked.');
+                    Flash.create("danger", `Tried to open the questionnaire at "${url}", but the popup was blocked.`);
                 }
             };
 
             $scope.startEditing = function (name, event, opt = null) {
                 $scope.edit = {};
-                var element = $(event.target);
+                const element = $(event.target);
                 $scope.edit.name = name;
                 $scope.edit.element = element;
                 $scope.edit.old_value = (opt != null) ? opt : element.text();
             };
 
             $scope.isEditing = function (name) {
-                return $scope.edit.name == name;
+                return $scope.edit.name === name;
             };
 
             $scope.abortEditing = function (name, event, opt = null) {
-                if ($scope.edit.name == name) {
-                    if (name == 'questionnairename') {
+                if ($scope.edit.name === name) {
+                    if (name === "questionnairename") {
                         opt.fields.name = $scope.edit.old_value;
-                    } else if (name == 'questionnairedescription') {
+                    } else if (name === "questionnairedescription") {
                         opt.fields.description = $scope.edit.old_value;
                     } else if (name.indexOf("questiongroup") !== -1) {
                         opt.fields.name = $scope.edit.old_value;
@@ -416,10 +430,10 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
             };
 
             $scope.stopEditing = function (name, event, opt = null) {
-                if ($scope.edit.name == name) {
-                    var element = $(event.target);
-                    var success;
-                    if (name == 'questionnairename' || name == 'questionnairedescription') {
+                if ($scope.edit.name === name) {
+                    const element = $(event.target);
+                    let success;
+                    if (name === "questionnairename" || name === "questionnairedescription") {
                         success = $scope.updateQuestionnaire();
                     }
                     if (name.indexOf("questiongroup") !== -1) {
@@ -440,28 +454,28 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * Sends updates with current questionnaire data
              */
             $scope.updateQuestionnaire = function () {
-                if ($scope.questionnaire.fields.name == "" ||
-                    $scope.questionnaire.fields.description == "") {
+                if ($scope.questionnaire.fields.name === "" ||
+                    $scope.questionnaire.fields.description === "") {
                     Flash.create("danger", "Name and description can't be empty!");
                     return false;
                 }
                 $http({
-                    method: 'PUT',
-                    url: '/api/questionnaire',
+                    method: "PUT",
+                    url: "/api/questionnaire",
                     data: {
                         uuid: $scope.questionnaire.uuid,
                         name: $scope.questionnaire.fields.name,
                         description: $scope.questionnaire.fields.description
                     },
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json"
                     }
                 }).then(
                     function success(result) {
-                        Flash.create('success', 'Questionnaire updated!');
+                        Flash.create("success", "Questionnaire updated!");
                     },
                     function fail(error) {
-                        Flash.create('danger', error.data.error);
+                        Flash.create("danger", error.data.error);
                     }
                 );
                 return true;
@@ -472,7 +486,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * $scope.edit.
              */
             $scope.updateQuestionGroup = function (uuid, name) {
-                if (name == "") {
+                if (name === "") {
                     Flash.create("danger", "Name can't be empty!");
                     return false;
                 }
@@ -502,7 +516,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * $scope.edit.
              */
             $scope.updateQuestion = function (uuid, text) {
-                if (text == "") {
+                if (text === "") {
                     Flash.create("danger", "Text can't be empty!");
                     return false;
                 }
@@ -539,18 +553,18 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * @param question
              */
             $scope.toggleSelect = function (questionGroup, question) {
-                if ($scope.selection.questionGroup != questionGroup) {
+                if ($scope.selection.questionGroup !== questionGroup) {
                     $scope.resetEditing();
                 }
                 $scope.selection.questionGroup = questionGroup;
-                if ($scope.selection.questions[question.uuid] == true) {
+                if ($scope.selection.questions[question.uuid] === true) {
                     $scope.selection.questions[question.uuid] = false;
                     $scope.selection.count--;
                 } else {
                     $scope.selection.questions[question.uuid] = true;
                     $scope.selection.count++;
                 }
-                if ($scope.selection.count == 0) {
+                if ($scope.selection.count === 0) {
                     $scope.resetEditing();
                 }
             };
@@ -577,30 +591,30 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                     return;
                 }
                 $http({
-                    method: 'POST',
-                    url: '/api/question',
+                    method: "POST",
+                    url: "/api/question",
                     data: JSON.stringify({
                         questionnaire: $scope.questionnaire.uuid,
                         question_group: $scope.new.question.questionGroup.uuid,
                         text: $scope.new.question.data.text
                     }),
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json"
                     }
                 })
                     .then(
                         function success(result) {
-                            if (result.status == 200
-                                && result.data.result == 'Question created.') {
+                            if (result.status === 200
+                                && result.data.result === "Question created.") {
                                 $scope.resetEditing();
-                                Flash.create('success', 'Question successfully created.');
+                                Flash.create("success", "Question successfully created.");
                                 $scope.query();
                             } else {
-                                Flash.create('danger', result.data.error);
+                                Flash.create("danger", result.data.error);
                             }
                         },
                         function failure(error) {
-                            Flash.create('danger', error.data.error);
+                            Flash.create("danger", error.data.error);
                         }
                     )
             };
@@ -610,19 +624,19 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              * TODO: error handling
              */
             $scope.deleteQuestions = function () {
-                promises = [];
+                const promises = [];
                 $.each($scope.selection.questions, function (uuid, shouldDelete) {
-                    if (shouldDelete == true) {
+                    if (shouldDelete === true) {
                         promises.push(
                             $http({
-                                method: 'DELETE',
-                                url: '/api/question',
+                                method: "DELETE",
+                                url: "/api/question",
                                 data: {
                                     questionnaire: $scope.questionnaire.uuid,
                                     question_group: $scope.selection.questionGroup.uuid,
                                     uuid: uuid
                                 },
-                                headers: {'Content-Type': 'application/json'}
+                                headers: {"Content-Type": "application/json"}
                             })
                         );
                     }
@@ -630,14 +644,14 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                 Promise.waitAll(promises).then(
                     function success(results) {
                         $scope.resetEditing();
-                        Flash.create('success', 'Question(s) successfully deleted.');
+                        Flash.create("success", "Question(s) successfully deleted.");
                         $scope.query();
                     },
                     function fail(results) {
-                        Flash.create('danger', 'Something went wrong with one of the Questions:');
+                        Flash.create("danger", "Something went wrong with one of the Questions:");
                         $.each(results, function (index, result) {
-                            if (result.status != 200) {
-                                Flash.create('danger', results.data);
+                            if (result.status !== 200) {
+                                Flash.create("danger", results.data);
                             }
                         })
                     }
@@ -664,29 +678,29 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                     return;
                 }
                 $http({
-                    method: 'POST',
-                    url: '/api/question_group',
+                    method: "POST",
+                    url: "/api/question_group",
                     data: JSON.stringify({
                         questionnaire: $scope.questionnaire.uuid,
                         name: $scope.new.questionGroup.data.name,
                     }),
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json"
                     }
                 })
                     .then(
                         function success(result) {
-                            if (result.status == 200
-                                && result.data.result == 'QuestionGroup created.') {
+                            if (result.status === 200
+                                && result.data.result === "QuestionGroup created.") {
                                 $scope.resetEditing();
-                                Flash.create('success', 'QuestionGroup successfully created.');
+                                Flash.create("success", "QuestionGroup successfully created.");
                                 $scope.query();
                             } else {
-                                Flash.create('danger', result.data.error);
+                                Flash.create("danger", result.data.error);
                             }
                         },
                         function failure(error) {
-                            Flash.create('danger', error.data.error);
+                            Flash.create("danger", error.data.error);
                         }
                     )
             };
@@ -696,77 +710,77 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              */
             $scope.deleteQuestionGroup = function (questionGroup) {
                 $http({
-                    method: 'DELETE',
-                    url: '/api/question_group',
+                    method: "DELETE",
+                    url: "/api/question_group",
                     data: {
                         uuid: questionGroup.uuid,
                         questionnaire: $scope.questionnaire.uuid
                     },
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json"
                     }
                 }).then(
                     function success(result) {
-                        Flash.create('success', 'QuestionGroup successfully deleted.');
+                        Flash.create("success", "QuestionGroup successfully deleted.");
                         $scope.questionnaire.fields.questiongroups.splice(
                             $scope.questionnaire.fields.questiongroups.indexOf(questionGroup),
                             1
                         );
                     },
                     function fail(error) {
-                        Flash.create('danger', 'QuestionGroup could not be deleted. Please try again.');
+                        Flash.create("danger", "QuestionGroup could not be deleted. Please try again.");
                     }
                 )
             };
 
             $scope.updateColor = function (color, questionGroup) {
                 $http({
-                    method: 'PUT',
-                    url: '/api/question_group',
+                    method: "PUT",
+                    url: "/api/question_group",
                     data: {
                         uuid: questionGroup.uuid,
                         color: color
                     },
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json"
                     }
                 }).then(
                     function success(result) {
-                        if (result.status == 200 && result.data.result == 'QuestionGroup updated.') {
+                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
                             questionGroup.fields.color = color;
-                            Flash.create('success', 'QuestionGroup color was updated!');
+                            Flash.create("success", "QuestionGroup color was updated!");
                         } else {
-                            Flash.create('danger', result.data.error);
+                            Flash.create("danger", result.data.error);
                         }
                     },
                     function fail(error) {
-                        Flash.create('danger', 'QuestionGroup color could not be updated. Please try again.');
+                        Flash.create("danger", "QuestionGroup color could not be updated. Please try again.");
                     }
                 )
             };
 
             $scope.updateTextColor = function (color, questionGroup) {
                 $http({
-                    method: 'PUT',
-                    url: '/api/question_group',
+                    method: "PUT",
+                    url: "/api/question_group",
                     data: {
                         uuid: questionGroup.uuid,
                         text_color: color
                     },
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json"
                     }
                 }).then(
                     function success(result) {
-                        if (result.status == 200 && result.data.result == 'QuestionGroup updated.') {
+                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
                             questionGroup.fields.text_color = color;
-                            Flash.create('success', 'QuestionGroup text color was updated!');
+                            Flash.create("success", "QuestionGroup text color was updated!");
                         } else {
                             Flash.create('danger', result.data.error);
                         }
                     },
                     function fail(error) {
-                        Flash.create('danger', 'QuestionGroup text color could not be updated. Please try again.');
+                        Flash.create("danger", "QuestionGroup text color could not be updated. Please try again.");
                     }
                 )
             };
@@ -775,67 +789,69 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
             $scope.query().then(function success(result) {
                 console.log(result);
                 $(".as-checkbox").each(function (index, element) {
-                    var e = $(element);
+                    const e = $(element);
                     console.log(e.height());
                     console.log(e.sibling(".selectable").height());
                     e.height(e.sibling(".selectable").height());
                 });
             });
         }])
-    .controller('QuestionnaireStatisticController', ['$scope', '$http', '$routeParams', '$timeout', 'Questionnaire', 'QuestionStatistic',
-        function ($scope, $http, $routeParams, $timeout, Questionnaire, QuestionStatistic) {
+    .controller("QuestionnaireStatisticController", [
+        "$scope", "$http", "$routeParams", "$timeout", "Questionnaire",
+        "QuestionStatistic",
+        function ($scope, $http, $routeParams, $timeout, Questionnaire,
+                  QuestionStatistic) {
             $scope.properties = {
-                'questionnaire_uuid': null,
-                'graph_width': window.innerWidth - 400,
-                'graph_height': 60, // 2 * bar_padding as default
-                'graph_padding_left': 100,
-                'graph_padding_right': 100,
-                'text_padding_left': 5,
-                'text_padding_right': 80,
-                'bar_height': 50,
-                'bar_padding': 30,
-                'upper_scale_line_upper_y': '20',
-                'upper_scale_line_lower_y': '25',
-                'upper_scale_text_y': '15',
-                'lower_scale_line_upper_y': '25',
-                'lower_scale_line_lower_y': '20',
-                'lower_scale_text_y': '5'
+                "questionnaire_uuid": null,
+                "graph_width": window.innerWidth - 400,
+                "graph_height": 60, // 2 * bar_padding as default
+                "graph_padding_left": 100,
+                "graph_padding_right": 100,
+                "text_padding_left": 5,
+                "text_padding_right": 80,
+                "bar_height": 50,
+                "bar_padding": 30,
+                "upper_scale_line_upper_y": 20,
+                "upper_scale_line_lower_y": 25,
+                "upper_scale_text_y": 15,
+                "lower_scale_line_upper_y": 25,
+                "lower_scale_line_lower_y": 20,
+                "lower_scale_text_y": 5
             };
 
             $scope.query = function () {
                 Questionnaire.query($routeParams.questionnaire).then(
                     function success(result) {
                         $scope.statistics = {
-                            'questionGroups': []
+                            "questionGroups": []
                         };
                         $scope.properties.questionnaire_uuid = result.uuid;
                         $.each(result.fields.questiongroups, function (index, questionGroup) {
-                            var questionGroupObject = {
-                                'name': questionGroup.fields.name,
-                                'color': questionGroup.fields.color,
-                                'text_color': questionGroup.fields.text_color,
-                                'questions': []
+                            const questionGroupObject = {
+                                "name": questionGroup.fields.name,
+                                "color": questionGroup.fields.color,
+                                "text_color": questionGroup.fields.text_color,
+                                "questions": []
                             };
                             $.each(questionGroup.fields.questions, function (index, question) {
-                                var questionObject = {
-                                    'text': $scope.cutQuestionText(question.fields.text),
-                                    'answers': question.fields.results.length,
-                                    'statistic': null
+                                const questionObject = {
+                                    "text": $scope.cutQuestionText(question.fields.text),
+                                    "answers": question.fields.results.length,
+                                    "statistic": null
                                 };
                                 questionGroupObject.questions.push(questionObject);
-                                console.log(questionObject);
 
                                 QuestionStatistic.query(question.uuid).then(
                                     function success(result) {
                                         questionObject.statistic = result;
-                                        if ($scope.properties.graph_height == 0) {
+                                        if ($scope.properties.graph_height === 0) {
                                             $scope.properties.graph_height += $scope.properties.bar_height;
                                         } else {
                                             $scope.properties.graph_height += $scope.properties.bar_height + $scope.properties.bar_padding;
                                         }
                                     },
                                     function fail(error) {
-                                        Flash.create('danger', error.data.error);
+                                        Flash.create("danger", error.data.error);
                                     }
                                 );
                             });
@@ -843,35 +859,34 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                         });
                         setTimeout(function () {
                         }, 0);
-                        console.log($scope.statistics);
                         return $scope.statistics;
                     },
                     function fail(error) {
                         $scope.questionnaire = null;
                         $scope.statistics = null;
-                        Flash.create('danger', error.data.error);
+                        Flash.create("danger", error.data.error);
                     }
                 )
             };
 
             $scope.getX = function (value) {
-                var maxValue = 11;
-                var effectiveWidth = $scope.properties.graph_width - $scope.properties.graph_padding_left - $scope.properties.graph_padding_right;
+                const maxValue = 11;
+                const effectiveWidth = $scope.properties.graph_width - $scope.properties.graph_padding_left - $scope.properties.graph_padding_right;
 
                 return $scope.properties.graph_padding_left + effectiveWidth * value / maxValue;
             };
 
             $scope.getY = function (index) {
-                var result = $scope.properties.bar_padding;
-                if (index != 0) {
+                let result = $scope.properties.bar_padding;
+                if (index !== 0) {
                     result += index * ($scope.properties.bar_height + $scope.properties.bar_padding)
                 }
                 return result;
             };
 
             $scope.cutQuestionText = function (text) {
-                var width = $scope.getTextWidth(text, "12pt Arial");
-                var cuts = 0;
+                let width = $scope.getTextWidth(text, "12pt Arial");
+                let cuts = 0;
                 while (width > ($scope.properties.graph_padding_left - 2 * $scope.properties.text_padding_left)) {
                     text = text.slice(0, -1);
                     width = $scope.getTextWidth(text, "12pt Arial");
@@ -879,7 +894,7 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
                 }
                 if (cuts > 0) {
                     text = text.slice(0, -3);
-                    return text + '...';
+                    return `${text}...`;
                 }
                 return text;
             };
@@ -894,33 +909,33 @@ angular.module('Surveys', ['ngRoute', 'ngFlash', "API"])
              */
             $scope.getTextWidth = function (text, font) {
                 // re-use canvas object for better performance
-                var canvas = $scope.getTextWidth.canvas || ($scope.getTextWidth.canvas = document.createElement("canvas"));
-                var context = canvas.getContext("2d");
+                const canvas = $scope.getTextWidth.canvas || ($scope.getTextWidth.canvas = document.createElement("canvas"));
+                const context = canvas.getContext("2d");
                 context.font = font;
-                var metrics = context.measureText(text);
+                const metrics = context.measureText(text);
                 return metrics.width;
             };
 
             $scope.query();
         }])
-    .config(['$routeProvider', '$locationProvider',
+    .config(["$routeProvider", "$locationProvider",
         function ($routeProvider, $locationProvider) {
-            $locationProvider.hashPrefix('');
+            $locationProvider.hashPrefix("");
             $routeProvider
-                .when('/', {
-                    templateUrl: '/static/js/templates/Surveys.html',
-                    controller: 'SurveysController'
+                .when("/", {
+                    templateUrl: "/static/js/templates/Surveys.html",
+                    controller: "SurveysController"
                 })
-                .when('/surveys/', {
-                    templateUrl: '/static/js/templates/Surveys.html',
-                    controller: 'SurveysController'
+                .when("/surveys/", {
+                    templateUrl: "/static/js/templates/Surveys.html",
+                    controller: "SurveysController"
                 })
-                .when('/surveys/:questionnaire/', {
-                    templateUrl: '/static/js/templates/EditSurvey.html',
-                    controller: 'EditQuestionnaireController'
+                .when("/surveys/:questionnaire/", {
+                    templateUrl: "/static/js/templates/EditSurvey.html",
+                    controller: "EditQuestionnaireController"
                 })
-                .when('/surveys/:questionnaire/statistic', {
-                    templateUrl: '/static/js/templates/QuestionnaireStatistics.html',
-                    controller: 'QuestionnaireStatisticController'
+                .when("/surveys/:questionnaire/statistic", {
+                    templateUrl: "/static/js/templates/QuestionnaireStatistics.html",
+                    controller: "QuestionnaireStatisticController"
                 });
         }]);
