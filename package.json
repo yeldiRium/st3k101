@@ -6,18 +6,6 @@
   ],
   "version": "1.0.0",
   "private": true,
-  "dependencies": {
-    "angular": "^1.6.6",
-    "angular-flash-alert": "^2.5.0",
-    "angular-route": "^1.6.6",
-    "bootstrap": "^3.3.7",
-    "browserify": "^16.1.1",
-    "fluture": "^8.0.2",
-    "jquery": "^3.2.1",
-    "ramda": "^0.25.0",
-    "sass": "^1.0.0-beta.3",
-    "spectrum-colorpicker": "^1.8.0"
-  },
   "scripts": {
     "preinstall": "npm run clearStaticDir",
     "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run compileJS",
@@ -30,6 +18,22 @@
     "compileSCSSHome": "sass websrv-flask/app/sass/home.scss >> websrv-flask/app/static/css/home.css",
     "compileSCSSSurvey": "sass websrv-flask/app/sass/survey.scss >> websrv-flask/app/static/css/survey.css",
     "compileJS": "browserify websrv-flask/app/static/js/App.js -o websrv-flask/app/static/js/bundle.js",
+    "watchJS": "watchify websrv-flask/app/static/js/App.js -o websrv-flask/app/static/js/bundle.js",
     "removeSassModule": "rm -rf websrv-flask/app/static/vendor/sass/ && rm -rf websrv-flask/app/static/vendor/.bin/"
+  },
+  "dependencies": {
+    "angular": "^1.6.6",
+    "angular-flash-alert": "^2.5.0",
+    "angular-route": "^1.6.6",
+    "bootstrap": "^3.3.7",
+    "browserify": "^16.1.1",
+    "fluture": "^8.0.2",
+    "jquery": "^3.2.1",
+    "ramda": "^0.25.0",
+    "sass": "^1.0.0-beta.3",
+    "spectrum-colorpicker": "^1.8.0"
+  },
+  "devDependencies": {
+    "watchify": "^3.11.0"
   }
 }
