@@ -356,6 +356,19 @@ angular.module("API", [])
                         }
                     }))
                         .map(ResultHandling.extractData);
+                },
+                "update": function (question_uuid, text) {
+                    return Future.tryP(() => $http({
+                        "method": "PUT",
+                        "url": `/api/question/${question_uuid}`,
+                        "data": {
+                            "text": text
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .chain(ResultHandling.extractData);
                 }
             }
         }])

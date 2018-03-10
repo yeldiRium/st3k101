@@ -675,24 +675,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     Flash.create("danger", "Text can't be empty!");
                     return false;
                 }
-                $http({
-                    method: "PUT",
-                    url: "/api/question",
-                    data: {
-                        uuid: uuid,
-                        text: text
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        Flash.create("success", "Question updated!");
-                    },
-                    function fail(error) {
-                        Flash.create("danger", error.data.error);
-                    }
-                );
+                Questions.update(uuid, text)
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
                 return true;
             };
 
