@@ -308,7 +308,7 @@ angular.module("API", [])
                         .chain(ResultHandling.extractData);
                 },
                 "update": function (questionGroup_uuid, data) {
-                    const {name=null, color=null, textColor=null} = data;
+                    const {name = null, color = null, textColor = null} = data;
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": `/api/question_group/${questionGroup_uuid}`,
@@ -316,6 +316,19 @@ angular.module("API", [])
                             "name": name,
                             "color": color,
                             "text_color": textColor
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .chain(ResultHandling.extractData);
+                },
+                "delete": function (questionGroup_uuid, questionnaire_uuid) {
+                    return Future.tryP(() => $http({
+                        "method": "DELETE",
+                        "url": `/api/question_group/${questionGroup_uuid}`,
+                        "data": {
+                            "questionnaire_uuid": questionnaire_uuid
                         },
                         "headers": {
                             "Content-Type": "application/json"

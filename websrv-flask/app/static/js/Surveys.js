@@ -611,28 +611,20 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * Sends a delete request for a specific QuestionGroup.
              */
             $scope.deleteQuestionGroup = function (questionGroup) {
-                $http({
-                    method: "DELETE",
-                    url: "/api/question_group",
-                    data: {
-                        uuid: questionGroup.uuid,
-                        questionnaire: $scope.questionnaire.uuid
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        Flash.create("success", "QuestionGroup successfully deleted.");
+                QuestionGroups.delete(
+                    questionGroup.uuid, $scope.questionnaire.uuid
+                )
+                    .chain(data => {
                         $scope.questionnaire.fields.questiongroups.splice(
                             $scope.questionnaire.fields.questiongroups.indexOf(questionGroup),
                             1
                         );
-                    },
-                    function fail(error) {
-                        Flash.create("danger", "QuestionGroup could not be deleted. Please try again.");
-                    }
-                )
+                        return Future.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             /**
