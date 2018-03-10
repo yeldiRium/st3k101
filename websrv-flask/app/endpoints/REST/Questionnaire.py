@@ -79,7 +79,7 @@ def api_questionnaire_create(survey_uuid: str=None, questionnaire: Any=None):
             or not all((arg in questionnaire for arg in required_args)):
         return make_error(_("Missing parameter."), 400)
 
-    if "template" in questionnaire:
+    if "template" in questionnaire or questionnaire["template"] is None:
         the_questionnaire = the_survey.add_new_questionnaire_from_template(
             questionnaire["name"],
             questionnaire["description"],
