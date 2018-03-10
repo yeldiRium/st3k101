@@ -176,4 +176,5 @@ Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules",
                                                 serialize=False)
 Questionnaire.published = DataAttribute(Questionnaire, "published")
 
-Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire)
+Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire,
+                                     serialize=False)
