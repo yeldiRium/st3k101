@@ -18,7 +18,7 @@
     "compileSCSSHome": "sass websrv-flask/app/sass/home.scss >> websrv-flask/app/static/css/home.css",
     "compileSCSSSurvey": "sass websrv-flask/app/sass/survey.scss >> websrv-flask/app/static/css/survey.css",
     "compileJS": "browserify websrv-flask/app/static/js/App.js -o websrv-flask/app/static/js/bundle.js --debug",
-    "watchJS": "watchify websrv-flask/app/static/js/App.js -o websrv-flask/app/static/js/bundle.js --debug",
+    "watchJS": "watchify websrv-flask/app/static/js/App.js -o websrv-flask/app/static/js/bundle.js --debug --verbose",
     "removeSassModule": "rm -rf websrv-flask/app/static/vendor/sass/ && rm -rf websrv-flask/app/static/vendor/.bin/"
   },
   "dependencies": {
