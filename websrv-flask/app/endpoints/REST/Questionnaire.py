@@ -394,3 +394,8 @@ def api_questionnaire_download_csv(questionnaire_uuid: str):
     response.headers["Content-type"] = "text/csv"
 
     return response
+
+
+@app.route("/api/questionnaire/templates", methods=["GET"])
+def api_get_questionnaire_templates():
+    return jsonify(Questionnaire.get_available_templates().keys())
