@@ -42,7 +42,7 @@ angular.module("API", [])
                 ["fields", "default_locale"], i15dString
             );
             return R.pathOr(
-                R.path(["fields", "locales", defaultLocale]),
+                R.path(["fields", "locales", defaultLocale], i15dString),
                 ["fields", "locales", locale],
                 i15dString
             )
