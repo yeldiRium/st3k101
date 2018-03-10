@@ -101,8 +101,29 @@ angular.module("API", [])
 
         const getQuestionGroupTranslation = R.curry(
             function (locale, questionGroup) {
+                const name = R.path(["fields", "name"], questionGroup);
+                const questions = R.path(
+                    ["fields", "questions"], questionGroup
+                );
+                return R.pipe(
+                    R.assocPath(
+                        ["fields", "name"],
+                        getStringLocale(locale, name)
+                    ),
+                    R.assocPath(
+                        ["fields", "questions"],
+                        R.map(
+                            getQuestionTranslation(locale), questions
+                        )
+                    )
+                )(questionGroup);
+            }
+        );
+
+        const getQuestionTranslation = R.curry(
+            function (locale, question) {
                 // TODO: implement
-                return questionGroup
+                return question;
             }
         );
 
@@ -110,7 +131,8 @@ angular.module("API", [])
             "getStringLocale": getStringLocale,
             "getSurveyTranslation": getSurveyTranslation,
             "getQuestionnaireTranslation": getQuestionnaireTranslation,
-            "getQuestionGroupTranslation": getQuestionGroupTranslation
+            "getQuestionGroupTranslation": getQuestionGroupTranslation,
+            "getQuestionTranslation": getQuestionTranslation
         }
     }])
     .factory("PathHandling", [function () {
