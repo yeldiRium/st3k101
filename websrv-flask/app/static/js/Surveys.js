@@ -475,30 +475,28 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * Sends updates with current questionnaire data
              */
             $scope.updateQuestionnaire = function () {
-                if ($scope.questionnaire.fields.name === "" ||
-                    $scope.questionnaire.fields.description === "") {
+                const name = R.path(
+                    ["fields", "name"], $scope.questionnaire
+                );
+                const description = R.path(
+                    ["fields", "description"], $scope.questionnaire
+                );
+
+                if (name === "" || description === "") {
                     Flash.create("danger", "Name and description can't be empty!");
                     return false;
                 }
-                $http({
-                    method: "PUT",
-                    url: "/api/questionnaire",
-                    data: {
-                        uuid: $scope.questionnaire.uuid,
-                        name: $scope.questionnaire.fields.name,
-                        description: $scope.questionnaire.fields.description
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
+                Questionnaires.update(
+                    $scope.questionnaire.uuid,
+                    {
+                        "name": name,
+                        "description": description
                     }
-                }).then(
-                    function success(result) {
-                        Flash.create("success", "Questionnaire updated!");
-                    },
-                    function fail(error) {
-                        Flash.create("danger", error.data.error);
-                    }
-                );
+                )
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
                 return true;
             };
 

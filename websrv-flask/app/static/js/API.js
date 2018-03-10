@@ -191,7 +191,9 @@ angular.module("API", [])
                     let path = PathHandling.pathMaybeWithLocale(
                         "/api/survey", locale
                     );
-                    return Future.tryP(() => $http.get(path))
+                    return Future.tryP(() => {
+                        return $http.get(path);
+                    })
                         .chain(ResultHandling.extractDataAndLocale);
                 },
                 "create": function (name) {
@@ -243,8 +245,25 @@ angular.module("API", [])
                     const path = PathHandling.pathMaybeWithLocale(
                         `/api/questionnaire/${questionnaire_uuid}`, locale
                     );
-                    return Future.tryP(() => $http.get(path))
+                    return Future.tryP(() => {
+                        return $http.get(path);
+                    })
                         .chain(ResultHandling.extractDataAndLocale);
+                },
+                "update": function (questionnaire_uuid, data) {
+                    const {name=null, description=null} = data;
+                    return Future.tryP(() => $http({
+                        "method": "PUT",
+                        "url": `/api/questionnaire/${questionnaire_uuid}`,
+                        "data": {
+                            "name": name,
+                            "description": description
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .chain(ResultHandling.extractData);
                 },
                 "delete": function (questionnaire_uuid, survey_uuid) {
                     return Future.tryP(() => $http({
