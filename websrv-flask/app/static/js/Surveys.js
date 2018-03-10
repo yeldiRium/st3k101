@@ -24,7 +24,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * If something goes wrong, $scope.error will be set.
              * @returns Promise
              */
-            $scope.query = function () {
+            $scope.init = function () {
                 /**
                  * Queries for surveys and creates a list of templates that
                  * can be used for new questionnaires based on the surveys
@@ -222,7 +222,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 })
                     .chain(data => {
                         $scope.resetEditing();
-                        $scope.query();
+                        $scope.init();
                         return Future.of(data);
                     })
                     .fork(
@@ -247,7 +247,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 Future.parallel(Infinity, deleteFutures)
                     .chain(data => {
                             $scope.resetEditing();
-                            $scope.query();
+                            $scope.init();
                             return Future.of(data);
                         }
                     )
@@ -278,7 +278,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 }
                 Surveys.create($scope.new.survey.data.name)
                     .chain(data => {
-                        $scope.query();
+                        $scope.init();
                         return Future.of(data);
                     })
                     .fork(
@@ -306,7 +306,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             $scope.resetEditing();
-            $scope.query();
+            $scope.init();
         }
     ])
     .controller("EditQuestionnaireController", [
@@ -626,7 +626,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                                 && result.data.result === "Question created.") {
                                 $scope.resetEditing();
                                 Flash.create("success", "Question successfully created.");
-                                $scope.query();
+                                $scope.init();
                             } else {
                                 Flash.create("danger", result.data.error);
                             }
@@ -663,7 +663,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     function success(results) {
                         $scope.resetEditing();
                         Flash.create("success", "Question(s) successfully deleted.");
-                        $scope.query();
+                        $scope.init();
                     },
                     function fail(results) {
                         Flash.create("danger", "Something went wrong with one of the Questions:");
@@ -712,7 +712,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                                 && result.data.result === "QuestionGroup created.") {
                                 $scope.resetEditing();
                                 Flash.create("success", "QuestionGroup successfully created.");
-                                $scope.query();
+                                $scope.init();
                             } else {
                                 Flash.create("danger", result.data.error);
                             }
@@ -829,7 +829,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 "lower_scale_text_y": 5
             };
 
-            $scope.query = function () {
+            $scope.init = function () {
                 Questionnaire.query($routeParams.questionnaire).then(
                     function success(result) {
                         $scope.statistics = {
@@ -926,7 +926,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 return metrics.width;
             };
 
-            $scope.query();
+            $scope.init();
         }])
     .config(["$routeProvider", "$locationProvider",
         function ($routeProvider, $locationProvider) {
