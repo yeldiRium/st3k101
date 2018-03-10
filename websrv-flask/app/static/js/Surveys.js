@@ -36,8 +36,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                  * else displayed.
                  */
                 Surveys.all()
-                    .chainRej(ResultHandling.flashError($scope))
+                    .mapRej(ResultHandling.flashError($scope))
                     .fork(
+                        // Status 500 somehow doesn't reject. Why?
                         () => {
                             $scope.surveys = null;
                             $scope.$apply(() => {
@@ -307,10 +308,10 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     ])
     .controller("EditQuestionnaireController", [
         "$scope", "$http", "$timeout", "Flash", "$routeParams",
-        "Questionnaires", "QuestionGroups", "ResultHandling",
+        "Questionnaires", "QuestionGroups", "Questions", "ResultHandling",
         "LanguageHandling", "PathHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, $routeParams,
-                  Questionnaires, QuestionGroups, ResultHandling,
+                  Questionnaires, QuestionGroups, Questions, ResultHandling,
                   LanguageHandling, PathHandling, StyleStuff) {
             $scope.loading = "loading";
 
@@ -321,14 +322,15 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              */
             $scope.init = function () {
                 return Questionnaires.get($routeParams.questionnaire)
-                    .chainRej(ResultHandling.flashError($scope))
+                    .mapRej(data => {
+                        $scope.questionnaire = null;
+                        $scope.$apply(() => {
+                            $scope.loading = "error";
+                        });
+                        return data;
+                    })
                     .fork(
-                        () => {
-                            $scope.questionnaire = null;
-                            $scope.$apply(() => {
-                                $scope.loading = "error";
-                            });
-                        },
+                        ResultHandling.flashError($scope),
                         prepareView
                     );
             };
@@ -551,10 +553,10 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     $scope.questionnaire.uuid,
                     $scope.new.questionGroup.data.name
                 )
-                    .chain(data => {
+                    .map(data => {
                         $scope.resetEditing();
                         $scope.init();
-                        return Future.of(data);
+                        return data;
                     })
                     .fork(
                         ResultHandling.flashError($scope),
@@ -584,9 +586,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             $scope.updateQuestionGroupColor = function (color, questionGroup) {
                 QuestionGroups
                     .update(questionGroup.uuid, {color})
-                    .chain(data => {
+                    .map(data => {
                         questionGroup.fields.color = color;
-                        return Future.of(data);
+                        return data;
                     })
                     .fork(
                         ResultHandling.flashError($scope),
@@ -597,9 +599,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             $scope.updateQuestionGroupTextColor = function (color, questionGroup) {
                 QuestionGroups
                     .update(questionGroup.uuid, {"textColor": color})
-                    .chain(data => {
+                    .map(data => {
                         questionGroup.fields.text_color = color;
-                        return Future.of(data);
+                        return data;
                     })
                     .fork(
                         ResultHandling.flashError($scope),
@@ -614,12 +616,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 QuestionGroups.delete(
                     questionGroup.uuid, $scope.questionnaire.uuid
                 )
-                    .chain(data => {
+                    .map(data => {
                         $scope.questionnaire.fields.questiongroups.splice(
                             $scope.questionnaire.fields.questiongroups.indexOf(questionGroup),
                             1
                         );
-                        return Future.of(data);
+                        return data;
                     })
                     .fork(
                         ResultHandling.flashError($scope),
@@ -648,33 +650,20 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     || $scope.new.question.data == null) {
                     return;
                 }
-                $http({
-                    method: "POST",
-                    url: "/api/question",
-                    data: JSON.stringify({
-                        questionnaire: $scope.questionnaire.uuid,
-                        question_group: $scope.new.question.questionGroup.uuid,
-                        text: $scope.new.question.data.text
-                    }),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                })
-                    .then(
-                        function success(result) {
-                            if (result.status === 200
-                                && result.data.result === "Question created.") {
-                                $scope.resetEditing();
-                                Flash.create("success", "Question successfully created.");
-                                $scope.init();
-                            } else {
-                                Flash.create("danger", result.data.error);
-                            }
-                        },
-                        function failure(error) {
-                            Flash.create("danger", error.data.error);
-                        }
-                    )
+                Questions.create(
+                    $scope.questionnaire.uuid,
+                    $scope.new.question.questionGroup.uuid,
+                    $scope.new.question.data.text
+                )
+                    .map(data => {
+                        $scope.resetEditing();
+                        $scope.init();
+                        return data;
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             /**

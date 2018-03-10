@@ -13,7 +13,7 @@ angular.module("API", [])
                     scope.$apply(() => {
                         Flash.create("danger", error.data.error);
                     });
-                    return Future.of(error);
+                    return error;
                 }
             },
             // Flashes the resulting success message.
@@ -22,17 +22,17 @@ angular.module("API", [])
                     scope.$apply(() => {
                         Flash.create("success", data.result);
                     });
-                    return Future.of(data);
+                    return data;
                 }
             },
             "extractDataAndLocale": function (result) {
-                return Future.of({
+                return {
                     "data": result.data,
                     "locale": result.headers("Content-Language")
-                });
+                };
             },
             "extractData": function (result) {
-                return Future.of(result.data);
+                return result.data;
             }
         }
     }])
@@ -163,7 +163,7 @@ angular.module("API", [])
                     return Future.tryP(() => {
                         return $http.get("/api/account/current");
                     })
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
                 },
                 "update": function (data) {
                     const {email = null, locale = null} = data;
@@ -178,7 +178,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
                 }
             };
         }
@@ -190,7 +190,7 @@ angular.module("API", [])
                     return Future.tryP(() => {
                         return $http.get("/api/locales");
                     })
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
                 }
             }
         }])
@@ -204,7 +204,7 @@ angular.module("API", [])
                     return Future.tryP(() => {
                         return $http.get(path);
                     })
-                        .chain(ResultHandling.extractDataAndLocale);
+                        .map(ResultHandling.extractDataAndLocale);
                 },
                 "create": function (name) {
                     return Future.tryP(() => $http({
@@ -217,14 +217,14 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
                 },
                 "delete": function (uuid) {
                     return Future.tryP(() => $http({
                         "method": "DELETE",
                         "url": `/api/survey/${uuid}`
                     }))
-                        .chain(ResultHandling.extractData)
+                        .map(ResultHandling.extractData)
                 }
             }
         }])
@@ -249,7 +249,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData)
+                        .map(ResultHandling.extractData)
                 },
                 "get": function (questionnaire_uuid, locale = "") {
                     const path = PathHandling.pathMaybeWithLocale(
@@ -258,7 +258,7 @@ angular.module("API", [])
                     return Future.tryP(() => {
                         return $http.get(path);
                     })
-                        .chain(ResultHandling.extractDataAndLocale);
+                        .map(ResultHandling.extractDataAndLocale);
                 },
                 "update": function (questionnaire_uuid, data) {
                     const {name = null, description = null} = data;
@@ -273,7 +273,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
                 },
                 "delete": function (questionnaire_uuid, survey_uuid) {
                     return Future.tryP(() => $http({
@@ -286,7 +286,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData)
+                        .map(ResultHandling.extractData)
                 }
             }
         }])
@@ -305,7 +305,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
                 },
                 "update": function (questionGroup_uuid, data) {
                     const {name = null, color = null, textColor = null} = data;
@@ -321,7 +321,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
                 },
                 "delete": function (questionGroup_uuid, questionnaire_uuid) {
                     return Future.tryP(() => $http({
@@ -334,7 +334,28 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
-                        .chain(ResultHandling.extractData);
+                        .map(ResultHandling.extractData);
+                }
+            }
+        }])
+    .factory("Questions", ["$http", "ResultHandling",
+        function ($http, ResultHandling) {
+            return {
+                "create": function (questionnaire_uuid, questionGroup_uuid,
+                                    text) {
+                    return Future.tryP(() => $http({
+                        "method": "POST",
+                        "url": "/api/question",
+                        "data": {
+                            "questionnaire_uuid": questionnaire_uuid,
+                            "question_group_uuid": questionGroup_uuid,
+                            "text": text
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .map(ResultHandling.extractData);
                 }
             }
         }])
