@@ -122,8 +122,12 @@ angular.module("API", [])
 
         const getQuestionTranslation = R.curry(
             function (locale, question) {
-                // TODO: implement
-                return question;
+                const text = R.path(["fields", "text"], question);
+                return R.assocPath(
+                    ["fields", "text"],
+                    getStringLocale(locale, text),
+                    question
+                );
             }
         );
 
