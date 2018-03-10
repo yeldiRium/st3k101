@@ -365,14 +365,18 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             R.path(["fields", "color"], questiongroup),
                             `#colorPicker_${questiongroup.uuid}`,
                             function (color) {
-                                $scope.updateColor(color, questiongroup);
+                                $scope.updateQuestionGroupColor(
+                                    color, questiongroup
+                                );
                             }
                         ), 0);
                         setTimeout(StyleStuff.colorPicker(
                             R.path(["fields", "text_color"], questiongroup),
                             `#textColorPicker_${questiongroup.uuid}`,
                             function (color) {
-                                $scope.updateTextColor(color, questiongroup);
+                                $scope.updateQuestionGroupTextColor(
+                                    color, questiongroup
+                                );
                             }
                         ), 0);
                     },
@@ -567,77 +571,40 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     Flash.create("danger", "Name can't be empty!");
                     return false;
                 }
-                $http({
-                    method: "PUT",
-                    url: "/api/question_group",
-                    data: {
-                        uuid: uuid,
-                        name: name
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        Flash.create("success", "QuestionGroup updated!");
-                    },
-                    function fail(error) {
-                        Flash.create("danger", error.data.error);
-                    }
-                );
+
+                QuestionGroups
+                    .update(uuid, {name})
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
                 return true;
             };
 
             $scope.updateQuestionGroupColor = function (color, questionGroup) {
-                $http({
-                    method: "PUT",
-                    url: "/api/question_group",
-                    data: {
-                        uuid: questionGroup.uuid,
-                        color: color
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
-                            questionGroup.fields.color = color;
-                            Flash.create("success", "QuestionGroup color was updated!");
-                        } else {
-                            Flash.create("danger", result.data.error);
-                        }
-                    },
-                    function fail(error) {
-                        Flash.create("danger", "QuestionGroup color could not be updated. Please try again.");
-                    }
-                )
+                QuestionGroups
+                    .update(questionGroup.uuid, {color})
+                    .chain(data => {
+                        questionGroup.fields.color = color;
+                        return Future.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             $scope.updateQuestionGroupTextColor = function (color, questionGroup) {
-                $http({
-                    method: "PUT",
-                    url: "/api/question_group",
-                    data: {
-                        uuid: questionGroup.uuid,
-                        text_color: color
-                    },
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(
-                    function success(result) {
-                        if (result.status === 200 && result.data.result === "QuestionGroup updated.") {
-                            questionGroup.fields.text_color = color;
-                            Flash.create("success", "QuestionGroup text color was updated!");
-                        } else {
-                            Flash.create('danger', result.data.error);
-                        }
-                    },
-                    function fail(error) {
-                        Flash.create("danger", "QuestionGroup text color could not be updated. Please try again.");
-                    }
-                )
+                QuestionGroups
+                    .update(questionGroup.uuid, {"textColor": color})
+                    .chain(data => {
+                        questionGroup.fields.text_color = color;
+                        return Future.of(data);
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
             };
 
             /**

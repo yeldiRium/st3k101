@@ -306,6 +306,22 @@ angular.module("API", [])
                         }
                     }))
                         .chain(ResultHandling.extractData);
+                },
+                "update": function (questionGroup_uuid, data) {
+                    const {name=null, color=null, textColor=null} = data;
+                    return Future.tryP(() => $http({
+                        "method": "PUT",
+                        "url": `/api/question_group/${questionGroup_uuid}`,
+                        "data": {
+                            "name": name,
+                            "color": color,
+                            "text_color": textColor
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .chain(ResultHandling.extractData);
                 }
             }
         }])
