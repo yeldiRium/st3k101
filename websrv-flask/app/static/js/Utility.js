@@ -48,7 +48,7 @@ angular.module("Utility", [])
             "equalizeSelectboxes": function(checkbox, selectable) {
                 $(checkbox).each(function (index, element) {
                     const e = $(element);
-                    e.height(e.sibling(selectable).height());
+                    e.height(e.siblings(selectable).height());
                 });
             },
             /**
