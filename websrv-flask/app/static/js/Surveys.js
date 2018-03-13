@@ -14,9 +14,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     }])
     .controller("SurveysController", [
         "$scope", "$http", "$timeout", "Flash", "Surveys", "Questionnaires",
-        "ResultHandling", "LanguageHandling", "PathHandling",
+        "ResultHandling", "LanguageHandling", "PathHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, Surveys, Questionnaires,
-                  ResultHandling, LanguageHandling, PathHandling) {
+                  ResultHandling, LanguageHandling, PathHandling, StyleStuff) {
             $scope.loading = "loading";
 
             /**
@@ -66,6 +66,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 $scope.$apply(() => {
                     $scope.loading = "done";
                 });
+
+
+                StyleStuff.equalizeSelectboxes(
+                    ".as-checkbox", ".selectable"
+                );
             };
 
             /**

@@ -10,13 +10,17 @@
             </div>
             <div class="panel-body">
                 <div class="list-group">
-                    <a class="list-group-item" ng-repeat="questionnaire in survey.fields.questionnaires" ng-click="toggleSelect(survey, questionnaire)" ng-class="{'list-group-item-info': selection.questionnaires[questionnaire.uuid] == true}">
-                        <button type="button" class="pull-left btn btn-default" click-go="/surveys/{{ questionnaire.uuid }}/statistic">{{ questionnaire.fields.answer_count || 0 }} Results</button>
-                        <button type="button" class="pull-left btn btn-default" ng-click="gotoQuestionnaire(questionnaire)">Open</button>
-                        <button type="button" class="pull-left btn btn-default edit-button" click-go="/surveys/{{ questionnaire.uuid }}">Edit</button>
-                        <h4 class="list-group-item-heading">{{ questionnaire.fields.name }}</h4>
-                        <p class="list-group-item-text">{{ questionnaire.fields.description }}</p>
-                    </a>
+                    <ngRepeat ng-repeat="questionnaire in survey.fields.questionnaires">
+                        <div class="list-group-item col-sm-1 as-checkbox" ng-click="toggleSelect(survey, questionnaire)" ng-class="{'list-group-item-info': selection.questionnaires[questionnaire.uuid] == true}">
+                        </div>
+                        <a class="list-group-item col-sm-11 selectable">
+                            <button type="button" class="pull-left btn btn-default" click-go="/surveys/{{ questionnaire.uuid }}/statistic">{{ questionnaire.fields.answer_count || 0 }} Results</button>
+                            <button type="button" class="pull-left btn btn-default" ng-click="gotoQuestionnaire(questionnaire)">Open</button>
+                            <button type="button" class="pull-left btn btn-default edit-button" click-go="/surveys/{{ questionnaire.uuid }}">Edit</button>
+                            <h4 class="list-group-item-heading">{{ questionnaire.fields.name }}</h4>
+                            <p class="list-group-item-text">{{ questionnaire.fields.description }}</p>
+                        </a>
+                    </ngRepeat>
                 </div>
             </div>
             <div class="panel-footer">
