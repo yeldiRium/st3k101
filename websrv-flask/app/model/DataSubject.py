@@ -10,9 +10,9 @@ class DataSubject(DataObject):
     @staticmethod
     def get_or_create(email_address):
         # hash email address of user to anonymize data
-        email = email_address
+        email = email_address.encode("utf-8")
         hasher = hashlib.new('ripemd160')
-        hasher.update()
+        hasher.update(email)
         email_hashed = hasher.hexdigest()
 
         # get existing DataSubject or create new
