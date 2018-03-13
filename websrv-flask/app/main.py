@@ -129,7 +129,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: L'Error
     """
-    return make_response(_("U do not kno de wae"), 404)
+    return make_response(_("U do not kno de wae"), 404)  # TODO: nice 404 page
 
 
 @app.errorhandler(500)
@@ -141,7 +141,7 @@ def internal_server_error_handler(error):
             print("Freeing {}".format(mutex_uuid), file=sys.stderr)
     else:
         print("No mutexes to free.", file=sys.stderr)
-    abort(500)
+    return make_response(error, 500)  # TODO: nice error page
 
 
 @app.errorhandler(AccessControlException)

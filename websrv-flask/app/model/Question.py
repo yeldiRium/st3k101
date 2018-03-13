@@ -66,7 +66,7 @@ class Question(DataObject):
             return True
 
         elif len(previous_results) == 1:
-            previous_result = next(previous_results)
+            previous_result = previous_results[0]
             if previous_result.verified and needs_verification:
                 # keep old, verified result and append new result
                 # as an unverified result
@@ -80,8 +80,8 @@ class Question(DataObject):
 
         elif len(previous_results) == 2:
             # one result is verified, the other one isn't, find out which
-            verified_result = next(verified_results)
-            unverified_result = next(unverified_results)
+            verified_result = verified_results[0]
+            unverified_result = unverified_results[0]
 
             # cancel pending unverified result
             self.remove_question_result(unverified_result)
