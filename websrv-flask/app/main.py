@@ -23,7 +23,7 @@ babel = Babel(app)
 
 # setup logging
 mail_handler = SMTPHandler(
-    mailhost=app.config["SMTP_SERVER"],
+    mailhost=(app.config["SMTP_SERVER"], app.config["SMTP_PORT"]),
     fromaddr=app.config["SMTP_FROM_ADDRESS"],
     toaddrs=[app.config["ERROR_NOTIFICATION_EMAIL_ADDRESS"]],
     subject='[EFLA-web] Application Error',
