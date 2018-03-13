@@ -57,9 +57,35 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param locale
              */
             let prepareView = function ({data, locale}) {
-                $scope.surveys = R.map(
-                    LanguageHandling.getSurveyTranslation(locale), data
-                );
+                $scope.surveys = R.pipe(
+                    R.map(LanguageHandling.getSurveyTranslation(locale)),
+                    R.map(survey => {
+                        let original_locale = R.head(R.map(
+                            R.toLower,
+                            [R.path(["fields", "original_locale"], survey)]
+                        ));
+                        if (original_locale !== locale.toLowerCase()) {
+                            return R.pipe(
+                                R.assoc(
+                                    "original",
+                                    LanguageHandling.getSurveyTranslation(
+                                        original_locale, survey
+                                    )
+                                ),
+                                R.assoc(
+                                    "original_locale",
+                                    original_locale
+                                )
+                            )(survey);
+                        } else {
+                            return R.assoc(
+                                "original_locale",
+                                null,
+                                survey
+                            );
+                        }
+                    })
+                )(data);
                 $scope.templates = prepareTemplates(
                     locale, $scope.surveys
                 );
@@ -463,6 +489,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 if (parsed_questionnaire_original) {
                     $scope.questionnaire_original =
                         parsed_questionnaire_original;
+                    $scope.original_locale = R.map(R.toLower, original_locale);
                 }
 
                 $scope.$apply(() => {

@@ -4,26 +4,16 @@
             <div class="form-group">
                 <label for="inputQuestionnaireName" class="col-sm-2 control-label">Name</label>
                 <!-- Questionnaire name form -->
-                <div class="col-sm-10" ng-if="questionnaire_original == null">
-                    <span ng-click="startEditing('questionnairename', $event, questionnaire.fields.name)" ng-if="!isEditing('questionnairename')">{{ questionnaire.fields.name }}</span>
-                    <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="questionnaire.fields.name" ng-enter="stopEditing('questionnairename', $event, questionnaire)" ng-blur="abortEditing('questionnairename', $event, questionnaire)" ng-if="isEditing('questionnairename')">
-                </div>
-                <!-- Questionnaire name form with translation present -->
-                <div class="col-sm-10" ng-if="questionnaire_original != null">
-                    <span ng-click="startEditing('questionnairename', $event, questionnaire.fields.name)" ng-if="!isEditing('questionnairename')">{{ questionnaire.fields.name }} ({{ questionnaire_original.fields.name }})</span>
+                <div class="col-sm-10">
+                    <span ng-click="startEditing('questionnairename', $event, questionnaire.fields.name)" ng-if="!isEditing('questionnairename')">{{ questionnaire.fields.name }} <span class="translation" data-language="{{ original_locale }}" ng-if="questionnaire_original != null">({{ questionnaire_original.fields.name }})</span></span>
                     <input type="text" class="form-control" id="inputQuestionnaireName" ng-model="questionnaire.fields.name" ng-enter="stopEditing('questionnairename', $event, questionnaire)" ng-blur="abortEditing('questionnairename', $event, questionnaire)" ng-if="isEditing('questionnairename')">
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputQuestionnaireDescription" class="col-sm-2 control-label">Description</label>
                 <!-- Questionnaire description form -->
-                <div class="col-sm-10" ng-if="questionnaire_original == null">
-                    <span ng-click="startEditing('questionnairedescription', $event, questionnaire.fields.description)" ng-if="!isEditing('questionnairedescription')">{{ questionnaire.fields.description }}</span>
-                    <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="questionnaire.fields.description" ng-enter="stopEditing('questionnairedescription', $event, questionnaire)" ng-blur="abortEditing('questionnairedescription', $event, questionnaire)" ng-if="isEditing('questionnairedescription')">
-                </div>
-                <!-- Questionnaire name form with translation present -->
-                <div class="col-sm-10" ng-if="questionnaire_original != null">
-                    <span ng-click="startEditing('questionnairedescription', $event, questionnaire.fields.description)" ng-if="!isEditing('questionnairedescription')">{{ questionnaire.fields.description }} ({{ questionnaire_original.fields.description }})</span>
+                <div class="col-sm-10">
+                    <span ng-click="startEditing('questionnairedescription', $event, questionnaire.fields.description)" ng-if="!isEditing('questionnairedescription')">{{ questionnaire.fields.description }} <span class="translation" data-language="{{ original_locale }}" ng-if="questionnaire_original != null">({{ questionnaire_original.fields.description }})</span></span>
                     <input type="text" class="form-control" id="inputQuestionnaireDescription" ng-model="questionnaire.fields.description" ng-enter="stopEditing('questionnairedescription', $event, questionnaire)" ng-blur="abortEditing('questionnairedescription', $event, questionnaire)" ng-if="isEditing('questionnairedescription')">
                 </div>
             </div>
@@ -36,12 +26,8 @@
     </div>
     <div class="row" ng-repeat="questionGroup in questionnaire.fields.questiongroups">
         <div class="panel panel-default">
-            <div class="panel-heading" style="background-color: {{ questionGroup.fields.color }}; color: {{ questionGroup.fields.text_color }};" ng-if="questionnaire_original == null">
-                <h3 class="panel-title" ng-click="startEditing('questiongroup'+questionGroup.uuid, $event, questionGroup.fields.name)" ng-if="!isEditing('questiongroup'+questionGroup.uuid)">{{ questionGroup.fields.name }}</h3>
-                <input type="text" id="{{ 'inputQuestionGroupName' + questionGroup.uuid }}" data-uuid="{{ questionGroup.uuid }}" ng-model="questionGroup.fields.name" ng-enter="stopEditing('questiongroup'+questionGroup.uuid, $event, questionGroup)" ng-blur="abortEditing('questiongroup'+questionGroup.uuid, $event, questionGroup)" ng-if="isEditing('questiongroup'+questionGroup.uuid)">
-            </div>
-            <div class="panel-heading" style="background-color: {{ questionGroup.fields.color }}; color: {{ questionGroup.fields.text_color }};" ng-if="questionnaire_original != null">
-                <h3 class="panel-title" ng-click="startEditing('questiongroup'+questionGroup.uuid, $event, questionGroup.fields.name)" ng-if="!isEditing('questiongroup'+questionGroup.uuid)">{{ questionGroup.fields.name }} ({{ questionnaire_original.fields.questiongroups[$index].fields.name }})</h3>
+            <div class="panel-heading" style="background-color: {{ questionGroup.fields.color }}; color: {{ questionGroup.fields.text_color }};">
+                <h3 class="panel-title" ng-click="startEditing('questiongroup'+questionGroup.uuid, $event, questionGroup.fields.name)" ng-if="!isEditing('questiongroup'+questionGroup.uuid)">{{ questionGroup.fields.name }} <span class="translation" data-language="{{ original_locale }}" ng-if="questionnaire_original != null">({{ questionnaire_original.fields.questiongroups[$index].fields.name }})</span></h3>
                 <input type="text" id="{{ 'inputQuestionGroupName' + questionGroup.uuid }}" data-uuid="{{ questionGroup.uuid }}" ng-model="questionGroup.fields.name" ng-enter="stopEditing('questiongroup'+questionGroup.uuid, $event, questionGroup)" ng-blur="abortEditing('questiongroup'+questionGroup.uuid, $event, questionGroup)" ng-if="isEditing('questiongroup'+questionGroup.uuid)">
             </div>
             <div class="panel-body">
@@ -64,12 +50,8 @@
                         <div class="list-group-item col-sm-1 as-checkbox" ng-click="toggleSelect(questionGroup, question)" ng-class="{'list-group-item-info': selection.questions[question.uuid] == true}">
                         </div>
                         <a class="list-group-item col-sm-11 selectable">
-                            <ngIf ng-if="questionnaire_original == null">
-                                <ngIf ng-click="startEditing('singlequestion'+question.uuid, $event, question.fields.text)" ng-if="!isEditing('singlequestion'+question.uuid)">{{ question.fields.text }}</ngIf>
-                                <input type="text" id="{{ 'inputQuestionName' + question.uuid }}" data-uuid="{{ question.uuid }}" ng-model="question.fields.text" ng-enter="stopEditing('singlequestion'+question.uuid, $event, question)" ng-blur="abortEditing('singlequestion'+question.uuid, $event, question)" ng-if="isEditing('singlequestion'+question.uuid)">
-                            </ngIf>
-                            <ngIf ng-if="questionnaire_original != null">
-                                <ngIf ng-click="startEditing('singlequestion'+question.uuid, $event, question.fields.text)" ng-if="!isEditing('singlequestion'+question.uuid)">{{ question.fields.text }} ({{ questionnaire_original.fields.questiongroups[$parent.$parent.$parent.$index].fields.questions[$index].fields.text }})</ngIf>
+                            <ngIf>
+                                <ngIf ng-click="startEditing('singlequestion'+question.uuid, $event, question.fields.text)" ng-if="!isEditing('singlequestion'+question.uuid)">{{ question.fields.text }} <span class="translation" data-language="{{ original_locale }}" ng-if="questionnaire_original != null">({{ questionnaire_original.fields.questiongroups[$parent.$parent.$parent.$index].fields.questions[$index].fields.text }})</span></ngIf>
                                 <input type="text" id="{{ 'inputQuestionName' + question.uuid }}" data-uuid="{{ question.uuid }}" ng-model="question.fields.text" ng-enter="stopEditing('singlequestion'+question.uuid, $event, question)" ng-blur="abortEditing('singlequestion'+question.uuid, $event, question)" ng-if="isEditing('singlequestion'+question.uuid)">
                             </ngIf>
                         </a>
