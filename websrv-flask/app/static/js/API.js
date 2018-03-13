@@ -319,7 +319,46 @@ angular.module("API", [])
                         }
                     }))
                         .map(ResultHandling.extractData)
-                }
+                },
+                "listQACs": function (questionnaire_uuid) {
+                    return Future.tryP(() => $http({
+                        "method": "GET",
+                        "url": `/api/questionnaire/${questionnaire_uuid}/qac`
+                    }))
+                        .map(ResultHandling.extractData);
+                },
+                "getQACConfig": function (questionnaire_uuid, qac_name) {
+                    return Future.tryP(() => $http({
+                        "method": "GET",
+                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
+                    }))
+                        .map(ResultHandling.extractData);
+                },
+                "enableQAC": function (questionnaire_uuid, qac_name) {
+                    return Future.tryP(() => $http({
+                        "method": "POST",
+                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
+                    }))
+                        .map(ResultHandling.extractData);
+                },
+                "configureQAC": function (questionnaire_uuid, qac_name, data) {
+                    return Future.tryP(() => $http({
+                        "method": "PUT",
+                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`,
+                        "data": data,
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .map(ResultHandling.extractData);
+                },
+                "disableQAC": function (questionnaire_uuid, qac_name) {
+                    return Future.tryP(() => $http({
+                        "method": "DELETE",
+                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
+                    }))
+                        .map(ResultHandling.extractData);
+                },
             }
         }])
     .factory("QuestionGroups", ["$http", "ResultHandling",
@@ -414,6 +453,18 @@ angular.module("API", [])
                         "headers": {
                             "Content-Type": "application/json"
                         }
+                    }))
+                        .map(ResultHandling.extractData);
+                }
+            }
+        }])
+    .factory("QACs", ["$http", "ResultHandling",
+        function ($http, ResultHandling) {
+            return {
+                "list": function () {
+                    return Future.tryP(() => $http({
+                        "method": "GET",
+                        "url": "/api/qac_module"
                     }))
                         .map(ResultHandling.extractData);
                 }
