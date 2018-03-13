@@ -118,7 +118,9 @@ angular.module("Utility", [])
     .directive("clickGo", ["$location", function ($location) {
         return function (scope, element, attrs) {
             element.bind("click", function (e) {
-                $location.path(attrs.clickGo);
+                scope.$apply(() => {
+                    $location.path(attrs.clickGo);
+                });
             })
         }
     }]);
