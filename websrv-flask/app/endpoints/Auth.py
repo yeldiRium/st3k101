@@ -5,7 +5,8 @@
 from flask import render_template, request, make_response, redirect
 
 from auth import users
-from framework.exceptions import UserExistsException, BadCredentialsException
+from framework.exceptions import UserExistsException, BadCredentialsException, \
+    UserNotLoggedInException
 from main import app
 
 
@@ -68,6 +69,9 @@ def logout():
     """
     Logout Route
     """
-    # FIXME
-    users.logout()
-    return make_response(redirect('/'))
+    try:
+        users.logout()
+    except UserNotLoggedInException:
+        pass
+    finally:
+        return make_response(redirect('/'))

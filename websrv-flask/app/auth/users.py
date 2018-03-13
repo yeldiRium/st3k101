@@ -63,7 +63,7 @@ def logout():
     Logs out the current user, raises UserNotLoggedInException if the session is already invalid.
     :return: None
     """
-    if not g._current_user:
+    if g._current_user is None:
         raise UserNotLoggedInException()
 
     if not auth.invalidate(g._current_session_token):
