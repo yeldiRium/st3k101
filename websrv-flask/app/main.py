@@ -157,7 +157,8 @@ def inject_languages():
     Inject languages parameters into all templates.
     """
     language = {
-        "current": g._locale,
+        "current": babel_languages[g._locale],
+        "current_short": g._locale,
         "languages": list_sorted_by_long_name()
     }
     return dict(language=language)
