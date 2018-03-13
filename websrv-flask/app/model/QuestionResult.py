@@ -40,7 +40,7 @@ class QuestionResult(DataObject):
 
 QuestionResult.verified = DataAttribute(QuestionResult, "verified")
 QuestionResult.verification_token = DataAttribute(QuestionResult,
-                                                  "verification_hash",
+                                                  "verification_token",
                                                   serialize=False)
 QuestionResult.submission_attempt_count = DataAttribute(
     QuestionResult, "submission_attempt_count")
