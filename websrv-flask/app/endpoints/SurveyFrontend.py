@@ -2,7 +2,7 @@
     All http endpoints that are used when a DataSubject interacts with the site
 """
 
-from flask import render_template, make_response, redirect, request, g
+from flask import render_template, make_response, redirect, request
 
 import utils
 from framework.exceptions import ObjectDoesntExistException, \
@@ -112,7 +112,6 @@ def survey_submit(questionnaire_uuid):
     answer_is_new = False
     for question_group in questionnaire.questiongroups:
         for question in question_group.questions:
-
             answer_value = request.form["question_{}".format(question.uuid)]
             answer_is_new |= question.add_question_result(answer_value, email,
                                                           needs_verification,
@@ -131,7 +130,8 @@ def survey_submit(questionnaire_uuid):
             questionnaire_url=questionnaire_url
         )
         try:
-            send_mail(email, _("Please confirm your survey submission"), message)
+            send_mail(email, _("Please confirm your survey submission"),
+                      message)
         except Exception as e:
             error_message = "Tried to send a verification email to {}, but " \
                             "the action failed.\n\n " \
