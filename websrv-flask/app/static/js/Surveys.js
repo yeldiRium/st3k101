@@ -1042,7 +1042,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     controller: "SurveysController"
                 })
                 .when("/surveys/:questionnaire/", {
-                    templateUrl: "/static/js/templates/EditSurvey.html",
+                    templateUrl: "/static/js/templates/Questionnaire.html",
                     controller: "EditQuestionnaireController"
                 })
                 .when("/surveys/:questionnaire/statistic", {
