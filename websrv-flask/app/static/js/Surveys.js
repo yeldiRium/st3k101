@@ -436,7 +436,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
+            // Reset editing so that all object exist.
             $scope.resetEditing();
+            // Initialize data-loading and rendering.
             $scope.init();
         }
     ])
@@ -501,6 +503,19 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
+            /**
+             * Prepares the data for rendering.
+             * If the loaded Questionnaire's original_locale is not the same as
+             * the currently selected locale, the original text is parsed and
+             * displayed in addition to the text in the current language.
+             *
+             * Initializes ColorPickers for each QuestionGroup.
+             *
+             * Initializes the selectbox-helpers.
+             *
+             * @param questionnaire
+             * @param locale
+             */
             function prepareView({questionnaire, locale}) {
                 const parsed_questionnaire = LanguageHandling
                     .getQuestionnaireTranslation(locale, questionnaire);
@@ -779,6 +794,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 return true;
             };
 
+            /**
+             * Updates a QuestionGroup's color.
+             *
+             * @param color
+             * @param questionGroup
+             */
             $scope.updateQuestionGroupColor = function (color, questionGroup) {
                 QuestionGroups
                     .update(questionGroup.uuid, {color})
@@ -792,6 +813,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
+            /**
+             * Updates a QuestionGroup's textColor.
+             *
+             * @param color
+             * @param questionGroup
+             */
             $scope.updateQuestionGroupTextColor = function (color, questionGroup) {
                 QuestionGroups
                     .update(questionGroup.uuid, {"textColor": color})
@@ -909,12 +936,22 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
 
             /* QAC related stuff */
 
-            $scope.updateI15dTextParameter = function (qacName, parameter) {
+            /**
+             * Updates the QACI15dTextParameter for the given qacName on the
+             * current Questionnaire.
+             *
+             * Extracts the type of QACParameter and the value from the parame-
+             * ter qacParameter.
+             *
+             * @param qacName
+             * @param qacParameter
+             */
+            $scope.updateI15dTextParameter = function (qacName, qacParameter) {
                 const questionnaireUuid = $scope.questionnaire.uuid;
-                const parameterName = parameter.fields.name.msgid;
+                const parameterName = qacParameter.fields.name.msgid;
 
                 const data = {};
-                data[parameterName] = parameter.fields.text;
+                data[parameterName] = qacParameter.fields.text;
 
                 Questionnaires.configureQAC(questionnaireUuid, qacName, data)
                     .fork(
@@ -923,12 +960,22 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
-            $scope.updateTextParameter = function (qacName, parameter) {
+            /**
+             * Updates the I15dTextParameter for the given qacName on the
+             * current Questionnaire.
+             *
+             * Extracts the type of QACParameter and the value from the parame-
+             * ter qacParameter.
+             *
+             * @param qacName
+             * @param qacParameter
+             */
+            $scope.updateTextParameter = function (qacName, qacParameter) {
                 const questionnaireUuid = $scope.questionnaire.uuid;
-                const parameterName = parameter.fields.name.msgid;
+                const parameterName = qacParameter.fields.name.msgid;
 
                 const data = {};
-                data[parameterName] = parameter.fields.text;
+                data[parameterName] = qacParameter.fields.text;
 
                 Questionnaires.configureQAC(questionnaireUuid, qacName, data)
                     .fork(
@@ -937,6 +984,16 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
+            /**
+             * Updates the QACCheckboxParameter for the given qacName on the
+             * current Questionnaire.
+             *
+             * Extracts the type of QACParameter and the value from the parame-
+             * ter qacParameter.
+             *
+             * @param qacName
+             * @param qacParameter
+             */
             $scope.updateCheckboxParameter = function (qacName, parameter) {
                 const questionnaireUuid = $scope.questionnaire.uuid;
                 const parameterName = parameter.fields.name.msgid;
@@ -959,7 +1016,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                  */
             };
 
+            // Reset editing so that all object exist.
             $scope.resetEditing();
+            // Initialize data-loading and rendering.
             $scope.init();
         }])
     .controller("QuestionnaireStatisticController", [
