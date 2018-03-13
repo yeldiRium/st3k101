@@ -113,9 +113,10 @@ QuestionStatistic.question = DataPointer(QuestionStatistic, "question",
                                          Question)
 QuestionResult.question = DataPointer(QuestionResult, "question", Question)
 
-Question.text = DataPointer(Question, "text", I15dString)
+Question.text = DataPointer(Question, "text", I15dString, cascading_delete=True)
 Question.statistic = DataPointer(Question, "statistic", QuestionStatistic,
                                  cascading_delete=True, serialize=False)
 Question.results = DataPointerSet(Question, "results", QuestionResult,
-                                  cascading_delete=True, serialize=False)
+                                  cascading_delete=True, serialize=False,
+                                  no_acl=True)
 Question.dirty = DataAttribute(Question, "dirty", serialize=False, no_acl=True)
