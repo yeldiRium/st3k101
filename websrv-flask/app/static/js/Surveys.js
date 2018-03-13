@@ -937,6 +937,28 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
+            $scope.updateCheckboxParameter = function (qacName, parameter) {
+                const questionnaireUuid = $scope.questionnaire.uuid;
+                const parameterName = parameter.fields.name.msgid;
+
+                const data = {};
+                data[parameterName] = parameter.fields.value;
+
+                Questionnaires.configureQAC(questionnaireUuid, qacName, data)
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
+            };
+
+            $scope.updateSelectParameter = function (qacName, parameter) {
+                /* TODO: implement
+                   Should update the according SelectParamater.
+                   Not sure yet, how values should be formatted.
+                   Especially MultiSelect could be difficult.
+                 */
+            };
+
             $scope.resetEditing();
             $scope.init();
         }])

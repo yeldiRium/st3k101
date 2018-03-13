@@ -233,12 +233,16 @@
                         <div class="qac-paramater-content qac-parameter-checkbox"
                              ng-if="parameter.class == 'model.query_access_control.QACCheckboxParameter.QACCheckboxParameter'">
                             <!-- QACCheckboxParameter -->
-                            QACCheckboxParameter
+                            <input type="text"
+                                   id="{{ qac.fields.name.msgid }} - {{ parameter.fields.name.msgid }}"
+                                   ng-model="parameter.fields.value"
+                                   ng-click="updateCheckboxParameter(qac.fields.name.msgid, parameter)">
                         </div>
                         <div class="qac-paramater-content qac-parameter-select"
                              ng-if="parameter.class == 'model.query_access_control.QACSelectParameter.QACSelectParameter'">
-                            <!-- QACSelectParameter -->
-                            QACCheckboxParameter
+                            <!-- QACSelectParameter
+                            TODO: Implement this
+                            -->
                         </div>
                         <input type="button"
                                class="qac-parameter-update btn btn-default"
