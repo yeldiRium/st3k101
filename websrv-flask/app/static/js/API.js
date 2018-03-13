@@ -48,10 +48,6 @@ angular.module("API", [])
             )
         });
 
-        const getDataStringContent = function (dataString) {
-            return dataString.text;
-        };
-
         const getSurveyTranslation = R.curry(
             function (locale, survey) {
                 const name = R.path(["fields", "name"], survey);
@@ -140,38 +136,19 @@ angular.module("API", [])
                 const name = R.path(["fields", "name"], qac);
                 const description = R.path(["fields", "description"], qac);
                 const parameters = R.path(["fields", "parameters"], qac);
-                return R.pipe(
-                    R.assocPath(
-                        ["fields", "name"],
-                        getDataStringContent(name)
+                return R.assocPath(
+                    ["fields", "parameters"],
+                    R.map(
+                        getQacParameterTranslation(locale),
+                        parameters
                     ),
-                    R.assocPath(
-                        ["fields", "description"],
-                        getDataStringContent(description)
-                    ),
-                    R.assocPath(
-                        ["fields", "parameters"],
-                        R.map(
-                            getQacParameterTranslation(locale),
-                            parameters
-                        )
-                    )
-                )(qac);
+                    qac
+                );
             }
         );
 
         const getQacParameterTranslation = R.curry(
             function (locale, parameter) {
-                parameter = R.assocPath(
-                    ["fields", "name"],
-                    getDataStringContent(R.path(["fields", "name"], parameter)),
-                    parameter
-                );
-                parameter = R.assocPath(
-                    ["fields", "description"],
-                    getDataStringContent(R.path(["fields", "description"], parameter)),
-                    parameter
-                );
                 if (parameter.class === "model.query_access_control.QACI15dTextParameter.QACI15dTextParameter") {
                     parameter = R.assocPath(
                         ["fields", "text"],
