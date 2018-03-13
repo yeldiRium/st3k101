@@ -907,6 +907,36 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
+            /* QAC related stuff */
+
+            $scope.updateI15dTextParameter = function (qacName, parameter) {
+                const questionnaireUuid = $scope.questionnaire.uuid;
+                const parameterName = parameter.fields.name.msgid;
+
+                const data = {};
+                data[parameterName] = parameter.fields.text;
+
+                Questionnaires.configureQAC(questionnaireUuid, qacName, data)
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
+            };
+
+            $scope.updateTextParameter = function (qacName, parameter) {
+                const questionnaireUuid = $scope.questionnaire.uuid;
+                const parameterName = parameter.fields.name.msgid;
+
+                const data = {};
+                data[parameterName] = parameter.fields.text;
+
+                Questionnaires.configureQAC(questionnaireUuid, qacName, data)
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
+            };
+
             $scope.resetEditing();
             $scope.init();
         }])
