@@ -351,6 +351,40 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             /**
+             * Publishes the Questionnaire. Enables the open button.
+             */
+            $scope.publishQuestionnaire = function (questionnaire) {
+                Questionnaires.publish(questionnaire.uuid)
+                    .map(result => {
+                        $scope.$apply(() => {
+                            questionnaire.fields.published = true;
+                        });
+                        return result;
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    )
+            };
+
+            /**
+             * Unpublishes the Questionnaire.
+             */
+            $scope.unpublishQuestionnaire = function (questionnaire) {
+                Questionnaires.unpublish(questionnaire.uuid)
+                    .map(result => {
+                        $scope.$apply(() => {
+                            questionnaire.fields.published = false;
+                        });
+                        return result;
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    )
+            };
+
+            /**
              * Sends delete requests for all currently selected questionnaires.
              */
             $scope.deleteQuestionnaires = function () {
