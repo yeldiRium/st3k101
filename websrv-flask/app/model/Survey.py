@@ -43,6 +43,8 @@ class Survey(DataObject):
         Questionnaire.
         """
 
+        # TODO: something fishy happens when template is None
+
         # first look in local template path
         template_files = Questionnaire.get_available_templates()
 
