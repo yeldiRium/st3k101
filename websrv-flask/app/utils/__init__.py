@@ -15,3 +15,11 @@ def generate_verification_url(endpoint, token):
         endpoint,
         token
     )
+
+
+def generate_questionnaire_url(questionnaire_uuid):
+    return "http://{}{}/{}".format(
+        g._config["DOMAIN_NAME"],
+        "/survey",
+        questionnaire_uuid
+    )

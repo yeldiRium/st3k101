@@ -19,4 +19,5 @@ def send_mail(to: str, subject: str, message: str):
     smtp = smtplib.SMTP(server, port=port)
     if g._config["SMTP_USE_STARTTLS"]:
         smtp.starttls()
+    smtp.login(g._config["SMTP_FROM_ADDRESS"], g._config["SMTP_PASSWORD"])
     smtp.sendmail(sender, receivers, email.as_string())

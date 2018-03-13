@@ -5,7 +5,7 @@
 {{ verification_url }}
 
 
-{{_("You may retake the survey while it is still online:")}}
+{{_("You may retake the survey while it is still online: ")}} {{ questionnaire_url }}
 
 
 

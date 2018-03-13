@@ -123,12 +123,21 @@ def survey_submit(questionnaire_uuid):
 
     if needs_verification:
         url = utils.generate_verification_url("/verify/survey", token)
+        questionnaire_url = utils.generate_questionnaire_url(questionnaire_uuid)
         message = render_template(
             "mail/verification_mail.txt",
             verification_url=url,
-            questionnaire_name=questionnaire.name
+            questionnaire_name=questionnaire.name.get(),
+            questionnaire_url=questionnaire_url
         )
-        send_mail(email, _("Please confirm your survey submission"), message)
+        try:
+            send_mail(email, _("Please confirm your survey submission"), message)
+        except Exception as e:
+            error_message = "Tried to send a verification email to {}, but " \
+                            "the action failed.\n\n " \
+                            "Original error message:\n\n " \
+                            "{}".format(email, e.args)
+            app.logger.error(error_message)
         return render_template("survey_please_verify.html", email=email)
     else:
         return render_template("survey_thanks.html", email=email)

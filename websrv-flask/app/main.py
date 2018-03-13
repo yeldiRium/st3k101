@@ -1,13 +1,13 @@
 import sys
 import traceback
-
+from logging.handlers import SMTPHandler
+import logging
 from flask import Flask, render_template, g, request, make_response, jsonify, \
     abort
 from flask.ext.babel import Babel
 from werkzeug.wrappers import Response
 
 import auth
-import test
 from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
@@ -20,6 +20,21 @@ app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')
 app.json_encoder = DataObjectEncoder
 babel = Babel(app)
+
+# setup logging
+mail_handler = SMTPHandler(
+    mailhost=app.config["SMTP_SERVER"],
+    fromaddr=app.config["SMTP_FROM_ADDRESS"],
+    toaddrs=[app.config["ERROR_NOTIFICATION_EMAIL_ADDRESS"]],
+    subject='[EFLA-web] Application Error',
+    credentials=(app.config["SMTP_FROM_ADDRESS"], app.config["SMTP_PASSWORD"]),
+    secure=()
+)
+mail_handler.setLevel(logging.ERROR)
+mail_handler.setFormatter(logging.Formatter(
+    '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+))
+app.logger.addHandler(mail_handler)
 
 
 # flask-babel related setup
@@ -198,14 +213,4 @@ import endpoints.REST.Question
 import endpoints.REST.QAC
 import endpoints.REST.Account
 import endpoints.REST.Locale
-
-
-@app.route("/test/runall", methods=["POST"])
-def api_test_runall():
-    # FIXME: remove (WHOLE METHOD) in production
-    # if g._current_user is None:
-    #    return abort(403)
-
-    return make_response(jsonify({
-        "result": test.run_all()
-    }))
+import endpoints.Verification
