@@ -258,7 +258,7 @@ def api_qac_configure(questionnaire_uuid: str, qac_name: str):
             "result": "error"
         }
         404: {
-            "error": "No such Questionnaire." / "No such QAC.",
+            "error": "No such Questionnaire." / "No such QAC." / "QAC {name} is not enabled.",
             "result": "error"
         }
 
@@ -282,7 +282,7 @@ def api_qac_configure(questionnaire_uuid: str, qac_name: str):
 
     qac_module = questionnaire.get_qac_module(qac_name)
     if qac_module is None:
-        return make_error("QAC is not enabled.".format(qac_name), 404)
+        return make_error("QAC {} is not enabled.".format(qac_name), 404)
 
     updated_params = []
     errors = []
