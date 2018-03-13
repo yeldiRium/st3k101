@@ -8,8 +8,8 @@ from framework.internationalization import _
 from model.query_access_control.QACCheckboxParameter import QACCheckboxParameter
 from model.query_access_control.QACParameter import QACParameter
 from model.query_access_control.QACSelectParameter import QACSelectParameter
-from model.query_access_control.QACTextParameter import QACTextParameter, \
-    QACI15dTextParameter
+from model.query_access_control.QACTextParameter import QACTextParameter
+from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
 
 
 class QACModule(DataObject):
@@ -65,7 +65,7 @@ class QACModule(DataObject):
                 elif type_of_param in (QACTextParameter, QACI15dTextParameter):
                     param: QACTextParameter
                     value: str
-                    param.text = value
+                    param.set_text(value)
                     updated = True
 
                 else:

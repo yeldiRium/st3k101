@@ -20,8 +20,7 @@ class Survey(DataObject):
     @staticmethod
     def create_survey(name: str):
         survey = Survey()
-        survey.name = I15dString()
-        survey.name.set_locale(name)
+        survey.name = I15dString.new(name)
         survey.date_created = datetime.now().timestamp()
         survey.original_locale = g._locale
         return survey

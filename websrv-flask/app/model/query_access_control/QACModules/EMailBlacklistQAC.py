@@ -45,14 +45,13 @@ class EMailBlacklistQAC(QACModule):
 
     @staticmethod
     def new() -> "EMailBlacklistQAC":
-        email_list_str = QACTextParameter()
+        email_list_str = QACTextParameter.new("")
         email_list_str.name = I18n("List of disallowed E-Mail addresses")
         email_list_str.description = I18n("A comma separated list of email"
                                           "addresses which are not allowed when"
                                           "submitting a survey. Wildcard"
                                           "expressions like *@uni-frankfurt.de"
                                           "are also supported.")
-        email_list_str.text = ""
 
         the_new_qac = EMailBlacklistQAC()
         the_new_qac.name = I18n("Email blacklist")

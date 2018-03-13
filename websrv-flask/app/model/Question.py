@@ -19,8 +19,7 @@ class Question(DataObject):
     @staticmethod
     def create_question(text: str):
         question = Question()
-        question.text = I15dString()
-        question.text.set_locale(text, g._locale)
+        question.text = I15dString.new(text)
         question.dirty = False
 
         question_statistic = QuestionStatistic()

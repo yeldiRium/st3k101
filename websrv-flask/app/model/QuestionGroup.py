@@ -22,8 +22,7 @@ class QuestionGroup(DataObject):
     @staticmethod
     def create_question_group(name: str):
         question_group = QuestionGroup()
-        question_group.name = I15dString()
-        question_group.name.set_locale(name)
+        question_group.name = I15dString.new(name)
         question_group.color = "#FFFFFF"
         question_group.text_color = "#000000"
         question_group.questions = []

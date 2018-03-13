@@ -38,12 +38,11 @@ class PasswordQAC(QACModule):
     @staticmethod
     def new() -> "PasswordQAC":
         # Set up params
-        pass_qac_password = QACTextParameter()
+        pass_qac_password = QACTextParameter.new("gandalf1")
         pass_qac_password.name = I18n("Pre-shared Password")
         pass_qac_password.description = I18n("The password that a DataSubject"
                                              "has to fill in to submit a"
                                              "survey.")
-        pass_qac_password.text = "gandalf1"
 
         # set up new qac instance
         the_new_qac = PasswordQAC()

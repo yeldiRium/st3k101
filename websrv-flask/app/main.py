@@ -1,8 +1,8 @@
 import sys
 import traceback
 
-from flask import Flask, render_template, g, request, make_response, \
-    jsonify, abort
+from flask import Flask, render_template, g, request, make_response, jsonify, \
+    abort
 from flask.ext.babel import Babel
 from werkzeug.wrappers import Response
 

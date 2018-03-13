@@ -18,12 +18,20 @@ class I15dString(DataObject):
 
     readable_by_anonymous = True
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.locales is None:  # init dict
-            self.locales = dict({})
-        if self.default_locale is None:
-            self.default_locale = g._locale
+    @staticmethod
+    def new(text:str=None):
+        the_new_string = I15dString()
+        the_new_string.locales = dict({})
+        the_new_string.default_locale = g._locale
+        if text is not None and type(text) is str:
+            the_new_string.set_locale(text)
+        return the_new_string
+
+    def get(self):
+        if g._locale in self.get_locales():
+            return self.locales[g._locale]
+        else:
+            return self.get_default_text()
 
     def set_locale(self, text: str, locale: str = None) -> None:
         """

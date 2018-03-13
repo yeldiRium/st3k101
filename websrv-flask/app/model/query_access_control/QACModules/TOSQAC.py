@@ -7,8 +7,7 @@ from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 from model.query_access_control.QACModule import QACModule
 from flask import request, render_template, g
 
-from model.query_access_control.QACTextParameter import QACI15dTextParameter
-
+from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
 
 
 class TOSQAC(QACModule):
@@ -46,7 +45,7 @@ class TOSQAC(QACModule):
         """
 
         # Set up parameters for QAC
-        tos_text = QACI15dTextParameter()
+        tos_text = QACI15dTextParameter.new()
         tos_text.name = I18n("TOS Text")
         tos_text.description = I18n("The text that is displayed to the user "
                                     "as the terms of service.")

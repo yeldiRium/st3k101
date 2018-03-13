@@ -27,10 +27,8 @@ class Questionnaire(DataObject):
     @staticmethod
     def create_questionnaire(name: str, description: str):
         questionnaire = Questionnaire()
-        questionnaire.name = I15dString()
-        questionnaire.name.set_locale(name)
-        questionnaire.description = I15dString()
-        questionnaire.description.set_locale(description)
+        questionnaire.name = I15dString.new(name)
+        questionnaire.description = I15dString.new(description)
         questionnaire.questiongroups = []
         questionnaire.question_count = 0
         questionnaire.answer_count = 0
