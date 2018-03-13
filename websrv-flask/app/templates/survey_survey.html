@@ -14,8 +14,8 @@
 {% block subcontent %}
 <div class="jumbotron text-center">
     <div class="container">
-        <h1>{{ questionnaire.name }}</h1>
-        <p>{{ questionnaire.description }}</p>
+        <h1>{{ questionnaire.name.get() }}</h1>
+        <p>{{ questionnaire.description.get() }}</p>
     </div>
 </div>
 <div class="container">
@@ -24,13 +24,13 @@
             {% for questiongroup in questionnaire.questiongroups %}
             <div class="question-group-container question-group-{{ loop.index }}">
                 <div class="question-group-header question-group-header-{{ loop.index }}">
-                    {{ questiongroup.name }}
+                    {{ questiongroup.name.get() }}
                 </div>
                 <div class="question-group-content">
                     {% for question in questiongroup.questions %}
                     <div class="question">
                         <div class="question-text">
-                            {{ question.text }}
+                            {{ question.text.get() }}
                         </div>
                         <div class="question-answer-container {% if 'question_'~question.uuid in error %}bg-danger{% endif %}">
                             <div class="question-left-text">
