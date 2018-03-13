@@ -48,6 +48,10 @@ angular.module("API", [])
             )
         });
 
+        const getDataStringContent = function (dataString) {
+            return dataString.text;
+        };
+
         const getSurveyTranslation = R.curry(
             function (locale, survey) {
                 const name = R.path(["fields", "name"], survey);
@@ -131,12 +135,79 @@ angular.module("API", [])
             }
         );
 
+        const getQacTranslation = R.curry(
+            function (locale, qac) {
+                const name = R.path(["fields", "name"], qac);
+                const description = R.path(["fields", "description"], qac);
+                const parameters = R.path(["fields", "parameters"], qac);
+                return R.pipe(
+                    R.assocPath(
+                        ["fields", "name"],
+                        getDataStringContent(name)
+                    ),
+                    R.assocPath(
+                        ["fields", "description"],
+                        getDataStringContent(description)
+                    ),
+                    R.assocPath(
+                        ["fields", "parameters"],
+                        R.map(
+                            getQacParameterTranslation(locale),
+                            parameters
+                        )
+                    )
+                )(qac);
+            }
+        );
+
+        const getQacParameterTranslation = R.curry(
+            function (locale, parameter) {
+                parameter = R.assocPath(
+                    ["fields", "name"],
+                    getDataStringContent(R.path(["fields", "name"], parameter)),
+                    parameter
+                );
+                parameter = R.assocPath(
+                    ["fields", "description"],
+                    getDataStringContent(R.path(["fields", "description"], parameter)),
+                    parameter
+                );
+                if (parameter.class === "model.query_access_control.QACI15dTextParameter.QACI15dTextParameter") {
+                    parameter = R.assocPath(
+                        ["fields", "text"],
+                        getStringLocale(locale, R.path(["fields", "text"], parameter)),
+                        parameter
+                    );
+                } else if (parameter.class === "model.query_access_control.QACCheckboxParameter.QACCheckboxParameter") {
+                    parameter = R.assocPath(
+                        ["fields", "choices"],
+                        R.map(
+                            getDataStringContent(locale),
+                            R.path(["fields", "choices"])
+                        ),
+                        parameter
+                    );
+                    parameter = R.assocPath(
+                        ["fields", "values"],
+                        R.map(
+                            getDataStringContent(locale),
+                            R.path(["fields", "values"])
+                        ),
+                        parameter
+                    );
+                }
+                return parameter;
+            }
+        );
+
         return {
             "getStringLocale": getStringLocale,
             "getSurveyTranslation": getSurveyTranslation,
             "getQuestionnaireTranslation": getQuestionnaireTranslation,
             "getQuestionGroupTranslation": getQuestionGroupTranslation,
-            "getQuestionTranslation": getQuestionTranslation
+            "getQuestionTranslation": getQuestionTranslation,
+            "getQacTranslation": getQacTranslation,
+            "getQacParameterTranslation": getQacParameterTranslation
         }
     }])
     .factory("PathHandling", [function () {

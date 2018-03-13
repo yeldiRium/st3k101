@@ -456,6 +456,38 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              */
             $scope.init = function () {
                 return Questionnaires.get($routeParams.questionnaire)
+                // Load QACs for Questionnaire and store them
+                    .chain(({data: questionnaire, locale}) => Questionnaires
+                        .listQACs(questionnaire.uuid)
+                        .map(qacList => ({
+                            "questionnaire": R.assoc(
+                                "qacs",
+                                R.map(
+                                    LanguageHandling.getQacTranslation(locale),
+                                    qacList
+                                ),
+                                questionnaire
+                            ),
+                            "locale": locale
+                        }))
+                    )
+                    // Parse original locale
+                    .map(({questionnaire, locale}) => ({
+                        "questionnaire": R.assoc(
+                            "original_locale",
+                            R.either(
+                                () => R.apply(
+                                    R.toLower,
+                                    [R.path(
+                                        ["fields", "original_locale"], questionnaire
+                                    )]
+                                ),
+                                () => null
+                            ),
+                            questionnaire
+                        ),
+                        "locale": locale
+                    }))
                     .mapRej(data => {
                         $scope.questionnaire = null;
                         $scope.$apply(() => {
@@ -469,29 +501,24 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
-            function prepareView({data, locale}) {
+            function prepareView({questionnaire, locale}) {
                 const parsed_questionnaire = LanguageHandling
-                    .getQuestionnaireTranslation(locale, data);
-                const original_locale = R.path(
-                    ["fields", "original_locale"], data
-                );
+                    .getQuestionnaireTranslation(locale, questionnaire);
                 let parsed_questionnaire_original = false;
 
-                if (original_locale.toLowerCase() !== locale.toLowerCase()) {
+                if (questionnaire.original_locale !== locale.toLowerCase()) {
                     parsed_questionnaire_original = LanguageHandling
                         .getQuestionnaireTranslation(
-                            original_locale.toLowerCase(), data
+                            questionnaire.original_locale, questionnaire
                         );
                 }
 
                 $scope.questionnaire = parsed_questionnaire;
-
                 if (parsed_questionnaire_original) {
                     $scope.questionnaire_original =
                         parsed_questionnaire_original;
-                    $scope.original_locale = R.map(R.toLower, original_locale);
+                    $scope.original_locale = R.map(R.toLower, questionnaire.original_locale);
                 }
-
                 $scope.$apply(() => {
                     $scope.loading = "done";
                 });
