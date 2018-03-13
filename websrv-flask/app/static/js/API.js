@@ -293,6 +293,20 @@ angular.module("API", [])
                     }))
                         .map(ResultHandling.extractData);
                 },
+                "publish": function (questionnaire_uuid) {
+                    return Future.tryP(() => $http({
+                        "method": "PATCH",
+                        "url": `/api/questionnaire/${questionnaire_uuid}/publish`
+                    }))
+                        .map(ResultHandling.extractData);
+                },
+                "unpublish": function (questionnaire_uuid) {
+                    return Future.tryP(() => $http({
+                        "method": "PATCH",
+                        "url": `/api/questionnaire/${questionnaire_uuid}/unpublish`
+                    }))
+                        .map(ResultHandling.extractData);
+                },
                 "delete": function (questionnaire_uuid, survey_uuid) {
                     return Future.tryP(() => $http({
                         "method": "DELETE",
