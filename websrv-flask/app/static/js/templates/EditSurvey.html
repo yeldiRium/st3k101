@@ -18,8 +18,10 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="col-sm-2">
-                    <button type="button" id="buttonQuestionnaireGoto" class="form-control btn btn-default" ng-click="gotoQuestionnaire()">Go To Questionnaire</button>
+                <div class="btn-group col-sm-12" role="group">
+                    <button type="button" id="buttonQuestionnaireGoto" class="btn btn-default" ng-if="questionnaire.fields.published" ng-click="gotoQuestionnaire()">Go To Questionnaire</button>
+                    <button type="button" class="btn btn-default" ng-if="questionnaire.fields.published" ng-click="unpublishQuestionnaire(questionnaire)">Unpublish</button>
+                    <button type="button" class="btn btn-default" ng-if="!questionnaire.fields.published" ng-click="publishQuestionnaire(questionnaire)">Publish</button>
                 </div>
             </div>
         </form>
