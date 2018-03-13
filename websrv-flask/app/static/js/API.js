@@ -223,6 +223,19 @@ angular.module("API", [])
                     }))
                         .map(ResultHandling.extractData);
                 },
+                "update": function (uuid, name) {
+                    return Future.tryP(() => $http({
+                        "method": "PUT",
+                        "url": `/api/survey/${uuid}`,
+                        "data": {
+                            "name": name
+                        },
+                        "headers": {
+                            "Content-Type": "application/json"
+                        }
+                    }))
+                        .map(ResultHandling.extractData);
+                },
                 "delete": function (uuid) {
                     return Future.tryP(() => $http({
                         "method": "DELETE",

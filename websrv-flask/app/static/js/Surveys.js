@@ -138,6 +138,72 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 }
             };
 
+            $scope.startEditing = function (name, event, opt = null) {
+                $scope.edit = {};
+                const element = $(event.target);
+                $scope.edit.name = name;
+                $scope.edit.element = element;
+                $scope.edit.old_value = (opt != null) ? opt : element.text();
+            };
+
+            $scope.isEditing = function (name) {
+                return $scope.edit.name === name;
+            };
+
+            $scope.abortEditing = function (name, event, opt = null) {
+                if ($scope.edit.name === name) {
+                    if (name === "surveyname") {
+                        opt.fields.name = $scope.edit.old_value;
+                    } else if (name === "questionnairename") {
+                        opt.fields.name = $scope.edit.old_value;
+                    } else if (name === "questionnairedescription") {
+                        opt.fields.description = $scope.edit.old_value;
+                    }
+                    $scope.edit = {};
+                }
+            };
+
+            $scope.stopEditing = function (name, event, opt = null) {
+                if ($scope.edit.name === name) {
+                    const element = $(event.target);
+                    let success;
+                    if (name === "surveyname") {
+                        success = Surveys.update(
+                            element.data("uuid"), element[0].value
+                        );
+                    }
+                    if (name === "questionnairename") {
+                        success = Questionnaires.update(
+                            element.data("uuid"),
+                            {
+                                "name": element[0].value
+                            }
+                        );
+                    }
+                    if (name === "questionnairedescription") {
+                        success = Questionnaires.update(
+                            element.data("uuid"),
+                            {
+                                "description": element[0].value
+                            }
+                        );
+                    }
+                    success
+                        .mapRej(error => {
+                            $scope.abortEditing(name, event, opt);
+                            return error
+                        })
+                        .map(data => {
+                            $scope.edit = {};
+                            return data;
+                        })
+                        .fork(
+                            ResultHandling.flashError($scope),
+                            ResultHandling.flashSuccess($scope)
+                        );
+                }
+            };
+
             /**
              * Toggles the selection of a single questionnaire.
              * Selection is survey-based. It is not possible to select multi-
@@ -184,6 +250,8 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     questionnaires: {},
                     count: 0
                 };
+
+                $scope.edit = {};
             };
 
             /**
@@ -448,29 +516,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             /**
-             * Resets all editing forms and all temporary data.
-             */
-            $scope.resetEditing = function () {
-                $scope.new = {
-                    question: {
-                        questionGroup: null,
-                        data: null
-                    },
-                    questionGroup: {
-                        data: null
-                    }
-                };
-
-                $scope.selection = {
-                    questionGroup: null,
-                    questions: {},
-                    count: 0
-                };
-
-                $scope.edit = {};
-            };
-
-            /**
              * Toggles the selection of a single question.
              * Selection is questionGroup-based. It is not possible to select
              * multiple questions across questionGroup.
@@ -495,6 +540,29 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 if ($scope.selection.count === 0) {
                     $scope.resetEditing();
                 }
+            };
+
+            /**
+             * Resets all editing forms and all temporary data.
+             */
+            $scope.resetEditing = function () {
+                $scope.new = {
+                    question: {
+                        questionGroup: null,
+                        data: null
+                    },
+                    questionGroup: {
+                        data: null
+                    }
+                };
+
+                $scope.selection = {
+                    questionGroup: null,
+                    questions: {},
+                    count: 0
+                };
+
+                $scope.edit = {};
             };
 
             /**

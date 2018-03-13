@@ -5,7 +5,8 @@
     <div class="row" ng-repeat="survey in surveys">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">{{ survey.fields.name }}</h3>
+                <h3 class="panel-title" ng-click="startEditing('surveyname', $event, survey.fields.name)" ng-if="!isEditing('surveyname')">{{ survey.fields.name }}</h3>
+                <input type="text" class="form-control" id="inputSurveyName" data-uuid="{{ survey.uuid }}" ng-model="survey.fields.name" ng-enter="stopEditing('surveyname', $event, survey)" ng-blur="abortEditing('surveyname', $event, survey)" ng-if="isEditing('surveyname')">
             </div>
             <div class="panel-body">
                 <div class="list-group">
