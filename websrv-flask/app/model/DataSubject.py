@@ -20,7 +20,7 @@ class DataSubject(DataObject):
             {"email_hash": email_hashed})
         if data_subject is None:
             data_subject = DataSubject()
-            data_subject.email = email_hashed
+            data_subject.email_hash = email_hashed
 
         return data_subject
 
