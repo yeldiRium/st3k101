@@ -56,6 +56,9 @@ def expect_optional(*arguments: List[Tuple[str, type]]):
 
                 argument = data[arg_name]
 
+                if argument is None:
+                    continue
+
                 if (arg_type is not None) and (arg_type is not Any):
                     try:
                         argument = arg_type(argument)

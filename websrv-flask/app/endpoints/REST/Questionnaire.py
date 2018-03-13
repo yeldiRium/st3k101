@@ -26,7 +26,7 @@ from model.Survey import Survey
     ('survey_uuid', str),
     ('questionnaire', Any)
 )
-def api_questionnaire_create(survey_uuid: str='', questionnaire: Any=None):
+def api_questionnaire_create(survey_uuid: str=None, questionnaire: Any=None):
     """
     Parameters:
         survey_uuid: String The uuid for the Survey to create a Questionnaire
@@ -75,10 +75,11 @@ def api_questionnaire_create(survey_uuid: str='', questionnaire: Any=None):
         return make_error(_("Lacking credentials"), 403)
 
     required_args = {"name", "description"}
-    if not all((arg in questionnaire for arg in required_args)):
+    if questionnaire is None \
+            or not all((arg in questionnaire for arg in required_args)):
         return make_error(_("Missing parameter."), 400)
 
-    if "template" in questionnaire:
+    if "template" in questionnaire or questionnaire["template"] is None:
         the_questionnaire = the_survey.add_new_questionnaire_from_template(
             questionnaire["name"],
             questionnaire["description"],
@@ -208,7 +209,7 @@ def api_questionnaire_update(
 
 @app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["DELETE"])
 @expect(('survey_uuid', str))
-def api_questionnaire_delete(questionnaire_uuid: str='', survey_uuid: str=''):
+def api_questionnaire_delete(questionnaire_uuid: str=None, survey_uuid: str=None):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire to update.

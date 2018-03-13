@@ -62,9 +62,9 @@ class Questionnaire(DataObject):
         # default locale
         if question_group not in self.questiongroups:
             raise QuestionGroupNotFoundException
-        question_group.add_new_question(text)
+        question = question_group.add_new_question(text)
         self.question_count += 1
-        return question_group
+        return question
 
     def remove_question_from_group(self, question_group: QuestionGroup,
                                    question: Question) -> QuestionGroup:
@@ -176,4 +176,5 @@ Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules",
                                                 serialize=False)
 Questionnaire.published = DataAttribute(Questionnaire, "published")
 
-Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire)
+Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire,
+                                     serialize=False)

@@ -3,7 +3,7 @@
 <head>
     <title>Survey Tool 3000 lol Backend</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/dist/css/bootstrap.min.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" type="text/css" />
     {% block header %}
     {% endblock %}
 </head>
@@ -13,9 +13,7 @@
 
     {% block pre_foot_js %}
     {% endblock %}
-    <script src="{{ url_for('static', filename='vendor/jquery/dist/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='vendor/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/languagepicker.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
     {% block post_foot_js %}
     {% endblock %}
 </body>
