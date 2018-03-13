@@ -61,22 +61,17 @@ class Question(DataObject):
         unverified_results = list(filter(lambda x: not x.verified,
                                          previous_results))
 
+        self.results.add(new_result)
+
         if len(previous_results) == 0:  # first result by this DataSubject
-            self.results.add(new_result)
             return True
 
         elif len(previous_results) == 1:
             previous_result = previous_results[0]
-            if previous_result.verified and needs_verification:
-                # keep old, verified result and append new result
-                # as an unverified result
-                self.results.add(new_result)
-
-            else:
+            if not previous_result.verified or not needs_verification:
                 # verification disabled, new result is instantly verified
                 # replace old result by new result
                 self.remove_question_result(previous_result)
-                self.results.add(new_result)
 
         elif len(previous_results) == 2:
             # one result is verified, the other one isn't, find out which
@@ -90,9 +85,6 @@ class Question(DataObject):
                 # remove previous verified result, so that the new result
                 # replaces it
                 self.remove_question_result(verified_result)
-
-            # add new result, might be verified or not
-            self.results.add(new_result)
 
         return False
 
