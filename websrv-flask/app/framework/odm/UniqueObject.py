@@ -11,7 +11,7 @@ class UniqueObject(object):
     def uuid(self):
         return str(self._id)
 
-    def __init__(self, uuid: str):
+    def __init__(self, uuid: str, **kwargs):
         self._id = uuid
 
 
@@ -24,7 +24,7 @@ class UniqueHandle(type):
     can exist.
     """
 
-    def __call__(cls, uuid=None):
+    def __call__(cls, uuid=None, **kwargs):
         if uuid:  # uuid should be str, but we will also allow types which support string representations
             if type(uuid) != str:
                 uuid = str(uuid)
@@ -35,7 +35,7 @@ class UniqueHandle(type):
         if not uuid or (uuid not in g._persistent_objects.keys()):
             # if uuid is omitted, a new object is requested, which is different to every already existing object by def
             instance = object.__new__(cls)  # type: UniqueObject
-            instance.__init__(uuid)
+            instance.__init__(uuid, **kwargs)
             uuid = instance.uuid  # in case uuid was None and was set during __init__()
             g._persistent_objects[uuid] = instance
 
