@@ -186,6 +186,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         );
                     }
                     if (name === "questionnairedescription") {
+                        console.log(element[0].value);
                         success = Questionnaires.update(
                             element.data("uuid"),
                             {
