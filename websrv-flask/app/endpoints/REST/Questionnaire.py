@@ -154,8 +154,8 @@ def api_questionnaire_get(questionnaire_uuid: str):
 @expect_optional(('name', str), ('description', str))
 def api_questionnaire_update(
         questionnaire_uuid: str= '',
-        name: str= '',
-        description: str= ''
+        name: str=None,
+        description: str=None
 ):
     """
     Parameters:
