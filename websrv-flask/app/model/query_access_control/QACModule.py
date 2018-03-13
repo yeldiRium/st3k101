@@ -13,6 +13,21 @@ from model.query_access_control.QACTextParameter import QACTextParameter, \
 
 
 class QACModule(DataObject):
+    """
+    A QACModule represents a challenge DataSubjects have to overcome in order
+    to submit Responses to a specific Survey.
+    
+    Every Questionnaire may have any combination of the available QACModules
+    enabled on it at any time.
+    
+    All QACModules are are enumerated in
+    
+        model/query_access_control/QACModules/__init__.py
+        
+    The QACModule class is an abstract superclass and should be subclassed
+    to implement specific behaviour.
+    
+    """
 
     readable_by_anonymous = True
 

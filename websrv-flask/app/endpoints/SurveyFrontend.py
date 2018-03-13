@@ -16,6 +16,12 @@ from utils.email import send_mail
 
 @app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
 def survey(questionnaire_uuid):
+    """
+    Endpoint for accessing questionnaires as a DataSubject.
+    Serves the Questionnaire.
+    :param questionnaire_uuid: str The uuid of the questionnaire in question
+    :return: A response containing html
+    """
     try:
         questionnaire = Questionnaire(questionnaire_uuid)
     except (AccessControlException, ObjectDoesntExistException):
@@ -45,7 +51,8 @@ def survey_submit(questionnaire_uuid):
     Survey submit
 
     This endpoint receives survey data via POST and persists them. Then redi-
-    rects to a thank-you page.
+    rects to a thank-you page. If email verification is enabled, an info
+    page is displayed instead.
 
     In the first step errors are caught. If any is found, the survey template
     is returned again, with error messages injected.
@@ -129,4 +136,8 @@ def survey_submit(questionnaire_uuid):
 
 @app.route("/disclaimer")
 def disclaimer():
+    """
+    Statically serves the disclaimer page.
+    :return: str HTML
+    """
     return render_template("home_disclaimer.html")
