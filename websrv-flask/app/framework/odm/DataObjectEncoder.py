@@ -20,6 +20,9 @@ class DataObjectEncoder(json.JSONEncoder):
 
     def default(self, o):
 
+        if o is None:
+            return o
+
         if type(o) == I18n:
             return {
                 "msgid": o.msgid,

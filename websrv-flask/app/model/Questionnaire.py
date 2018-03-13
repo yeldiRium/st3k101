@@ -63,6 +63,7 @@ class Questionnaire(DataObject):
         if question_group not in self.questiongroups:
             raise QuestionGroupNotFoundException
         question = question_group.add_new_question(text)
+        question.questionnaire = self
         self.question_count += 1
         return question
 
@@ -176,5 +177,4 @@ Questionnaire.qac_modules = MixedDataPointerSet(Questionnaire, "qac_modules",
                                                 serialize=False)
 Questionnaire.published = DataAttribute(Questionnaire, "published")
 
-Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire,
-                                     serialize=False)
+Question.questionnaire = DataPointer(Question, "questionnaire", Questionnaire)
