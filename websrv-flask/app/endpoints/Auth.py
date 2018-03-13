@@ -59,8 +59,9 @@ def login():
         response = make_response(redirect('/be/'))
         response.set_cookie('session_token', session_token)
         return response
-    except BadCredentialsException as e:
-        app.log_exception(e)
+    except BadCredentialsException:
+        app.logger.info(
+            "Invalid login attempt: {}".format(request.form["email"]))
         return render_template('home_index.html', login_failed=True)
 
 

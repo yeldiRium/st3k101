@@ -80,11 +80,14 @@ def api_questionnaire_create(survey_uuid: str=None, questionnaire: Any=None):
         return make_error(_("Missing parameter."), 400)
 
     if "template" in questionnaire and questionnaire["template"] is not None:
-        the_questionnaire = the_survey.add_new_questionnaire_from_template(
-            questionnaire["name"],
-            questionnaire["description"],
-            questionnaire["template"]
-        )
+        try:
+            the_questionnaire = the_survey.add_new_questionnaire_from_template(
+                questionnaire["name"],
+                questionnaire["description"],
+                questionnaire["template"]
+            )
+        except ObjectDoesntExistException:
+            return make_error(_("No such template."), 404)
     else:
         the_questionnaire = the_survey.add_new_questionnaire(
             questionnaire["name"],

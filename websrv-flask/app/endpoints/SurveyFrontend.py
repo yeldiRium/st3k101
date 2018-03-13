@@ -2,7 +2,7 @@
     All http endpoints that are used when a DataSubject interacts with the site
 """
 
-from flask import render_template, make_response, redirect, request
+from flask import render_template, make_response, redirect, request, g
 
 import utils
 from framework.exceptions import ObjectDoesntExistException, \
