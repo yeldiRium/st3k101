@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-02-08 16:55+0100\n"
-"PO-Revision-Date: 2018-02-08 16:55+0100\n"
+"POT-Creation-Date: 2018-03-09 00:06+0100\n"
+"PO-Revision-Date: 2018-03-08 23:48+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
 "Language-Team: de <LL@li.org>\n"
@@ -18,187 +18,390 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#: endpoints/SurveyFrontend.py:58
+#: main.py:123
+msgid "U been doin bad stuff"
+msgstr ""
+
+#: main.py:132
+msgid "U do not kno de wae"
+msgstr ""
+
+#: endpoints/SurveyFrontend.py:73
 msgid "Please enter an E-Mail."
 msgstr ""
 
-#: endpoints/SurveyFrontend.py:63
+#: endpoints/SurveyFrontend.py:77
 msgid "Please choose a value."
 msgstr ""
 
-#: endpoints/REST/Account.py:21 endpoints/REST/Account.py:46
-#: endpoints/REST/QAC.py:32 endpoints/REST/QAC.py:49 endpoints/REST/QAC.py:76
-#: endpoints/REST/QAC.py:113 endpoints/REST/QAC.py:167
-#: endpoints/REST/QAC.py:179 endpoints/REST/Question.py:31
-#: endpoints/REST/Question.py:60 endpoints/REST/Question.py:78
-#: endpoints/REST/Question.py:95 endpoints/REST/QuestionGroup.py:29
-#: endpoints/REST/QuestionGroup.py:55 endpoints/REST/QuestionGroup.py:83
-#: endpoints/REST/Questionnaire.py:31 endpoints/REST/Questionnaire.py:41
-#: endpoints/REST/Questionnaire.py:123 endpoints/REST/Questionnaire.py:143
-#: endpoints/REST/Survey.py:63 endpoints/REST/Survey.py:79
-msgid "Not found."
+#: endpoints/SurveyFrontend.py:131
+msgid "Please confirm your survey submission"
 msgstr ""
 
-#: endpoints/REST/Account.py:49 endpoints/REST/Account.py:52
-#: endpoints/REST/QAC.py:37 endpoints/REST/QAC.py:53 endpoints/REST/QAC.py:79
-#: endpoints/REST/QAC.py:116 endpoints/REST/QAC.py:170
-#: endpoints/REST/Question.py:24 endpoints/REST/Question.py:34
-#: endpoints/REST/Question.py:81 endpoints/REST/Question.py:98
-#: endpoints/REST/QuestionGroup.py:24 endpoints/REST/QuestionGroup.py:32
-#: endpoints/REST/QuestionGroup.py:66 endpoints/REST/QuestionGroup.py:86
-#: endpoints/REST/Survey.py:20 endpoints/REST/Survey.py:38
-msgid "Lacking credentials"
+#: endpoints/REST/Account.py:46 endpoints/REST/Account.py:90
+#: endpoints/REST/Question.py:71 endpoints/REST/Question.py:122
+#: endpoints/REST/Question.py:167 endpoints/REST/Question.py:229
+#: endpoints/REST/QuestionGroup.py:57 endpoints/REST/Questionnaire.py:72
+#: endpoints/REST/Questionnaire.py:198 endpoints/REST/Questionnaire.py:250
+#: endpoints/REST/Questionnaire.py:291 endpoints/REST/Questionnaire.py:334
+#: endpoints/REST/Questionnaire.py:371 endpoints/REST/Questionnaire.py:377
+#: endpoints/REST/Survey.py:170 endpoints/REST/Survey.py:206
+msgid "Lacking credentials."
 msgstr ""
 
-#: endpoints/REST/Account.py:64
+#: endpoints/REST/Account.py:99
+msgid "Invalid locale."
+msgstr ""
+
+#: endpoints/REST/Account.py:102
 msgid "Account updated."
 msgstr ""
 
-#: endpoints/REST/QAC.py:59 endpoints/REST/QAC.py:84
+#: endpoints/REST/QAC.py:77 endpoints/REST/QAC.py:137 endpoints/REST/QAC.py:193
+#: endpoints/REST/QAC.py:276 endpoints/REST/Question.py:67
+#: endpoints/REST/Question.py:225 endpoints/REST/QuestionGroup.py:55
+#: endpoints/REST/QuestionGroup.py:225 endpoints/REST/Questionnaire.py:196
+#: endpoints/REST/Questionnaire.py:246 endpoints/REST/Questionnaire.py:289
+#: endpoints/REST/Questionnaire.py:332 endpoints/REST/Questionnaire.py:369
+msgid "No such Questionnaire."
+msgstr ""
+
+#: endpoints/REST/QAC.py:79 endpoints/REST/QAC.py:84 endpoints/REST/QAC.py:139
+#: endpoints/REST/QAC.py:143 endpoints/REST/QAC.py:195
+#: endpoints/REST/QAC.py:198 endpoints/REST/QAC.py:278
+#: endpoints/REST/QAC.py:281 endpoints/REST/QAC.py:366
+#: endpoints/REST/Question.py:60 endpoints/REST/Question.py:74
+#: endpoints/REST/Question.py:170 endpoints/REST/Question.py:232
+#: endpoints/REST/Question.py:281 endpoints/REST/Question.py:284
+#: endpoints/REST/QuestionGroup.py:50 endpoints/REST/QuestionGroup.py:60
+#: endpoints/REST/QuestionGroup.py:163 endpoints/REST/QuestionGroup.py:166
+#: endpoints/REST/QuestionGroup.py:181 endpoints/REST/QuestionGroup.py:227
+#: endpoints/REST/QuestionGroup.py:230 endpoints/REST/Questionnaire.py:66
+#: endpoints/REST/Questionnaire.py:75 endpoints/REST/Questionnaire.py:201
+#: endpoints/REST/Survey.py:37 endpoints/REST/Survey.py:71
+#: endpoints/REST/Survey.py:129
+msgid "Lacking credentials"
+msgstr ""
+
+#: endpoints/REST/QAC.py:148 endpoints/REST/QAC.py:203
 msgid "No such QAC."
 msgstr ""
 
-#: endpoints/REST/QAC.py:63
+#: endpoints/REST/QAC.py:152
 msgid "QAC is not enabled."
 msgstr ""
 
-#: endpoints/REST/QAC.py:89
-msgid "QACModule added to questionnaire."
+#: endpoints/REST/QAC.py:211
+msgid "QACModule added to Questionnaire."
 msgstr ""
 
-#: endpoints/REST/QAC.py:93
-msgid "QACModule already enabled."
+#: endpoints/REST/QAC.py:296
+msgid "Missing parameter(s) "
 msgstr ""
 
-#: endpoints/REST/QAC.py:127 endpoints/REST/Questionnaire.py:83
-#: framework/flask_request.py:21
-msgid "Missing parameter "
-msgstr ""
-
-#: endpoints/REST/QAC.py:142
+#: endpoints/REST/QAC.py:311
 msgid "Nothing updated."
 msgstr ""
 
-#: endpoints/REST/QAC.py:146
+#: endpoints/REST/QAC.py:313
 msgid "QACModule updated."
 msgstr ""
 
-#: endpoints/REST/QAC.py:150
+#: endpoints/REST/QAC.py:315
 msgid "Partially updated."
 msgstr ""
 
-#: endpoints/REST/QAC.py:175
+#: endpoints/REST/QAC.py:363 endpoints/REST/QAC.py:375
+#: endpoints/REST/Question.py:279 endpoints/REST/Questionnaire.py:149
+msgid "Not found."
+msgstr ""
+
+#: endpoints/REST/QAC.py:371
 msgid "QACModule disabled."
 msgstr ""
 
-#: endpoints/REST/Question.py:42
-msgid "A Question with that name already exists."
+#: endpoints/REST/Question.py:69 endpoints/REST/Question.py:227
+#: endpoints/REST/QuestionGroup.py:108 endpoints/REST/QuestionGroup.py:161
+#: endpoints/REST/QuestionGroup.py:223
+msgid "No such QuestionGroup."
 msgstr ""
 
-#: endpoints/REST/Question.py:45
+#: endpoints/REST/Question.py:80
 msgid "Question created."
 msgstr ""
 
-#: endpoints/REST/Question.py:63
+#: endpoints/REST/Question.py:120 endpoints/REST/Question.py:165
+#: endpoints/REST/Question.py:223
+msgid "No such Question."
+msgstr ""
+
+#: endpoints/REST/Question.py:173
 msgid "Question updated."
 msgstr ""
 
-#: endpoints/REST/Question.py:86
+#: endpoints/REST/Question.py:236
 msgid "Question deleted."
 msgstr ""
 
-#: endpoints/REST/QuestionGroup.py:39
-msgid "QuestionGroup with that name already exists."
-msgstr ""
-
-#: endpoints/REST/QuestionGroup.py:42
+#: endpoints/REST/QuestionGroup.py:65
 msgid "QuestionGroup created."
 msgstr ""
 
-#: endpoints/REST/QuestionGroup.py:69
+#: endpoints/REST/QuestionGroup.py:177
+msgid "Parameter malformatted: {}"
+msgstr ""
+
+#: endpoints/REST/QuestionGroup.py:184
 msgid "QuestionGroup updated."
 msgstr ""
 
-#: endpoints/REST/QuestionGroup.py:91
+#: endpoints/REST/QuestionGroup.py:234
 msgid "QuestionGroup deleted."
 msgstr ""
 
-#: endpoints/REST/Questionnaire.py:47
-msgid "Not found"
-msgstr ""
-
-#: endpoints/REST/Questionnaire.py:73
-msgid "lacking credentials"
+#: endpoints/REST/Questionnaire.py:70 endpoints/REST/Questionnaire.py:248
+#: endpoints/REST/Survey.py:127 endpoints/REST/Survey.py:168
+#: endpoints/REST/Survey.py:204
+msgid "No such Survey."
 msgstr ""
 
 #: endpoints/REST/Questionnaire.py:79
-msgid "Not Found."
+msgid "Missing parameter."
 msgstr ""
 
-#: endpoints/REST/Questionnaire.py:100
-msgid "A Questionnaire with that name already exists"
-msgstr ""
-
-#: endpoints/REST/Questionnaire.py:126
+#: endpoints/REST/Questionnaire.py:204 endpoints/REST/Questionnaire.py:294
+#: endpoints/REST/Questionnaire.py:337
 msgid "Questionnaire updated."
 msgstr ""
 
-#: endpoints/REST/Questionnaire.py:145
+#: endpoints/REST/Questionnaire.py:252
 msgid "Questionnaire deleted."
 msgstr ""
 
-#: endpoints/REST/Survey.py:44
+#: endpoints/REST/Survey.py:77
 msgid "Survey created."
 msgstr ""
 
-#: endpoints/REST/Survey.py:58
+#: endpoints/REST/Survey.py:164
 msgid "Survey updated."
 msgstr ""
 
-#: endpoints/REST/Survey.py:76
+#: endpoints/REST/Survey.py:202
 msgid "Survey deleted."
+msgstr ""
+
+#: framework/flask_request.py:21
+msgid "Missing parameter "
 msgstr ""
 
 #: framework/flask_request.py:32 framework/flask_request.py:64
 msgid "Wrong argument type "
 msgstr ""
 
-#: model/query_access_control/QACTextParameter.py:14
+#: model/Questionnaire.py:138
+msgid "Template needs to be a dictionary"
+msgstr ""
+
+#: model/Questionnaire.py:141
+msgid "Missing argument in template: "
+msgstr ""
+
+#: model/Questionnaire.py:143
+msgid "Argument has wrong type: "
+msgstr ""
+
+#: model/Questionnaire.py:144
+msgid " Expected: "
+msgstr ""
+
+#: model/Questionnaire.py:144
+msgid " Got: "
+msgstr ""
+
+#: model/Questionnaire.py:151
+msgid "Invalid language specified"
+msgstr ""
+
+#: model/Questionnaire.py:155
+msgid "Empty name specified"
+msgstr ""
+
+#: model/Survey.py:61 model/Survey.py:62 model/Survey.py:71 model/Survey.py:81
+msgid "From template: "
+msgstr ""
+
+#: model/query_access_control/QACModule.py:74
+msgid "Wrong type for QACParameter"
+msgstr ""
+
+#: model/query_access_control/QACModule.py:79
+msgid "QACParameter not found."
+msgstr ""
+
+#: model/query_access_control/QACTextParameter.py:20
+#: model/query_access_control/QACTextParameter.py:51
 msgid "This is a placeholder text, replace it to your liking."
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:33
-msgid "QACParameter has wrong type"
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:21
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:46
+msgid "Unknown error"
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:39
-msgid "QACParameter not found"
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:25
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:50
+msgid "The submitted pattern contains errors: "
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:53
-msgid "I have also read and agree to the TOS of the EFLA survey platform."
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:32
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:34
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:57
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:59
+msgid "Please enter your email address."
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:65
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:41
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:65
+msgid "This email address is not allowed to participatein this survey."
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:49
+msgid "List of disallowed E-Mail addresses"
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:50
+msgid ""
+"A comma separated list of emailaddresses which are not allowed "
+"whensubmitting a survey. Wildcardexpressions like *@uni-frankfurt.deare "
+"also supported."
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:58
+msgid "Email blacklist"
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:59
+msgid "Block users with a certain emailaddress from submitting answers."
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailVerificationQAC.py:14
+msgid "EMail verification"
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailVerificationQAC.py:15
+msgid ""
+"When submitting a survey, users haveto enter their email address.For "
+"their answers to be counted, usershave to verify their email address "
+"byclicking on a link that is sent outto them."
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:20
+msgid "Whitespace in email address."
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:73
+msgid "List of allowed E-Mail addresses"
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:74
+msgid ""
+"A comma separated list of emailaddresses which are allowed whensubmitting"
+" a survey. Wildcardexpressions like *@uni-frankfurt.deare also supported."
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:82
+msgid "Email whitelist"
+msgstr ""
+
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:83
+msgid "Only allow users with a certain emailaddress to submit answers."
+msgstr ""
+
+#: model/query_access_control/QACModules/PasswordQAC.py:21
+msgid "Missing pre-shared password."
+msgstr ""
+
+#: model/query_access_control/QACModules/PasswordQAC.py:26
+#: model/query_access_control/QACModules/PasswordQAC.py:42
+msgid "Pre-shared Password"
+msgstr ""
+
+#: model/query_access_control/QACModules/PasswordQAC.py:30
+msgid "No password set."
+msgstr ""
+
+#: model/query_access_control/QACModules/PasswordQAC.py:35
+msgid "Please enter the correct password to submit your answers."
+msgstr ""
+
+#: model/query_access_control/QACModules/PasswordQAC.py:43
+msgid "The password that a DataSubjecthas to fill in to submit asurvey."
+msgstr ""
+
+#: model/query_access_control/QACModules/PasswordQAC.py:50
+msgid "Password check"
+msgstr ""
+
+#: model/query_access_control/QACModules/PasswordQAC.py:51
+msgid ""
+"Only let DataSubjects submit answers to surveys if they know the pre-"
+"shared password."
+msgstr ""
+
+#: model/query_access_control/QACModules/TOSQAC.py:38
 msgid "Please accept the terms of service."
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:77
+#: model/query_access_control/QACModules/TOSQAC.py:50
 msgid "TOS Text"
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:78
+#: model/query_access_control/QACModules/TOSQAC.py:51
 msgid "The text that is displayed to the user as the terms of service."
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:83
+#: model/query_access_control/QACModules/TOSQAC.py:56
 msgid "TOS"
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:84
+#: model/query_access_control/QACModules/TOSQAC.py:57
 msgid ""
 "Display a terms of service text to the user when they submit a survey. "
 "The user has to agree to the terms of service before a survey can be "
 "submitted."
+msgstr ""
+
+#: templates/PasswordQAC.html:4
+msgid "Password"
+msgstr ""
+
+#: templates/TOSQAC.html:5
+msgid "I have also read and agree to the TOS of the EFLA survey platform."
+msgstr ""
+
+#: templates/survey_please_verify.html:5 templates/survey_thanks.html:5
+msgid "Thank you,"
+msgstr ""
+
+#: templates/survey_please_verify.html:5
+msgid "for participating in our survey."
+msgstr ""
+
+#: templates/survey_please_verify.html:6
+msgid ""
+"For your answers to be counted, please click on the link we've sent to "
+"your email account: "
+msgstr ""
+
+#: templates/survey_please_verify.html:7
+msgid ""
+"If you've entered the wrong email address, please retake the survey and "
+"enter an email address you've got access to."
+msgstr ""
+
+#: templates/survey_thanks.html:5
+msgid ""
+"for participating in our survey. Your answers have been saved. You may "
+"retake the survey at a later time to change your answers."
 msgstr ""
 
