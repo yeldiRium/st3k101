@@ -19,6 +19,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
 
     # TODO: document
     readable_by_anonymous = False
+    acl_exclusions = []
 
     # Set of properties that should also be serialized. Useful for hiding a database persistent attribute behind an
     # accessor method
@@ -199,7 +200,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         for name, value in query.items():
             attr = cls.persistent_members().get(name)
             if not attr:
-                raise BadQueryException("No attribute {} for class {}".format(name, str(cls)[8:-2]))
+                raise BadQueryException("No attribute {} for class {}".format(
+                    name, str(cls)[8:-2]))
 
             new_query[attr.internal_name] = value
 
@@ -220,7 +222,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         :param member: The member / field name
         :return: None
         """
-        if self.readonly:
+        if self.readonly and member not in self.acl_exclusions:
             raise AccessControlException()
 
         setattr(self, member, value)
@@ -370,4 +372,4 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
 
     @property
     def readonly(self):
-        return self.__readonly == True
+        return self.__readonly

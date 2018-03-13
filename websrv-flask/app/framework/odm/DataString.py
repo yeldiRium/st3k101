@@ -31,7 +31,8 @@ class DataString(object):
     Usages 
     """
 
-    def __init__(self, cls: type, name: str, serialize: bool=True):
+    def __init__(self, cls: type, name: str, serialize: bool=True,
+                 no_acl:bool=False):
         """
         :param cls: type The class to which to add the attribute. This argument is needed to keep the target class
          aware of which DataAttributes exist, to automatically make subclasses of DataObject json
@@ -39,12 +40,18 @@ class DataString(object):
         :param name: str The name of the DataAttribute. This is how it will show up in the database and in json.
         :param serialize: bool whether the object encoder should automatically serialize this attribute
         """
+        cls: DataObject
+
         if not hasattr(cls, "data_strings"):
             cls.data_strings= dict({})  # let cls keep track of all persistent attributes
         cls.data_strings[name] = self
         self.__external_name = name
         self.__name = "__data_str_{}".format(name)
         self.__serialize = serialize
+        self.__no_acl = no_acl
+
+        if no_acl:
+            cls.acl_exclusions.append(self.__name)
 
     @property
     def name(self):

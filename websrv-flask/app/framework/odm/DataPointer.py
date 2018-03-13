@@ -11,8 +11,10 @@ class DataPointer(object):
     erence to ome other DataObject.
     """
 
-    def __init__(self, cls: type, name: str, other_class: type, serialize:bool=True, cascading_delete: bool = False,
-                 pointer_type: PointerType = PointerType.WEAK):
+    def __init__(self, cls: type, name: str, other_class: type,
+                 serialize:bool=True, cascading_delete: bool = False,
+                 pointer_type: PointerType = PointerType.WEAK,
+                 no_acl=False):
         """
         :param cls: type See documentation for DataAttribute.
         :param name: str See documentation for DataAttribute.
@@ -24,6 +26,8 @@ class DataPointer(object):
         :param pointer_type: PointerType the type of pointer, strong pointers to objects stop objects from being deleted
         during a cascading delete. Weak pointers do not count into the reference count of objects.
         """
+        cls: DataObject
+
         if not hasattr(cls, "data_pointers"):
             cls.data_pointers = dict({})
         cls.data_pointers[name] = self
@@ -33,6 +37,10 @@ class DataPointer(object):
         self.__serialize = serialize
         self.__cascading_delete = cascading_delete
         self.__reference_type = pointer_type
+        self.__no_acl = no_acl
+
+        if no_acl:
+            cls.acl_exclusions.append(self.__name)
 
     @property
     def cascading_delete(self):

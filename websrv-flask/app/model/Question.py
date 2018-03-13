@@ -118,4 +118,4 @@ Question.statistic = DataPointer(Question, "statistic", QuestionStatistic,
                                  cascading_delete=True, serialize=False)
 Question.results = DataPointerSet(Question, "results", QuestionResult,
                                   cascading_delete=True, serialize=False)
-Question.dirty = DataAttribute(Question, "dirty", serialize=False)
+Question.dirty = DataAttribute(Question, "dirty", serialize=False, no_acl=True)

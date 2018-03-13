@@ -15,7 +15,9 @@ class MixedDataPointerSet(object):
     """
 
     def __init__(self, cls: type, name: str, serialize:bool=True,
-                 cascading_delete: bool = False, pointer_type: PointerType = PointerType.WEAK):
+                 cascading_delete: bool = False,
+                 pointer_type: PointerType = PointerType.WEAK,
+                 no_acl:bool=False):
         """
         :param cls: type See documentation for PersistentAttribute.
         :param name: str See documentation for PersistentAttribute.
@@ -26,6 +28,7 @@ class MixedDataPointerSet(object):
         :param pointer_type: PointerType the type of pointer, strong pointers to objects stop objects from being deleted
         during a cascading delete. Weak pointers do not count into the reference count of objects.
         """
+        cls: DataObject
 
         if not hasattr(cls, "mixed_data_pointer_sets"):
             cls.mixed_data_pointer_sets = dict({})
@@ -35,6 +38,10 @@ class MixedDataPointerSet(object):
         self.__serialize = serialize
         self.__cascading_delete = cascading_delete
         self.__reference_type = pointer_type
+        self.__no_acl = no_acl
+
+        if no_acl:
+            cls.acl_exclusions.append(self.__name)
 
     @property
     def cascading_delete(self):
