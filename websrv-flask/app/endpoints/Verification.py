@@ -41,7 +41,8 @@ def verify_survey_submission(token:str):
 
     # update answer count on questionnaire if needed
     for questionnaire_uuid, new_answer in new_answers.items():
-        Questionnaire(questionnaire_uuid).answer_count += 1
+        if new_answer:
+            Questionnaire(questionnaire_uuid).answer_count += 1
 
     return render_template("survey_thanks.html", email=email)
 
