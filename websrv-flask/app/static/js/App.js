@@ -1,6 +1,7 @@
 const angular = require("angular");
 
 const $ = jQuery = require("jquery");
+require("radar-chart-d3");
 require("bootstrap");
 require("./Languagepicker");
 require("./Surveys");

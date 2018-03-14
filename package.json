@@ -27,8 +27,10 @@
     "angular-route": "^1.6.6",
     "bootstrap": "^3.3.7",
     "browserify": "^16.1.1",
+    "d3": "^3.5.17",
     "fluture": "^8.0.2",
     "jquery": "^3.2.1",
+    "radar-chart-d3": "git+https://github.com/yeldirium/radar-chart-d3.git",
     "ramda": "^0.25.0",
     "sass": "^1.0.0-beta.3",
     "spectrum-colorpicker": "^1.8.0"
