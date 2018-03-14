@@ -86,7 +86,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     }),
                     R.map(LanguageHandling.getSurveyTranslation(locale))
                 )(data);
-                console.log($scope.surveys);
 
                 prepareTemplates(
                     locale, $scope.surveys
