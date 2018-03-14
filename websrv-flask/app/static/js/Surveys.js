@@ -509,14 +509,14 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     .map(({questionnaire, locale}) => ({
                         "questionnaire": R.assoc(
                             "original_locale",
-                            R.either(
-                                () => R.apply(
+                            R.or(
+                                R.apply(
                                     R.toLower,
                                     [R.path(
                                         ["fields", "original_locale"], questionnaire
                                     )]
                                 ),
-                                () => null
+                                null
                             ),
                             questionnaire
                         ),
