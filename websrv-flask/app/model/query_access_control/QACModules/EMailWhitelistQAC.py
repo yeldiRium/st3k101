@@ -41,7 +41,7 @@ class EMailWhitelistQAC(QACModule):
     def set_config_value(self, param_uuid: str, value: Any):
         super().set_config_value(param_uuid, value)
         try:
-            self._parse_email_list(next(self.parameters).text)
+            self._parse_email_list(next(self.parameters.__iter__()).text)
         except Exception as e:
             reason = _("Unknown error")
             if len(e.args) > 0:
@@ -59,7 +59,7 @@ class EMailWhitelistQAC(QACModule):
             return [I18n("Please enter your email address.")]
 
         email = request.form['email']
-        regexes = self._parse_email_list(next(self.parameters).text)
+        regexes = self._parse_email_list(next(self.parameters.__iter__()).text)
 
         if all((m is None for m in (r.match(email) for r in regexes))):
             return [I18n("This email address is not allowed to participate"
