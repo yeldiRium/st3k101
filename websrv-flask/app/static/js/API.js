@@ -33,6 +33,17 @@ angular.module("API", [])
             },
             "extractData": function (result) {
                 return result.data;
+            },
+            /**
+             * Checks, if a given HttpResponse has a 403 status code and exits
+             * the Backend, if so.
+             * @param result
+             */
+            "check403": function (result) {
+                if (result.status === 403) {
+                    window.location.reload(true);
+                }
+                return result;
             }
         }
     }])
@@ -215,6 +226,7 @@ angular.module("API", [])
                     return Future.tryP(() => {
                         return $http.get("/api/account/current");
                     })
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "update": function (data) {
@@ -230,6 +242,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 }
             };
@@ -256,6 +269,7 @@ angular.module("API", [])
                     return Future.tryP(() => {
                         return $http.get(path);
                     })
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractDataAndLocale);
                 },
                 "create": function (name) {
@@ -269,6 +283,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "update": function (uuid, name) {
@@ -282,6 +297,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "delete": function (uuid) {
@@ -289,6 +305,7 @@ angular.module("API", [])
                         "method": "DELETE",
                         "url": `/api/survey/${uuid}`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData)
                 }
             }
@@ -314,6 +331,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData)
                 },
                 "get": function (questionnaire_uuid, locale = "") {
@@ -323,6 +341,7 @@ angular.module("API", [])
                     return Future.tryP(() => {
                         return $http.get(path);
                     })
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractDataAndLocale);
                 },
                 "update": function (questionnaire_uuid, data) {
@@ -338,6 +357,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "publish": function (questionnaire_uuid) {
@@ -345,6 +365,7 @@ angular.module("API", [])
                         "method": "PATCH",
                         "url": `/api/questionnaire/${questionnaire_uuid}/publish`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "unpublish": function (questionnaire_uuid) {
@@ -352,6 +373,7 @@ angular.module("API", [])
                         "method": "PATCH",
                         "url": `/api/questionnaire/${questionnaire_uuid}/unpublish`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "delete": function (questionnaire_uuid, survey_uuid) {
@@ -365,6 +387,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData)
                 },
                 "listTemplates": function () {
@@ -372,6 +395,7 @@ angular.module("API", [])
                         "method": "GET",
                         "url": "/api/questionnaire/templates"
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "listQACs": function (questionnaire_uuid) {
@@ -379,6 +403,7 @@ angular.module("API", [])
                         "method": "GET",
                         "url": `/api/questionnaire/${questionnaire_uuid}/qac`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "getQACConfig": function (questionnaire_uuid, qac_name) {
@@ -386,6 +411,7 @@ angular.module("API", [])
                         "method": "GET",
                         "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "enableQAC": function (questionnaire_uuid, qac_name) {
@@ -393,6 +419,7 @@ angular.module("API", [])
                         "method": "POST",
                         "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "configureQAC": function (questionnaire_uuid, qac_name, data) {
@@ -404,6 +431,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "disableQAC": function (questionnaire_uuid, qac_name) {
@@ -411,6 +439,7 @@ angular.module("API", [])
                         "method": "DELETE",
                         "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
             }
@@ -430,6 +459,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "update": function (questionGroup_uuid, data) {
@@ -446,6 +476,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "delete": function (questionGroup_uuid, questionnaire_uuid) {
@@ -459,6 +490,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 }
             }
@@ -480,6 +512,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "update": function (question_uuid, text) {
@@ -493,6 +526,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 },
                 "delete": function (question_uuid, questionnaire_uuid,
@@ -508,6 +542,7 @@ angular.module("API", [])
                             "Content-Type": "application/json"
                         }
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 }
             }
@@ -520,6 +555,7 @@ angular.module("API", [])
                         "method": "GET",
                         "url": "/api/qac_module"
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData);
                 }
             }
@@ -532,6 +568,7 @@ angular.module("API", [])
                         "method": "GET",
                         "url": `/api/question/${question_uuid}/statistic`
                     }))
+                        .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData)
                         .map(result => ({
                             "biggest": R.path(["data", "fields", "biggest"], result),

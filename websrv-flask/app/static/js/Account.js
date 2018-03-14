@@ -18,8 +18,9 @@ angular.module("Account", ["ngRoute", "API", "Utility"])
             $scope.loading = "loading";
 
             Future.both(Account.current(), Locales.all())
-                .chainRej(
-                    errors => { errors.map(ResultHandling.flashError($scope)) })
+                .mapRej(
+                    ResultHandling.flashError($scope)
+                )
                 .fork(
                     () => {
                         $scope.$apply(() => $scope.loading = "error");
