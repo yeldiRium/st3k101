@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 import yaml
 from flask import g
@@ -115,43 +115,49 @@ class Questionnaire(DataObject):
         return None
 
     @staticmethod
-    def get_available_templates() -> Dict[str, List[str]]:
-        template_files = {}
-        for dirname, sdn, filenames in os.walk(
-                g._config["SURVEY_TEMPLATE_PATH"]):
-            for filename in filenames:
-                template_files[filename] = os.path.join(dirname, filename)
-        return template_files
-
-    @staticmethod
-    def from_yaml(path_to_yaml: str):
-        schema = {
-            "name": str,
-            "language": str,
-            "questions": dict
-        }
+    def parse_yaml(path_to_yaml: str) -> Dict[str, Any]:
         with open(path_to_yaml) as fd:
             contents = yaml.load(fd)
+        schema = {
+            "name": str,
+            "questions": dict
+        }
         try:
             if type(contents) != type(schema):
                 raise Exception(_("Template needs to be a dictionary"))
             for k, v in schema.items():
                 if k not in contents:
                     raise Exception(_("Missing argument in template: ") + k)
-                if type(v) != type(contents[k]):
+                if v != type(contents[k]):
                     raise Exception(_("Argument has wrong type: ") + k +
-                                    _(" Expected: ") + type(v) + _(" Got: ") +
-                                    type(contents[k]))
+                                    _(" Expected: ") + str(v) +
+                                    _(" Got: ") + str(type(contents[k])))
         except Exception as e:
             raise YAMLTemplateInvalidException(e.args[0])
-
-        language = contents["language"]
-        if language not in babel_languages.keys():
-            raise YAMLTemplateInvalidException(_("Invalid language specified"))
 
         name = contents["name"]
         if len(name) < 1:
             raise YAMLTemplateInvalidException(_("Empty name specified"))
+
+        return contents
+
+    @staticmethod
+    def get_available_templates() -> Dict[str, List[str]]:
+        template_files = dict({})
+        for dirname, sdn, filenames in os.walk(
+                g._config["SURVEY_TEMPLATE_PATH"]):
+            for filename in filenames:
+                abspath = os.path.join(dirname, filename)
+                try:
+                    contents = Questionnaire.parse_yaml(abspath)
+                except Exception as e:
+                    continue
+                template_files[contents["name"]] = abspath
+        return template_files
+
+    @staticmethod
+    def from_yaml(path_to_yaml: str):
+        contents = Questionnaire.parse_yaml(path_to_yaml)
 
         new_questionnaire = Questionnaire()
         for group_name, questions in contents["questions"].items():
