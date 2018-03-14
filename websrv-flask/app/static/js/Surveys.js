@@ -1096,9 +1096,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
         }])
     .controller("QuestionnaireStatisticController", [
         "$scope", "$http", "$routeParams", "$timeout", "Questionnaires",
-        "QuestionStatistics", "ResultHandling", "LanguageHandling",
+        "QuestionStatistics", "ResultHandling",
         function ($scope, $http, $routeParams, $timeout, Questionnaires,
-                  QuestionStatistics, ResultHandling, LanguageHandling) {
+                  QuestionStatistics, ResultHandling) {
             $scope.properties = {
                 "questionnaire_uuid": null,
                 "graph_width": window.innerWidth - 400,
@@ -1118,55 +1118,8 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             $scope.init = function () {
-                Questionnaires
-                    .get($routeParams.questionnaire)
-                    .map(({data: questionnaireData, locale}) => {
-                        $scope.questionnaire_uuid = questionnaireData.uuid;
-
-                        return R.pipe(
-                            R.map(questionGroup => ({
-                                "name": questionGroup.fields.name,
-                                "color": questionGroup.fields.color,
-                                "text_color": questionGroup.fields.text_color,
-                                "questions": questionGroup.fields.questions
-                            })),
-                            R.map(questionGroup => R.assoc(
-                                "questions",
-                                R.map(question => QuestionStatistics.get(question.uuid)
-                                        .map(statisticResult => {
-                                            return {
-                                                "text": cutQuestionText(
-                                                    LanguageHandling.getStringLocale(locale, question.fields.text)
-                                                ),
-                                                "answers": R.pathOr([], ["fields", "results"], question).length,
-                                                "statistic": statisticResult
-                                            }
-                                        }),
-                                    questionGroup.questions
-                                ),
-                                questionGroup
-                            )),
-                            R.map(questionGroup =>
-                                Future.parallel(
-                                    Infinity,
-                                    questionGroup.questions
-                                )
-                                    .map(questions => {
-                                        return R.assoc(
-                                            "questions",
-                                            questions,
-                                            questionGroup
-                                        )
-                                    })
-                            ))
-                        (questionnaireData.fields.questiongroups);
-                    })
-                    .chain(questionGroups => {
-                        return Future.parallel(
-                            Infinity,
-                            questionGroups
-                        );
-                    })
+                let questionnaire_uuid = $routeParams.questionnaire;
+                QuestionStatistics.getWholeQuestionnaire(questionnaire_uuid)
                     .mapRej(data => {
                         $scope.questionnaire = null;
                         $scope.statistics = null;
@@ -1176,6 +1129,8 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         ResultHandling.flashError($scope),
                         questionGroups => {
                             $scope.$apply(() => {
+                                $scope.questionnaire_uuid = questionnaire_uuid;
+
                                 $scope.statistics = {
                                     "questionGroups": questionGroups
                                 };
@@ -1193,7 +1148,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     );
             };
 
-            let cutQuestionText = function (text) {
+            $scope.cutQuestionText = function (text) {
                 let width = $scope.getTextWidth(text, "12pt Arial");
                 let cuts = 0;
                 while (width > ($scope.properties.graph_padding_left - 2 * $scope.properties.text_padding_left)) {
@@ -1248,6 +1203,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
 
             $scope.init();
         }])
+    .controller("QuestionnaireStatisticSpiderController", [
+        "$scope",
+        function ($scope) {
+
+        }
+    ])
     .config(["$routeProvider", "$locationProvider",
         function ($routeProvider, $locationProvider) {
             $locationProvider.hashPrefix("");
@@ -1267,5 +1228,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 .when("/surveys/:questionnaire/statistic", {
                     templateUrl: "/static/js/templates/QuestionnaireStatistics.html",
                     controller: "QuestionnaireStatisticController"
+                })
+                .when("/surveys/:questionnaire/statistic/spider", {
+                    templateUrl: "/static/js/templates/QuestionnaireStatisticsSpider.html",
+                    controller: "QuestionnaireStatisticSpiderController"
                 });
         }]);

@@ -58,7 +58,7 @@
             <text
                     x="{{ properties.text_padding_left }}px"
                     y="{{ getY($parent.$index, $index) + (properties.bar_height / 2) + 3 }}px"
-            >{{ question.text }}</text>
+            >{{ cutQuestionText(question.text) }}</text>
             <line
                     x1="{{ getX(question.statistic.smallest) }}px"
                     y1="{{ getY($parent.$index, $index) + (properties.bar_height / 2) }}px"
