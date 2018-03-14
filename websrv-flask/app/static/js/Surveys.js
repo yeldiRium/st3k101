@@ -1099,6 +1099,8 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
         "QuestionStatistics", "ResultHandling",
         function ($scope, $http, $routeParams, $timeout, Questionnaires,
                   QuestionStatistics, ResultHandling) {
+            $scope.loading = "loading";
+
             $scope.properties = {
                 "questionnaire_uuid": null,
                 "graph_width": window.innerWidth - 400,
@@ -1121,8 +1123,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 let questionnaire_uuid = $routeParams.questionnaire;
                 QuestionStatistics.getWholeQuestionnaire(questionnaire_uuid)
                     .mapRej(data => {
-                        $scope.questionnaire = null;
-                        $scope.statistics = null;
+                        $scope.$apply(() => {
+                            $scope.questionnaire = null;
+                            $scope.statistics = null;
+                            $scope.loading = "error";
+                        });
                         return data;
                     })
                     .fork(
@@ -1143,6 +1148,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                                     $scope.properties.bar_height +
                                     $scope.properties.bar_padding
                                 ) + $scope.properties.bar_padding; // 2x bar_padding as outer padding
+                                $scope.loading = "done";
                             })
                         }
                     );

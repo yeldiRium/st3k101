@@ -1,121 +1,123 @@
-<svg width="{{ properties.graph_width }}px" height="{{ properties.graph_height }}px">
-    <style type="text/css">
-        .question_bar:hover .bar_bg {
-            fill: lightgrey;
-        }
+<ew-load loading="loading">
+    <svg width="{{ properties.graph_width }}px" height="{{ properties.graph_height }}px">
+        <style type="text/css">
+            .question_bar:hover .bar_bg {
+                fill: lightgrey;
+            }
 
-        line {
-            stroke:black;
-        }
+            line {
+                stroke:black;
+            }
 
-        .line_center {
-            stroke-width:2px
-        }
+            .line_center {
+                stroke-width:2px
+            }
 
-        .line_center_vertical {
-            stroke-width:3px
-        }
+            .line_center_vertical {
+                stroke-width:3px
+            }
 
-        .line_whisker {
-            stroke-width: 1px;
-        }
+            .line_whisker {
+                stroke-width: 1px;
+            }
 
-        .box_graph {
-            fill:#bbb;
-            stroke:black;
-            stroke-width:3px
-        }
+            .box_graph {
+                fill:#bbb;
+                stroke:black;
+                stroke-width:3px
+            }
 
-        svg * {
-            font: 12pt "Arial";
-        }
-    </style>
-    <g class="scale upper">
-        <g class="scale_element" ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
-            <text
-                    x="{{ getX(i) - 3 }}"
-                    y="{{ properties.upper_scale_text_y }}"
-            >{{ i }}</text>
-            <line
-                    x1="{{ getX(i) }}"
-                    x2="{{ getX(i) }}"
-                    y1="{{ properties.upper_scale_line_upper_y }}"
-                    y2="{{ properties.upper_scale_line_lower_y }}"
-                    style="stroke:black;stroke-width:2px"
-            ></line>
+            svg * {
+                font: 12pt "Arial";
+            }
+        </style>
+        <g class="scale upper">
+            <g class="scale_element" ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+                <text
+                        x="{{ getX(i) - 3 }}"
+                        y="{{ properties.upper_scale_text_y }}"
+                >{{ i }}</text>
+                <line
+                        x1="{{ getX(i) }}"
+                        x2="{{ getX(i) }}"
+                        y1="{{ properties.upper_scale_line_upper_y }}"
+                        y2="{{ properties.upper_scale_line_lower_y }}"
+                        style="stroke:black;stroke-width:2px"
+                ></line>
+            </g>
         </g>
-    </g>
-    <g ng-repeat="questionGroup in statistics.questionGroups">
-        <g ng-repeat="question in questionGroup.questions" class="question_bar">
-            <rect
-                    x="0px"
-                    y="{{ getY($parent.$index, $index) }}px"
-                    width="{{ properties.graph_width }}px"
-                    height="{{ properties.bar_height }}px"
-                    fill="white"
-                    class="bar_bg"
-            ></rect>
-            <text
-                    x="{{ properties.text_padding_left }}px"
-                    y="{{ getY($parent.$index, $index) + (properties.bar_height / 2) + 3 }}px"
-            >{{ cutQuestionText(question.text) }}</text>
-            <line
-                    x1="{{ getX(question.statistic.smallest) }}px"
-                    y1="{{ getY($parent.$index, $index) + (properties.bar_height / 2) }}px"
-                    x2="{{ getX(question.statistic.biggest) }}px"
-                    y2="{{ getY($parent.$index, $index) + (properties.bar_height / 2) }}px"
-                    class="line_center"
-            ></line>
-            <line
-                    x1="{{ getX(question.statistic.smallest) }}px"
-                    y1="{{ getY($parent.$index, $index) }}px"
-                    x2="{{ getX(question.statistic.smallest) }}px"
-                    y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
-                    class="line_whisker"
-            ></line>
-            <line
-                    x1="{{ getX(question.statistic.biggest) }}px"
-                    y1="{{ getY($parent.$index, $index) }}px"
-                    x2="{{ getX(question.statistic.biggest) }}px"
-                    y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
-                    class="line_whisker"
-            ></line>
-            <rect
-                    x="{{ getX(question.statistic.q1) }}px"
-                    y="{{ getY($parent.$index, $index) + 10 }}px"
-                    width="{{ getX(question.statistic.q3) - getX(question.statistic.q1) }}px"
-                    height="{{ properties.bar_height - 20 }}px"
-                    class="box_graph"
-            ></rect>
-            <line
-                    x1="{{ getX(question.statistic.q2) }}px"
-                    y1="{{ getY($parent.$index, $index) }}px"
-                    x2="{{ getX(question.statistic.q2) }}px"
-                    y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
-                    class="line_center_vertical"
-            ></line>
-            <text
-                    x="{{ properties.graph_width - properties.text_padding_right }}px"
-                    y="{{ getY($parent.$index, $index) + (properties.bar_height / 2) + 3 }}px"
-            >{{ question.answers }} Answers</text>
+        <g ng-repeat="questionGroup in statistics.questionGroups">
+            <g ng-repeat="question in questionGroup.questions" class="question_bar">
+                <rect
+                        x="0px"
+                        y="{{ getY($parent.$index, $index) }}px"
+                        width="{{ properties.graph_width }}px"
+                        height="{{ properties.bar_height }}px"
+                        fill="white"
+                        class="bar_bg"
+                ></rect>
+                <text
+                        x="{{ properties.text_padding_left }}px"
+                        y="{{ getY($parent.$index, $index) + (properties.bar_height / 2) + 3 }}px"
+                >{{ cutQuestionText(question.text) }}</text>
+                <line
+                        x1="{{ getX(question.statistic.smallest) }}px"
+                        y1="{{ getY($parent.$index, $index) + (properties.bar_height / 2) }}px"
+                        x2="{{ getX(question.statistic.biggest) }}px"
+                        y2="{{ getY($parent.$index, $index) + (properties.bar_height / 2) }}px"
+                        class="line_center"
+                ></line>
+                <line
+                        x1="{{ getX(question.statistic.smallest) }}px"
+                        y1="{{ getY($parent.$index, $index) }}px"
+                        x2="{{ getX(question.statistic.smallest) }}px"
+                        y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
+                        class="line_whisker"
+                ></line>
+                <line
+                        x1="{{ getX(question.statistic.biggest) }}px"
+                        y1="{{ getY($parent.$index, $index) }}px"
+                        x2="{{ getX(question.statistic.biggest) }}px"
+                        y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
+                        class="line_whisker"
+                ></line>
+                <rect
+                        x="{{ getX(question.statistic.q1) }}px"
+                        y="{{ getY($parent.$index, $index) + 10 }}px"
+                        width="{{ getX(question.statistic.q3) - getX(question.statistic.q1) }}px"
+                        height="{{ properties.bar_height - 20 }}px"
+                        class="box_graph"
+                ></rect>
+                <line
+                        x1="{{ getX(question.statistic.q2) }}px"
+                        y1="{{ getY($parent.$index, $index) }}px"
+                        x2="{{ getX(question.statistic.q2) }}px"
+                        y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
+                        class="line_center_vertical"
+                ></line>
+                <text
+                        x="{{ properties.graph_width - properties.text_padding_right }}px"
+                        y="{{ getY($parent.$index, $index) + (properties.bar_height / 2) + 3 }}px"
+                >{{ question.answers }} Answers</text>
+            </g>
         </g>
-    </g>
-    <g class="scale lower">
-        <g class="scale_element" ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
-            <text
-                    x="{{ getX(i) - 3 }}"
-                    y="{{ properties.graph_height - properties.lower_scale_text_y }}"
-            >{{ i }}</text>
-            <line
-                    x1="{{ getX(i) }}"
-                    x2="{{ getX(i) }}"
-                    y1="{{ properties.graph_height - properties.lower_scale_line_upper_y }}"
-                    y2="{{ properties.graph_height - properties.lower_scale_line_lower_y }}"
-                    style="stroke:black;stroke-width:2px"
-            ></line>
+        <g class="scale lower">
+            <g class="scale_element" ng-repeat="i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+                <text
+                        x="{{ getX(i) - 3 }}"
+                        y="{{ properties.graph_height - properties.lower_scale_text_y }}"
+                >{{ i }}</text>
+                <line
+                        x1="{{ getX(i) }}"
+                        x2="{{ getX(i) }}"
+                        y1="{{ properties.graph_height - properties.lower_scale_line_upper_y }}"
+                        y2="{{ properties.graph_height - properties.lower_scale_line_lower_y }}"
+                        style="stroke:black;stroke-width:2px"
+                ></line>
+            </g>
         </g>
-    </g>
-</svg>
-<div class="row text-center">
-    <a href="/api/questionnaire/{{ questionnaire_uuid }}/dl/csv" target="_blank">Download as .CSV</a>
-</div>
+    </svg>
+    <div class="row text-center">
+        <a href="/api/questionnaire/{{ questionnaire_uuid }}/dl/csv" target="_blank">Download as .CSV</a>
+    </div>
+</ew-load>
