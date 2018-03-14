@@ -937,6 +937,42 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             /* QAC related stuff */
 
             /**
+             * Disables the given QAC on the current Questionnaire.
+             *
+             * @param qacName
+             */
+            $scope.disableQac = function (qacName) {
+                Questionnaires.disableQAC(
+                    $scope.questionnaire.uuid,
+                    qacName
+                )
+                    .map(data => {
+                        $scope.init();
+                        return data;
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
+            };
+
+            /**
+             * Enables the given QAC on the current Questionnaire.
+             *
+             * @param qacName
+             */
+            $scope.enableQac = function (qacName) {
+                Questionnaires.enableQAC(
+                    $scope.questionnaire.uuid,
+                    qacName
+                )
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
+            };
+
+            /**
              * Updates the QACI15dTextParameter for the given qacName on the
              * current Questionnaire.
              *
