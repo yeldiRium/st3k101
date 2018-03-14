@@ -1269,6 +1269,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 )
                 (questionGroups);
                 $scope.$apply(() => {
+                    $scope.questionnaire_uuid = $routeParams.questionnaire
                     $scope.loading = "done";
                     setTimeout(() => RadarChart.draw(".chart-container", data), 0);
                 })
