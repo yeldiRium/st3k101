@@ -11,7 +11,7 @@ class EMailVerificationQAC(QACModule):
     def new() -> "EMailVerificationQAC":
 
         the_new_qac = EMailVerificationQAC()
-        the_new_qac.name = I18n("EMail verification")
+        the_new_qac.name = I18n("EMAIL_VERIFICATION")
         the_new_qac.description = I18n("When submitting a survey, users have"
                                        "to enter their email address."
                                        "For their answers to be counted, users"

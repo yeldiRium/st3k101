@@ -70,7 +70,7 @@ class EMailWhitelistQAC(QACModule):
     @staticmethod
     def new() -> "EMailWhitelistQAC":
         email_list_str = QACTextParameter.new("*@*.*")
-        email_list_str.name = I18n("List of allowed E-Mail addresses")
+        email_list_str.name = I18n("EMAIL_WHITELIST")
         email_list_str.description = I18n("A comma separated list of email"
                                           "addresses which are allowed when"
                                           "submitting a survey. Wildcard"
