@@ -58,7 +58,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              */
             let prepareView = function ({data, locale}) {
                 $scope.surveys = R.pipe(
-                    R.map(LanguageHandling.getSurveyTranslation(locale)),
                     R.map(survey => {
                         let original_locale = R.head(R.map(
                             R.toLower,
@@ -84,8 +83,10 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                                 survey
                             );
                         }
-                    })
+                    }),
+                    R.map(LanguageHandling.getSurveyTranslation(locale))
                 )(data);
+                console.log($scope.surveys);
 
                 prepareTemplates(
                     locale, $scope.surveys
