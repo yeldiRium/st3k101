@@ -74,8 +74,6 @@ class Survey(DataObject):
         if template in template_files:
             template_path = template_files[template]
             questionnaire = Questionnaire.from_yaml(template_path)
-            questionnaire.set_name(name)
-            questionnaire.set_description(description)
             self.questionnaires.add(questionnaire)
             return questionnaire
 

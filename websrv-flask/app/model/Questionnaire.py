@@ -120,6 +120,7 @@ class Questionnaire(DataObject):
             contents = yaml.load(fd)
         schema = {
             "name": str,
+            "description": str,
             "questions": dict
         }
         try:
@@ -158,8 +159,10 @@ class Questionnaire(DataObject):
     @staticmethod
     def from_yaml(path_to_yaml: str):
         contents = Questionnaire.parse_yaml(path_to_yaml)
-
-        new_questionnaire = Questionnaire()
+        new_questionnaire = Questionnaire.create_questionnaire(
+            contents["name"],
+            contents["description"]
+        )
         for group_name, questions in contents["questions"].items():
             new_group = new_questionnaire.add_question_group(group_name)
             for question in questions:
