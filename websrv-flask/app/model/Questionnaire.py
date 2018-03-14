@@ -142,7 +142,7 @@ class Questionnaire(DataObject):
         return contents
 
     @staticmethod
-    def get_available_templates() -> Dict[str, List[str]]:
+    def get_available_templates() -> Dict[str, str]:
         template_files = dict({})
         for dirname, sdn, filenames in os.walk(
                 g._config["SURVEY_TEMPLATE_PATH"]):

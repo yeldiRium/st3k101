@@ -1,5 +1,3 @@
-import os
-
 from flask import g
 
 from datetime import datetime
@@ -16,20 +14,43 @@ from model.Questionnaire import Questionnaire
 
 
 class Survey(DataObject):
+    """
+    A DataObject representing a Survey.
+    A Survey is a collection of Questionnaires, where each Questionnaire con-
+    tains potentially different Questions and targets a specific audience in
+    your survey.
+    """
 
     @staticmethod
-    def create_survey(name: str):
+    def create_survey(name: str) -> "Survey":
+        """
+        Factory method for Survey, return a new instance of Survey initialized
+        with default values.
+        :param name: str The name of the survey
+        :return: Survey the new instance
+        """
         survey = Survey()
         survey.name = I15dString.new(name)
         survey.date_created = datetime.now().timestamp()
         survey.original_locale = g._locale
         return survey
 
-    def set_name(self, name):
+    def set_name(self, name:str) -> None:
+        """
+        Setter method for Survey.name
+        :param name: str The new name
+        :return: None
+        """
         self.name.set_locale(name)
 
     def add_new_questionnaire(self, name: str,
                               description: str) -> Questionnaire:
+        """
+        Creates and adds a new Questionnaire to this survey.
+        :param name: str The name of the new Questionnaire
+        :param description: str The description of the new Questionnaire
+        :return: Questionnaire The newly created Questionnaire
+        """
         questionnaire = Questionnaire.create_questionnaire(name, description)
         self.questionnaires.add(questionnaire)
         return questionnaire
@@ -40,9 +61,12 @@ class Survey(DataObject):
         """
         Creates a new Questionnaire by copying all settings from a given
         Questionnaire.
+        
+        :param name: str The name of the new Questionnaire
+        :param description: str The description of the new Questionnaire
+        :param template: str uuid of template file name of the template
+        :return: Questionnaire The newly created Questionnaire
         """
-
-        # TODO: something fishy happens when template is None
 
         # first look in local template path
         template_files = Questionnaire.get_available_templates()
@@ -50,12 +74,16 @@ class Survey(DataObject):
         if template in template_files:
             template_path = template_files[template]
             questionnaire = Questionnaire.from_yaml(template_path)
+            questionnaire.set_name(name)
+            questionnaire.set_description(description)
             self.questionnaires.add(questionnaire)
             return questionnaire
 
-        # then try getting by uuid
+        # if template not found on disk try getting by uuid
         template_questionnaire = Questionnaire(template)
 
+        # if template is in a different language, indicate that foreign
+        # language was copied
         foreign_template = template_questionnaire.original_locale != g._locale
         template_locale = template_questionnaire.original_locale
         if foreign_template:
@@ -89,6 +117,13 @@ class Survey(DataObject):
         return questionnaire
 
     def remove_questionnaire(self, questionnaire: Questionnaire) -> None:
+        """
+        Removes a questionnaire from this survey. Also removes the Questionnaire
+        from the database
+        :param questionnaire: Questionnaire The Qeustionnaire to remove from 
+        the survey
+        :return: None
+        """
         try:
             self.questionnaires.remove(questionnaire)
             questionnaire.remove()
@@ -102,6 +137,6 @@ Survey.name = DataPointer(Survey, "name", I15dString)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)
 
-# here to avoid cyclic import
+# placed here to avoid cyclic import
 DataClient.surveys = DataPointerSet(DataClient, "surveys", Survey,
                                     serialize=False)

@@ -2,8 +2,7 @@ import sys
 import traceback
 from logging.handlers import SMTPHandler
 import logging
-from flask import Flask, render_template, g, request, make_response, jsonify, \
-    abort
+from flask import Flask, render_template, g, request, make_response, abort
 from flask.ext.babel import Babel
 from werkzeug.wrappers import Response
 
@@ -16,12 +15,13 @@ from framework.memcached import get_memcache
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
 
+# Setup of flask environment
 app = Flask(__name__)
-app.config.from_envvar('FLASK_CONFIG_PATH')
-app.json_encoder = DataObjectEncoder
-babel = Babel(app)
+app.config.from_envvar('FLASK_CONFIG_PATH')  # this path is set in Dockerfile
+app.json_encoder = DataObjectEncoder  # to allow us to encode DataObjects
 
-# setup logging
+# Setup of logging for critical errors, critical errors are logged by email
+# For configuration, see flask.cfg
 mail_handler = SMTPHandler(
     mailhost=(app.config["SMTP_SERVER"], app.config["SMTP_PORT"]),
     fromaddr=app.config["SMTP_FROM_ADDRESS"],
@@ -36,8 +36,8 @@ mail_handler.setFormatter(logging.Formatter(
 ))
 app.logger.addHandler(mail_handler)
 
-
-# flask-babel related setup
+# Setup of flask_babel to ba able to use gettext() for translating strings
+babel = Babel(app)
 @babel.localeselector
 def get_locale():
     """
@@ -47,21 +47,28 @@ def get_locale():
     """
     return g._locale.lower()
 
-
 @babel.timezoneselector
 def get_timezone():
+    """
+    Returns the timezone flask_babel will use.
+    We could make an effort here and select one based on locale or browser
+    settings, but we don't handle time information, so we just use one
+    fixed timezone that is set in flask.cfg
+    :return: str The timezone set in flask.cfg
+    """
     return g._config["BABEL_DEFAULT_TIMEZONE"]
 
 
-# before and after request foo, things to do before or after each request
+# Things that happen on each request
 @app.before_request
 def before_request():
     """
     Called before each request, when the app context is initialized
     Automatically sets g._current_user, g._locale
     """
-    g._config = app.config
+    g._config = app.config  # g is always reachable, app might not be
 
+    # Try to detect session based on session token
     session_token = request.args.get('session_token')
     if not session_token:
         session_token = request.cookies.get('session_token')
@@ -102,33 +109,32 @@ def before_request():
             requested_locale = requested_locale.lower()
             g._locale = requested_locale
         except (AttributeError, KeyError):
-            # TODO: log error
             pass  # use previously set locale if malformed locale was requested
 
 
 @app.after_request
 def after_request(response: Response):
+    """
+    Called before response is sent to client.
+    We may transform the response before sending it out.
+    :param response: Reponse That is about to be sent back
+    :return: Response the response that is sent back to the client
+    """
     # hacky scheduling
     for job in laziness.LAZY_JOBS:
         job()
 
+    # set the locale as cookie, keeps locale constant for a period of time
     if request.args.get('locale'):
         if request.args.get('locale_cookie', 1) == 1:
             response.set_cookie('locale', g._locale.lower())
+
+    # we respond in the user's language
     response.headers['Content-Language'] = g._locale.lower()
     return response
 
 
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    """
-    Called after request is handled, before app context is deleted
-    :param exception: Exception Did an exception happen?
-    """
-    pass
-
-
-# error handlers for common errors, in case we didn't catch one
+# Error handlers
 @app.errorhandler(ClientIpChangedException)
 def client_ip_changed(error):
     """
@@ -149,7 +155,14 @@ def page_not_found(error):
 
 @app.errorhandler(500)
 def internal_server_error_handler(error):
-    # free all mutexes
+    """
+    Called when an uncaught exception occurs.
+    We use this method to clean up any resources we might still have and exit
+    cleanly.
+    :param error: The exception 
+    :return: Response that is sent back to the user
+    """
+    # free all mutexes in memcache so that we don't lock up any DataObjects
     if hasattr(g, "_local_mutexes"):
         for mutex_uuid in g._local_mutexes:
             get_memcache().delete(mutex_uuid)
@@ -161,6 +174,12 @@ def internal_server_error_handler(error):
 
 @app.errorhandler(AccessControlException)
 def handle_access_control_violation(error):
+    """
+    Called when an uncaught AccessControlException occurs.
+    We pretend we don't know the resource in question and respond with 404.
+    :param error: The error.
+    :return: None
+    """
     print("Access Control Exception:", file=sys.stderr)
     print(traceback.format_exc(), file=sys.stderr)
     abort(404)
@@ -169,7 +188,7 @@ def handle_access_control_violation(error):
 @app.context_processor
 def inject_languages():
     """
-    Inject languages parameters into all templates.
+    Injects languages parameters into all jinja templates.
     """
     language = {
         "current": babel_languages[g._locale],
@@ -199,8 +218,12 @@ def backend():
     return render_template("backend.html")
 
 
+# Leave the following imports in place, even if your IDE tries to optimize them
+# away. Importing these modules will load the http endpoints for our app.
+
 # Survey Frontend, what DataSubject sees
 import endpoints.SurveyFrontend
+import endpoints.Verification
 
 # Auth related pages like login, registration
 import endpoints.Auth
@@ -213,4 +236,3 @@ import endpoints.REST.Question
 import endpoints.REST.QAC
 import endpoints.REST.Account
 import endpoints.REST.Locale
-import endpoints.Verification

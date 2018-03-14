@@ -5,6 +5,14 @@ from flask import g
 
 
 def send_mail(to: str, subject: str, message: str):
+    """
+    A helper method to wrap interaction with smtplib in order to send emails.
+    
+    :param to: str The email address of the recipient.
+    :param subject: str The subject line 
+    :param message: str The mail body
+    :return: None
+    """
 
     sender = g._config["SMTP_FROM_ADDRESS"]
     receivers = [to]
