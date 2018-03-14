@@ -3,9 +3,9 @@
         <form class="form-horizontal">
             <div class="form-group">
                 <label for="inputQuestionnaireName"
-                       class="col-sm-2 control-label">Name</label>
+                       class="col-xs-2 control-label">Name</label>
                 <!-- Questionnaire name form -->
-                <div class="col-sm-10">
+                <div class="col-xs-10">
                     <span ng-click="startEditing('questionnairename', $event, questionnaire.fields.name)"
                           ng-if="!isEditing('questionnairename')">{{ questionnaire.fields.name }} <span
                             class="translation"
@@ -21,9 +21,9 @@
             </div>
             <div class="form-group">
                 <label for="inputQuestionnaireDescription"
-                       class="col-sm-2 control-label">Description</label>
+                       class="col-xs-2 control-label">Description</label>
                 <!-- Questionnaire description form -->
-                <div class="col-sm-10">
+                <div class="col-xs-10">
                     <span ng-click="startEditing('questionnairedescription', $event, questionnaire.fields.description)"
                           ng-if="!isEditing('questionnairedescription')">{{ questionnaire.fields.description }} <span
                             class="translation"
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <div class="btn-group col-sm-12" role="group">
+                <div class="btn-group col-xs-12" role="group">
                     <button type="button" id="buttonQuestionnaireGoto"
                             class="btn btn-default"
                             ng-if="questionnaire.fields.published"
@@ -81,17 +81,17 @@
             <div class="panel-body">
                 <form class="form-horizontal">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Background
+                        <label class="col-xs-2 control-label">Background
                             Color:</label>
-                        <div class="col-sm-10">
+                        <div class="col-xs-10">
                             <input type="text"
                                    id="colorPicker_{{ questionGroup.uuid }}"/>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Text
+                        <label class="col-xs-2 control-label">Text
                             Color:</label>
-                        <div class="col-sm-10">
+                        <div class="col-xs-10">
                             <input type="text"
                                    id="textColorPicker_{{ questionGroup.uuid }}"/>
                         </div>
@@ -100,11 +100,11 @@
                 <div class="list-group">
                     <ngRepeat
                             ng-repeat="question in questionGroup.fields.questions">
-                        <div class="list-group-item col-sm-1 as-checkbox"
+                        <div class="list-group-item col-xs-1 as-checkbox"
                              ng-click="toggleSelect(questionGroup, question)"
                              ng-class="{'list-group-item-info': selection.questions[question.uuid] == true}">
                         </div>
-                        <a class="list-group-item col-sm-11 selectable">
+                        <a class="list-group-item col-xs-11 selectable">
                             <ngIf>
                                 <ngIf ng-click="startEditing('singlequestion'+question.uuid, $event, question.fields.text)"
                                       ng-if="!isEditing('singlequestion'+question.uuid)">
@@ -130,8 +130,8 @@
                       ng-if="new.question.questionGroup == questionGroup">
                     <div class="form-group">
                         <label for="inputQuestionText"
-                               class="col-sm-2 control-label">Name</label>
-                        <div class="col-sm-10">
+                               class="col-xs-2 control-label">Name</label>
+                        <div class="col-xs-10">
                             <input type="text" class="form-control"
                                    id="inputQuestionText"
                                    ng-model="new.question.data.text"
@@ -140,14 +140,14 @@
                     </div>
                     <div class="form-group">
                         <label for="buttonQuestionCreate"
-                               class="col-sm-2 control-label"></label>
-                        <div class="col-sm-2">
+                               class="col-xs-2 control-label"></label>
+                        <div class="col-xs-2">
                             <button type="button" id="buttonQuestionCreate"
                                     class="form-control btn btn-default"
                                     ng-click="createQuestion()">Create
                             </button>
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-xs-2">
                             <button type="button" id="buttonQuestionCancel"
                                     class="form-control btn btn-default"
                                     ng-click="resetEditing()">Cancel

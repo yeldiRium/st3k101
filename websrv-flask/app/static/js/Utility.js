@@ -56,6 +56,10 @@ angular.module("Utility", [])
 
                     resize();
 
+                    $(window).resize(function() {
+                        resize();
+                    });
+
                     (new MutationObserver(resize))
                         .observe(e.siblings(selectable)[0], {
                             "childList": true,
