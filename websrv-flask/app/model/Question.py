@@ -1,7 +1,3 @@
-from itertools import takewhile
-
-from flask import g
-
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
