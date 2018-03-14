@@ -368,6 +368,13 @@ angular.module("API", [])
                     }))
                         .map(ResultHandling.extractData)
                 },
+                "listTemplates": function () {
+                    return Future.tryP(() => $http({
+                        "method": "GET",
+                        "url": "/api/questionnaire/templates"
+                    }))
+                        .map(ResultHandling.extractData);
+                },
                 "listQACs": function (questionnaire_uuid) {
                     return Future.tryP(() => $http({
                         "method": "GET",

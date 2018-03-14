@@ -36,15 +36,15 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                  * else displayed.
                  */
                 Surveys.all()
-                    .mapRej(ResultHandling.flashError($scope))
-                    .fork(
-                        // Status 500 somehow doesn't reject. Why?
-                        () => {
+                    .mapRej(data => {
+                        $scope.$apply(() => {
                             $scope.surveys = null;
-                            $scope.$apply(() => {
-                                $scope.loading = "error";
-                            });
-                        },
+                            $scope.loading = "error";
+                        });
+                        return data;
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
                         prepareView
                     );
             };
@@ -86,9 +86,19 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         }
                     })
                 )(data);
-                $scope.templates = prepareTemplates(
+
+                prepareTemplates(
                     locale, $scope.surveys
-                );
+                )
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        templates => {
+                            console.log(templates);
+                            $scope.$apply(() => {
+                                $scope.templates = templates
+                            });
+                        }
+                    );
                 $scope.$apply(() => {
                     $scope.loading = "done";
                 });
@@ -100,7 +110,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             };
 
             /**
-             * Returns a function which takes a parsed Survey and:
+             * Returns a Future which will resolve with a list of templates.
              *
              * Generates the template options for the select field.
              *
@@ -112,52 +122,60 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * Questionnaires.
              *
              * @param locale
+             * @param surveys
              */
-            let prepareTemplates = R.pipe(
-                R.filter(survey =>
-                    R.path(["fields", "questionnaires", "length"], survey)
-                ),
-                // Extract Questionnaires from Survey.
-                R.map(survey => [
-                    R.path(["fields", "name"], survey),
-                    R.path(["fields", "questionnaires"], survey)
-                ]),
-                // Format them for use in a select field.
-                R.map(([name, questionnaires]) => ([
-                    name,
-                    R.map(
-                        questionnaire => ({
-                            "value": R.path(["uuid"], questionnaire),
-                            "name": R.path(
-                                ["fields", "name"], questionnaire
-                            )
-                        }),
+            let prepareTemplates = function (locale, surveys) {
+                let selectOptionsFromSurveys = R.pipe(
+                    R.filter(survey =>
+                        R.path(["fields", "questionnaires", "length"], survey)
+                    ),
+                    // Extract Questionnaires from Survey.
+                    R.map(survey => [
+                        R.path(["fields", "name"], survey),
+                        R.path(["fields", "questionnaires"], survey)
+                    ]),
+                    // Format them for use in a select field.
+                    R.map(([name, questionnaires]) => ([
+                        name,
+                        R.map(
+                            questionnaire => ({
+                                "value": R.path(["uuid"], questionnaire),
+                                "name": R.path(
+                                    ["fields", "name"], questionnaire
+                                )
+                            }),
+                            questionnaires
+                        )
+                    ])),
+                    // Prepend a spacer element with the Survey name and return
+                    // only resulting list of select elements.
+                    R.map(([name, questionnaires]) => R.prepend(
+                        {
+                            "value": null,
+                            "name": "-- from Survey " + name + " --"
+                        },
                         questionnaires
-                    )
-                ])),
-                // Prepend a spacer element with the Survey name and return
-                // only resulting list of select elements.
-                R.map(([name, questionnaires]) => R.prepend(
-                    {
-                        "value": null,
-                        "name": "-- from Survey " + name + " --"
-                    },
-                    questionnaires
-                )),
-                R.flatten,
-                R.prepend({
-                    "value": "efla_student",
-                    "name": "EFLA Student"
-                }),
-                R.prepend({
-                    "value": "efla_teacher",
-                    "name": "EFLA Teacher"
-                }),
-                R.prepend({
-                    "value": null,
-                    "name": "You can optionally create a questionnaire from a template. Select one here."
-                })
-            );
+                    )),
+                    R.flatten
+                )(surveys);
+                return Questionnaires.listTemplates()
+                    .map(templates => {
+                        console.log(templates);
+                        return R.pipe(
+                            R.map(templateName => ({
+                                "value": templateName,
+                                "name": templateName
+                            })),
+                            R.prepend({
+                                "value": null,
+                                "name": "You can optionally create a questionnaire from a template. Select one here.",
+                                "selected": true
+                            }),
+                            R.append(selectOptionsFromSurveys),
+                            R.flatten
+                        )(templates);
+                    });
+            };
 
             /**
              * Navigates to the frontend view of a Questionnaire.
