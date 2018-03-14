@@ -93,7 +93,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     .fork(
                         ResultHandling.flashError($scope),
                         templates => {
-                            console.log(templates);
                             $scope.$apply(() => {
                                 $scope.templates = templates
                             });
