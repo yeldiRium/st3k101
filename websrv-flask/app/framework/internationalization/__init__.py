@@ -1,8 +1,8 @@
-from flask.ext.babel import lazy_gettext
+from flask.ext.babel import gettext
 from .babel_languages import babel_languages
 
-_ = lambda msg: str(lazy_gettext(msg))
-
+_ = lambda msg: str(gettext(msg))
+cd
 HTTP_LANGUAGE_TAGS = {
     "aa": {
         "english": "Afar",
