@@ -33,7 +33,7 @@ def api_qac_modules():
             }
     """
     return jsonify({
-        "qacModules": [qac.name for qac in QAC]
+        "qacModules": {qac.name: qac.value[1] for qac in QAC}
     })
 
 
@@ -198,7 +198,7 @@ def api_qac_enable(questionnaire_uuid: str, qac_name: str):
         return make_error(_("Lacking credentials"), 403)
 
     try:
-        qac_module = QAC[qac_name].value  # type: QACModule
+        qac_module = QAC[qac_name].value[0]  # type: QACModule
     except KeyError:
         return make_error(_("No such QAC."), 404)
 
