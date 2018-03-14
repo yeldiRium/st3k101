@@ -2,6 +2,7 @@ const angular = require("angular");
 const Future = require("fluture");
 const R = require("ramda");
 const $ = require("jquery");
+const RadarChart = require("radar-chart-d3");
 
 require("angular-route");
 require("angular-flash-alert");
@@ -1210,9 +1211,70 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             $scope.init();
         }])
     .controller("QuestionnaireStatisticSpiderController", [
-        "$scope",
-        function ($scope) {
+        "$scope", "$routeParams", "QuestionStatistics", "ResultHandling",
+        "LanguageHandling",
+        function ($scope, $routeParams, QuestionStatistics, ResultHandling,
+                  LanguageHandling) {
+            $scope.loading = "loading";
 
+            $scope.init = function () {
+                let questionnaire_uuid = $routeParams.questionnaire;
+                QuestionStatistics.getWholeQuestionnaire(questionnaire_uuid)
+                    .mapRej(data => {
+                        $scope.$apply(() => {
+                            $scope.statistics = null;
+                            $scope.loading = "error";
+                        });
+                        return data;
+                    })
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        prepareSpiderChart
+                    );
+            };
+
+            let prepareSpiderChart = function (questionGroups) {
+                const data = R.pipe(
+                    R.map(questionGroup => R.assoc(
+                        "questions",
+                        R.addIndex(R.map)(
+                            (question, index) =>
+                                R.objOf(
+                                    R.concat(
+                                        R.pipe(
+                                            LanguageHandling.getDefaultStringLocale,
+                                            R.head,
+                                            R.toUpper
+                                        )(questionGroup.name),
+                                        R.toString(index + 1)
+                                    ),
+                                    question
+                                ),
+                            questionGroup.questions
+                        ),
+                        questionGroup
+                    )),
+                    R.map(R.prop("questions")),
+                    R.flatten,
+                    R.mergeAll,
+                    R.mapObjIndexed((value, key, obj) => ({
+                        "axis": key,
+                        "value": R.path(["statistic", "q2"], value)
+                    })),
+                    R.values,
+                    values => [{
+                        "className": "results",
+                        "axes": values
+                    }]
+                )
+                (questionGroups);
+                $scope.$apply(() => {
+                    $scope.loading = "done";
+                    setTimeout(() => RadarChart.draw(".chart-container", data), 0);
+                })
+            };
+
+            $scope.init();
         }
     ])
     .config(["$routeProvider", "$locationProvider",
