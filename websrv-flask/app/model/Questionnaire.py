@@ -150,7 +150,7 @@ class Questionnaire(DataObject):
                 abspath = os.path.join(dirname, filename)
                 try:
                     contents = Questionnaire.parse_yaml(abspath)
-                except Exception as e:
+                except Exception:
                     continue
                 template_files[contents["name"]] = abspath
         return template_files
