@@ -38,8 +38,8 @@ class QuestionStatistic(DataObject):
         result_list_length = len(result_list)
         self.q2 = self.median(result_list)
         if result_list_length % 2 == 0:
-            self.q1 = self.median(result_list[0:int(result_list_length / 2)])
-            self.q3 = self.median(result_list[int(result_list_length / 2):])
+            self.q1 = self.median(result_list[0:result_list_length // 2])
+            self.q3 = self.median(result_list[result_list_length // 2:])
 
         if result_list_length % 4 == 1:
             if result_list_length == 1:
@@ -58,11 +58,14 @@ class QuestionStatistic(DataObject):
         """
         Returns the median value of all QuestionResults
         """
+        if len(values) == 0:
+            return 0
+
         list.sort(values, key=lambda x: x.answer_value)
         if len(values) % 2 == 0:
-            return (values[int(len(values) / 2) - 1].answer_value) + int(values[int(len(values) / 2)].answer_value) // 2
+            return (values[len(values) // 2 - 1].answer_value) + int(values[len(values) // 2].answer_value) // 2
         else:
-            return int(values[int(math.floor(len(values) / 2))].answer_value)
+            return int(values[len(values) // 2].answer_value)
 
 
 QuestionStatistic.smallest = DataAttribute(QuestionStatistic, "smallest")
