@@ -18,7 +18,7 @@ def lazy_update_statistics():
     if  now - last_upate_time > g._config["STATISTICS_UPDATE_INTERVAL"]:
         dirty_questions = Question.many_from_query({"dirty": True})
         for question in dirty_questions:
-            question.statistics.update()
+            question.statistic.update()
 
         mc.set(key, now)
 
