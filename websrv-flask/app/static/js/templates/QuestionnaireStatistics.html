@@ -49,7 +49,7 @@
         <g ng-repeat="question in questionGroup.questions" class="question_bar">
             <rect
                     x="0px"
-                    y="{{ getY($index) }}px"
+                    y="{{ getY($parent.$index, $index) }}px"
                     width="{{ properties.graph_width }}px"
                     height="{{ properties.bar_height }}px"
                     fill="white"
@@ -57,46 +57,46 @@
             ></rect>
             <text
                     x="{{ properties.text_padding_left }}px"
-                    y="{{ getY($index) + (properties.bar_height / 2) + 3 }}px"
+                    y="{{ getY($parent.$index, $index) + (properties.bar_height / 2) + 3 }}px"
             >{{ question.text }}</text>
             <line
                     x1="{{ getX(question.statistic.smallest) }}px"
-                    y1="{{ getY($index) + (properties.bar_height / 2) }}px"
+                    y1="{{ getY($parent.$index, $index) + (properties.bar_height / 2) }}px"
                     x2="{{ getX(question.statistic.biggest) }}px"
-                    y2="{{ getY($index) + (properties.bar_height / 2) }}px"
+                    y2="{{ getY($parent.$index, $index) + (properties.bar_height / 2) }}px"
                     class="line_center"
             ></line>
             <line
                     x1="{{ getX(question.statistic.smallest) }}px"
-                    y1="{{ getY($index) }}px"
+                    y1="{{ getY($parent.$index, $index) }}px"
                     x2="{{ getX(question.statistic.smallest) }}px"
-                    y2="{{ getY($index) + properties.bar_height }}px"
+                    y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
                     class="line_whisker"
             ></line>
             <line
                     x1="{{ getX(question.statistic.biggest) }}px"
-                    y1="{{ getY($index) }}px"
+                    y1="{{ getY($parent.$index, $index) }}px"
                     x2="{{ getX(question.statistic.biggest) }}px"
-                    y2="{{ getY($index) + properties.bar_height }}px"
+                    y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
                     class="line_whisker"
             ></line>
             <rect
                     x="{{ getX(question.statistic.q1) }}px"
-                    y="{{ getY($index) + 10 }}px"
+                    y="{{ getY($parent.$index, $index) + 10 }}px"
                     width="{{ getX(question.statistic.q3) - getX(question.statistic.q1) }}px"
                     height="{{ properties.bar_height - 20 }}px"
                     class="box_graph"
             ></rect>
             <line
                     x1="{{ getX(question.statistic.q2) }}px"
-                    y1="{{ getY($index) }}px"
+                    y1="{{ getY($parent.$index, $index) }}px"
                     x2="{{ getX(question.statistic.q2) }}px"
-                    y2="{{ getY($index) + properties.bar_height }}px"
+                    y2="{{ getY($parent.$index, $index) + properties.bar_height }}px"
                     class="line_center_vertical"
             ></line>
             <text
                     x="{{ properties.graph_width - properties.text_padding_right }}px"
-                    y="{{ getY($index) + (properties.bar_height / 2) + 3 }}px"
+                    y="{{ getY($parent.$index, $index) + (properties.bar_height / 2) + 3 }}px"
             >{{ question.answers }} Answers</text>
         </g>
     </g>

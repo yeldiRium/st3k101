@@ -1159,7 +1159,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                                         )
                                     })
                             ))
-                        (questionnaireData.fields.questiongroups)
+                        (questionnaireData.fields.questiongroups);
                     })
                     .chain(questionGroups => {
                         return Future.parallel(
@@ -1175,18 +1175,20 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     .fork(
                         ResultHandling.flashError($scope),
                         questionGroups => {
-                            $scope.statistics = {
-                                "questionGroups": questionGroups
-                            };
+                            $scope.$apply(() => {
+                                $scope.statistics = {
+                                    "questionGroups": questionGroups
+                                };
 
-                            $scope.properties.graph_height = R.pipe(
-                                R.map(questionGroup => questionGroup.questions),
-                                R.flatten,
-                                R.length
-                            )(questionGroups) * (
-                                $scope.properties.bar_height +
-                                $scope.properties.bar_padding
-                            ) - $scope.properties.bar_padding;
+                                $scope.properties.graph_height = R.pipe(
+                                    R.map(questionGroup => questionGroup.questions),
+                                    R.flatten,
+                                    R.length
+                                )(questionGroups) * (
+                                    $scope.properties.bar_height +
+                                    $scope.properties.bar_padding
+                                ) + $scope.properties.bar_padding; // 2x bar_padding as outer padding
+                            })
                         }
                     );
             };
@@ -1213,7 +1215,13 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 return $scope.properties.graph_padding_left + effectiveWidth * value / maxValue;
             };
 
-            $scope.getY = function (index) {
+            $scope.getY = function (groupIndex, questionIndex) {
+                const index = R.pipe(
+                    R.take(groupIndex),
+                    R.map(R.prop("questions")),
+                    R.map(R.length),
+                    R.sum
+                )($scope.statistics.questionGroups) + questionIndex;
                 let result = $scope.properties.bar_padding;
                 if (index !== 0) {
                     result += index * ($scope.properties.bar_height + $scope.properties.bar_padding)

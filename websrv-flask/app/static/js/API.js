@@ -571,11 +571,11 @@ angular.module("API", [])
                         .mapRej(ResultHandling.check403)
                         .map(ResultHandling.extractData)
                         .map(result => ({
-                            "biggest": R.path(["data", "fields", "biggest"], result),
-                            "smallest": R.path(["data", "fields", "smallest"], result),
-                            "q1": R.path(["data", "fields", "q1"], result),
-                            "q2": R.path(["data", "fields", "q2"], result),
-                            "q3": R.path(["data", "fields", "q3"], result)
+                            "biggest": R.path(["fields", "biggest"], result),
+                            "smallest": R.path(["fields", "smallest"], result),
+                            "q1": R.path(["fields", "q1"], result),
+                            "q2": R.path(["fields", "q2"], result),
+                            "q3": R.path(["fields", "q3"], result)
                         }));
                 }
             }
