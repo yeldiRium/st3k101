@@ -33,7 +33,7 @@ def api_qac_modules():
             }
     """
     return jsonify({
-        "qacModules": [qac for qac in QAC]
+        "qacModules": [qac.name for qac in QAC]
     })
 
 
