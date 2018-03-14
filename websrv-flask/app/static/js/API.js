@@ -59,6 +59,13 @@ angular.module("API", [])
             )
         });
 
+        const getDefaultStringLocale = function (i15dString) {
+            const defaultLocale = R.path(
+                ["fields", "default_locale"], i15dString
+            );
+            return R.path(["fields", "locales", defaultLocale], i15dString);
+        };
+
         const getSurveyTranslation = R.curry(
             function (locale, survey) {
                 const name = R.path(["fields", "name"], survey);
@@ -190,6 +197,7 @@ angular.module("API", [])
 
         return {
             "getStringLocale": getStringLocale,
+            "getDefaultStringLocale": getDefaultStringLocale,
             "getSurveyTranslation": getSurveyTranslation,
             "getQuestionnaireTranslation": getQuestionnaireTranslation,
             "getQuestionGroupTranslation": getQuestionGroupTranslation,
