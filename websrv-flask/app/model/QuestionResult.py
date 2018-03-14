@@ -65,10 +65,6 @@ class QuestionResult(DataObject):
 
         return False
 
-    def remove(self):
-        super().__readonly = False
-        super().remove()
-
 
 QuestionResult.verified = DataAttribute(QuestionResult, "verified", no_acl=True)
 QuestionResult.verification_token = DataAttribute(QuestionResult,

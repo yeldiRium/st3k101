@@ -31,6 +31,7 @@ class Question(DataObject):
         :return: 
         """
         self.results.remove(question_result)
+        setattr(question_result, "_DataObject__readonly", False)  # dirty h4x
         question_result.remove()
 
     def add_question_result(
