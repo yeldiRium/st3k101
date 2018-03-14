@@ -327,7 +327,6 @@ angular.module("API", [])
                 },
                 "update": function (questionnaire_uuid, data) {
                     const {name = null, description = null} = data;
-                    console.log(name, description);
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": `/api/questionnaire/${questionnaire_uuid}`,

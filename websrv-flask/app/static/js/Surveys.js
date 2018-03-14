@@ -159,7 +159,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 )(surveys);
                 return Questionnaires.listTemplates()
                     .map(templates => {
-                        console.log(templates);
                         return R.pipe(
                             R.map(templateName => ({
                                 "value": templateName,
@@ -229,7 +228,6 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         );
                     }
                     if (name === "questionnairedescription") {
-                        console.log(element[0].value);
                         success = Questionnaires.update(
                             element.data("uuid"),
                             {
@@ -461,11 +459,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     ])
     .controller("EditQuestionnaireController", [
         "$scope", "$http", "$timeout", "Flash", "$routeParams",
-        "Questionnaires", "QuestionGroups", "Questions", "ResultHandling",
-        "LanguageHandling", "PathHandling", "StyleStuff",
+        "Questionnaires", "QuestionGroups", "Questions", "QACs",
+        "ResultHandling", "LanguageHandling", "PathHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, $routeParams,
-                  Questionnaires, QuestionGroups, Questions, ResultHandling,
-                  LanguageHandling, PathHandling, StyleStuff) {
+                  Questionnaires, QuestionGroups, Questions, QACs,
+                  ResultHandling, LanguageHandling, PathHandling, StyleStuff) {
             $scope.loading = "loading";
 
             /**
@@ -490,6 +488,23 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             "locale": locale
                         }))
                     )
+                    .chain(({questionnaire, locale}) => {
+                        let usedQacNames = R.map(
+                            R.path(["fields", "name", "msgid"]),
+                            questionnaire.qacs
+                        );
+                        return QACs.list()
+                            .map(R.path(["qacModules"]))
+                            .map(R.without(usedQacNames))
+                            .map(availableQacs => ({
+                                "questionnaire": R.assoc(
+                                    "availableQacs",
+                                    availableQacs,
+                                    questionnaire
+                                ),
+                                "locale": locale
+                            }));
+                    })
                     // Parse original locale
                     .map(({questionnaire, locale}) => ({
                         "questionnaire": R.assoc(
@@ -978,11 +993,16 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              *
              * @param qacName
              */
-            $scope.enableQac = function (qacName) {
+            $scope.enableQac = function () {
+                let qacName = $("#qacEnableSelect :selected").text();
                 Questionnaires.enableQAC(
                     $scope.questionnaire.uuid,
                     qacName
                 )
+                    .map(data => {
+                        $scope.init();
+                        return data;
+                    })
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)

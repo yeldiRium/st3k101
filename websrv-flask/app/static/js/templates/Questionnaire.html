@@ -257,6 +257,23 @@
                            ng-click="disableQac(qac.fields.name.msgid)">
                 </div>
             </div>
+            <div class="qac-enable">
+                <div class="qac-enable-header">
+                    <span class="h4">Available Access Control Modules:</span>
+                </div>
+                <div class="qac-enable-options">
+                    <select id="qacEnableSelect">
+                        <option ng-repeat="(id, name) in questionnaire.availableQacs"
+                                value="id">{{ name }}</option>
+                    </select>
+                </div>
+                <div class="qac-enable-button">
+                    <input type="button"
+                           class="btn btn-default"
+                           value="Enable"
+                           ng-click="enableQac()">
+                </div>
+            </div>
         </div>
     </div>
 </ew-load>

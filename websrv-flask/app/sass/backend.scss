@@ -124,7 +124,7 @@ body {
     border-top-width: 3px;
   }
 
-  .qac:last-of-type {
+  .qac-enable {
     border-radius: 0 0 5px 5px;
   }
 }
@@ -190,22 +190,23 @@ body {
 
     &[data-tooltip]:before {
       position: absolute;
-      padding: 0 15px;
+      padding: 2px 15px;
       margin-top: 20px;
       margin-left: -15px;
 
       display: none;
 
       content: attr(data-tooltip);
-      white-space: nowrap;
 
       background-color: white;
       color: black;
 
-      height: 30px;
-      line-height: 30px;
+      max-width: 200px;
+      line-height: 20px;
       border: 1px solid #ddd;
       border-radius: 5px;
+
+      text-align: left;
     }
 
     &[data-tooltip]:hover:before {
@@ -233,5 +234,42 @@ body {
 
   .qac-parameter-select {
     // TODO: style this
+  }
+}
+
+.qac-enable {
+  display: grid;
+  grid-template-columns: 3fr 6fr 1fr;
+  grid-template-areas: "header options button";
+
+  .qac-enable-header {
+    grid-area: header;
+
+    display: grid;
+    align-items: center;
+
+    border-right: 1px solid #ddd;
+
+    padding: 5px 5px 14px 10px;
+  }
+
+  .qac-enable-options {
+    grid-area: options;
+
+    display: grid;
+    align-items: center;
+
+    padding: 10px 10px 14px 10px;
+  }
+
+  .qac-enable-button {
+    grid-area: button;
+
+    padding: 10px;
+
+    input {
+      width: 100%;
+      height: 100%;
+    }
   }
 }
