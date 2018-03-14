@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-03-09 00:06+0100\n"
+"POT-Creation-Date: 2018-03-14 12:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#: main.py:123
+#: main.py:138
 msgid "U been doin bad stuff"
 msgstr ""
 
-#: main.py:132
+#: main.py:147
 msgid "U do not kno de wae"
 msgstr ""
 
@@ -33,7 +33,7 @@ msgstr ""
 msgid "Please choose a value."
 msgstr ""
 
-#: endpoints/SurveyFrontend.py:131
+#: endpoints/SurveyFrontend.py:133
 msgid "Please confirm your survey submission"
 msgstr ""
 
@@ -41,9 +41,9 @@ msgstr ""
 #: endpoints/REST/Question.py:71 endpoints/REST/Question.py:122
 #: endpoints/REST/Question.py:167 endpoints/REST/Question.py:229
 #: endpoints/REST/QuestionGroup.py:57 endpoints/REST/Questionnaire.py:72
-#: endpoints/REST/Questionnaire.py:198 endpoints/REST/Questionnaire.py:250
-#: endpoints/REST/Questionnaire.py:291 endpoints/REST/Questionnaire.py:334
-#: endpoints/REST/Questionnaire.py:371 endpoints/REST/Questionnaire.py:377
+#: endpoints/REST/Questionnaire.py:202 endpoints/REST/Questionnaire.py:254
+#: endpoints/REST/Questionnaire.py:295 endpoints/REST/Questionnaire.py:338
+#: endpoints/REST/Questionnaire.py:375 endpoints/REST/Questionnaire.py:381
 #: endpoints/REST/Survey.py:170 endpoints/REST/Survey.py:206
 msgid "Lacking credentials."
 msgstr ""
@@ -59,9 +59,9 @@ msgstr ""
 #: endpoints/REST/QAC.py:77 endpoints/REST/QAC.py:137 endpoints/REST/QAC.py:193
 #: endpoints/REST/QAC.py:276 endpoints/REST/Question.py:67
 #: endpoints/REST/Question.py:225 endpoints/REST/QuestionGroup.py:55
-#: endpoints/REST/QuestionGroup.py:225 endpoints/REST/Questionnaire.py:196
-#: endpoints/REST/Questionnaire.py:246 endpoints/REST/Questionnaire.py:289
-#: endpoints/REST/Questionnaire.py:332 endpoints/REST/Questionnaire.py:369
+#: endpoints/REST/QuestionGroup.py:225 endpoints/REST/Questionnaire.py:200
+#: endpoints/REST/Questionnaire.py:250 endpoints/REST/Questionnaire.py:293
+#: endpoints/REST/Questionnaire.py:336 endpoints/REST/Questionnaire.py:373
 msgid "No such Questionnaire."
 msgstr ""
 
@@ -76,7 +76,7 @@ msgstr ""
 #: endpoints/REST/QuestionGroup.py:163 endpoints/REST/QuestionGroup.py:166
 #: endpoints/REST/QuestionGroup.py:181 endpoints/REST/QuestionGroup.py:227
 #: endpoints/REST/QuestionGroup.py:230 endpoints/REST/Questionnaire.py:66
-#: endpoints/REST/Questionnaire.py:75 endpoints/REST/Questionnaire.py:201
+#: endpoints/REST/Questionnaire.py:75 endpoints/REST/Questionnaire.py:205
 #: endpoints/REST/Survey.py:37 endpoints/REST/Survey.py:71
 #: endpoints/REST/Survey.py:129
 msgid "Lacking credentials"
@@ -111,7 +111,7 @@ msgid "Partially updated."
 msgstr ""
 
 #: endpoints/REST/QAC.py:363 endpoints/REST/QAC.py:375
-#: endpoints/REST/Question.py:279 endpoints/REST/Questionnaire.py:149
+#: endpoints/REST/Question.py:279 endpoints/REST/Questionnaire.py:153
 msgid "Not found."
 msgstr ""
 
@@ -158,22 +158,26 @@ msgstr ""
 msgid "QuestionGroup deleted."
 msgstr ""
 
-#: endpoints/REST/Questionnaire.py:70 endpoints/REST/Questionnaire.py:248
+#: endpoints/REST/Questionnaire.py:70 endpoints/REST/Questionnaire.py:252
 #: endpoints/REST/Survey.py:127 endpoints/REST/Survey.py:168
 #: endpoints/REST/Survey.py:204
 msgid "No such Survey."
 msgstr ""
 
-#: endpoints/REST/Questionnaire.py:79
+#: endpoints/REST/Questionnaire.py:80
 msgid "Missing parameter."
 msgstr ""
 
-#: endpoints/REST/Questionnaire.py:204 endpoints/REST/Questionnaire.py:294
-#: endpoints/REST/Questionnaire.py:337
+#: endpoints/REST/Questionnaire.py:90
+msgid "No such template."
+msgstr ""
+
+#: endpoints/REST/Questionnaire.py:208 endpoints/REST/Questionnaire.py:298
+#: endpoints/REST/Questionnaire.py:341
 msgid "Questionnaire updated."
 msgstr ""
 
-#: endpoints/REST/Questionnaire.py:252
+#: endpoints/REST/Questionnaire.py:256
 msgid "Questionnaire deleted."
 msgstr ""
 
@@ -193,40 +197,45 @@ msgstr ""
 msgid "Missing parameter "
 msgstr ""
 
-#: framework/flask_request.py:32 framework/flask_request.py:64
+#: framework/flask_request.py:32 framework/flask_request.py:67
 msgid "Wrong argument type "
 msgstr ""
 
-#: model/Questionnaire.py:138
+#: model/Questionnaire.py:137
 msgid "Template needs to be a dictionary"
 msgstr ""
 
-#: model/Questionnaire.py:141
+#: model/Questionnaire.py:140
 msgid "Missing argument in template: "
 msgstr ""
 
-#: model/Questionnaire.py:143
+#: model/Questionnaire.py:142
 msgid "Argument has wrong type: "
 msgstr ""
 
-#: model/Questionnaire.py:144
+#: model/Questionnaire.py:143
 msgid " Expected: "
 msgstr ""
 
-#: model/Questionnaire.py:144
+#: model/Questionnaire.py:143
 msgid " Got: "
 msgstr ""
 
-#: model/Questionnaire.py:151
+#: model/Questionnaire.py:150
 msgid "Invalid language specified"
 msgstr ""
 
-#: model/Questionnaire.py:155
+#: model/Questionnaire.py:154
 msgid "Empty name specified"
 msgstr ""
 
-#: model/Survey.py:61 model/Survey.py:62 model/Survey.py:71 model/Survey.py:81
+#: model/Survey.py:62 model/Survey.py:63 model/Survey.py:72 model/Survey.py:82
 msgid "From template: "
+msgstr ""
+
+#: model/query_access_control/QACI15dTextParameter.py:19
+#: model/query_access_control/QACTextParameter.py:15
+msgid "This is a placeholder text, replace it to your liking."
 msgstr ""
 
 #: model/query_access_control/QACModule.py:74
@@ -235,11 +244,6 @@ msgstr ""
 
 #: model/query_access_control/QACModule.py:79
 msgid "QACParameter not found."
-msgstr ""
-
-#: model/query_access_control/QACTextParameter.py:20
-#: model/query_access_control/QACTextParameter.py:51
-msgid "This is a placeholder text, replace it to your liking."
 msgstr ""
 
 #: model/query_access_control/QACModules/EMailBlacklistQAC.py:21
@@ -265,7 +269,7 @@ msgid "This email address is not allowed to participatein this survey."
 msgstr ""
 
 #: model/query_access_control/QACModules/EMailBlacklistQAC.py:49
-msgid "List of disallowed E-Mail addresses"
+msgid "EMAIL_BLACKLIST"
 msgstr ""
 
 #: model/query_access_control/QACModules/EMailBlacklistQAC.py:50
@@ -275,16 +279,16 @@ msgid ""
 "also supported."
 msgstr ""
 
-#: model/query_access_control/QACModules/EMailBlacklistQAC.py:58
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:57
 msgid "Email blacklist"
 msgstr ""
 
-#: model/query_access_control/QACModules/EMailBlacklistQAC.py:59
+#: model/query_access_control/QACModules/EMailBlacklistQAC.py:58
 msgid "Block users with a certain emailaddress from submitting answers."
 msgstr ""
 
 #: model/query_access_control/QACModules/EMailVerificationQAC.py:14
-msgid "EMail verification"
+msgid "EMAIL_VERIFICATION"
 msgstr ""
 
 #: model/query_access_control/QACModules/EMailVerificationQAC.py:15
@@ -299,7 +303,7 @@ msgid "Whitespace in email address."
 msgstr ""
 
 #: model/query_access_control/QACModules/EMailWhitelistQAC.py:73
-msgid "List of allowed E-Mail addresses"
+msgid "EMAIL_WHITELIST"
 msgstr ""
 
 #: model/query_access_control/QACModules/EMailWhitelistQAC.py:74
@@ -308,11 +312,11 @@ msgid ""
 " a survey. Wildcardexpressions like *@uni-frankfurt.deare also supported."
 msgstr ""
 
-#: model/query_access_control/QACModules/EMailWhitelistQAC.py:82
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:81
 msgid "Email whitelist"
 msgstr ""
 
-#: model/query_access_control/QACModules/EMailWhitelistQAC.py:83
+#: model/query_access_control/QACModules/EMailWhitelistQAC.py:82
 msgid "Only allow users with a certain emailaddress to submit answers."
 msgstr ""
 
@@ -321,7 +325,6 @@ msgid "Missing pre-shared password."
 msgstr ""
 
 #: model/query_access_control/QACModules/PasswordQAC.py:26
-#: model/query_access_control/QACModules/PasswordQAC.py:42
 msgid "Pre-shared Password"
 msgstr ""
 
@@ -333,37 +336,41 @@ msgstr ""
 msgid "Please enter the correct password to submit your answers."
 msgstr ""
 
+#: model/query_access_control/QACModules/PasswordQAC.py:42
+msgid "PASSWORD"
+msgstr ""
+
 #: model/query_access_control/QACModules/PasswordQAC.py:43
 msgid "The password that a DataSubjecthas to fill in to submit asurvey."
 msgstr ""
 
-#: model/query_access_control/QACModules/PasswordQAC.py:50
+#: model/query_access_control/QACModules/PasswordQAC.py:49
 msgid "Password check"
 msgstr ""
 
-#: model/query_access_control/QACModules/PasswordQAC.py:51
+#: model/query_access_control/QACModules/PasswordQAC.py:50
 msgid ""
 "Only let DataSubjects submit answers to surveys if they know the pre-"
 "shared password."
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:38
+#: model/query_access_control/QACModules/TOSQAC.py:37
 msgid "Please accept the terms of service."
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:50
+#: model/query_access_control/QACModules/TOSQAC.py:49
 msgid "TOS Text"
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:51
+#: model/query_access_control/QACModules/TOSQAC.py:50
 msgid "The text that is displayed to the user as the terms of service."
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:56
+#: model/query_access_control/QACModules/TOSQAC.py:55
 msgid "TOS"
 msgstr ""
 
-#: model/query_access_control/QACModules/TOSQAC.py:57
+#: model/query_access_control/QACModules/TOSQAC.py:56
 msgid ""
 "Display a terms of service text to the user when they submit a survey. "
 "The user has to agree to the terms of service before a survey can be "
@@ -376,6 +383,19 @@ msgstr ""
 
 #: templates/TOSQAC.html:5
 msgid "I have also read and agree to the TOS of the EFLA survey platform."
+msgstr ""
+
+#: templates/home_index.html:8
+msgid "Welcome to the EFLA-web survey platform"
+msgstr ""
+
+#: templates/home_index.html:9
+msgid ""
+"Create your own surveys in seconds and start gathering data. You can "
+"provide your survey in different languages, target specific audiences by "
+"setting challenges for participants and even integrate into your own "
+"software by using our REST-like API. Get started today, by signing up at "
+"the top."
 msgstr ""
 
 #: templates/survey_please_verify.html:5 templates/survey_thanks.html:5
