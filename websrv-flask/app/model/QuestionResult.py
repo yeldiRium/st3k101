@@ -6,6 +6,9 @@ from model.DataSubject import DataSubject
 
 
 class QuestionResult(DataObject):
+
+    readable_by_anonymous = True
+
     @staticmethod
     def new(question, data_subject:DataSubject, answer_value:int,
             needs_verification:bool=True, verification_token:str=""):
@@ -38,10 +41,10 @@ class QuestionResult(DataObject):
             question.questionnaire.answer_count += 1
 
 
-QuestionResult.verified = DataAttribute(QuestionResult, "verified")
+QuestionResult.verified = DataAttribute(QuestionResult, "verified", no_acl=True)
 QuestionResult.verification_token = DataAttribute(QuestionResult,
                                                   "verification_token",
-                                                  serialize=False)
+                                                  serialize=False, no_acl=True)
 QuestionResult.submission_attempt_count = DataAttribute(
     QuestionResult, "submission_attempt_count")
 QuestionResult.data_subject = DataPointer(QuestionResult, "data_subject",

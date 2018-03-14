@@ -48,19 +48,19 @@ class Question(DataObject):
         :param subject_email: 
         :param needs_verification: 
         :param verification_token: 
-        :return: bool Inidicating whether the answer count has increased or not
+        :return: bool Indicating whether the answer count has increased or not
         """
 
         self.dirty = True
         data_subject = DataSubject.get_or_create(subject_email)
-        new_result = QuestionResult.new(self, data_subject, answer_value,
-                                        needs_verification, verification_token)
-
         previous_results = self.get_results_by_subject(data_subject)
         verified_results = list(filter(lambda x: x.verified, previous_results))
         unverified_results = list(filter(lambda x: not x.verified,
                                          previous_results))
-
+        # create after getting previous results as new result would be in
+        # previous results otherwise
+        new_result = QuestionResult.new(self, data_subject, answer_value,
+                                        needs_verification, verification_token)
         self.results.add(new_result)
 
         if len(previous_results) == 0:  # first result by this DataSubject

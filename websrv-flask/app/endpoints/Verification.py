@@ -18,8 +18,11 @@ def verify_survey_submission(token:str):
     :param token: str A random string generated on survey submission.
     :return: str HTML
     """
-    unverified_results = QuestionResult.many_from_query({"token": token,
-                                                         "verified": False})
+    unverified_results = QuestionResult.many_from_query({
+        "verification_token": token,
+        "verified": False
+    })
+
     if len(unverified_results) == 0:
         return make_response(redirect("/"))
 
