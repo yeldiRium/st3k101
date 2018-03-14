@@ -47,25 +47,38 @@ class QuestionStatistic(DataObject):
                 self.q3 = int(result_list[0].answer_value)
             else:
                 n = int((result_list_length - 1) / 4)
-                self.q1 = 0.25 * int(result_list[n - 1].answer_value) + 0.75 * int(result_list[n].answer_value)
-                self.q3 = 0.75 * int(result_list[3*n].answer_value) + 0.25 * int(result_list[3*n + 1].answer_value)
+                self.q1 = 0.25 * int(
+                    result_list[n - 1].answer_value) + 0.75 * int(
+                    result_list[n].answer_value)
+                self.q3 = 0.75 * int(
+                    result_list[3 * n].answer_value) + 0.25 * int(
+                    result_list[3 * n + 1].answer_value)
         if result_list_length % 4 == 3:
             n = int((result_list_length - 3) / 4)
-            self.q1 = 0.25 * int(result_list[n].answer_value) + 0.75 * int(result_list[n + 1].answer_value)
-            self.q3 = 0.75 * int(result_list[3*n + 1].answer_value) + 0.25 * int(result_list[3*n + 2].answer_value)
+            self.q1 = 0.25 * int(result_list[n].answer_value) + 0.75 * int(
+                result_list[n + 1].answer_value)
+            self.q3 = 0.75 * int(
+                result_list[3 * n + 1].answer_value) + 0.25 * int(
+                result_list[3 * n + 2].answer_value)
 
     def median(self, values: List[int]) -> int:
         """
         Returns the median value of all QuestionResults
         """
-        if len(values) == 0:
+        from pprint import pprint
+        import sys
+        pprint(values, stream=sys.stderr)
+        list.sort(values, key=lambda x: x.answer_value)
+        vl = len(values)
+
+        if vl == 0:
             return 0
 
-        list.sort(values, key=lambda x: x.answer_value)
-        if len(values) % 2 == 0:
-            return (values[len(values) // 2 - 1].answer_value) + int(values[len(values) // 2].answer_value) // 2
+        hvl = vl // 2
+        if vl % 2 == 0:
+            return int(values[hvl - 1].answer_value) + int(values[hvl].answer_value) // 2
         else:
-            return int(values[len(values) // 2].answer_value)
+            return int(values[hvl].answer_value)
 
 
 QuestionStatistic.smallest = DataAttribute(QuestionStatistic, "smallest")

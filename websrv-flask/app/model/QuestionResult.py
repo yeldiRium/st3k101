@@ -37,7 +37,7 @@ class QuestionResult(DataObject):
         new_result.submission_attempt_count = 0
         new_result.verified = not needs_verification
         new_result.verification_token = verification_token
-        new_result.answer_value = answer_value
+        new_result.answer_value = int(answer_value)
         return new_result
 
     def verify(self) -> bool:
