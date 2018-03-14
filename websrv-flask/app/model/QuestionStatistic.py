@@ -1,4 +1,5 @@
 import math
+from typing import List
 
 from framework.exceptions import QuestionStatisticHasNoQuestionException
 from framework.odm.DataAttribute import DataAttribute
@@ -6,7 +7,18 @@ from framework.odm.DataObject import DataObject
 
 
 class QuestionStatistic(DataObject):
+    """
+    A DataObject representing statistical data generated from QuestionResults of
+    a particular Question. Each Question has exactly one QuestionStatistic.
+    Used to draw the visualizations in the DataClient's dashboard.
+    """
+
     def update(self):
+        """
+        Updates the statistics taking into account all QuestionResults of 
+        self.question that are verified.
+        :return: None
+        """
         if self.question is None:
             raise QuestionStatisticHasNoQuestionException()
 
@@ -42,15 +54,15 @@ class QuestionStatistic(DataObject):
             self.q1 = 0.25 * int(result_list[n].answer_value) + 0.75 * int(result_list[n + 1].answer_value)
             self.q3 = 0.75 * int(result_list[3*n + 1].answer_value) + 0.25 * int(result_list[3*n + 2].answer_value)
 
-    def median(self, values):
+    def median(self, values: List[int]) -> int:
         """
-        values has to be sorted, but we actually do this in the first line so whatever
+        Returns the median value of all QuestionResults
         """
         list.sort(values, key=lambda x: x.answer_value)
         if len(values) % 2 == 0:
-            return (int(values[int(len(values) / 2) - 1].answer_value) + int(values[int(len(values) / 2)].answer_value)) / 2
+            return (values[int(len(values) / 2) - 1].answer_value) + int(values[int(len(values) / 2)].answer_value) // 2
         else:
-            return int(values[math.floor(len(values) / 2)].answer_value)
+            return int(values[int(math.floor(len(values) / 2))].answer_value)
 
 
 QuestionStatistic.smallest = DataAttribute(QuestionStatistic, "smallest")

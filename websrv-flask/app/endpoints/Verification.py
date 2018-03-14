@@ -2,6 +2,7 @@ from flask import render_template, make_response, redirect
 
 from main import app
 from model.QuestionResult import QuestionResult
+from model.Questionnaire import Questionnaire
 
 
 @app.route("/verify/survey/<string:token>", methods=["GET"])
@@ -23,14 +24,24 @@ def verify_survey_submission(token:str):
         "verified": False
     })
 
-    if len(unverified_results) == 0:
+    if len(unverified_results) == 0:  # nothing to verify
         return make_response(redirect("/"))
 
     email = None
-    for result in unverified_results:
-        result.verify()
+    new_answers = dict({})
+
+    for result in unverified_results:  # verify all results with same token
+        questionnaire_uuid = result.question.questionnaire.uuid
+        # check if the answer count needs to be updated on Questionnaire
+        new_answers[questionnaire_uuid] = result.verify()
+
+        # get hashed email to display it to the user
         if email is None:
             email = result.data_subject.email_hash
+
+    # update answer count on questionnaire if needed
+    for questionnaire_uuid, new_answer in new_answers.items():
+        Questionnaire(questionnaire_uuid).answer_count += 1
 
     return render_template("survey_thanks.html", email=email)
 
