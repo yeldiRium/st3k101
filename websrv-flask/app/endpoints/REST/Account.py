@@ -9,7 +9,7 @@ from framework import make_error
 from framework.exceptions import ObjectDoesntExistException, \
     AccessControlException
 from framework.flask_request import expect_optional
-from framework.internationalization import _
+from framework.internationalization import _, babel_languages
 from framework.internationalization.languages import Language
 from main import app
 from model.DataClient import DataClient
@@ -93,10 +93,9 @@ def api_account_update(email: str=None, locale: str=None):
         g._current_user.email = email
 
     if locale is not None:
-        try:
-            g._current_user.locale = Language[locale]
-        except KeyError:
+        if locale not in babel_languages:
             return make_error(_("Invalid locale."), 400)
+        g._current_user.locale = locale
 
     return jsonify({
         "result": _("Account updated."),
