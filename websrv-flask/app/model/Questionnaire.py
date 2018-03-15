@@ -166,7 +166,7 @@ class Questionnaire(DataObject):
         for group_name, questions in contents["questions"].items():
             new_group = new_questionnaire.add_question_group(group_name)
             for question in questions:
-                new_group.add_new_question(question)
+                new_questionnaire.add_question_to_group(new_group, question)
 
         return new_questionnaire
 

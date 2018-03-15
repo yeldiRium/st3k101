@@ -1,11 +1,7 @@
 from typing import List, Dict
 
-import sys
-import re
 from flask import g
 
-from framework.exceptions import LocaleNotFoundException
-from framework.internationalization import HTTP_LANGUAGE_TAGS
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 

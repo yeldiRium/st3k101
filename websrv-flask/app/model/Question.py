@@ -13,7 +13,7 @@ class Question(DataObject):
     readable_by_anonymous = True
 
     @staticmethod
-    def create_question(text: str):
+    def create_question(text: str) -> "Question":
         question = Question()
         question.text = I15dString.new(text)
         question.dirty = False
