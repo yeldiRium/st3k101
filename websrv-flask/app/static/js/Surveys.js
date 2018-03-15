@@ -994,7 +994,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param qacName
              */
             $scope.enableQac = function () {
-                let qacName = $("#qacEnableSelect :selected").text();
+                let qacName = $("#qacEnableSelect").val();
                 Questionnaires.enableQAC(
                     $scope.questionnaire.uuid,
                     qacName

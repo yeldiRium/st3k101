@@ -1,0 +1,8 @@
+name: Test Questionnaire
+description: A Questionnaire used for debugging
+
+questions:
+  Group 1:
+    - What is the meaning of life?
+  Group 2:
+    - Why are we here?
