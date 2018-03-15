@@ -104,11 +104,11 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
 
         while True:  # until mutex is acquired
 
-            mutex_locked, cas = get_memcache().get(mutex_uuid, get_cas=True)
+            mutex_locked, cas = get_memcache().gets(mutex_uuid)
             while mutex_locked:
                 # wait random time to avoid deadlocks
                 time.sleep(mutex_polling_time + random.uniform(0, mutex_polling_time / 10))
-                mutex_locked, cas = get_memcache().get(mutex_uuid, get_cas=True)
+                mutex_locked, cas = get_memcache().gets(mutex_uuid)
 
             if not get_memcache().cas(mutex_uuid, True, cas):  # atomic write, if memcached wasn't modified
                 continue  # atomic write failed
