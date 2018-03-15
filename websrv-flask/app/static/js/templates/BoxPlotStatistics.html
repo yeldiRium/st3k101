@@ -1,5 +1,5 @@
 <ew-load loading="loading">
-    <a click-go="/surveys/{{ questionnaire_uuid }}/statistic/spider">Spider Graph</a>
+    <a href="#/surveys/{{ questionnaire_uuid }}/statistic">Go Back</a>
     <svg width="{{ properties.graph_width }}px" height="{{ properties.graph_height }}px">
         <style type="text/css">
             .question_bar:hover .bar_bg {
@@ -118,7 +118,4 @@
             </g>
         </g>
     </svg>
-    <div class="row text-center">
-        <a href="/api/questionnaire/{{ questionnaire_uuid }}/dl/csv" target="_blank">Download as .CSV</a>
-    </div>
 </ew-load>

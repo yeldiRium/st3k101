@@ -12,9 +12,29 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
         FlashProvider.setShowClose(true);
     }])
     .controller("StatisticController", [
-        "$scope", "$routeParams",
-        function ($scope, $routeParams) {
-            $scope.questionnaire_uuid = $routeParams.questionnaire;
+        "$scope", "$routeParams", "Questionnaires", "ResultHandling",
+        "LanguageHandling",
+        function ($scope, $routeParams, Questionnaires, ResultHandling,
+                  LanguageHandling) {
+            $scope.loading = "loading";
+
+            Questionnaires.get($routeParams.questionnaire)
+                .mapRej(error => {
+                    $scope.$apply(() => {
+                        $scope.loading = "error";
+                    });
+                    return error;
+                })
+                .fork(
+                    ResultHandling.flashError($scope),
+                    ({data: questionnaire, locale}) => {
+                        $scope.$apply(() => {
+                            $scope.questionnaire_uuid = $routeParams.questionnaire;
+                            $scope.questionnaire = LanguageHandling.getQuestionnaireTranslation(locale, questionnaire);
+                            $scope.loading = "done";
+                        });
+                    }
+                )
         }])
     .controller("BoxPlotStatisticController", [
         "$scope", "$http", "$routeParams", "$timeout", "Questionnaires",
@@ -207,11 +227,11 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                     templateUrl: "/static/js/templates/Statistics.html",
                     controller: "StatisticController"
                 })
-                .when("/surveys/:questionnaire/statistic/boxplat", {
+                .when("/surveys/:questionnaire/statistic/boxplot", {
                     templateUrl: "/static/js/templates/BoxPlotStatistics.html",
                     controller: "BoxPlotStatisticController"
                 })
-                .when("/surveys/:questionnaire/statistic/radar", {
+                .when("/surveys/:questionnaire/statistic/radarchart", {
                     templateUrl: "/static/js/templates/RadarChartStatistics.html",
                     controller: "RadarChartStatisticController"
                 });

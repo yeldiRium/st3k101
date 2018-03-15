@@ -274,6 +274,24 @@ body {
   }
 }
 
+.statistics-overview {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-areas: ". boxplot radarchart csv .";
+
+  .statistics-boxplot-link {
+    grid-area: boxplot;
+  }
+
+  .statistics-radarchart-link {
+    grid-area: radarchart;
+  }
+
+  .statistics-csv-link {
+    grid-area: csv;
+  }
+}
+
 // RadarChart
 
 .radar-chart .area {
