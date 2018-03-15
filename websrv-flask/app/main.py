@@ -180,8 +180,6 @@ def handle_access_control_violation(error):
     :param error: The error.
     :return: None
     """
-    print("Access Control Exception:", file=sys.stderr)
-    print(traceback.format_exc(), file=sys.stderr)
     abort(404)
 
 

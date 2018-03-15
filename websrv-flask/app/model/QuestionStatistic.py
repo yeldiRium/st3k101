@@ -65,9 +65,6 @@ class QuestionStatistic(DataObject):
         """
         Returns the median value of all QuestionResults
         """
-        from pprint import pprint
-        import sys
-        pprint(values, stream=sys.stderr)
         list.sort(values, key=lambda x: x.answer_value)
         vl = len(values)
 

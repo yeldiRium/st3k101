@@ -10,8 +10,6 @@ class DataSubject(DataObject):
     @staticmethod
     def get_or_create(email_address):
         # hash email address of user to anonymize data
-        import sys
-        print("Get or create: {}".format(email_address), file=sys.stderr)
 
         email = email_address.encode("utf-8")
         hasher = hashlib.new('ripemd160')
