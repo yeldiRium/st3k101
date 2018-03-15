@@ -14,7 +14,7 @@ from framework.internationalization import _
 
 class QAC(Enum):
     TOS = (TOSQAC, _("TOS"))
-    PASSWORD = (PasswordQAC, _("PASSWORD"))
-    EMAIL_VERIFICATION = (EMailVerificationQAC, _("EMAIL_VERIFICATION"))
-    EMAIL_BLACKLIST = (EMailBlacklistQAC, _("EMAIL_BLACKLIST"))
-    EMAIL_WHITELIST = (EMailWhitelistQAC, _("EMAIL_WHITELIST"))
+    PASSWORD = (PasswordQAC, _("Password"))
+    EMAIL_VERIFICATION = (EMailVerificationQAC, _("Email Verification"))
+    EMAIL_BLACKLIST = (EMailBlacklistQAC, _("Email Blacklist"))
+    EMAIL_WHITELIST = (EMailWhitelistQAC, _("Email Whitelist"))

@@ -23,7 +23,7 @@ class PasswordQAC(QACModule):
         preshared_passphrase = None
 
         for param in self.parameters:
-            if param.name == I18n("Pre-shared Password"):
+            if param.name == I18n("Password"):
                 preshared_passphrase = param.text
 
         if preshared_passphrase is None:
@@ -39,14 +39,14 @@ class PasswordQAC(QACModule):
     def new() -> "PasswordQAC":
         # Set up params
         pass_qac_password = QACTextParameter.new("gandalf1")
-        pass_qac_password.name = I18n("PASSWORD")
-        pass_qac_password.description = I18n("The password that a DataSubject"
-                                             "has to fill in to submit a"
+        pass_qac_password.name = I18n("Password")
+        pass_qac_password.description = I18n("The password that a DataSubject "
+                                             "has to fill in to submit a "
                                              "survey.")
 
         # set up new qac instance
         the_new_qac = PasswordQAC()
-        the_new_qac.name = I18n("Password check")
+        the_new_qac.name = I18n("Password")
         the_new_qac.description = I18n("Only let DataSubjects submit answers "
                                        "to surveys if they know the "
                                        "pre-shared password.")

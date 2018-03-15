@@ -62,7 +62,7 @@ class EMailWhitelistQAC(QACModule):
         regexes = self._parse_email_list(next(self.parameters.__iter__()).text)
 
         if all((m is None for m in (r.match(email) for r in regexes))):
-            return [I18n("This email address is not allowed to participate"
+            return [I18n("This email address is not allowed to participate "
                          "in this survey.")]
 
         return []
@@ -70,16 +70,16 @@ class EMailWhitelistQAC(QACModule):
     @staticmethod
     def new() -> "EMailWhitelistQAC":
         email_list_str = QACTextParameter.new("*@*.*")
-        email_list_str.name = I18n("EMAIL_WHITELIST")
-        email_list_str.description = I18n("A comma separated list of email"
-                                          "addresses which are allowed when"
-                                          "submitting a survey. Wildcard"
-                                          "expressions like *@uni-frankfurt.de"
+        email_list_str.name = I18n("Email Whitelist")
+        email_list_str.description = I18n("A comma separated list of email "
+                                          "addresses which are allowed when "
+                                          "submitting a survey. Wildcard "
+                                          "expressions like *@uni-frankfurt.de "
                                           "are also supported.")
 
         the_new_qac = EMailWhitelistQAC()
-        the_new_qac.name = I18n("Email whitelist")
-        the_new_qac.description = I18n("Only allow users with a certain email"
+        the_new_qac.name = I18n("Email Whitelist")
+        the_new_qac.description = I18n("Only allow users with a certain email "
                                        "address to submit answers.")
 
         the_new_qac.parameters = {

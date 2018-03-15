@@ -1,6 +1,5 @@
-from typing import List, Optional
+from typing import List
 
-from framework.internationalization import _
 from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 

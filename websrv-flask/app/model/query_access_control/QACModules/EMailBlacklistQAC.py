@@ -1,4 +1,3 @@
-import re
 from typing import List, Any
 
 from flask import request
@@ -38,7 +37,7 @@ class EMailBlacklistQAC(QACModule):
         regexes = EMailWhitelistQAC._parse_email_list(email_list_str)
 
         if any((m is not None for m in (r.match(email) for r in regexes))):
-            return [I18n("This email address is not allowed to participate"
+            return [I18n("This email address is not allowed to participate "
                          "in this survey.")]
 
         return []
@@ -46,16 +45,16 @@ class EMailBlacklistQAC(QACModule):
     @staticmethod
     def new() -> "EMailBlacklistQAC":
         email_list_str = QACTextParameter.new("")
-        email_list_str.name = I18n("EMAIL_BLACKLIST")
-        email_list_str.description = I18n("A comma separated list of email"
-                                          "addresses which are not allowed when"
-                                          "submitting a survey. Wildcard"
-                                          "expressions like *@uni-frankfurt.de"
+        email_list_str.name = I18n("Email Blacklist")
+        email_list_str.description = I18n("A comma separated list of email "
+                                          "addresses which are not allowed when "
+                                          "submitting a survey. Wildcard "
+                                          "expressions like *@uni-frankfurt.de "
                                           "are also supported.")
 
         the_new_qac = EMailBlacklistQAC()
-        the_new_qac.name = I18n("Email blacklist")
-        the_new_qac.description = I18n("Block users with a certain email"
+        the_new_qac.name = I18n("Email Blacklist")
+        the_new_qac.description = I18n("Block users with a certain email "
                                        "address from submitting answers.")
 
         the_new_qac.parameters = {
