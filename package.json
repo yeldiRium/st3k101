@@ -13,7 +13,7 @@
     "clearStaticDir": "rm -rf websrv-flask/app/static/css",
     "mkCssDir": "mkdir -p websrv-flask/app/static/css",
     "compileSCSS": "npm run moveVendorCSS && npm run compileSCSSBackend && npm run compileSCSSHome && npm run compileSCSSSurvey",
-    "moveVendorCSS": "cp node_modules/bootstrap/dist/css/bootstrap.min.css websrv-flask/app/static/css/bootstrap.css && cp node_modules/spectrum-colorpicker/spectrum.css websrv-flask/app/static/css/spectrum.css",
+    "moveVendorCSS": "cp node_modules/bootstrap/dist/css/bootstrap.min.css websrv-flask/app/static/css/bootstrap.css && cp -r node_modules/bootstrap/dist/fonts websrv-flask/app/static/fonts && cp node_modules/spectrum-colorpicker/spectrum.css websrv-flask/app/static/css/spectrum.css",
     "compileSCSSBackend": "sass websrv-flask/app/sass/backend.scss > websrv-flask/app/static/css/backend.css",
     "compileSCSSHome": "sass websrv-flask/app/sass/home.scss > websrv-flask/app/static/css/home.css",
     "compileSCSSSurvey": "sass websrv-flask/app/sass/survey.scss > websrv-flask/app/static/css/survey.css",
