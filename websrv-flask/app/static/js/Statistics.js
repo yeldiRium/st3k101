@@ -11,7 +11,12 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
         FlashProvider.setTimeout(5000);
         FlashProvider.setShowClose(true);
     }])
-    .controller("QuestionnaireStatisticController", [
+    .controller("StatisticController", [
+        "$scope", "$routeParams",
+        function ($scope, $routeParams) {
+            $scope.questionnaire_uuid = $routeParams.questionnaire;
+        }])
+    .controller("BoxPlotStatisticController", [
         "$scope", "$http", "$routeParams", "$timeout", "Questionnaires",
         "QuestionStatistics", "ResultHandling",
         function ($scope, $http, $routeParams, $timeout, Questionnaires,
@@ -126,7 +131,7 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
 
             $scope.init();
         }])
-    .controller("QuestionnaireStatisticSpiderController", [
+    .controller("RadarChartStatisticController", [
         "$scope", "$routeParams", "QuestionStatistics", "ResultHandling",
         "LanguageHandling",
         function ($scope, $routeParams, QuestionStatistics, ResultHandling,
@@ -199,11 +204,15 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
             $locationProvider.hashPrefix("");
             $routeProvider
                 .when("/surveys/:questionnaire/statistic", {
-                    templateUrl: "/static/js/templates/QuestionnaireStatistics.html",
-                    controller: "QuestionnaireStatisticController"
+                    templateUrl: "/static/js/templates/Statistics.html",
+                    controller: "StatisticController"
                 })
-                .when("/surveys/:questionnaire/statistic/spider", {
-                    templateUrl: "/static/js/templates/QuestionnaireStatisticsSpider.html",
-                    controller: "QuestionnaireStatisticSpiderController"
+                .when("/surveys/:questionnaire/statistic/boxplat", {
+                    templateUrl: "/static/js/templates/BoxPlotStatistics.html",
+                    controller: "BoxPlotStatisticController"
+                })
+                .when("/surveys/:questionnaire/statistic/radar", {
+                    templateUrl: "/static/js/templates/RadarChartStatistics.html",
+                    controller: "RadarChartStatisticController"
                 });
         }]);
