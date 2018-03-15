@@ -11,23 +11,25 @@
                 <a class="navbar-brand" href="{{ url_for('home') }}">ST3K101</a>
             </div>
 
-            <div class="languagepicker_container navbar-right navbar-text">
-                {% include 'partials/languagepicker.html' %}
+            <div class="navbar-right-side">
+                {% if not_logged_in %}
+                <div class="navbar-text"><span class="text-danger">You need to log in to access this site.</span></div>
+                {% endif %}
+                {% if login_failed %}
+                <div class="navbar-text"><span class="text-danger">E-Mail or Password was not correct</span></div>
+                {% endif %}
+                <form class="navbar-form login-form" method="POST" action="{{ url_for('login') }}">
+                    <input type="email" class="form-control" name="email" placeholder="E-Mail" />
+                    <input type="password" class="form-control" name="password" placeholder="Password" />
+                    <button type="submit" class="btn btn-link" id="login">Login</button>
+                </form>
+                <form class="navbar-form register-link" method="GET" action="{{ url_for('registration') }}">
+                    <button type="submit" class="btn btn-link" id="submit">or Register</button>
+                </form>
+                <div class="languagepicker_container navbar-text">
+                    {% include 'partials/languagepicker.html' %}
+                </div>
             </div>
-            <form class="navbar-form navbar-right register-link" method="GET" action="{{ url_for('registration') }}">
-                <button type="submit" class="btn btn-link" id="submit">or Register</button>
-            </form>
-            <form class="navbar-form navbar-right login-form" method="POST" action="{{ url_for('login') }}">
-                <input type="email" class="form-control" name="email" placeholder="E-Mail" />
-                <input type="password" class="form-control" name="password" placeholder="Password" />
-                <button type="submit" class="btn btn-link" id="login">Login</button>
-            </form>
-            {% if login_failed %}
-            <div class="navbar-text navbar-right"><span class="text-danger">E-Mail or Password was not correct</span></div>
-            {% endif %}
-            {% if not_logged_in %}
-            <div class="navbar-text navbar-right"><span class="text-danger">You need to log in to access this site.</span></div>
-            {% endif %}
         </div>
     </nav>
 {% endblock content %}
