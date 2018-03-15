@@ -1,7 +1,10 @@
-<div class="form-check {% if error %}bg-danger{% endif %}">
-    <input type="checkbox" class="form-check-input" name="tos" id="tos">
-    <label class="form-check-label" for="tos">
-        {{ agb_agreement_text }} <br/>
-        <a href="{{ url_for('disclaimer') }}">{{ _("I have also read and agree to the TOS of the EFLA survey platform.") }}</a>
-    </label>
+<div class="well">
+    <p>{{ agb_agreement_text }}</p>
+    <a href="{{ url_for('disclaimer') }}">{{ _("I have also read and agree to the TOS of the EFLA survey platform.") }}</a>
+    <hr>
+    <div class="checkbox {% if error %}bg-danger{% endif %}">
+        <label>
+            <input type="checkbox" class="form-control" name="tos" id="tos">  {{ _("I agree") }}
+        </label>
+    </div>
 </div>

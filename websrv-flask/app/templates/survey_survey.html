@@ -61,6 +61,7 @@
                 {{ qac_template|safe }}
             {% endfor %}
             <div class="input-group">
+                <div class="input-group-addon">{{ _("Email address") }}</div>
                 <input type="email" class="form-control" name="email" placeholder="E-Mail" {% if 'email' in values %}value={{ values['email'] }}{% endif %} />
                 <div class="input-group-btn">
                     <input type="submit" class="btn btn-default" name="submit" value="Submit" />

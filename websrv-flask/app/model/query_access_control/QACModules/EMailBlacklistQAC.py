@@ -1,6 +1,6 @@
 from typing import List, Any
 
-from flask import request
+from flask import request, render_template
 
 from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
@@ -24,7 +24,7 @@ class EMailBlacklistQAC(QACModule):
             return _("The submitted pattern contains errors: ") + reason
 
     def render_questionnaire_template(self, previous_errors: List[I18n]) -> str:
-        return ""
+        return render_template("EmailQAC.html", error=[e.text for e in previous_errors])
 
     def control(self) -> List[I18n]:
         if 'email' not in request.form:
