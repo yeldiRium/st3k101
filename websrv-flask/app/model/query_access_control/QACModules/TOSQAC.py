@@ -16,7 +16,7 @@ class TOSQAC(QACModule):
         agb_agreement_text = None
 
         for param in self.parameters:
-            if param.name.msgid == "TOS":
+            if param.name.msgid == "TOS Text":
                 agb_agreement_text = param.text.get()
 
         return render_template(
