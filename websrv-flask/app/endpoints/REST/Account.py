@@ -74,6 +74,10 @@ def api_account_update(email: str=None, locale: str=None):
             "error": "Invalid locale.",
             "result": "error
         }
+        400: {
+            "error": "That email address is already in use.",
+            "result": error"
+        }
         403: {
             "error": "Lacking credentials",
             "result": "error"
@@ -90,6 +94,9 @@ def api_account_update(email: str=None, locale: str=None):
         return make_error(_("Lacking credentials."), 403)
 
     if email is not None:
+        user_with_email = DataClient.one_from_query({"email": email})
+        if user_with_email is not None:
+            return make_error(_("That email address is already in use."), 400)
         g._current_user.email = email
 
     if locale is not None:
