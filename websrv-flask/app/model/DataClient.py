@@ -1,7 +1,6 @@
 from typing import Optional
 
 from framework.odm.DataObject import DataObject
-from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.DataAttribute import DataAttribute
 
 
