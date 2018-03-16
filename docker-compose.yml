@@ -5,6 +5,8 @@ services:
   db-mongo:
     build: ./db-mongo
     restart: always
+    volumes:
+      - ./db-mongo/data:/data/db
 
   memcached:
     build: ./memcached

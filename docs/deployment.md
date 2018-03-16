@@ -64,7 +64,27 @@ STATISTICS_UPDATE_INTERVAL = 1200  # time in seconds between statistics updates
 
 ### 1.2 Volumes & Backup
 
+With docker, you can mount directories inside of running containers to places
+within the host file system. We use volumes to keep the contents of the database
+between restarts or rebuilds of the db-mongo container. We use another
+volume to place new content into the nginx container without having to rebuild.
 
+The volumes are defined in `EFLA-web/docker-compose.yml`.
+
+#### HowTo: Database backup
+
+Just backup the contents of the `EFLA-web/db-mongo/data` directory as it's mapped
+to the data directory of the database container.
+
+Make sure you do this backup as root, as the user id of the container and
+the host machine will differ.
+
+We suggest using rsync to copy the database over with permissions intact.
+
+#### HowTo: Applying code changes
+
+When changing code inside the `EFLA-web/websrv-flask/app` directory, you need
+to restart the stack to make nginx aware of the changes (see 2.2.).
 
 ### 1.2 SSL
 
@@ -82,8 +102,50 @@ To apply your changes, you need to rebuild (described in 2.1)
 
 ## 2. Deployment
 
+Run all of these commands from the `EFLA-web` directory.
+
 ### 2.1. Building
+
+When building for the first time you need to run:
+
+```bash
+cd EFLA-web
+npm install
+```
+
+To build the containers, then run:
+
+```bash
+docker-compose build --no-cache
+```
+Note: This will not delete the contents of the database.
+
+#### When to build
+
+You need to run `npm install` when:
+
+- JavaScript has been changed
+- SCSS files have been changed
+
+Note: It's not necessary to rebuild the containers after `npm install`, just restart the stack.
+
+You need to rebuild when changing:
+
+- Dockerfiles
+- SSL certificates
+- nginx config
 
 ### 2.2. Starting
 
+After building for the first time, you can run:
+
+```bash
+docker-compose start
+```
+
+To start the services. Use `docker ps` to view running docker services.
+To restart, use `docker-compose restart`.
+
 ### 2.3 Stopping
+
+To stop the services, run `docker-compose stop`
