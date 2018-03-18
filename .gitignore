@@ -12,3 +12,5 @@ websrv-flask/app/static/js/bundle.js
 
 # Compiled translations
 **/*.mo
+
+db-mongo/data/
