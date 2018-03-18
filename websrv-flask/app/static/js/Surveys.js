@@ -459,10 +459,10 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     ])
     .controller("EditQuestionnaireController", [
         "$scope", "$http", "$timeout", "Flash", "$routeParams",
-        "Questionnaires", "QuestionGroups", "Questions", "QACs",
+        "Questionnaires", "QuestionGroups", "Questions", "QACs", "Locales",
         "ResultHandling", "LanguageHandling", "PathHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, $routeParams,
-                  Questionnaires, QuestionGroups, Questions, QACs,
+                  Questionnaires, QuestionGroups, Questions, QACs, Locales,
                   ResultHandling, LanguageHandling, PathHandling, StyleStuff) {
             $scope.loading = "loading";
 
@@ -472,6 +472,23 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * nothing else.
              */
             $scope.init = function () {
+                Locales.all().map(data => {
+                    data = R.pipe(
+                        R.map(
+                            ([short, long]) => R.objOf(short, long)
+                        ),
+                        R.mergeAll
+                    )(data);
+
+                    $scope.$apply(() => {
+                        $scope.locales = data;
+                    });
+                    return data;
+                }).fork(
+                    ResultHandling.flashError($scope),
+                    ResultHandling.flashSuccess($scope)
+                );
+
                 return Questionnaires.get($routeParams.questionnaire)
                 // Load QACs for Questionnaire and store them
                     .chain(({data: questionnaire, locale}) => Questionnaires
@@ -560,13 +577,13 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         );
                 }
 
-                $scope.questionnaire = parsed_questionnaire;
-                if (parsed_questionnaire_original) {
-                    $scope.questionnaire_original =
-                        parsed_questionnaire_original;
-                    $scope.original_locale = R.map(R.toLower, questionnaire.original_locale);
-                }
                 $scope.$apply(() => {
+                    $scope.questionnaire = parsed_questionnaire;
+                    if (parsed_questionnaire_original) {
+                        $scope.questionnaire_original =
+                            parsed_questionnaire_original;
+                        $scope.original_locale = R.map(R.toLower, questionnaire.original_locale);
+                    }
                     $scope.loading = "done";
                 });
 

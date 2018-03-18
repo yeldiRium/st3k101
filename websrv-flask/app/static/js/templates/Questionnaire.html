@@ -38,6 +38,14 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="originalLocale" class="col-xs-2 control-label">
+                    Original Language
+                </label>
+                <div class="col-xs-10">
+                    {{ locales[questionnaire.fields.original_locale] }}
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="btn-group col-xs-12" role="group">
                     <button type="button" id="buttonQuestionnaireGoto"
                             class="btn btn-default"
@@ -126,75 +134,99 @@
                 </div>
             </div>
             <div class="panel-footer">
-                <form class="form-horizontal"
-                      ng-if="new.question.questionGroup == questionGroup">
-                    <div class="form-group">
-                        <label for="inputQuestionText"
-                               class="col-xs-2 control-label">Name</label>
-                        <div class="col-xs-10">
-                            <input type="text" class="form-control"
-                                   id="inputQuestionText"
-                                   ng-model="new.question.data.text"
-                                   ng-enter="createQuestion()">
+                <ngIf ng-if="questionGroup.fields.original_locale == original_locale">
+                    <form class="form-horizontal"
+                        ng-if="new.question.questionGroup == questionGroup">
+                        <div class="form-group">
+                            <label for="inputQuestionText"
+                                class="col-xs-2 control-label">Name</label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control"
+                                    id="inputQuestionText"
+                                    ng-model="new.question.data.text"
+                                    ng-enter="createQuestion()">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="buttonQuestionCreate"
-                               class="col-xs-2 control-label"></label>
-                        <div class="col-xs-2">
-                            <button type="button" id="buttonQuestionCreate"
-                                    class="form-control btn btn-default"
-                                    ng-click="createQuestion()">Create
-                            </button>
+                        <div class="form-group">
+                            <label for="buttonQuestionCreate"
+                                class="col-xs-2 control-label"></label>
+                            <div class="col-xs-2">
+                                <button type="button" id="buttonQuestionCreate"
+                                        class="form-control btn btn-default"
+                                        ng-click="createQuestion()">Create
+                                </button>
+                            </div>
+                            <div class="col-xs-2">
+                                <button type="button" id="buttonQuestionCancel"
+                                        class="form-control btn btn-default"
+                                        ng-click="resetEditing()">Cancel
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-xs-2">
-                            <button type="button" id="buttonQuestionCancel"
-                                    class="form-control btn btn-default"
-                                    ng-click="resetEditing()">Cancel
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                <button type="button" class="btn btn-default btn-success"
-                        ng-click="newQuestion(questionGroup)"
-                        ng-if="new.question.questionGroup != questionGroup">
-                    Add new Question to this Question Group...
-                </button>
-                <button type="button" class="btn btn-default btn-warning"
-                        mw-confirm-click="deleteQuestions(questionGroup)"
-                        mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questions?"
-                        ng-if="selection.questionGroup == questionGroup">
-                    Remove the selected {{ selection.count }} Questions from
-                    this Question Group...
-                </button>
-                <button type="button"
-                        class="btn btn-default btn-danger pull-right"
-                        mw-confirm-click="deleteQuestionGroup(questionGroup)"
-                        mw-confirm-message="Are you sure you want to delete the Question Group '{{ questionGroup.fields.name }}'?">
-                    Delete this Question Group...
-                </button>
+                    </form>
+                    <button type="button" class="btn btn-default btn-success"
+                            ng-click="newQuestion(questionGroup)"
+                            ng-if="new.question.questionGroup != questionGroup">
+                        Add new Question to this Question Group...
+                    </button>
+                    <button type="button" class="btn btn-default btn-warning"
+                            mw-confirm-click="deleteQuestions(questionGroup)"
+                            mw-confirm-message="Are you sure you want to delete the selected {{ selection.count }} Questions?"
+                            ng-if="selection.questionGroup == questionGroup">
+                        Remove the selected {{ selection.count }} Questions from
+                        this Question Group...
+                    </button>
+                    <button type="button"
+                            class="btn btn-default btn-danger pull-right"
+                            mw-confirm-click="deleteQuestionGroup(questionGroup)"
+                            mw-confirm-message="Are you sure you want to delete the Question Group '{{ questionGroup.fields.name }}'?">
+                        Delete this Question Group...
+                    </button>
+                </ngIf>
+                <ngIf ng-if="questionGroup.fields.original_locale != original_locale">
+                        <!--
+                            Adding new Objects can't be allowed in a different
+                            language inside a hierarchy.
+                         -->
+                        <button type="button" class="btn btn-default btn-success"
+                                disabled>
+                            Add new Question to this Question Group...
+                        </button>
+                        <button type="button"
+                                class="btn btn-default btn-danger pull-right"
+                                disabled>
+                            Delete this Question Group...
+                        </button>
+                </ngIf>
             </div>
         </div>
     </div>
     <div class="row" ng-if="questionnaire != null">
-        <div class="input-group" ng-if="new.questionGroup.data != null">
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="button"
-                        ng-click="createQuestionGroup()">Create</button>
-            </span>
-            <input type="text" class="form-control"
-                   ng-model="new.questionGroup.data.name"
-                   ng-enter="createQuestionGroup()"/>
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="button"
-                        ng-click="resetEditing()">Cancel</button>
-            </span>
-        </div>
-        <button type="button" class="btn btn-default"
-                ng-click="newQuestionGroup()"
-                ng-if="new.questionGroup.data == null">
-            Add new Question Group...
-        </button>
+        <ngIf ng-if="questionnaire.fields.original_locale == original_locale">
+            <div class="input-group" ng-if="new.questionGroup.data != null">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"
+                            ng-click="createQuestionGroup()">Create</button>
+                </span>
+                <input type="text" class="form-control"
+                    ng-model="new.questionGroup.data.name"
+                    ng-enter="createQuestionGroup()"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button"
+                            ng-click="resetEditing()">Cancel</button>
+                </span>
+            </div>
+            <button type="button" class="btn btn-default"
+                    ng-click="newQuestionGroup()"
+                    ng-if="new.questionGroup.data == null">
+                Add new Question Group...
+            </button>
+        </ngIf>
+        <ngIf ng-if="questionGroup.fields.original_locale != original_locale">
+            <button type="button" class="btn btn-default" disabled>
+                Add new Question Group...
+            </button>
+        </ngIf>
     </div>
     <div class="row">
         <div class="qac-container">
