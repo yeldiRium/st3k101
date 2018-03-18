@@ -12,10 +12,10 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
         FlashProvider.setShowClose(true);
     }])
     .controller("StatisticController", [
-        "$scope", "$routeParams", "Questionnaires", "ResultHandling",
-        "LanguageHandling",
-        function ($scope, $routeParams, Questionnaires, ResultHandling,
-                  LanguageHandling) {
+        "$scope", "$routeParams", "Questionnaires", "QuestionStatistics",
+        "ResultHandling", "LanguageHandling",
+        function ($scope, $routeParams, Questionnaires, QuestionStatistics,
+                  ResultHandling, LanguageHandling) {
             $scope.loading = "loading";
 
             Questionnaires.get($routeParams.questionnaire)
@@ -34,7 +34,15 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                             $scope.loading = "done";
                         });
                     }
-                )
+                );
+
+            $scope.updateStatistics = function () {
+                QuestionStatistics.update($scope.questionnaire_uuid)
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
+            };
         }])
     .controller("BoxPlotStatisticController", [
         "$scope", "$http", "$routeParams", "$timeout", "Questionnaires",

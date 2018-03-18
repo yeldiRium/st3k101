@@ -238,7 +238,7 @@ angular.module("API", [])
                         .map(ResultHandling.extractData);
                 },
                 "update": function (data) {
-                    const {email = null, locale = null} = data;
+                    const { email = null, locale = null } = data;
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": "/api/account/current",
@@ -322,7 +322,7 @@ angular.module("API", [])
         function ($http, PathHandling, ResultHandling) {
             return {
                 "create": function (data) {
-                    const {survey_uuid, name, description, template = null} =
+                    const { survey_uuid, name, description, template = null } =
                         data;
                     return Future.tryP(() => $http({
                         "method": "POST",
@@ -353,7 +353,7 @@ angular.module("API", [])
                         .map(ResultHandling.extractDataAndLocale);
                 },
                 "update": function (questionnaire_uuid, data) {
-                    const {name = null, description = null} = data;
+                    const { name = null, description = null } = data;
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": `/api/questionnaire/${questionnaire_uuid}`,
@@ -471,7 +471,7 @@ angular.module("API", [])
                         .map(ResultHandling.extractData);
                 },
                 "update": function (questionGroup_uuid, data) {
-                    const {name = null, color = null, textColor = null} = data;
+                    const { name = null, color = null, textColor = null } = data;
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": `/api/question_group/${questionGroup_uuid}`,
@@ -507,7 +507,7 @@ angular.module("API", [])
         function ($http, ResultHandling) {
             return {
                 "create": function (questionnaire_uuid, questionGroup_uuid,
-                                    text) {
+                    text) {
                     return Future.tryP(() => $http({
                         "method": "POST",
                         "url": "/api/question",
@@ -538,7 +538,7 @@ angular.module("API", [])
                         .map(ResultHandling.extractData);
                 },
                 "delete": function (question_uuid, questionnaire_uuid,
-                                    questionGroup_uuid) {
+                    questionGroup_uuid) {
                     return Future.tryP(() => $http({
                         "method": "DELETE",
                         "url": `/api/question/${question_uuid}`,
@@ -592,7 +592,7 @@ angular.module("API", [])
                 "getWholeQuestionnaire": function (questionnaire_uuid) {
                     return Questionnaires
                         .get(questionnaire_uuid)
-                        .map(({data: questionnaireData, locale}) => {
+                        .map(({ data: questionnaireData, locale }) => {
                             return R.pipe(
                                 R.map(questionGroup => ({
                                     "name": questionGroup.fields.name,
@@ -603,13 +603,13 @@ angular.module("API", [])
                                 R.map(questionGroup => R.assoc(
                                     "questions",
                                     R.map(question => get(question.uuid)
-                                            .map(statisticResult => {
-                                                return {
-                                                    "text": LanguageHandling.getStringLocale(locale, question.fields.text),
-                                                    "answers": R.pathOr([], ["fields", "results"], question).length,
-                                                    "statistic": statisticResult
-                                                }
-                                            }),
+                                        .map(statisticResult => {
+                                            return {
+                                                "text": LanguageHandling.getStringLocale(locale, question.fields.text),
+                                                "answers": R.pathOr([], ["fields", "results"], question).length,
+                                                "statistic": statisticResult
+                                            }
+                                        }),
                                         questionGroup.questions
                                     ),
                                     questionGroup
@@ -627,7 +627,7 @@ angular.module("API", [])
                                             )
                                         })
                                 ))
-                            (questionnaireData.fields.questiongroups);
+                                (questionnaireData.fields.questiongroups);
                         })
                         .chain(questionGroups => {
                             return Future.parallel(
@@ -635,6 +635,13 @@ angular.module("API", [])
                                 questionGroups
                             );
                         });
+                },
+                "update": function (questionnaire_uuid) {
+                    return Future.tryP(() => $http({
+                        "method": "POST",
+                        "url": "/api/statistics/update"
+                    }))
+                        .map(ResultHandling.extractData);
                 }
             }
         }])
