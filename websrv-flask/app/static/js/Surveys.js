@@ -57,6 +57,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param locale
              */
             let prepareView = function ({data, locale}) {
+                $scope.current_locale = locale;
                 $scope.surveys = R.pipe(
                     R.map(survey => {
                         let original_locale = R.head(R.map(
