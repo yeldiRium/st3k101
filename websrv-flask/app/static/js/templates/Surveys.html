@@ -11,6 +11,9 @@
                 <input type="text" class="form-control" id="inputSurveyName" data-uuid="{{ survey.uuid }}" ng-model="survey.fields.name"
                     ng-enter="stopEditing('surveyname', $event, survey)" ng-blur="abortEditing('surveyname', $event, survey)"
                     ng-if="isEditing('surveyname')">
+                <ngIf ng-if="survey.fields.original_locale != current_locale">
+                    [Originally in {{ locales[survey.fields.original_locale] }}]
+                </ngIf>
             </div>
             <div class="panel-body">
                 <div class="list-group">

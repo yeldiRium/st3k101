@@ -14,9 +14,11 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     }])
     .controller("SurveysController", [
         "$scope", "$http", "$timeout", "Flash", "Surveys", "Questionnaires",
-        "ResultHandling", "LanguageHandling", "PathHandling", "StyleStuff",
+        "Locales", "ResultHandling", "LanguageHandling", "PathHandling",
+        "StyleStuff",
         function ($scope, $http, $timeout, Flash, Surveys, Questionnaires,
-                  ResultHandling, LanguageHandling, PathHandling, StyleStuff) {
+                  Locales, ResultHandling, LanguageHandling, PathHandling,
+                  StyleStuff) {
             $scope.loading = "loading";
 
             /**
@@ -35,6 +37,23 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                  * If something goes wrong, an error message is set and nothing
                  * else displayed.
                  */
+                Locales.all().map(data => {
+                    data = R.pipe(
+                        R.map(
+                            ([short, long]) => R.objOf(short, long)
+                        ),
+                        R.mergeAll
+                    )(data);
+
+                    $scope.$apply(() => {
+                        $scope.locales = data;
+                    });
+                    return data;
+                }).fork(
+                    ResultHandling.flashError($scope),
+                    ResultHandling.flashSuccess($scope)
+                );
+
                 Surveys.all()
                     .mapRej(data => {
                         $scope.$apply(() => {
