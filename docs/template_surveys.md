@@ -11,7 +11,7 @@ a template file.
 The template files are located at 
 `EFLA-web/websrv-flask/app/templates/questionnaire`.
 
-The search path can be changed in `flask.cfg`:
+The path can be configured in `flask.cfg`:
 
 ```SURVEY_TEMPLATE_PATH = "/app/templates/questionnaire"```
 
@@ -20,7 +20,7 @@ with `/app`.
 
 ## Format
 
-The template files are written in a simple YAML format. The schema is as follows:
+The template files are written in YAML. The schema is as follows:
 
 ```yaml
 name: Name of the Questionnaire

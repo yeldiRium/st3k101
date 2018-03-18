@@ -111,13 +111,14 @@ When building for the first time you need to run:
 ```bash
 cd EFLA-web
 npm install
-```
-
-To build the containers, then run:
-
-```bash
 docker-compose build --no-cache
 ```
+
+This installs the npm dependencies and builds the docker container.
+These steps are independent from each other. I.e. you can change JS
+code, run `npm install` und you're good without rebuilding the whole 
+container.
+
 Note: This will not delete the contents of the database.
 
 #### When to build
@@ -127,7 +128,7 @@ You need to run `npm install` when:
 - JavaScript has been changed
 - SCSS files have been changed
 
-Note: It's not necessary to rebuild the containers after `npm install`, just restart the stack.
+Note: `npm install`,
 
 You need to rebuild when changing:
 

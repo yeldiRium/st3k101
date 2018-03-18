@@ -27,10 +27,10 @@
         - [3.2 Using the REST-like API](#32-using-the-rest-like-api)
             - [3.2.1 Specifying a locale](#321-specifying-a-locale)
             - [3.2.1.1 How locale is detected](#3211-how-locale-is-detected)
-                - [3.2.1.2 In HTTP Headers](#3212-in-http-headers)
-                - [3.2.1.3 As Request Parameter](#3213-as-request-parameter)
-            - [3.2.2 The locale cookie](#322-the-locale-cookie)
-            - [3.2.3 Format of internationalized strings](#323-format-of-internationalized-strings)
+                - [3.2.1.2 As Request Parameter](#3212-as-request-parameter)
+                - [3.2.1.3 The locale cookie](#3213-the-locale-cookie)
+                - [3.2.1.4 In HTTP Headers](#3214-in-http-headers)
+            - [3.2.2 Format of internationalized strings](#323-format-of-internationalized-strings)
 
 
 ## 1. Introduction
@@ -320,24 +320,29 @@ locale is used.
 
 #### 3.2.1.1 How locale is detected
 
-The request parameter overrides the cookie, which overrides the DataClient's account language, which overrides the HTTP header.
+In priority ascending:
 
-##### 3.2.1.2 In HTTP Headers
+- request parameter 
+- browser cookie
+- DataClient's account locale
+- HTTP `Accept-Language` header
 
-Set the `Accept-Language' filed in the HTTP header to the requested locale.
-
-##### 3.2.1.3 As Request Parameter
+##### 3.2.1.2 As request parameter
 
 Send `locale` as a request parameter with any request to request a specific locale.
 
-#### 3.2.2 The locale cookie
+##### 3.2.1.3 The locale cookie
 
 The first time a client's locale is detected, we hand out a cookie with the detected locale.
 
 This cookie will be used from this moment on. To be issued a new cookie, manually set the `locale` request
 parameter to a different locale.
 
-#### 3.2.3 Format of internationalized strings
+##### 3.2.1.4 In HTTP headers
+
+Set the `Accept-Language' field in the HTTP header to the requested locale.
+
+#### 3.2.2 Format of internationalized strings
     
 ```json
 {   
