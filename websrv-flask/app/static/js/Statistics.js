@@ -45,8 +45,10 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
 
             $scope.properties = {
                 "questionnaire_uuid": null,
-                "graph_width": window.innerWidth - 400,
-                "graph_height": 60, // 2 * bar_padding as default
+                // see marginsof #content
+                "graph_width": window.innerWidth * 0.76,
+                // 2 * bar_padding as default
+                "graph_height": 60,
                 "graph_padding_left": 100,
                 "graph_padding_right": 100,
                 "text_padding_left": 5,
@@ -69,6 +71,7 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                             $scope.questionnaire = null;
                             $scope.statistics = null;
                             $scope.loading = "error";
+                            console.log($scope.properties.graph_width);
                         });
                         return data;
                     })
