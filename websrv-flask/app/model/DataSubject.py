@@ -5,12 +5,22 @@ from framework.odm.DataAttribute import DataAttribute
 
 
 class DataSubject(DataObject):
+    """
+    A DataObject representing a DataSubject.
+    DataSubjects submit answers to Questionnaires.
+    """
     has_owner = False
 
     @staticmethod
-    def get_or_create(email_address):
-        # hash email address of user to anonymize data
+    def get_or_create(email_address: str) -> "DataSubject":
+        """
+        Factory method for getting an existing DataSubject from the database or
+        returning an already existing DataSubject.
+        :param email_address: str The email address of the DataSubject
+        :return: DataSubject The newly created or already existing DataSubject
+        """
 
+        # hash email address of user to anonymize data
         email = email_address.encode("utf-8")
         hasher = hashlib.new('ripemd160')
         hasher.update(email)

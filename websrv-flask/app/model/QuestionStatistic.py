@@ -13,7 +13,7 @@ class QuestionStatistic(DataObject):
     Used to draw the visualizations in the DataClient's dashboard.
     """
 
-    def update(self):
+    def update(self) -> None:
         """
         Updates the statistics taking into account all QuestionResults of 
         self.question that are verified.

@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from flask import g
 
 
-def send_mail(to: str, subject: str, message: str):
+def send_mail(to: str, subject: str, message: str) -> None:
     """
     A helper method to wrap interaction with smtplib in order to send emails.
     

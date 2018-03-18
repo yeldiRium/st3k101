@@ -8,14 +8,23 @@ from framework.odm.DataObject import DataObject
 
 class I15dString(DataObject):
     """
-    A internationalized string, which may have multiple instances, one for every language in 
-    framework.internationalization.languages.Language
+    A internationalized string, which may have multiple representations, one for
+    every language in framework.internationalization.babel_languages.py.
     """
 
     readable_by_anonymous = True
 
     @staticmethod
     def new(text:str=None):
+        """
+        Factory method for creating an I15dString with default values.
+        The default locale of the string will be the current locale.
+        :param text: str The content of the new I15dString. This text will be
+                         the representation of the string in the current
+                         language (which is always stored in g._current_locale
+                         and is detected automatically on each request).
+        :return: I15dString The newly created I15dString
+        """
         the_new_string = I15dString()
         the_new_string.locales = dict({})
         the_new_string.default_locale = g._locale
@@ -24,6 +33,12 @@ class I15dString(DataObject):
         return the_new_string
 
     def get(self):
+        """
+        Gets the best matching representation of the I15dString according to
+        g._current_locale. Returns the default locale for the string if the
+        string has no representation of the current locale.
+        :return: str The best matching representation of the string.
+        """
         if g._locale in self.get_locales():
             return self.locales[g._locale]
         else:
@@ -31,7 +46,7 @@ class I15dString(DataObject):
 
     def set_locale(self, text: str, locale: str = None) -> None:
         """
-        Add a localized instance of this string for the given locale.
+        Add a localized representation of this string for the given locale.
         :param locale: str The short code for the locale.
         :param text: str The localized instance of the string
         :return: None
@@ -45,11 +60,14 @@ class I15dString(DataObject):
 
     def get_locales(self) -> List[str]:
         """
-        :return: list of available locales 
+        :return: List[str] A list of available locales 
         """
         return list(self.locales.keys())
 
     def get_default_text(self) -> str:
+        """
+        :return: str The default locale representation of the string 
+        """
         return self.locales[self.default_locale]
 
 

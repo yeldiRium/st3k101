@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
@@ -9,11 +11,23 @@ from model.QuestionStatistic import QuestionStatistic
 
 
 class Question(DataObject):
+    """
+    A DataObject representing a Question.
+    Questions are grouped in QuestionGroup and belong to Questionnaires.
+    Any Question may have any number of QuestionResults.
+    Questions are linked to a QuestionStatistic which is updated when
+    the Question.dirty flag is set.
+    """
 
     readable_by_anonymous = True
 
     @staticmethod
     def create_question(text: str) -> "Question":
+        """
+        Factory method to create a Question with default values
+        :param text: str The name of the new Question
+        :return: Question The newly created Question
+        """
         question = Question()
         question.text = I15dString.new(text)
         question.dirty = False
@@ -24,9 +38,9 @@ class Question(DataObject):
 
         return question
 
-    def remove_question_result(self, question_result: QuestionResult):
+    def remove_question_result(self, question_result: QuestionResult) -> None:
         """
-        
+        Removes a QuestionResult
         :param question_result: 
         :return: 
         """
@@ -37,14 +51,16 @@ class Question(DataObject):
     def add_question_result(
             self, answer_value: int,
             subject_email: str,
-            needs_verification:bool=True,
-            verification_token:str="") -> bool:
+            needs_verification: bool=True,
+            verification_token: str="") -> bool:
         """
-        
-        :param answer_value: 
-        :param subject_email: 
-        :param needs_verification: 
-        :param verification_token: 
+        Adds a new QuestionResult to the Question.
+        :param answer_value: int The value the DataSubject has chosen
+        :param subject_email: str The email address of the DataSubject
+        :param needs_verification: bool Indicating whether this result need to 
+                                        be verified
+        :param verification_token: str The verification token to be used when
+                                       verifying the result
         :return: bool Indicating whether the answer count has increased or not
         """
 
@@ -85,22 +101,28 @@ class Question(DataObject):
 
         return False
 
-    def update_text(self, text):
+    def update_text(self, text: str) -> None:
+        """
+        Setter for Question.text, wraps setter of I15dString
+        :param text: str The new text for the Question
+        :return: None
+        """
         self.text.set_locale(text)
 
-    def get_results_by_subject(self, data_subject:DataSubject):
+    def get_results_by_subject(self, data_subject: DataSubject) -> \
+            Iterable[QuestionResult]:
+        """
+        Gets all QuestionResults for the Question submitted by a specific
+        DataSubject.
+        :param data_subject: DataSubject The DataSubject whose results to get
+        :return: Iterable[DataSubject] The list of matching QuestionResults
+        """
         results_by_subject = QuestionResult.many_from_query({
             "data_subject": data_subject.uuid,
             "question": self.uuid
         })
         return results_by_subject
 
-
-# These are here to prevent circular dependencies in QuestionStatistic and
-# QuestionResult modules
-QuestionStatistic.question = DataPointer(QuestionStatistic, "question",
-                                         Question)
-QuestionResult.question = DataPointer(QuestionResult, "question", Question)
 
 Question.text = DataPointer(Question, "text", I15dString, cascading_delete=True)
 Question.statistic = DataPointer(Question, "statistic", QuestionStatistic,
@@ -109,3 +131,10 @@ Question.results = DataPointerSet(Question, "results", QuestionResult,
                                   cascading_delete=True, serialize=False,
                                   no_acl=True)
 Question.dirty = DataAttribute(Question, "dirty", serialize=False, no_acl=True)
+
+# These are here to prevent circular dependencies in QuestionStatistic and
+# QuestionResult modules
+QuestionStatistic.question = DataPointer(QuestionStatistic, "question",
+                                         Question)
+QuestionResult.question = DataPointer(QuestionResult, "question", Question)
+

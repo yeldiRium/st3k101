@@ -3,7 +3,7 @@ import os
 from flask import g
 
 
-def generate_verification_token():
+def generate_verification_token() -> str:
     """
     Helper function to generate a random string that is used as verification
     token at survey submission.
@@ -14,7 +14,7 @@ def generate_verification_token():
     return some_data
 
 
-def generate_verification_url(endpoint, token):
+def generate_verification_url(endpoint: str, token: str) -> str:
     """
     Given a verification token and verification endpoint, generates an url 
     pointing to the service.
@@ -29,7 +29,7 @@ def generate_verification_url(endpoint, token):
     )
 
 
-def generate_questionnaire_url(questionnaire_uuid):
+def generate_questionnaire_url(questionnaire_uuid: str) -> str:
     """
     Given a questionnaire uuid, generates an url pointing to the survey frontend
     of the given questionnaire.

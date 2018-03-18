@@ -95,6 +95,8 @@ class Survey(DataObject):
 
             group_name = template_group.name.get_default_text()
             if foreign_template:
+                # Don't just copy name over, prepend notice that it's copied
+                # from a different locale
                 group_name = _("From template: ") + group_name + "({})".format(
                     template_locale)
 
