@@ -11,34 +11,58 @@ from model.query_access_control.QACTextParameter import QACTextParameter
 
 
 class EMailWhitelistQAC(QACModule):
+    """
+    A QACModule which matches the DataSubject's email address against a list
+    of allowed email addresses. The list of allowed email addresses supports
+    wildcard expressions like *@*.uni-frankfurt.de.
+
+    For a full documentation of the methods see model/qac/QACModule
+    """
 
     @staticmethod
     def _parse_email_list(text: str) -> List[re._pattern_type]:
+        """
+        Helper method to parse the user submitted list of allowed emails.
+        Checks syntax and builds regex patterns from the list.
+        :param text: str The user submitted list of allowed emails
+        :return: List[re.pattern] A list of regex patterns which match allowed
+                                  email addresses
+        """
+        # separate comma separated list and strip whitespace between commas
         entries = list(map(str.strip, text.split(",")))
 
+        # if whitespace is found in entries, it's not valid syntax
         if any((" " in e for e in entries)):
             raise ValueError(_("Whitespace in email address."))
 
         patterns = []
 
-        for e in entries:
-            def to_regex(part):
-                if part == "*":
-                    return ".*"
-                else:
-                    return re.escape(part)
+        def to_regex(part):
+            if part == "*":
+                return ".*"
+            else:
+                return re.escape(part)
 
+        for e in entries:
+            # split wildcard portions from rest of email
             expr = filter(lambda x: x, e.replace("*", ",*,").split(","))
+            # escape normal portions, build regex for wildcards
             expr = map(to_regex, expr)
+            # concat
             expr = "".join(expr)
+            # add string delimiters to pattern
             expr = "^" + expr + "$"
             pattern = re.compile(expr)
-
             patterns.append(pattern)
 
         return patterns
 
     def set_config_value(self, param_uuid: str, value: Any):
+        """
+        Overridden to implement syntax checking when updating the email list
+
+        For a full documentation of the method see model/qac/QACModule
+        """
         super().set_config_value(param_uuid, value)
         try:
             self._parse_email_list(next(self.parameters.__iter__()).text)

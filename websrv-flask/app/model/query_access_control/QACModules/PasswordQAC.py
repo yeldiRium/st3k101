@@ -9,6 +9,12 @@ from model.query_access_control.QACTextParameter import QACTextParameter
 
 
 class PasswordQAC(QACModule):
+    """
+    A QACModule which asks for a password when submitting answers to a 
+    questionnaire.
+
+    For a full documentation of the methods see model/qac/QACModule
+    """
 
     def render_questionnaire_template(self, previous_errors: List[I18n]):
         return render_template(

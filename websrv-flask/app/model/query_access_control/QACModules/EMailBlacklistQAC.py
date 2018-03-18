@@ -11,8 +11,19 @@ from model.query_access_control.QACTextParameter import QACTextParameter
 
 
 class EMailBlacklistQAC(QACModule):
+    """
+    A QACModule which matches the DataSubject's email address against a list
+    of forbidden emails when submitting answers to a questionnaire.
+    
+    For a full documentation of the methods see model/qac/QACModule
+    """
 
     def set_config_value(self, param_uuid: str, value: Any):
+        """
+        Overridden to implement syntax checking when updating the email list
+
+        For a full documentation of the method see model/qac/QACModule
+        """
         super().set_config_value(param_uuid, value)
         try:
             EMailWhitelistQAC._parse_email_list(next(self.parameters.__iter__()).text)

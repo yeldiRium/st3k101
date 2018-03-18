@@ -6,6 +6,20 @@ from model.query_access_control.QACModule import QACModule
 
 
 class EMailVerificationQAC(QACModule):
+    """
+    A dummy QACModule which causes the SurveyFrontend to mark responses 
+    submitted to Questionnaires as unverified.
+    
+    DataSubjects may then verify their responses by following a link sent out
+    to them via email. The link contains a verification token, which is used to
+    relate the responses back to the DataSubject without saving the email
+    address.
+    
+    For a full documentation of the methods see model/qac/QACModule
+    
+    For a better understanding of how email verification works, see 
+    endpoints/SurveyFrontend.py
+    """
 
     @staticmethod
     def new() -> "EMailVerificationQAC":

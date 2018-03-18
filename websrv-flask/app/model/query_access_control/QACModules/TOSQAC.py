@@ -10,6 +10,12 @@ from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
 
 
 class TOSQAC(QACModule):
+    """
+    A QACModule which displays a terms of service text when submitting answers
+    to a Questionnaire
+    
+    For a full documentation of the methods see model/qac/QACModule
+    """
 
     def render_questionnaire_template(self, errors: List[I18n]) -> str:
 
@@ -26,12 +32,7 @@ class TOSQAC(QACModule):
         )
 
     def control(self) -> List[I18n]:
-        """
-        Tests the flask request parameters against the persisted config params.
-        Returns a list of all found errors in user-readable form, so that they
-        can be displayed as an error message.
-        An empty list means there was no error.
-        """
+
         if 'tos' not in request.form or not request.form['tos']:
                 return [I18n("Please accept the terms of service.")]
 
