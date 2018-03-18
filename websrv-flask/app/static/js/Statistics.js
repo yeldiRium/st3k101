@@ -213,9 +213,12 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                 )
                 (questionGroups);
                 $scope.$apply(() => {
-                    $scope.questionnaire_uuid = $routeParams.questionnaire
+                    $scope.questionnaire_uuid = $routeParams.questionnaire;
                     $scope.loading = "done";
-                    setTimeout(() => RadarChart.draw(".chart-container", data), 0);
+                    setTimeout(() => RadarChart.draw(".chart-container", data, {
+                        w: 700,
+                        levels: 11
+                    }), 0);
                 })
             };
 
