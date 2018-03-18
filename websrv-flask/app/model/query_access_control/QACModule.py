@@ -15,7 +15,7 @@ from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
 class QACModule(DataObject):
     """
     A QACModule represents a challenge DataSubjects have to overcome in order
-    to submit Responses to a specific Survey.
+    to submit Responses to a specific Questionnaire.
     
     Every Questionnaire may have any combination of the available QACModules
     enabled on it at any time.
