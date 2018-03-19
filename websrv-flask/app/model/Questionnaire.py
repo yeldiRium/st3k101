@@ -156,7 +156,6 @@ class Questionnaire(DataObject):
             self.qac_modules.add(qac_module)
         else:
             qac_module.remove()  # clean up unneeded qac_module from db
-            raise QACAlreadyEnabledException()
 
     def remove_qac_module(self, name: str) -> None:
         """
