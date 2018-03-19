@@ -320,7 +320,7 @@ locale is used.
 
 #### 3.2.1.1 How locale is detected
 
-In priority ascending:
+In priority descending:
 
 - request parameter 
 - browser cookie
