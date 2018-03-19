@@ -3,37 +3,6 @@ const $ = require("jquery");
 
 require("spectrum-colorpicker");
 
-Promise.waitAll = function (iterable) {
-    return new Promise(function (resolve, reject) {
-        let waitCount = 0;
-        const results = [];
-
-        function checkDone() {
-            if (results.length === waitCount) {
-                resolve(results);
-            }
-        }
-
-        $.each(iterable, function (index, promise) {
-            waitCount++;
-            promise.then(
-                function success(result) {
-                    results.push({
-                        success: result
-                    });
-                    checkDone();
-                },
-                function fail(error) {
-                    results.push({
-                        error: error
-                    });
-                    checkDone();
-                }
-            )
-        })
-    });
-};
-
 angular.module("Utility", [])
     .factory("StyleStuff", function () {
         return {
