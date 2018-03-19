@@ -2,6 +2,7 @@ __pycache__/
 
 # IDE
 .idea/
+.vscode/
 
 # Frontend
 node_modules/*
