@@ -116,7 +116,7 @@ docker-compose build --no-cache
 
 This installs the npm dependencies and builds the docker container.
 These steps are independent from each other. I.e. you can change JS
-code, run `npm install` und you're good without rebuilding the whole 
+code, run `npm install` und you're good without rebuilding the whole
 container.
 
 Note: This will not delete the contents of the database.
@@ -127,8 +127,6 @@ You need to run `npm install` when:
 
 - JavaScript has been changed
 - SCSS files have been changed
-
-Note: `npm install`,
 
 You need to rebuild when changing:
 
