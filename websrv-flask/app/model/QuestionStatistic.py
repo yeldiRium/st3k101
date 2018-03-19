@@ -15,7 +15,7 @@ class QuestionStatistic(DataObject):
 
     def update(self) -> None:
         """
-        Updates the statistics taking into account all QuestionResults of 
+        Updates the statistics taking into account all QuestionResults of
         self.question that are verified.
         :return: None
         """
@@ -35,26 +35,26 @@ class QuestionStatistic(DataObject):
             if self.biggest is None or result.answer_value > self.biggest:
                 self.biggest = result.answer_value
 
-        result_list_length = len(result_list)
+        self.answer_count = len(result_list)
         self.q2 = self.median(result_list)
-        if result_list_length % 2 == 0:
-            self.q1 = self.median(result_list[0:result_list_length // 2])
-            self.q3 = self.median(result_list[result_list_length // 2:])
+        if self.answer_count % 2 == 0:
+            self.q1 = self.median(result_list[0:self.answer_count // 2])
+            self.q3 = self.median(result_list[self.answer_count // 2:])
 
-        if result_list_length % 4 == 1:
-            if result_list_length == 1:
+        if self.answer_count % 4 == 1:
+            if self.answer_count == 1:
                 self.q1 = int(result_list[0].answer_value)
                 self.q3 = int(result_list[0].answer_value)
             else:
-                n = int((result_list_length - 1) / 4)
+                n = int((self.answer_count - 1) / 4)
                 self.q1 = 0.25 * int(
                     result_list[n - 1].answer_value) + 0.75 * int(
                     result_list[n].answer_value)
                 self.q3 = 0.75 * int(
                     result_list[3 * n].answer_value) + 0.25 * int(
                     result_list[3 * n + 1].answer_value)
-        if result_list_length % 4 == 3:
-            n = int((result_list_length - 3) / 4)
+        if self.answer_count % 4 == 3:
+            n = int((self.answer_count - 3) / 4)
             self.q1 = 0.25 * int(result_list[n].answer_value) + 0.75 * int(
                 result_list[n + 1].answer_value)
             self.q3 = 0.75 * int(
@@ -83,3 +83,4 @@ QuestionStatistic.biggest = DataAttribute(QuestionStatistic, "biggest")
 QuestionStatistic.q1 = DataAttribute(QuestionStatistic, "q1")
 QuestionStatistic.q2 = DataAttribute(QuestionStatistic, "q2")
 QuestionStatistic.q3 = DataAttribute(QuestionStatistic, "q3")
+QuestionStatistic.answer_count = DataAttribute(QuestionStatistic, "answer_count")

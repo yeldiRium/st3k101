@@ -258,7 +258,6 @@ def api_question_statistic(question_uuid: str):
                 "q1": Double / null,
                 "q2": Double / null,
                 "q3": Double / null,
-                "question": Question (see GET /api/question/question_uuid)
                 "smallest": Double / null
             },
             "uuid": String
