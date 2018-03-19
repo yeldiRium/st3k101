@@ -636,12 +636,20 @@ angular.module("API", [])
                             );
                         });
                 },
-                "update": function (questionnaire_uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "POST",
-                        "url": "/api/statistics/update"
-                    }))
-                        .map(ResultHandling.extractData);
+                "update": function (questionnaire_uuid, force = false) {
+                    if (force) {
+                        return Future.tryP(() => $http({
+                            "method": "POST",
+                            "url": "/api/statistics/update/force"
+                        }))
+                            .map(ResultHandling.extractData);
+                    } else {
+                        return Future.tryP(() => $http({
+                            "method": "POST",
+                            "url": "/api/statistics/update"
+                        }))
+                            .map(ResultHandling.extractData);
+                    }
                 }
             }
         }])
