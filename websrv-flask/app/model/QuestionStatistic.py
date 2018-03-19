@@ -24,7 +24,7 @@ class QuestionStatistic(DataObject):
 
         result_list = list(filter(lambda x: x.verified,
                                   list(self.question.results)))
-        list.sort(result_list, key=lambda x: x.answer_value)
+        list.sort(result_list, key=lambda x: int(x.answer_value))
 
         self.smallest = None
         self.biggest = None
@@ -38,7 +38,7 @@ class QuestionStatistic(DataObject):
         self.answer_count = len(result_list)
         self.q2 = self.median(result_list)
         if self.answer_count % 2 == 0:
-            self.q1 = self.median(result_list[0:self.answer_count // 2])
+            self.q1 = self.median(result_list[:self.answer_count // 2])
             self.q3 = self.median(result_list[self.answer_count // 2:])
 
         if self.answer_count % 4 == 1:
@@ -46,7 +46,7 @@ class QuestionStatistic(DataObject):
                 self.q1 = int(result_list[0].answer_value)
                 self.q3 = int(result_list[0].answer_value)
             else:
-                n = int((self.answer_count - 1) / 4)
+                n = self.answer_count // 4
                 self.q1 = 0.25 * int(
                     result_list[n - 1].answer_value) + 0.75 * int(
                     result_list[n].answer_value)
@@ -54,14 +54,14 @@ class QuestionStatistic(DataObject):
                     result_list[3 * n].answer_value) + 0.25 * int(
                     result_list[3 * n + 1].answer_value)
         if self.answer_count % 4 == 3:
-            n = int((self.answer_count - 3) / 4)
+            n = self.answer_count // 4
             self.q1 = 0.25 * int(result_list[n].answer_value) + 0.75 * int(
                 result_list[n + 1].answer_value)
             self.q3 = 0.75 * int(
                 result_list[3 * n + 1].answer_value) + 0.25 * int(
                 result_list[3 * n + 2].answer_value)
 
-    def median(self, values: List[int]) -> int:
+    def median(self, values: List[int]) -> float:
         """
         Returns the median value of all QuestionResults
         """
@@ -73,7 +73,7 @@ class QuestionStatistic(DataObject):
 
         hvl = vl // 2
         if vl % 2 == 0:
-            return int(values[hvl - 1].answer_value) + int(values[hvl].answer_value) // 2
+            return (int(values[hvl - 1].answer_value) + int(values[hvl].answer_value)) / 2
         else:
             return int(values[hvl].answer_value)
 
