@@ -150,7 +150,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: L'Error
     """
-    return make_response(_("U do not kno de wae"), 404)  # TODO: nice 404 page
+    return render_template("home_404.html"), 404
 
 
 @app.errorhandler(500)
@@ -212,7 +212,7 @@ def backend():
     Dashboard for users
     """
     if not g._current_user:
-        return render_template('home_index.html', not_logged_in=True)
+        return render_template("home_index.html", not_logged_in=True)
     return render_template("backend.html")
 
 
