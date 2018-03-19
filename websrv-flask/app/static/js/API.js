@@ -583,7 +583,11 @@ angular.module("API", [])
                         "smallest": R.path(["fields", "smallest"], result),
                         "q1": R.path(["fields", "q1"], result),
                         "q2": R.path(["fields", "q2"], result),
-                        "q3": R.path(["fields", "q3"], result)
+                        "q3": R.path(["fields", "q3"], result),
+                        "answer_count": R.path(
+                            ["fields", "answer_count"],
+                            result
+                        )
                     }));
             };
 
