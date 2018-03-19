@@ -17,3 +17,23 @@ def update_dirty_statistics():
         counter = counter + 1
 
     return counter
+
+def update_all_statistics():
+    """
+    Update all the statistics. Useful for forcing an update after changing algo-
+    rithms.
+    """
+    questions = Question.many_from_query({})
+    counter = 0
+    for question in questions:
+        # only update a question statistic when the owner of the question
+        # made the request.
+        if not g._current_user:
+            continue
+        if question.owner_uuid != g._current_user.uuid:
+            continue
+        question.statistic.update()
+        question.dirty = False
+        counter = counter + 1
+
+    return counter
