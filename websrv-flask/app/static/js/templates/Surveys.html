@@ -88,7 +88,7 @@
                         ng-if="selection.survey == survey">
                         Remove the selected {{ selection.count }} Questionnaires from this Survey...
                     </button>
-                    <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteSurvey(survey)" mw-confirm-message="Are you sure you want to delete the survey '{{ survey.fields.name }}'?">
+                    <button type="button" class="btn btn-default btn-danger pull-right" mw-confirm-click="deleteSurvey(survey)" mw-confirm-message="Are you sure you want to delete the survey '{{ survey.fields.name }}'?" ng-if="new.questionnaire.survey != survey">
                         Delete this Survey...
                     </button>
                 </ngIf>
