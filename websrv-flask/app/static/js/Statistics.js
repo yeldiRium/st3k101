@@ -37,7 +37,7 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                 );
 
             $scope.updateStatistics = function () {
-                QuestionStatistics.update($scope.questionnaire_uuid, true)
+                QuestionStatistics.update($scope.questionnaire_uuid)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
