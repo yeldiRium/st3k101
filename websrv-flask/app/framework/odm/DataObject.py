@@ -1,6 +1,6 @@
 import random
 import time
-from typing import Any
+from typing import Any, List, Optional
 
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
@@ -13,37 +13,45 @@ from framework.odm.UniqueObject import UniqueObject, UniqueHandle
 
 
 class DataObject(UniqueObject, metaclass=UniqueHandle):
+    """
+    Base class for modeling database dependent class structures.
+    
+    See docs/odm.md for more information.
+    """
 
     # Indicates whether ownership model should be used & enforced
     has_owner = True
 
-    # TODO: document
     readable_by_anonymous = False
     acl_exclusions = []
 
-    # Set of properties that should also be serialized. Useful for hiding a database persistent attribute behind an
-    # accessor method
+    # Set of properties that should also be serialized. Useful for hiding a
+    # database persistent attribute behind an accessor method
     exposed_properties = set({})
 
     @classmethod
     def _collection(cls):
         """
-        Returns the name of the mongodb collection used for persisting instances of cls.
-        The collection name will be Python's representation of the class name, including containing parent modules.
-        This class, for example, will use 'model.DataObject.DataObject' as collection name.
-        :return: str
+        Returns the name of the mongodb collection used for persisting instances
+        of cls. The collection name will be Python's representation of the class
+        name, including containing parent modules. This class, for example, will
+        use 'model.DataObject.DataObject' as collection name.
+        :return: str 
         """
         db = get_db()
         return db[str(cls)[8:-2]]  # same as framework.classname(o) method
 
     def __init__(self, uuid: str = None, owner: object = None):
         """
-        :param uuid: str If passed, self will be a representant of the object with the given uuid. Important: If two
-        instances of the same PersistentObject are created, the instances do not update each other, when values are
-        changed. Only one request context may access the same uuid at once. As a consequence, the constructor may be 
-        deferred until the database resource becomes available.
-        :param owner: DataObject The user object who will own this object. When this is not passed, the owner
-        defaults to the currently logged in user.
+        :param uuid: str If passed, self will be a representant of the object
+        with the given uuid. Important: If two instances of the same DataObject
+        are created, the instances do not update each other, when values are
+        changed. Only one request context may access the same uuid at once. 
+        As a consequence, the constructor may be deferred until the database 
+        resource becomes available.
+        :param owner: DataClient The user object who will own this object. 
+                                 When this is not passed, the owner defaults to
+                                 the currently logged in user.
         """
         self.deleted = False
         self.initialized = False
@@ -122,7 +130,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         self.initialized = True
 
     @property
-    def __mutex_uuid(self):
+    def __mutex_uuid(self) -> str:
         """
         An uuid identifying the shared mutex to the mongodb document of which self is an representant uniquely
         :return: str
@@ -146,23 +154,31 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         self.__memcached_client.delete(self.__mutex_uuid)  # context is already destroyed, can't use framework
         self.deleted = True
 
-    def inc_refcount(self):
+    def inc_refcount(self) -> None:
+        """
+        Increments the DataObject's reference count by 1
+        :return: None
+        """
         count = getattr(self, "__ref_count")
         self._set_member("__ref_count", count + 1)
 
-    def dec_refcount(self):
+    def dec_refcount(self) -> None:
+        """
+        Decrements the DataObject's reference count by 1
+        :return: None
+        """
         count = getattr(self, "__ref_count")
         self._set_member("__ref_count", count - 1)
-        #if self.ref_count == 0: TODO: optional flag autodelete
-        #    print("Refcount of {} reached 0, deleting.".format(self.uuid), file=sys.stderr)
-        #    self.remove()
 
     @property
-    def ref_count(self):
+    def ref_count(self) -> int:
+        """
+        :return: int The amount of strong pointers to the DataObject 
+        """
         return getattr(self, "__ref_count")
 
     @classmethod
-    def one_from_query(cls, query: dict):
+    def one_from_query(cls, query: dict) -> Optional["DataObject"]:
         """
         Returns one PersistentObject of class cls which matches query
         :param cls: The class of PersistentObject to find
@@ -189,7 +205,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         return the_object
 
     @classmethod
-    def many_from_query(cls, query: dict):
+    def many_from_query(cls, query: dict) -> List["DataObject"]:
         """
         Returns all PersistentObjects of class cls which match query
         :param cls: The class of PersistentObject to find
@@ -231,7 +247,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
             {u'$set': {member: value}}
         )
 
-    def remove(self):
+    def remove(self) -> None:
         """
         Removes the database entry represented by self from mongodb.
         :return: None
@@ -289,11 +305,11 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         del g._persistent_objects[self.uuid]
         self.__del__()
 
-    def __from_document(self, document: dict):
+    def __from_document(self, document: dict) -> None:
         """
         Helper function to initialize self from mongodb document
-        :param document: 
-        :return: 
+        :param document: dict The document retrieved from mongodb
+        :return: None
         """
         if not document:
             return
@@ -329,16 +345,22 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
     @classmethod
     def _document_skeleton(cls) -> dict:
         """
-        Returns self in dict representation. This representation is used to store all instances of cls in the 
-        database. The returned representation will not contain any data yet.
-        :return: dict
+        Returns self in dict representation. This representation is used to 
+        store all instances of cls in the database. The returned representation
+        will not contain any data yet.
+        :return: dict The document skeleton
         """
-        persistent_members = {a.internal_name: None for _, a in cls.persistent_members().items()}
+        persistent_members = {a.internal_name: None for _, a in
+                              cls.persistent_members().items()}
         persistent_members.update({"__ref_count": 0})
         return persistent_members
 
     @property
-    def owner_uuid(self):
+    def owner_uuid(self) -> str:
+        """
+        Getter for DataObject.owner_uuid
+        :return: str The uuid of the DataClient who owns the DataObject
+        """
         return getattr(self, "__owner_uuid")
 
 
@@ -361,7 +383,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
 
         return user_uuid == owner_uuid
 
-    def accessible(self):
+    def accessible(self) -> bool:
         """
         Indicates whether the currently logged in user may access this object.
         Always returns true if no ownership is enforced.
@@ -371,5 +393,9 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         return self.accessible_by(g._current_user)
 
     @property
-    def readonly(self):
+    def readonly(self) -> bool:
+        """
+        Indicates whether the DataObject may not be written to.
+        :return: bool Whether the DataObject may not be written to.
+        """
         return self.__readonly

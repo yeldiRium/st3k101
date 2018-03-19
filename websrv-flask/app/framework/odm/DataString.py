@@ -3,18 +3,40 @@ from framework.internationalization import _
 
 
 class I18n(object):
+    """
+    An internationalized constant string, which is translated before runtime.
+    Contains a msgid identifying the string and a text, which contains the
+    appropriate localized version of the string for the current request.
+    
+    The translation of the string is achieved with gettext.
+    """
     def __init__(self, msgid: str):
         self.__msgid = msgid
 
     @property
-    def msgid(self):
+    def msgid(self) -> str:
+        """
+        Getter for I18n.msgid
+        :return: str The msgid
+        """
         return self.__msgid
 
     @property
-    def text(self):
+    def text(self) -> str:
+        """
+        Getter for localized version of I18n.msgid. Gets the appropriate version
+        according to g._locale.
+        :return: str Localized version of I18n.msgid
+        """
         return _(self.msgid)
 
-    def __eq__(self, other):
+    def __eq__(self, other: "I18n") -> bool:
+        """
+        Method to compare I18n objects. I18n objects are equivalent, when their
+        msgids are equivalent.
+        :param other: I18n The other object to compare to
+        :return: bool Whether the objects are equivalent
+        """
         if not type(other) == I18n:
             return False
         return self.msgid == other.msgid
@@ -54,20 +76,29 @@ class DataString(object):
             cls.acl_exclusions.append(self.__name)
 
     @property
-    def name(self):
+    def name(self) -> str:
+        """
+        Getter for DataString.name
+        :return: str DataString.name
+        """
         return self.__external_name
 
     @property
-    def internal_name(self):
+    def internal_name(self) -> str:
         """
         The name of the target classes internal attribute keeping track of the attributes value.
         Never use the internal attribute directly, instead use this descriptor class, or it's __get__() method.
-        :return: 
+        :return: str DataString.internal_name
         """
         return self.__name
 
     @property
-    def serialize(self):
+    def serialize(self) -> bool:
+        """
+        Getter for DataString.serialize
+        :return: bool Whether this member should be json serialized by 
+                      DataObjectEncoder
+        """
         return self.__serialize
 
     def __get__(self, obj, obj_type=None) -> I18n:
@@ -81,14 +112,14 @@ class DataString(object):
         value = getattr(obj, self.__name, None)
         return I18n(value)  # return localized version of string
 
-    def __set__(self, obj: DataObject, i18n: I18n):
+    def __set__(self, obj: DataObject, i18n: I18n) -> None:
         """
         Called when attribute is set.
         See Python's descriptor protocol.
         """
         obj._set_member(self.__name, i18n.msgid)
 
-    def __delete__(self, obj):
+    def __delete__(self, obj) -> None:
         """
         Called when attribute is deleted.
         See Python's descriptor protocol.
