@@ -38,5 +38,7 @@ class DataSubject(DataObject):
         return data_subject
 
 
-DataSubject.confirmation_token = DataAttribute(DataSubject, "confirmation_token", serialize=False)
+DataSubject.confirmation_token = DataAttribute(DataSubject,
+                                               "confirmation_token",
+                                               serialize=False)
 DataSubject.email_hash = DataAttribute(DataSubject, "email_hash")

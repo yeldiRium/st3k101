@@ -53,4 +53,4 @@ class QACI15dTextParameter(QACParameter):
 QACI15dTextParameter.name = DataString(QACI15dTextParameter, "name")
 QACI15dTextParameter.description = DataString(QACI15dTextParameter, "description")
 QACI15dTextParameter.text = DataPointer(QACI15dTextParameter, "text",
-                                        I15dString)
+                                        I15dString, cascading_delete=True)

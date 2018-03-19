@@ -98,7 +98,8 @@ class QuestionGroup(DataObject):
         self.text_color = text_color
 
 
-QuestionGroup.name = DataPointer(QuestionGroup, "name", I15dString)
+QuestionGroup.name = DataPointer(QuestionGroup, "name", I15dString,
+                                 cascading_delete=True)
 QuestionGroup.color = DataAttribute(QuestionGroup, "color")
 QuestionGroup.text_color = DataAttribute(QuestionGroup, "text_color")
 QuestionGroup.questions = DataPointerSet(QuestionGroup, "questions", Question)

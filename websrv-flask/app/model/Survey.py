@@ -135,7 +135,7 @@ class Survey(DataObject):
 
 
 Survey.original_locale = DataAttribute(Survey, "original_locale")
-Survey.name = DataPointer(Survey, "name", I15dString)
+Survey.name = DataPointer(Survey, "name", I15dString, cascading_delete=True)
 Survey.date_created = DataAttribute(Survey, "date_created")
 Survey.questionnaires = DataPointerSet(Survey, "questionnaires", Questionnaire)
 

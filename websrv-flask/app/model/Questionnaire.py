@@ -263,9 +263,10 @@ class Questionnaire(DataObject):
 
 
 Questionnaire.original_locale = DataAttribute(Questionnaire, "original_locale")
-Questionnaire.name = DataPointer(Questionnaire, "name", I15dString)
+Questionnaire.name = DataPointer(Questionnaire, "name", I15dString,
+                                 cascading_delete=True)
 Questionnaire.description = DataPointer(Questionnaire, "description",
-                                             I15dString)
+                                             I15dString, cascading_delete=True)
 Questionnaire.questiongroups = DataPointerSet(
     Questionnaire, "questiongroups", QuestionGroup
 )
