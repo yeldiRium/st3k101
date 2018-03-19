@@ -1,5 +1,23 @@
 # Deploying EFLA-web
 
+- [Deploying EFLA-web](#deploying-efla-web)
+    - [0. Setting up for the first time](#0-setting-up-for-the-first-time)
+    - [1. Configuration](#1-configuration)
+        - [1.1 flask.cfg](#11-flaskcfg)
+            - [Domain Name](#domain-name)
+            - [SMTP](#smtp)
+            - [Error notifications](#error-notifications)
+            - [Tweakables](#tweakables)
+        - [1.2 Volumes & Backup](#12-volumes-backup)
+            - [HowTo: Database backup](#howto-database-backup)
+            - [HowTo: Applying code changes](#howto-applying-code-changes)
+        - [1.2 SSL](#12-ssl)
+    - [2. Deployment](#2-deployment)
+        - [2.1. Building](#21-building)
+            - [When to build](#when-to-build)
+        - [2.2. (Re) Starting](#22-re-starting)
+        - [2.3 Stopping](#23-stopping)
+
 ## 0. Setting up for the first time
 
 1. Install dependencies
@@ -134,7 +152,7 @@ You need to rebuild when changing:
 - SSL certificates
 - nginx config
 
-### 2.2. Starting
+### 2.2. (Re) Starting
 
 After building for the first time, you can run:
 
@@ -142,7 +160,10 @@ After building for the first time, you can run:
 docker-compose start
 ```
 
-To start the services. Use `docker ps` to view running docker services.
+To start the services. 
+
+Use `docker ps` to view running docker services.
+
 To restart, use `docker-compose restart`.
 
 ### 2.3 Stopping

@@ -1,5 +1,11 @@
 # Template Surveys
 
+- [Template Surveys](#template-surveys)
+  - [Introduction](#introduction)
+  - [Location of files](#location-of-files)
+  - [Format](#format)
+  - [Adding new templates](#adding-new-templates)
+
 ## Introduction
 
 When adding a new Questionnaire to a survey, it's possible to

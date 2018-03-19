@@ -27,10 +27,10 @@
         - [3.2 Using the REST-like API](#32-using-the-rest-like-api)
             - [3.2.1 Specifying a locale](#321-specifying-a-locale)
             - [3.2.1.1 How locale is detected](#3211-how-locale-is-detected)
-                - [3.2.1.2 As Request Parameter](#3212-as-request-parameter)
+                - [3.2.1.2 As request parameter](#3212-as-request-parameter)
                 - [3.2.1.3 The locale cookie](#3213-the-locale-cookie)
-                - [3.2.1.4 In HTTP Headers](#3214-in-http-headers)
-            - [3.2.2 Format of internationalized strings](#323-format-of-internationalized-strings)
+                - [3.2.1.4 In HTTP headers](#3214-in-http-headers)
+            - [3.2.2 Format of internationalized strings](#322-format-of-internationalized-strings)
 
 
 ## 1. Introduction
