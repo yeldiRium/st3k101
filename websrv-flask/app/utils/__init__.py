@@ -2,6 +2,8 @@ import os
 
 from flask import g
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def generate_verification_token() -> str:
     """

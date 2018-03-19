@@ -15,6 +15,8 @@ from main import app
 from model.QuestionGroup import QuestionGroup
 from model.Questionnaire import Questionnaire
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/api/question_group", methods=["POST"])
 @expect(('questionnaire_uuid', str), ('name', str))

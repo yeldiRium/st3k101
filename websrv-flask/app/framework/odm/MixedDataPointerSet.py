@@ -4,6 +4,8 @@ from framework.odm import PointerType
 from framework.odm.DataObject import DataObject
 from framework.odm.MixedSetProxy import MixedSetProxy, instantiate_by_name
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class MixedDataPointerSet(object):
     """

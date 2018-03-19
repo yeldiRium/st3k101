@@ -11,6 +11,8 @@ from model.query_access_control.QACSelectParameter import QACSelectParameter
 from model.query_access_control.QACTextParameter import QACTextParameter
 from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class QACModule(DataObject):
     """

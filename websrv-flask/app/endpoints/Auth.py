@@ -9,6 +9,8 @@ from framework.exceptions import UserExistsException, BadCredentialsException, \
     UserNotLoggedInException
 from main import app
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/registration", methods=["GET"])
 def registration():

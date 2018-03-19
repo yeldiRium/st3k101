@@ -4,14 +4,18 @@ import argon2
 from flask import g
 
 import auth
-from framework.exceptions import UserExistsException, BadCredentialsException, UserNotLoggedInException
+from framework.exceptions import UserExistsException, BadCredentialsException, \
+    UserNotLoggedInException
 from model.DataClient import DataClient
+
+__author__ = "Noah Hummel, Hannes Leutloff"
 
 
 def register(email: str, password: str) -> DataClient:
     """
     Registers a new DataClient.
-    Raises UserExistsException, if a user with the given email address already exists.
+    Raises UserExistsException, if a user with the given email address already 
+    exists.
     :param email: str The email address of the DataClient
     :param password: str The password the DataClient will use to login
     :return: DataClient The resulting DataClient object
@@ -33,9 +37,9 @@ def register(email: str, password: str) -> DataClient:
 
 def login(email: str, password: str) -> str:
     """
-    Logs a DataClient in by checking if the user exists, matching the password hashes
-    and creating a new session token in memcache if authentication is successful.
-    Returns the session token.
+    Logs a DataClient in by checking if the user exists, matching the password 
+    hashes and creating a new session token in memcache if authentication is 
+    successful. Returns the session token.
     Raises SessionExistsException or BadCredentialsException if appropriate.
     :param email: The email address of the user to log in
     :param password: The plain text password of the user to log in

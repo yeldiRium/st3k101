@@ -2,6 +2,8 @@ from typing import Any
 
 from flask import request, make_response, jsonify, Response
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def get_client_ip() -> str:
     """

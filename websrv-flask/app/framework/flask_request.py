@@ -6,6 +6,8 @@ from flask import request
 from framework import make_error
 from framework.internationalization import _
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def expect(*arguments: List[Tuple[str, type]]):
     """

@@ -3,6 +3,8 @@ from email.mime.text import MIMEText
 
 from flask import g
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def send_mail(to: str, subject: str, message: str) -> None:
     """

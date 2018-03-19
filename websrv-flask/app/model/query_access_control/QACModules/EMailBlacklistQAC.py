@@ -9,6 +9,8 @@ from model.query_access_control.QACModule import QACModule
 from model.query_access_control.QACModules import EMailWhitelistQAC
 from model.query_access_control.QACTextParameter import QACTextParameter
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class EMailBlacklistQAC(QACModule):
     """

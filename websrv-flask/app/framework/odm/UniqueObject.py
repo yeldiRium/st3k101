@@ -1,5 +1,7 @@
 from flask import g
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class UniqueObject(object):
     """

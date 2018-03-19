@@ -4,6 +4,8 @@ from typing import List, Sized
 from framework.odm import PointerType
 from framework.odm.DataObject import DataObject
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class SetProxyIter(Iterator):
     """

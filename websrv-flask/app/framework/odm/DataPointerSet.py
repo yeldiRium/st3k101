@@ -4,6 +4,8 @@ from framework.odm import PointerType
 from framework.odm.DataObject import DataObject
 from framework.odm.SetProxy import SetProxy
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class DataPointerSet(object):
     """

@@ -9,6 +9,8 @@ from model.I15dString import I15dString
 from model.QuestionResult import QuestionResult
 from model.QuestionStatistic import QuestionStatistic
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class Question(DataObject):
     """

@@ -4,6 +4,8 @@ from framework.odm.DataString import DataString
 from model.I15dString import I15dString
 from model.query_access_control.QACParameter import QACParameter
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class QACI15dTextParameter(QACParameter):
     """

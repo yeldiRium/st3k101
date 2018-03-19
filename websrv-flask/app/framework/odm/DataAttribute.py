@@ -2,6 +2,8 @@ from typing import Any
 
 from framework.odm.DataObject import DataObject
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class DataAttribute(object):
     """

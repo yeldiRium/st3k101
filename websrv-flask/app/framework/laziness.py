@@ -3,6 +3,8 @@ from flask import g
 from framework.memcached import get_memcache
 from .services import update_dirty_statistics
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def lazy_update_statistics() -> None:
     """

@@ -2,6 +2,9 @@
 This module lists all of the custom exceptions we throw anywhere in the code
 """
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
+
 class ClientIpChangedException(Exception):
     pass
 

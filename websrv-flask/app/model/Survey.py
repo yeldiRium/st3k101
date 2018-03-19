@@ -12,6 +12,8 @@ from model.DataClient import DataClient
 from model.I15dString import I15dString
 from model.Questionnaire import Questionnaire
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class Survey(DataObject):
     """

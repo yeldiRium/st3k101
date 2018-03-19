@@ -3,6 +3,9 @@ from typing import Tuple, List
 from flask.ext.babel import gettext
 from .babel_languages import babel_languages
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
+
 def _(msgid: str) -> str:
     """
     Syntactical sugar for wrapping string messages in the gettext() function.

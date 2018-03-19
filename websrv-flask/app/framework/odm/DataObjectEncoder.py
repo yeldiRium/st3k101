@@ -12,6 +12,8 @@ from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 from framework.odm.SetProxy import SetProxy
 from framework.odm.MixedSetProxy import MixedSetProxy
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class DataObjectEncoder(json.JSONEncoder):
     """

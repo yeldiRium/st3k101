@@ -4,6 +4,8 @@ from main import app
 from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/verify/survey/<string:token>", methods=["GET"])
 def verify_survey_submission(token:str):

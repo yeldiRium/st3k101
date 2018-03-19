@@ -4,6 +4,8 @@ from framework.odm.DataAttribute import DataAttribute
 from model.DataClient import DataClient
 from model.DataSubject import DataSubject
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class QuestionResult(DataObject):
     """

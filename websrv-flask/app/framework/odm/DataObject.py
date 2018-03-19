@@ -11,6 +11,8 @@ from framework.memcached import get_memcache
 from framework.mongodb import get_db
 from framework.odm.UniqueObject import UniqueObject, UniqueHandle
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class DataObject(UniqueObject, metaclass=UniqueHandle):
     """

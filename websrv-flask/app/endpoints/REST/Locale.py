@@ -8,6 +8,8 @@ from flask.json import jsonify
 from main import app
 from framework.internationalization import list_sorted_by_long_name
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/api/locales", methods=["GET"])
 def api_locales():

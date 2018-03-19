@@ -13,6 +13,8 @@ from model.Questionnaire import Questionnaire
 from model.query_access_control.QACModules import EMailVerificationQAC
 from utils.email import send_mail
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
 def survey(questionnaire_uuid):

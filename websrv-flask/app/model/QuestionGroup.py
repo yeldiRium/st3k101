@@ -10,6 +10,8 @@ from framework.odm.DataAttribute import DataAttribute
 from model.I15dString import I15dString
 from model.Question import Question
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def check_color(color: str) -> None:
     """

@@ -5,6 +5,8 @@ from flask import g
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class I15dString(DataObject):
     """

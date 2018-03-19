@@ -1,9 +1,10 @@
-import math
 from typing import List
 
 from framework.exceptions import QuestionStatisticHasNoQuestionException
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
+
+__author__ = "Noah Hummel, Hannes Leutloff"
 
 
 class QuestionStatistic(DataObject):

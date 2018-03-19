@@ -19,6 +19,8 @@ from model.query_access_control.QACModule import QACModule
 from model.query_access_control.QACModules import EMailVerificationQAC
 from model.query_access_control.QACModules.TOSQAC import TOSQAC
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class Questionnaire(DataObject):
     """

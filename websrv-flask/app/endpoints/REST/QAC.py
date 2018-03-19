@@ -15,6 +15,8 @@ from main import app
 from model.Questionnaire import Questionnaire
 from model.query_access_control.QACModule import QACModule
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/api/qac_module", methods=["GET"])
 def api_qac_modules():

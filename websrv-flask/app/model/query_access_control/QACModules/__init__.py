@@ -16,6 +16,8 @@ from model.query_access_control.QACModules.TOSQAC import TOSQAC
 
 from framework.internationalization import _
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class QAC(Enum):
     """

@@ -4,6 +4,8 @@ from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
 from model.query_access_control.QACModule import QACModule
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class EMailVerificationQAC(QACModule):
     """

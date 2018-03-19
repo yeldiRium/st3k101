@@ -13,6 +13,8 @@ from main import app
 from framework.flask_request import expect
 from model.Survey import Survey
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/api/survey", methods=["GET"])
 def api_survey_list():

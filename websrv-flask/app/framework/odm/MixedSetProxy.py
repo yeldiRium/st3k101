@@ -5,6 +5,8 @@ import importlib
 from framework.odm import PointerType
 from framework.odm.DataObject import DataObject
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def instantiate_by_name(module_name: str, class_name: str, uuid: str) \
         -> DataObject:

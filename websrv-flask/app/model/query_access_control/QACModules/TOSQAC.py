@@ -8,6 +8,8 @@ from flask import request, render_template, g
 
 from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class TOSQAC(QACModule):
     """

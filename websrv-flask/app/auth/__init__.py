@@ -3,8 +3,8 @@ import time
 from framework.exceptions import ClientIpChangedException
 from framework.memcached import get_memcache
 from framework import get_client_ip
-from model import DataClient
 
+__author__ = "Noah Hummel, Hannes Leutloff"
 _memcached_prefix = "auth."
 
 

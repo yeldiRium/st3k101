@@ -1,5 +1,7 @@
 from enum import Enum, auto
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class PointerType(Enum):
     """

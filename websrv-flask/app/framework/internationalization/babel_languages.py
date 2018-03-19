@@ -4,6 +4,9 @@ It is important to only edit this in utf-8, as the names contain many unicode
 characters.
 """
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
+
 babel_languages = {
     "zu": "isiZulu",
     "zh": "中文",

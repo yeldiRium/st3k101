@@ -11,6 +11,8 @@ from framework.internationalization import _, babel_languages
 from main import app
 from model.DataClient import DataClient
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/api/account/current", methods=["GET"])
 def api_account_current():

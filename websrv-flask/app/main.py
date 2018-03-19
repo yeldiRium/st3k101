@@ -15,6 +15,9 @@ from framework.memcached import get_memcache
 from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
+
 # Setup of flask environment
 app = Flask(__name__)
 app.config.from_envvar('FLASK_CONFIG_PATH')  # this path is set in Dockerfile

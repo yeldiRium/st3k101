@@ -1,6 +1,8 @@
 from flask import g
 from pymongo import MongoClient
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def get_db() -> MongoClient:
     """

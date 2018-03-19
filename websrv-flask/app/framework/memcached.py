@@ -1,6 +1,8 @@
 from flask import g
 from bmemcached import Client
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 def get_memcache() -> Client:
     """

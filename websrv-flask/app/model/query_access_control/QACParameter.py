@@ -1,6 +1,8 @@
 from framework.odm.DataObject import DataObject
 from framework.odm.DataString import DataString
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class QACParameter(DataObject):
     """

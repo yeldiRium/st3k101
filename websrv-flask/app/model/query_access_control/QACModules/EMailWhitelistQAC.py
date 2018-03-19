@@ -9,6 +9,8 @@ from framework.internationalization import _
 from model.query_access_control.QACModule import QACModule
 from model.query_access_control.QACTextParameter import QACTextParameter
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 class EMailWhitelistQAC(QACModule):
     """

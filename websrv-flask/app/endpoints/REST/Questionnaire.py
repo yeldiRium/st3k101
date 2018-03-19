@@ -20,6 +20,8 @@ from main import app
 from model.Questionnaire import Questionnaire
 from model.Survey import Survey
 
+__author__ = "Noah Hummel, Hannes Leutloff"
+
 
 @app.route("/api/questionnaire", methods=["POST"])
 @expect(
