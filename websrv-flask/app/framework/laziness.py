@@ -1,13 +1,10 @@
 import time
-
 from flask import g
-
 from framework.memcached import get_memcache
-
 from .services import update_dirty_statistics
 
 
-def lazy_update_statistics():
+def lazy_update_statistics() -> None:
     """
     A helpfer function to run updates of the statistics module deferred and
     not every time a new result comes in.

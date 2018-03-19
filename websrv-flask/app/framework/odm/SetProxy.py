@@ -1,5 +1,5 @@
 from collections import Iterator
-from typing import List, Sized, Iterable
+from typing import List, Sized
 
 from framework.odm import PointerType
 from framework.odm.DataObject import DataObject

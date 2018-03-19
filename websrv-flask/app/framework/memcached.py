@@ -2,10 +2,11 @@ from flask import g
 from bmemcached import Client
 
 
-def get_memcache():
+def get_memcache() -> Client:
     """
+    Factory method for bmemcached.Client.
     Instantiates only one memcached client per request.
-    :return: The memcached client
+    :return: Client The memcached client
     """
 
     mc = getattr(g, '_memcache_client', None)

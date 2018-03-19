@@ -1,3 +1,7 @@
+"""
+This module lists all of the custom exceptions we throw anywhere in the code
+"""
+
 class ClientIpChangedException(Exception):
     pass
 

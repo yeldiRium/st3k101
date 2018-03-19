@@ -5,7 +5,7 @@ from pymongo import MongoClient
 def get_db() -> MongoClient:
     """
     Factory method for getting the appropriate MongoClient instance.
-    Also only instantiates one client per request.
+    Only instantiates one client per request.
     :return: MongoClient A MongoClient to access the mongodb 
     """
     client = getattr(g, "_mongodb", None)

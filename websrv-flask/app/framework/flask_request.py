@@ -8,6 +8,20 @@ from framework.internationalization import _
 
 
 def expect(*arguments: List[Tuple[str, type]]):
+    """
+    A decorator for flask's @app.route decorator, which takes a list of 
+    expected request parameters and their types.
+    When a request is served, this decorator will parse the expected arguments 
+    for the decorated endpoint from the json body of the request.
+    It will then pass the arguments as keyword parameters to the endpoint
+    function.
+    If an expected parameter is not found or has the wrong type, a
+    BAD_REQUEST response is automatically served without executing the endpoint
+    function.
+    
+    :param arguments: List[Tuple[str, type]] A list of tuples 
+                                             (arg_name, arg_type)
+    """
 
     def wrapper(function):
 
@@ -43,6 +57,19 @@ def expect(*arguments: List[Tuple[str, type]]):
 
 
 def expect_optional(*arguments: List[Tuple[str, type]]):
+    """
+    A decorator for flask's @app.route decorator, which takes a list of 
+    optional request parameters and their types.
+    When a request is served, this decorator will parse the optional arguments 
+    for the decorated endpoint from the json body of the request.
+    It will then pass the arguments as keyword parameters to the endpoint
+    function.
+    If an optional parameter has the wrong type, a BAD_REQUEST response is 
+    automatically served without executing the endpoint function.
+
+    :param arguments: List[Tuple[str, type]] A list of tuples 
+                                             (arg_name, arg_type)
+    """
 
     def wrapper(function):
 
