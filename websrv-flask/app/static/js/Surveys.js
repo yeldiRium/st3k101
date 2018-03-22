@@ -544,8 +544,8 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     })
                     // Parse original locale
                     .map(({questionnaire, locale}) => ({
-                        "questionnaire": R.assoc(
-                            "original_locale",
+                        "questionnaire": R.assocPath(
+                            ["fields", "original_locale"],
                             R.or(
                                 R.apply(
                                     R.toLower,
@@ -590,7 +590,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     .getQuestionnaireTranslation(locale, questionnaire);
                 let parsed_questionnaire_original = false;
 
-                if (questionnaire.original_locale !== locale.toLowerCase()) {
+                if (questionnaire.fields.original_locale !== locale.toLowerCase()) {
                     parsed_questionnaire_original = LanguageHandling
                         .getQuestionnaireTranslation(
                             questionnaire.original_locale, questionnaire
@@ -599,12 +599,17 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
 
                 $scope.$apply(() => {
                     $scope.questionnaire = parsed_questionnaire;
+                    $scope.current_locale = R.toLower(locale);
                     if (parsed_questionnaire_original) {
                         $scope.questionnaire_original =
                             parsed_questionnaire_original;
-                        $scope.original_locale = R.map(R.toLower, questionnaire.original_locale);
+                        $scope.original_locale = questionnaire.fields.original_locale;
                     }
                     $scope.loading = "done";
+                    console.log($scope.questionnaire);
+                    console.log($scope.current_locale);
+                    console.log($scope.questionnaire_original);
+                    console.log($scope.original_locale);
                 });
 
                 R.forEach(

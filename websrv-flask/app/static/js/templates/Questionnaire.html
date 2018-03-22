@@ -96,7 +96,7 @@
                 </div>
             </div>
             <div class="panel-footer">
-                <ngIf ng-if="questionGroup.fields.original_locale == original_locale">
+                <ngIf ng-if="questionnaire.fields.original_locale == current_locale">
                     <form class="form-horizontal" ng-if="new.question.questionGroup == questionGroup">
                         <div class="form-group">
                             <label for="inputQuestionText" class="col-xs-2 control-label">Name</label>
@@ -128,7 +128,7 @@
                         Delete this Question Group...
                     </button>
                 </ngIf>
-                <ngIf ng-if="questionGroup.fields.original_locale != original_locale">
+                <ngIf ng-if="questionnaire.fields.original_locale != current_locale">
                     <!--
                             Adding new Objects can't be allowed in a different
                             language inside a hierarchy.
@@ -144,7 +144,7 @@
         </div>
     </div>
     <div class="row" ng-if="questionnaire != null">
-        <ngIf ng-if="questionnaire.fields.original_locale == original_locale">
+        <ngIf ng-if="questionnaire.fields.original_locale == current_locale">
             <div class="input-group" ng-if="new.questionGroup.data != null">
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" ng-click="createQuestionGroup()">Create</button>
@@ -158,7 +158,7 @@
                 Add new Question Group...
             </button>
         </ngIf>
-        <ngIf ng-if="questionGroup.fields.original_locale != original_locale">
+        <ngIf ng-if="questionnaire.fields.original_locale != current_locale">
             <button type="button" class="btn btn-default" disabled data-toggle="tooltip" title="Change the current language to this Questionnaire's original language to add new Elements.">
                 Add new Question Group...
             </button>
