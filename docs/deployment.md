@@ -127,7 +127,6 @@ Run all of these commands from the `EFLA-web` directory.
 When building for the first time you need to run:
 
 ```bash
-cd EFLA-web
 npm install
 docker-compose build --no-cache
 ```
