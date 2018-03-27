@@ -156,15 +156,12 @@ You need to rebuild when changing:
 After building for the first time, you can run:
 
 ```bash
-docker-compose start
+docker-compose run -d --service-ports websrv-flask
 ```
 
-To start the services. 
+To start the services in the background.
 
 Use `docker ps` to view running docker services.
 
-To restart, use `docker-compose restart`.
+To restart, stop the containers via `docker-compose down` and repeat the run command.
 
-### 2.3 Stopping
-
-To stop the services, run `docker-compose stop`
