@@ -1141,15 +1141,15 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
             $locationProvider.hashPrefix("");
             $routeProvider
                 .when("/", {
-                    templateUrl: "/static/js/templates/Surveys.html",
+                    template: require("./templates/Surveys.html"),
                     controller: "SurveysController"
                 })
                 .when("/surveys/", {
-                    templateUrl: "/static/js/templates/Surveys.html",
+                    template: require("./templates/Surveys.html"),
                     controller: "SurveysController"
                 })
                 .when("/surveys/:questionnaire/", {
-                    templateUrl: "/static/js/templates/Questionnaire.html",
+                    template: require("./templates/Questionnaire.html"),
                     controller: "EditQuestionnaireController"
                 })
         }]);

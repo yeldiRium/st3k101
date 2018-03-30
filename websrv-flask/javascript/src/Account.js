@@ -71,7 +71,7 @@ angular.module("Account", ["ngRoute", "API", "Utility"])
             $locationProvider.hashPrefix("");
             $routeProvider
                 .when("/account", {
-                    templateUrl: "/static/js/templates/Account.html",
+                    template: require("./templates/Account.html"),
                     controller: "AccountController"
                 });
         }]);

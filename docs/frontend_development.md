@@ -22,13 +22,10 @@ EFLA-web uses:
 
 ### 1.1 JavaScript
 
-When editing JavaScript, run `npm run watchJS` in a separate terminal. This
-continually compiles your code while you write it.
+When editing JavaScript, regularly run `npm run compileJS` to keep your 
+JavaScript on the container up-to-date.
 
-As long as your container runs as described in deployment.md, you can just
-reload the frontend and your changes will be there.
-
-### 2.2 SCSS
+### 1.2 SCSS
 
 When editing the SCSS, you have to either set your editor up with a watcher or
 regularly execute `npm run compileSCSS` or one of the specific commands.
@@ -50,7 +47,7 @@ existing ones, you should first look into Angular's project structure.
 
 ### 2.2 API interaction
 
-All interaction with the REST-like API is defined in `app/static/js/API.js`.
+All interaction with the REST-like API is defined in `javascript/API.js`.
 Each domain model has a factory there with several methods for interaction with
 the endpoints.
 

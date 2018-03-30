@@ -665,7 +665,7 @@ angular.module("API", [])
             "scope": {
                 "loading": "=loading"
             },
-            "templateUrl": "/static/js/templates/loading.html",
+            "template": require("./templates/loading.html"),
             "link": function (scope) {
                 scope.$watch("loading", new_value => {
                     scope.loading = new_value;

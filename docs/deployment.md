@@ -127,7 +127,9 @@ Run all of these commands from the `EFLA-web` directory.
 When building for the first time you need to run:
 
 ```bash
+cd websrv-flask
 npm install
+cd -
 docker-compose build --no-cache
 ```
 

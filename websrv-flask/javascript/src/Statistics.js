@@ -238,15 +238,15 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
             $locationProvider.hashPrefix("");
             $routeProvider
                 .when("/surveys/:questionnaire/statistic", {
-                    templateUrl: "/static/js/templates/Statistics.html",
+                    template: require("./templates/Statistics.html"),
                     controller: "StatisticController"
                 })
                 .when("/surveys/:questionnaire/statistic/boxplot", {
-                    templateUrl: "/static/js/templates/BoxPlotStatistics.html",
+                    template: require("./templates/BoxPlotStatistics.html"),
                     controller: "BoxPlotStatisticController"
                 })
                 .when("/surveys/:questionnaire/statistic/radarchart", {
-                    templateUrl: "/static/js/templates/RadarChartStatistics.html",
+                    template: require("./templates/RadarChartStatistics.html"),
                     controller: "RadarChartStatisticController"
                 });
         }]);

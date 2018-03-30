@@ -5,8 +5,8 @@ __pycache__/
 .vscode/
 
 # Frontend
-node_modules/*
-.sass-cache/
+websrv-flask/node_modules/*
+**/.sass-cache/
 websrv-flask/app/static/fonts/*
 websrv-flask/app/static/css/*
 websrv-flask/app/static/js/bundle.js

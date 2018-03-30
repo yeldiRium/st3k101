@@ -1,0 +1,50 @@
+{
+  "name": "efla-web",
+  "authors": [
+    "Hannes Leutloff <hannes.leutloff@aol.de",
+    "Noah Hummel <strangedev@posteo.net"
+  ],
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "preinstall": "npm run clearStaticDir",
+    "postinstall": "npm run mkCssDir && npm run compileSCSS && npm run compileJS",
+    "cleanup": "npm run removeSassModule",
+    "clearStaticDir": "rm -rf app/static/css",
+    "mkCssDir": "mkdir -p app/static/css",
+    "compileSCSS": "npm run moveVendorCSS && npm run compileSCSSBackend && npm run compileSCSSHome && npm run compileSCSSSurvey",
+    "moveVendorCSS": "cp node_modules/bootstrap/dist/css/bootstrap.min.css app/static/css/bootstrap.css && cp -r node_modules/bootstrap/dist/fonts app/static/fonts && cp node_modules/spectrum-colorpicker/spectrum.css app/static/css/spectrum.css",
+    "compileSCSSBackend": "sass scss/backend.scss > app/static/css/backend.css",
+    "compileSCSSHome": "sass scss/home.scss > app/static/css/home.css",
+    "compileSCSSSurvey": "sass scss/survey.scss > app/static/css/survey.css",
+    "compileJS": "node javascript/build/build.js",
+    "removeSassModule": "rm -rf app/static/vendor/sass/ && rm -rf app/static/vendor/.bin/"
+  },
+  "dependencies": {
+    "angular": "^1.6.6",
+    "angular-flash-alert": "^2.5.0",
+    "angular-route": "^1.6.6",
+    "bootstrap": "^3.3.7",
+    "browserify": "^16.1.1",
+    "chalk": "^2.3.2",
+    "d3": "^3.5.17",
+    "fluture": "^8.0.2",
+    "jquery": "^3.2.1",
+    "ora": "^2.0.0",
+    "path": "^0.12.7",
+    "radar-chart-d3": "git+https://github.com/yeldirium/radar-chart-d3.git",
+    "ramda": "^0.25.0",
+    "rimraf": "^2.6.2",
+    "sass": "^1.0.0-beta.3",
+    "spectrum-colorpicker": "^1.8.0",
+    "webpack": "^4.4.1",
+    "css-loader": "^0.28.11",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "html-loader": "^0.5.5",
+    "ng-cache-loader": "0.0.26",
+    "ngtemplate-loader": "^2.0.1",
+    "optimize-css-assets-webpack-plugin": "^4.0.0",
+    "uglifyjs-webpack-plugin": "^1.2.4",
+    "watchify": "^3.11.0"
+  }
+}
