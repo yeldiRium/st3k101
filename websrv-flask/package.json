@@ -1,8 +1,8 @@
 {
   "name": "efla-web",
   "authors": [
-    "Hannes Leutloff <hannes.leutloff@aol.de",
-    "Noah Hummel <strangedev@posteo.net"
+    "Hannes Leutloff <hannes.leutloff@aol.de>",
+    "Noah Hummel <strangedev@posteo.net>"
   ],
   "version": "1.0.0",
   "private": true,
