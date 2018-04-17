@@ -251,92 +251,24 @@ angular.module("API", [])
     .factory("QACs", [function () {
         return Api.QAC;
     }])
-    .factory("QuestionStatistics", [
-        "$http", "Questionnaires", "ResultHandling", "LanguageHandling",
-        function ($http, Questionnaires, ResultHandling, LanguageHandling) {
-            let get = function (question_uuid) {
-                return Future.tryP(() => $http({
-                    "method": "GET",
-                    "url": `/api/question/${question_uuid}/statistic`
-                }))
-                    .mapRej(ResultHandling.check403)
-                    .map(ResultHandling.extractData)
-                    .map(result => ({
-                        "biggest": R.path(["fields", "biggest"], result),
-                        "smallest": R.path(["fields", "smallest"], result),
-                        "q1": R.path(["fields", "q1"], result),
-                        "q2": R.path(["fields", "q2"], result),
-                        "q3": R.path(["fields", "q3"], result),
-                        "answer_count": R.path(
-                            ["fields", "answer_count"],
-                            result
-                        )
-                    }));
-            };
-
+    .factory("QuestionStatistics", ["ResultHandling",
+        function (ResultHandling) {
             return {
-                "get": get,
+                "get": function (question_uuid) {
+                    return Api.QuestionStatistic.get(question_uuid)
+                        .mapRej(ResultHandling.checkLoggedIn);
+                },
                 "getWholeQuestionnaire": function (questionnaire_uuid) {
-                    return Questionnaires
-                        .get(questionnaire_uuid)
-                        .map(({data: questionnaireData, locale}) => {
-                            return R.pipe(
-                                R.map(questionGroup => ({
-                                    "name": questionGroup.fields.name,
-                                    "color": questionGroup.fields.color,
-                                    "text_color": questionGroup.fields.text_color,
-                                    "questions": questionGroup.fields.questions
-                                })),
-                                R.map(questionGroup => R.assoc(
-                                    "questions",
-                                    R.map(question => get(question.uuid)
-                                            .map(statisticResult => {
-                                                return {
-                                                    "text": LanguageHandling.getStringLocale(locale, question.fields.text),
-                                                    "answers": R.pathOr([], ["fields", "results"], question).length,
-                                                    "statistic": statisticResult
-                                                }
-                                            }),
-                                        questionGroup.questions
-                                    ),
-                                    questionGroup
-                                )),
-                                R.map(questionGroup =>
-                                    Future.parallel(
-                                        Infinity,
-                                        questionGroup.questions
-                                    )
-                                        .map(questions => {
-                                            return R.assoc(
-                                                "questions",
-                                                questions,
-                                                questionGroup
-                                            )
-                                        })
-                                ))
-                            (questionnaireData.fields.questiongroups);
-                        })
-                        .chain(questionGroups => {
-                            return Future.parallel(
-                                Infinity,
-                                questionGroups
-                            );
-                        });
+                    return Api.QuestionStatistic.getWholeQuestionnaire(
+                        questionnaire_uuid
+                    )
+                        .mapRej(ResultHandling.checkLoggedIn);
                 },
                 "update": function (questionnaire_uuid, force = false) {
-                    if (force) {
-                        return Future.tryP(() => $http({
-                            "method": "POST",
-                            "url": "/api/statistics/update/force"
-                        }))
-                            .map(ResultHandling.extractData);
-                    } else {
-                        return Future.tryP(() => $http({
-                            "method": "POST",
-                            "url": "/api/statistics/update"
-                        }))
-                            .map(ResultHandling.extractData);
-                    }
+                    return Api.QuestionStatistic.update(
+                        questionnaire_uuid, force
+                    )
+                        .mapRej(ResultHandling.checkLoggedIn);
                 }
             }
         }])
