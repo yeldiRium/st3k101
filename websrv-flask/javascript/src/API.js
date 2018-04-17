@@ -89,14 +89,7 @@ angular.module("API", [])
     }])
     .factory("Locales", ["$http", "ResultHandling",
         function ($http, ResultHandling) {
-            return {
-                "all": function () {
-                    return Future.tryP(() => {
-                        return $http.get("/api/locales");
-                    })
-                        .map(ResultHandling.extractData);
-                }
-            }
+            return Api.Locale;
         }])
     .factory("Surveys", ["$http", "PathHandling", "ResultHandling",
         function ($http, PathHandling, ResultHandling) {
