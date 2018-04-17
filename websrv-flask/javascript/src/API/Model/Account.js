@@ -37,6 +37,7 @@ export default {
      * @reject With either a TypeError, if a connection problem occured, or with
      * the server's response detailling the error, if the status code is not
      * 200.
+     * @cancel Aborts the HTTP request.
      */
     "update": function ({email = null, locale = null}) {
         return Future((reject, resolve) => {
