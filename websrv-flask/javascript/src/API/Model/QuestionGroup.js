@@ -38,7 +38,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     /**
      * Updates the given QuestionGroup's data.
@@ -78,7 +80,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     /**
      * Deletes the given QuestionGroup from the Questionnaire.
@@ -114,6 +118,8 @@ export default {
 
                 return controller.abort;
             })
-                .chain(ResultHandling.checkStatus(200));
+                .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
         }
 }

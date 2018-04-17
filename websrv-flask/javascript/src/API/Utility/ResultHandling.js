@@ -14,24 +14,47 @@ export default {
 
     /**
      * Checks if the given HTTP Response has the happyCode status code.
-     *
-     * Returns the Reponse's json content if so, otherwise throws an ApiError.
+     * Resolves with the Response, if the status code matched, rejects with it
+     * otherwise.
      *
      * @param {int} happyCode The status code the client wants to receive.
      * @param {Response} response
      * @return Future
-     * @resolve With the Response's JSON content.
-     * @reject With the Response's JSON content.
-     * @throws ApiError
+     * @resolves with the Response.
+     * @rejects with the Response.
      */
     "checkStatus": curry(function (happyCode, response) {
-        let jsonFuture = Future.tryP(() => response.json());
-
         if (response.status != happyCode) {
             // Reject with the JSON content.
-            jsonFuture = jsonFuture.swap();
+            return Future.reject(response);
         }
 
-        return jsonFuture;
-    })
+        return Future.of(response);
+    }),
+
+    /**
+     * Extracts the JSON content from a response.
+     *
+     * @param {Response} response
+     * @returns a Future.
+     * @resolves with the Response's JSON content.
+     */
+    "extractJson": function (response) {
+        return Future.tryP(() => response.json());
+    },
+
+    /**
+     * Extracts the JSON content and the content-language from a response.
+     *
+     * @param {Response} response
+     * @returns a Future.
+     * @resolves with the Response's JSON content and content-language.
+     */
+    "extractJsonPlusLocale": function (response) {
+        return Future.tryP(() => response.json())
+            .map(data => ({
+                "data": data,
+                "locale": response.headers.get("Content-Language")
+            }));
+    }
 }

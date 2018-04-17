@@ -40,7 +40,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     /**
      * Updates the text of the question with uuid = question_uuid to the given
@@ -76,7 +78,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     /**
      * Deletes the Question with uuid = question_uuid on the given hierarchy of
@@ -114,6 +118,8 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     }
 }

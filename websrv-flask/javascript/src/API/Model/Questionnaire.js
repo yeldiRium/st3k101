@@ -30,7 +30,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "get": function (questionnaire_uuid, locale = "") {
         const path = PathHandling.pathMaybeWithLocale(
@@ -51,15 +53,9 @@ export default {
 
             return controller.abort;
         })
-            .map(data => {
-                console.log(data);
-                return data;
-            })
             .chain(ResultHandling.checkStatus(200))
-            .map(data => {
-                console.log(data);
-                return data;
-            });
+            .chain(ResultHandling.extractJsonPlusLocale)
+            .chainRej(ResultHandling.extractJson);
     },
     "update": function (questionnaire_uuid, {name = null, description = null}) {
         return Future((reject, resolve) => {
@@ -84,7 +80,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "publish": function (questionnaire_uuid) {
         return Future((reject, resolve) => {
@@ -102,7 +100,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "unpublish": function (questionnaire_uuid) {
         return Future((reject, resolve) => {
@@ -120,7 +120,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "delete": function (questionnaire_uuid, survey_uuid) {
         return Future((reject, resolve) => {
@@ -144,7 +146,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "listTemplates": function () {
         return Future((reject, resolve) => {
@@ -162,7 +166,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "listQACs": function (questionnaire_uuid) {
         return Future((reject, resolve) => {
@@ -180,7 +186,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "getQACConfig": function (questionnaire_uuid, qac_name) {
         return Future((reject, resolve) => {
@@ -198,7 +206,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "enableQAC": function (questionnaire_uuid, qac_name) {
         return Future((reject, resolve) => {
@@ -216,7 +226,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "configureQAC": function (questionnaire_uuid, qac_name, data) {
         return Future((reject, resolve) => {
@@ -238,7 +250,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     "disableQAC": function (questionnaire_uuid, qac_name) {
         return Future((reject, resolve) => {
@@ -256,6 +270,8 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
 }

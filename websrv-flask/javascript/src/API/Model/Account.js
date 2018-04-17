@@ -26,7 +26,9 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     },
     /**
      * Updates the currently logged in account.
@@ -65,6 +67,8 @@ export default {
 
             return controller.abort;
         })
-            .chain(ResultHandling.checkStatus(200));
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .chainRej(ResultHandling.extractJson);
     }
 }

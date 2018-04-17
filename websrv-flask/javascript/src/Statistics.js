@@ -39,7 +39,6 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
 
             $scope.updateStatistics = function () {
                 QuestionStatistics.update($scope.questionnaire_uuid)
-                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -85,7 +84,6 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                         });
                         return data;
                     })
-                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         questionGroups => {
@@ -182,7 +180,6 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                         });
                         return data;
                     })
-                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         prepareSpiderChart
