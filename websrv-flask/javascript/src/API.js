@@ -327,8 +327,8 @@ angular.module("API", [])
                 }
             }
         }])
-    .factory("Questions", ["$http", "ResultHandling",
-        function ($http, ResultHandling) {
+    .factory("Questions", ["ResultHandling",
+        function (ResultHandling) {
             return {
                 "create": function (questionnaire_uuid, questionGroup_uuid,
                                     text) {
