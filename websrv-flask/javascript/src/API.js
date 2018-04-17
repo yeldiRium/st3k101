@@ -91,54 +91,24 @@ angular.module("API", [])
         function ($http, ResultHandling) {
             return Api.Locale;
         }])
-    .factory("Surveys", ["$http", "PathHandling", "ResultHandling",
-        function ($http, PathHandling, ResultHandling) {
+    .factory("Surveys", ["ResultHandling",
+        function (ResultHandling) {
             return {
                 "all": function (locale = "") {
-                    let path = PathHandling.pathMaybeWithLocale(
-                        "/api/survey", locale
-                    );
-                    return Future.tryP(() => {
-                        return $http.get(path);
-                    })
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractDataAndLocale);
+                    return Api.Survey.all()
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "create": function (name) {
-                    return Future.tryP(() => $http({
-                        "method": "POST",
-                        "url": "/api/survey",
-                        "data": {
-                            "name": name
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Survey.create(name)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "update": function (uuid, name) {
-                    return Future.tryP(() => $http({
-                        "method": "PUT",
-                        "url": `/api/survey/${uuid}`,
-                        "data": {
-                            "name": name
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Survey.update(uuid, name)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "delete": function (uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "DELETE",
-                        "url": `/api/survey/${uuid}`
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData)
+                    return Api.Survey.delete(uuid)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 }
             }
         }])
