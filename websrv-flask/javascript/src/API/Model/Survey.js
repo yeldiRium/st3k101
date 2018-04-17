@@ -4,6 +4,16 @@ import ResultHandling from "../Utility/ResultHandling";
 import PathHandling from "../Utility/PathHandling";
 
 export default {
+    /**
+     * Lists all Surveys available to the current user.
+     *
+     * @returns a Future.
+     * @resolves with the server's confirmation response.
+     * @rejects with either a TypeError, if a connection problem occured, or
+     * with the server's response detailling the error, if the status code is
+     * not 200.
+     * @cancel aborts the HTTP request.
+     */
     "all": function (locale = "") {
         let path = PathHandling.pathMaybeWithLocale(
             "/api/survey", locale
@@ -30,6 +40,18 @@ export default {
             .chain(ResultHandling.extractJsonPlusLocale)
             .chainRej(ResultHandling.extractJson);
     },
+    /**
+     * Creates a new survey with the given name.
+     * It's original locale will be the currently active one.
+     *
+     * @param name
+     * @returns a Future.
+     * @resolves with the server's confirmation response.
+     * @rejects with either a TypeError, if a connection problem occured, or
+     * with the server's response detailling the error, if the status code is
+     * not 200.
+     * @cancel aborts the HTTP request.
+     */
     "create": function (name) {
         return Future((reject, resolve) => {
             const controller = new AbortController();
@@ -58,6 +80,18 @@ export default {
             .chain(ResultHandling.extractJson)
             .chainRej(ResultHandling.extractJson);
     },
+    /**
+     * Update the Survey with the given uuid.
+     *
+     * @param uuid
+     * @param name
+     * @returns a Future.
+     * @resolves with the server's confirmation response.
+     * @rejects with either a TypeError, if a connection problem occured, or
+     * with the server's response detailling the error, if the status code is
+     * not 200.
+     * @cancel aborts the HTTP request.
+     */
     "update": function (uuid, name) {
         return Future((reject, resolve) => {
             const controller = new AbortController();
@@ -86,6 +120,17 @@ export default {
             .chain(ResultHandling.extractJson)
             .chainRej(ResultHandling.extractJson);
     },
+    /**
+     * Deletes the Survey with the given uuid.
+     *
+     * @param uuid
+     * @returns a Future.
+     * @resolves with the server's confirmation response.
+     * @rejects with either a TypeError, if a connection problem occured, or
+     * with the server's response detailling the error, if the status code is
+     * not 200.
+     * @cancel aborts the HTTP request.
+     */
     "delete": function (uuid) {
         return Future((reject, resolve) => {
             const controller = new AbortController();
