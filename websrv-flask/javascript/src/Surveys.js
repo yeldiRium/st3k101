@@ -7,6 +7,8 @@ require("./API");
 import Future from "fluture";
 import * as R from "ramda";
 
+import Api from "./API/";
+
 angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     .config(["FlashProvider", function (FlashProvider) {
         FlashProvider.setTimeout(5000);
@@ -14,11 +16,9 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     }])
     .controller("SurveysController", [
         "$scope", "$http", "$timeout", "Flash", "Surveys", "Questionnaires",
-        "Locales", "ResultHandling", "LanguageHandling", "PathHandling",
-        "StyleStuff",
+        "Locales", "ResultHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, Surveys, Questionnaires,
-                  Locales, ResultHandling, LanguageHandling, PathHandling,
-                  StyleStuff) {
+                  Locales, ResultHandling, StyleStuff) {
             $scope.loading = "loading";
 
             /**
@@ -88,7 +88,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             return R.pipe(
                                 R.assoc(
                                     "original",
-                                    LanguageHandling.getSurveyTranslation(
+                                    Api.LanguageHandling.getSurveyTranslation(
                                         original_locale, survey
                                     )
                                 ),
@@ -105,7 +105,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             );
                         }
                     }),
-                    R.map(LanguageHandling.getSurveyTranslation(locale))
+                    R.map(Api.LanguageHandling.getSurveyTranslation(locale))
                 )(data);
 
                 prepareTemplates(
@@ -201,7 +201,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param questionnaire
              */
             $scope.gotoQuestionnaire = function (questionnaire) {
-                if (!PathHandling.openQuestionnaire(questionnaire.uuid)) {
+                if (!Api.PathHandling.openQuestionnaire(questionnaire.uuid)) {
                     Flash.create("danger", `Tried to open the questionnaire, but the popup was blocked.`);
                 }
             };
@@ -481,10 +481,10 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     .controller("EditQuestionnaireController", [
         "$scope", "$http", "$timeout", "Flash", "$routeParams",
         "Questionnaires", "QuestionGroups", "Questions", "QACs", "Locales",
-        "ResultHandling", "LanguageHandling", "PathHandling", "StyleStuff",
+        "ResultHandling", "StyleStuff",
         function ($scope, $http, $timeout, Flash, $routeParams,
                   Questionnaires, QuestionGroups, Questions, QACs, Locales,
-                  ResultHandling, LanguageHandling, PathHandling, StyleStuff) {
+                  ResultHandling, StyleStuff) {
             $scope.loading = "loading";
 
             /**
@@ -519,7 +519,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             "questionnaire": R.assoc(
                                 "qacs",
                                 R.map(
-                                    LanguageHandling.getQacTranslation(locale),
+                                    Api.LanguageHandling.getQacTranslation(locale),
                                     qacList
                                 ),
                                 questionnaire
@@ -588,12 +588,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * @param locale
              */
             function prepareView({questionnaire, locale}) {
-                const parsed_questionnaire = LanguageHandling
+                const parsed_questionnaire = Api.LanguageHandling
                     .getQuestionnaireTranslation(locale, questionnaire);
                 let parsed_questionnaire_original = false;
 
                 if (questionnaire.fields.original_locale !== locale.toLowerCase()) {
-                    parsed_questionnaire_original = LanguageHandling
+                    parsed_questionnaire_original = Api.LanguageHandling
                         .getQuestionnaireTranslation(
                             questionnaire.original_locale, questionnaire
                         );
@@ -647,7 +647,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
              * Navigates to the frontend view of a Questionnaire.
              */
             $scope.gotoQuestionnaire = function () {
-                if (!PathHandling.openQuestionnaire($scope.questionnaire.uuid)) {
+                if (!Api.PathHandling.openQuestionnaire($scope.questionnaire.uuid)) {
                     Flash.create("danger", `Tried to open the questionnaire, but the popup was blocked.`);
                 }
             };

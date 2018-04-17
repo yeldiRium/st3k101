@@ -1,94 +1,68 @@
-import ResultHandling from "./API/Utility/ResultHandling";
-import Future from "fluture";
-import * as R from "ramda";
-
 import Api from "./API/";
 
 const angular = require("angular");
 require("angular-flash-alert");
 
 angular.module("API", [])
-    .factory("ResultHandling", ["Flash", function (Flash) {
-        return {
-            // Flashes the resulting error message.
-            "flashError": function (scope) {
-                return function (error) {
-                    scope.$apply(() => {
-                        Flash.create("danger", error.error);
-                    });
-                    return error;
+    .factory("ResultHandling", ["Flash",
+        function (Flash) {
+            return {
+                // Flashes the resulting error message.
+                "flashError": function (scope) {
+                    return function (error) {
+                        scope.$apply(() => {
+                            Flash.create("danger", error.error);
+                        });
+                        return error;
+                    }
+                },
+                // Flashes the resulting success message.
+                "flashSuccess": function (scope) {
+                    return function (data) {
+                        scope.$apply(() => {
+                            Flash.create("success", data.result);
+                        });
+                        return data;
+                    }
+                },
+                /**
+                 * Checks a server response for an invalid credentials error.
+                 * If an error of the kind is found, the user is logged out.
+                 *
+                 * @param result
+                 * @returns {*}
+                 */
+                "checkLoggedIn": function (result) {
+                    if ("error" in result &&
+                        result.error == "Lacking credentials.") {
+                        window.location.reload(true);
+                    }
+                    return result;
                 }
-            },
-            // Flashes the resulting success message.
-            "flashSuccess": function (scope) {
-                return function (data) {
-                    scope.$apply(() => {
-                        Flash.create("success", data.result);
-                    });
-                    return data;
-                }
-            },
-            "extractDataAndLocale": function (result) {
-                return Api.ResultHandling.extractDataAndLocale(result);
-            },
-            "extractData": function (result) {
-                return Api.ResultHandling.extractData(result);
-            },
-            /**
-             * Checks, if a given HttpResponse has a 403 status code and exits
-             * the Backend, if so.
-             * @param result
-             */
-            "check403": function (result) {
-                if (result.status === 403) {
-                    window.location.reload(true);
-                }
-                return result;
-            },
-
-            /**
-             * Checks a server response for an invalid credentials error.
-             * If an error of the kind is found, the user is logged out.
-             *
-             * @param result
-             * @returns {*}
-             */
-            "checkLoggedIn": function (result) {
-                if ("error" in result &&
-                    result.error == "Lacking credentials.") {
-                    window.location.reload(true);
-                }
-                return result;
             }
-        }
-    }])
-    .factory("LanguageHandling", [function () {
-        return Api.LanguageHandling;
-    }])
-    .factory("PathHandling", [function () {
-        return Api.PathHandling;
-    }])
-    .factory("Account", ["ResultHandling", function (ResultHandling) {
-        return {
-            "current": function () {
-                return Api.Account.current()
-                    .mapRej(ResultHandling.checkLoggedIn);
-            },
-            /**
-             * Updates the currently logged in account.
-             *
-             * @param email
-             * @param locale
-             * @returns A Future rejecting with the result of the update process.
-             */
-            "update": function ({email = null, locale = null}) {
-                return Api.Account.update({email, locale})
-                    .mapRej(ResultHandling.checkLoggedIn);
-            }
-        };
-    }])
-    .factory("Locales", ["$http", "ResultHandling",
-        function ($http, ResultHandling) {
+        }])
+    .factory("Account", ["ResultHandling",
+        function (ResultHandling) {
+            return {
+                "current": function () {
+                    return Api.Account.current()
+                        .mapRej(ResultHandling.checkLoggedIn);
+                },
+                /**
+                 * Updates the currently logged in account.
+                 *
+                 * @param email
+                 * @param locale
+                 * @returns A Future rejecting with the result of the update process.
+                 */
+                "update": function ({email = null, locale = null}) {
+                    return Api.Account.update({email, locale})
+                        .mapRej(ResultHandling.checkLoggedIn);
+                }
+            };
+        }])
+    .factory("Locales", [
+        function () {
             return Api.Locale;
         }])
     .factory("Surveys", ["ResultHandling",

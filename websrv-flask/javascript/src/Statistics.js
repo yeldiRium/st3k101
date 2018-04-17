@@ -6,6 +6,8 @@ require("./API");
 
 import * as R from "ramda";
 
+import Api from "./API/";
+
 angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
     .config(["FlashProvider", function (FlashProvider) {
         FlashProvider.setTimeout(5000);
@@ -13,9 +15,9 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
     }])
     .controller("StatisticController", [
         "$scope", "$routeParams", "Questionnaires", "QuestionStatistics",
-        "ResultHandling", "LanguageHandling",
+        "ResultHandling",
         function ($scope, $routeParams, Questionnaires, QuestionStatistics,
-                  ResultHandling, LanguageHandling) {
+                  ResultHandling) {
             $scope.loading = "loading";
 
             Questionnaires.get($routeParams.questionnaire)
@@ -31,7 +33,7 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                     ({data: questionnaire, locale}) => {
                         $scope.$apply(() => {
                             $scope.questionnaire_uuid = $routeParams.questionnaire;
-                            $scope.questionnaire = LanguageHandling.getQuestionnaireTranslation(locale, questionnaire);
+                            $scope.questionnaire = Api.LanguageHandling.getQuestionnaireTranslation(locale, questionnaire);
                             $scope.loading = "done";
                         });
                     }
@@ -165,9 +167,7 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
         }])
     .controller("RadarChartStatisticController", [
         "$scope", "$routeParams", "QuestionStatistics", "ResultHandling",
-        "LanguageHandling",
-        function ($scope, $routeParams, QuestionStatistics, ResultHandling,
-                  LanguageHandling) {
+        function ($scope, $routeParams, QuestionStatistics, ResultHandling) {
             $scope.loading = "loading";
 
             $scope.init = function () {
@@ -195,7 +195,7 @@ angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
                                 R.objOf(
                                     R.concat(
                                         R.pipe(
-                                            LanguageHandling.getDefaultStringLocale,
+                                            Api.LanguageHandling.getDefaultStringLocale,
                                             R.head,
                                             R.toUpper
                                         )(questionGroup.name),
