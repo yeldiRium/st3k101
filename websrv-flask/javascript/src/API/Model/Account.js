@@ -5,11 +5,12 @@ export default {
     /**
      * Retrieves the currently logged in user's account data.
      *
-     * @returns A Future.
-     * @resolve The current Account's data.
-     * @reject With data if the response was not ok (=200). With TypeError, if
-     * the connection was interrupted somehow.
-     * @cancel Aborts the HTTP request.
+     * @returns a Future.
+     * @resolves with the current Account's data.
+     * @rejects with either a TypeError, if a connection problem occured, or with
+     * the server's response detailling the error, if the status code is not
+     * 200.
+     * @cancel aborts the HTTP request.
      */
     "current": function () {
         return Future((reject, resolve) => {
@@ -32,12 +33,12 @@ export default {
      *
      * @param email
      * @param locale
-     * @returns A Future.
-     * @resolve With the server's response to the update request.
-     * @reject With either a TypeError, if a connection problem occured, or with
+     * @returns a Future.
+     * @resolves with the server's response to the update request.
+     * @rejects with either a TypeError, if a connection problem occured, or with
      * the server's response detailling the error, if the status code is not
      * 200.
-     * @cancel Aborts the HTTP request.
+     * @cancel aborts the HTTP request.
      */
     "update": function ({email = null, locale = null}) {
         return Future((reject, resolve) => {
