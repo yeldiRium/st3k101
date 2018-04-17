@@ -276,54 +276,23 @@ angular.module("API", [])
                 },
             }
         }])
-    .factory("QuestionGroups", ["$http", "ResultHandling",
-        function ($http, ResultHandling) {
+    .factory("QuestionGroups", ["ResultHandling",
+        function (ResultHandling) {
             return {
                 "create": function (questionnaire_uuid, name) {
-                    return Future.tryP(() => $http({
-                        "method": "POST",
-                        "url": "/api/question_group",
-                        "data": {
-                            "questionnaire_uuid": questionnaire_uuid,
-                            "name": name,
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.QuestionGroup.create(questionnaire_uuid, name)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "update": function (questionGroup_uuid, data) {
-                    const {name = null, color = null, textColor = null} = data;
-                    return Future.tryP(() => $http({
-                        "method": "PUT",
-                        "url": `/api/question_group/${questionGroup_uuid}`,
-                        "data": {
-                            "name": name,
-                            "color": color,
-                            "text_color": textColor
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.QuestionGroup.update(questionGroup_uuid, data)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "delete": function (questionGroup_uuid, questionnaire_uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "DELETE",
-                        "url": `/api/question_group/${questionGroup_uuid}`,
-                        "data": {
-                            "questionnaire_uuid": questionnaire_uuid
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.QuestionGroup.delete(
+                        questionGroup_uuid,
+                        questionnaire_uuid
+                    )
+                        .chainRej(ResultHandling.checkLoggedIn)
                 }
             }
         }])
