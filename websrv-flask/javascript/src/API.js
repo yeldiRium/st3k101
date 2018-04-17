@@ -1,8 +1,11 @@
-const angular = require("angular");
-require("angular-flash-alert");
-
+import ResultHandling from "./API/Utility/ResultHandling";
 import Future from "fluture";
 import * as R from "ramda";
+
+import Api from "./API/";
+
+const angular = require("angular");
+require("angular-flash-alert");
 
 angular.module("API", [])
     .factory("ResultHandling", ["Flash", function (Flash) {
@@ -11,7 +14,7 @@ angular.module("API", [])
             "flashError": function (scope) {
                 return function (error) {
                     scope.$apply(() => {
-                        Flash.create("danger", error.data.error);
+                        Flash.create("danger", error.error);
                     });
                     return error;
                 }
@@ -26,13 +29,10 @@ angular.module("API", [])
                 }
             },
             "extractDataAndLocale": function (result) {
-                return {
-                    "data": result.data,
-                    "locale": result.headers("Content-Language")
-                };
+                return Api.ResultHandling.extractDataAndLocale(result);
             },
             "extractData": function (result) {
-                return result.data;
+                return Api.ResultHandling.extractData(result);
             },
             /**
              * Checks, if a given HttpResponse has a 403 status code and exits
@@ -44,218 +44,49 @@ angular.module("API", [])
                     window.location.reload(true);
                 }
                 return result;
+            },
+
+            /**
+             * Checks a server response for an invalid credentials error.
+             * If an error of the kind is found, the user is logged out.
+             *
+             * @param result
+             * @returns {*}
+             */
+            "checkLoggedIn": function (result) {
+                if ("error" in result &&
+                    result.error == "Lacking credentials.") {
+                    window.location.reload(true);
+                }
+                return result;
             }
         }
     }])
     .factory("LanguageHandling", [function () {
-        const getStringLocale = R.curry(function (locale, i15dString) {
-            const defaultLocale = R.path(
-                ["fields", "default_locale"], i15dString
-            );
-            return R.pathOr(
-                R.path(["fields", "locales", defaultLocale], i15dString),
-                ["fields", "locales", locale],
-                i15dString
-            )
-        });
-
-        const getDefaultStringLocale = function (i15dString) {
-            const defaultLocale = R.path(
-                ["fields", "default_locale"], i15dString
-            );
-            return R.path(["fields", "locales", defaultLocale], i15dString);
-        };
-
-        const getSurveyTranslation = R.curry(
-            function (locale, survey) {
-                const name = R.path(["fields", "name"], survey);
-                const questionnaires = R.path(
-                    ["fields", "questionnaires"], survey
-                );
-                return R.pipe(
-                    R.assocPath(
-                        ["fields", "name"],
-                        getStringLocale(locale, name)
-                    ),
-                    R.assocPath(
-                        ["fields", "questionnaires"],
-                        R.map(
-                            getQuestionnaireTranslation(locale), questionnaires
-                        )
-                    )
-                )(survey);
-            }
-        );
-
-        const getQuestionnaireTranslation = R.curry(
-            function (locale, questionnaire) {
-                const getString = getStringLocale(locale);
-
-                const name = R.path(["fields", "name"], questionnaire);
-                const description = R.path(
-                    ["fields", "description"], questionnaire
-                );
-                const questionGroups = R.path(
-                    ["fields", "questiongroups"], questionnaire
-                );
-                return R.pipe(
-                    R.assocPath(
-                        ["fields", "name"],
-                        getString(name)
-                    ),
-                    R.assocPath(
-                        ["fields", "description"],
-                        getString(description)
-                    ),
-                    R.assocPath(
-                        ["fields", "questiongroups"],
-                        R.map(
-                            getQuestionGroupTranslation(locale), questionGroups
-                        )
-                    )
-                )(questionnaire);
-            }
-        );
-
-        const getQuestionGroupTranslation = R.curry(
-            function (locale, questionGroup) {
-                const name = R.path(["fields", "name"], questionGroup);
-                const questions = R.path(
-                    ["fields", "questions"], questionGroup
-                );
-                return R.pipe(
-                    R.assocPath(
-                        ["fields", "name"],
-                        getStringLocale(locale, name)
-                    ),
-                    R.assocPath(
-                        ["fields", "questions"],
-                        R.map(
-                            getQuestionTranslation(locale), questions
-                        )
-                    )
-                )(questionGroup);
-            }
-        );
-
-        const getQuestionTranslation = R.curry(
-            function (locale, question) {
-                const text = R.path(["fields", "text"], question);
-                return R.assocPath(
-                    ["fields", "text"],
-                    getStringLocale(locale, text),
-                    question
-                );
-            }
-        );
-
-        const getQacTranslation = R.curry(
-            function (locale, qac) {
-                const name = R.path(["fields", "name"], qac);
-                const description = R.path(["fields", "description"], qac);
-                const parameters = R.path(["fields", "parameters"], qac);
-                return R.assocPath(
-                    ["fields", "parameters"],
-                    R.map(
-                        getQacParameterTranslation(locale),
-                        parameters
-                    ),
-                    qac
-                );
-            }
-        );
-
-        const getQacParameterTranslation = R.curry(
-            function (locale, parameter) {
-                if (parameter.class === "model.query_access_control.QACI15dTextParameter.QACI15dTextParameter") {
-                    parameter = R.assocPath(
-                        ["fields", "text"],
-                        getStringLocale(locale, R.path(["fields", "text"], parameter)),
-                        parameter
-                    );
-                } else if (parameter.class === "model.query_access_control.QACCheckboxParameter.QACCheckboxParameter") {
-                    parameter = R.assocPath(
-                        ["fields", "choices"],
-                        R.map(
-                            getDataStringContent(locale),
-                            R.path(["fields", "choices"])
-                        ),
-                        parameter
-                    );
-                    parameter = R.assocPath(
-                        ["fields", "values"],
-                        R.map(
-                            getDataStringContent(locale),
-                            R.path(["fields", "values"])
-                        ),
-                        parameter
-                    );
-                }
-                return parameter;
-            }
-        );
-
-        return {
-            "getStringLocale": getStringLocale,
-            "getDefaultStringLocale": getDefaultStringLocale,
-            "getSurveyTranslation": getSurveyTranslation,
-            "getQuestionnaireTranslation": getQuestionnaireTranslation,
-            "getQuestionGroupTranslation": getQuestionGroupTranslation,
-            "getQuestionTranslation": getQuestionTranslation,
-            "getQacTranslation": getQacTranslation,
-            "getQacParameterTranslation": getQacParameterTranslation
-        }
+        return Api.LanguageHandling;
     }])
     .factory("PathHandling", [function () {
-        return {
-            "pathMaybeWithLocale": function (path, locale = "") {
-                return path + (
-                    (locale === "")
-                        ? ""
-                        : "?locale_cookie=0&locale=" + locale
-                );
-            },
-            "openQuestionnaire": function (questionnaire_uuid) {
-                const win = window.open(
-                    `/survey/${questionnaire_uuid}`, "_blank"
-                );
-                if (win) {
-                    win.focus();
-                    return true;
-                }
-                return false;
-            }
-        }
+        return Api.PathHandling;
     }])
-    .factory("Account", ["$http", "ResultHandling",
-        function ($http, ResultHandling) {
-            return {
-                "current": function () {
-                    return Future.tryP(() => {
-                        return $http.get("/api/account/current");
-                    })
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
-                },
-                "update": function (data) {
-                    const { email = null, locale = null } = data;
-                    return Future.tryP(() => $http({
-                        "method": "PUT",
-                        "url": "/api/account/current",
-                        "data": {
-                            email,
-                            locale
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
-                }
-            };
-        }
-    ])
+    .factory("Account", ["ResultHandling", function (ResultHandling) {
+        return {
+            "current": function () {
+                return Api.Account.current()
+                    .mapRej(ResultHandling.checkLoggedIn);
+            },
+            /**
+             * Updates the currently logged in account.
+             *
+             * @param email
+             * @param locale
+             * @returns A Future rejecting with the result of the update process.
+             */
+            "update": function ({email = null, locale = null}) {
+                return Api.Account.update({email, locale})
+                    .mapRej(ResultHandling.checkLoggedIn);
+            }
+        };
+    }])
     .factory("Locales", ["$http", "ResultHandling",
         function ($http, ResultHandling) {
             return {
@@ -322,7 +153,7 @@ angular.module("API", [])
         function ($http, PathHandling, ResultHandling) {
             return {
                 "create": function (data) {
-                    const { survey_uuid, name, description, template = null } =
+                    const {survey_uuid, name, description, template = null} =
                         data;
                     return Future.tryP(() => $http({
                         "method": "POST",
@@ -353,7 +184,7 @@ angular.module("API", [])
                         .map(ResultHandling.extractDataAndLocale);
                 },
                 "update": function (questionnaire_uuid, data) {
-                    const { name = null, description = null } = data;
+                    const {name = null, description = null} = data;
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": `/api/questionnaire/${questionnaire_uuid}`,
@@ -471,7 +302,7 @@ angular.module("API", [])
                         .map(ResultHandling.extractData);
                 },
                 "update": function (questionGroup_uuid, data) {
-                    const { name = null, color = null, textColor = null } = data;
+                    const {name = null, color = null, textColor = null} = data;
                     return Future.tryP(() => $http({
                         "method": "PUT",
                         "url": `/api/question_group/${questionGroup_uuid}`,
@@ -507,7 +338,7 @@ angular.module("API", [])
         function ($http, ResultHandling) {
             return {
                 "create": function (questionnaire_uuid, questionGroup_uuid,
-                    text) {
+                                    text) {
                     return Future.tryP(() => $http({
                         "method": "POST",
                         "url": "/api/question",
@@ -538,7 +369,7 @@ angular.module("API", [])
                         .map(ResultHandling.extractData);
                 },
                 "delete": function (question_uuid, questionnaire_uuid,
-                    questionGroup_uuid) {
+                                    questionGroup_uuid) {
                     return Future.tryP(() => $http({
                         "method": "DELETE",
                         "url": `/api/question/${question_uuid}`,
@@ -596,7 +427,7 @@ angular.module("API", [])
                 "getWholeQuestionnaire": function (questionnaire_uuid) {
                     return Questionnaires
                         .get(questionnaire_uuid)
-                        .map(({ data: questionnaireData, locale }) => {
+                        .map(({data: questionnaireData, locale}) => {
                             return R.pipe(
                                 R.map(questionGroup => ({
                                     "name": questionGroup.fields.name,
@@ -607,13 +438,13 @@ angular.module("API", [])
                                 R.map(questionGroup => R.assoc(
                                     "questions",
                                     R.map(question => get(question.uuid)
-                                        .map(statisticResult => {
-                                            return {
-                                                "text": LanguageHandling.getStringLocale(locale, question.fields.text),
-                                                "answers": R.pathOr([], ["fields", "results"], question).length,
-                                                "statistic": statisticResult
-                                            }
-                                        }),
+                                            .map(statisticResult => {
+                                                return {
+                                                    "text": LanguageHandling.getStringLocale(locale, question.fields.text),
+                                                    "answers": R.pathOr([], ["fields", "results"], question).length,
+                                                    "statistic": statisticResult
+                                                }
+                                            }),
                                         questionGroup.questions
                                     ),
                                     questionGroup
@@ -631,7 +462,7 @@ angular.module("API", [])
                                             )
                                         })
                                 ))
-                                (questionnaireData.fields.questiongroups);
+                            (questionnaireData.fields.questiongroups);
                         })
                         .chain(questionGroups => {
                             return Future.parallel(

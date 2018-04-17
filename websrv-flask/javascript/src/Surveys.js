@@ -49,10 +49,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.locales = data;
                     });
                     return data;
-                }).fork(
-                    ResultHandling.flashError($scope),
-                    ResultHandling.flashSuccess($scope)
-                );
+                })
+                    .mapRej(ResultHandling.extractData)
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
 
                 Surveys.all()
                     .mapRej(data => {
@@ -62,6 +64,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         });
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         prepareView
@@ -110,6 +113,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 prepareTemplates(
                     locale, $scope.surveys
                 )
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         templates => {
@@ -260,6 +264,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             $scope.abortEditing(name, event, opt);
                             return error
                         })
+                        .mapRej(ResultHandling.extractData)
                         .map(data => {
                             $scope.edit = {};
                             return data;
@@ -345,6 +350,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.init();
                         return Future.of(data);
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -363,6 +369,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         );
                         return Future.of(data);
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -405,6 +412,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.init();
                         return Future.of(data);
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -422,6 +430,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         });
                         return result;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -439,6 +448,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         });
                         return result;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -465,6 +475,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             return data;
                         }
                     )
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         R.map(ResultHandling.flashError($scope)),
                         R.map(ResultHandling.flashSuccess($scope))
@@ -504,10 +515,12 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.locales = data;
                     });
                     return data;
-                }).fork(
-                    ResultHandling.flashError($scope),
-                    ResultHandling.flashSuccess($scope)
-                );
+                })
+                    .mapRej(ResultHandling.extractData)
+                    .fork(
+                        ResultHandling.flashError($scope),
+                        ResultHandling.flashSuccess($scope)
+                    );
 
                 return Questionnaires.get($routeParams.questionnaire)
                 // Load QACs for Questionnaire and store them
@@ -566,6 +579,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         });
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         prepareView
@@ -770,6 +784,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         "description": description
                     }
                 )
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -788,6 +803,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         });
                         return result;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -805,6 +821,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         });
                         return result;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -843,6 +860,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.init();
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -861,6 +879,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
 
                 QuestionGroups
                     .update(uuid, {name})
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -881,6 +900,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         questionGroup.fields.color = color;
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -900,6 +920,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         questionGroup.fields.text_color = color;
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -920,6 +941,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         );
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -957,6 +979,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.init();
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -973,6 +996,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                     return false;
                 }
                 Questions.update(uuid, text)
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -1002,6 +1026,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                             return data;
                         }
                     )
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         R.map(ResultHandling.flashError($scope)),
                         R.map(ResultHandling.flashSuccess($scope))
@@ -1024,6 +1049,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.init();
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -1045,6 +1071,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                         $scope.init();
                         return data;
                     })
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -1069,6 +1096,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 data[parameterName] = qacParameter.fields.text;
 
                 Questionnaires.configureQAC(questionnaireUuid, qacName, data)
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -1093,6 +1121,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 data[parameterName] = qacParameter.fields.text;
 
                 Questionnaires.configureQAC(questionnaireUuid, qacName, data)
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
@@ -1117,6 +1146,7 @@ angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
                 data[parameterName] = parameter.fields.value;
 
                 Questionnaires.configureQAC(questionnaireUuid, qacName, data)
+                    .mapRej(ResultHandling.extractData)
                     .fork(
                         ResultHandling.flashError($scope),
                         ResultHandling.flashSuccess($scope)
