@@ -87,8 +87,8 @@ angular.module("API", [])
             }
         };
     }])
-    .factory("Locales", [
-        function () {
+    .factory("Locales", ["$http", "ResultHandling",
+        function ($http, ResultHandling) {
             return Api.Locale;
         }])
     .factory("Surveys", ["$http", "PathHandling", "ResultHandling",
@@ -379,19 +379,9 @@ angular.module("API", [])
                 }
             }
         }])
-    .factory("QACs", ["$http", "ResultHandling",
-        function ($http, ResultHandling) {
-            return {
-                "list": function () {
-                    return Future.tryP(() => $http({
-                        "method": "GET",
-                        "url": "/api/qac_module"
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
-                }
-            }
-        }])
+    .factory("QACs", [function () {
+        return Api.QAC;
+    }])
     .factory("QuestionStatistics", [
         "$http", "Questionnaires", "ResultHandling", "LanguageHandling",
         function ($http, Questionnaires, ResultHandling, LanguageHandling) {
