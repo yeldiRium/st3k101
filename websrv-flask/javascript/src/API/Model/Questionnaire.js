@@ -1,6 +1,5 @@
 import Future from "fluture";
 import ResultHandling from "../Utility/ResultHandling";
-import PathHandling from "../Utility/PathHandling";
 
 export default {
     /**
@@ -53,11 +52,9 @@ export default {
             .chainRej(ResultHandling.extractJson);
     },
     /**
-     * Reads the complete structure of the given Questionnaire, optionally using
-     * the given locale.
+     * Reads the complete structure of the given Questionnaire.
      *
      * @param questionnaire_uuid
-     * @param locale
      * @returns a Future.
      * @resolves with the Questionnaire's content.
      * @rejects with either a TypeError, if a connection problem occured, or
@@ -65,15 +62,12 @@ export default {
      * not 200.
      * @cancel aborts the HTTP request.
      */
-    "get": function (questionnaire_uuid, locale = "") {
-        const path = PathHandling.pathMaybeWithLocale(
-            `/api/questionnaire/${questionnaire_uuid}`, locale
-        );
+    "get": function (questionnaire_uuid) {
         return Future((reject, resolve) => {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(path, {
+            fetch(`/api/questionnaire/${questionnaire_uuid}`, {
                 "method": "GET",
                 "mode": "cors",
                 "credentials": "include",

@@ -1,7 +1,6 @@
 import Future from "fluture";
 
 import ResultHandling from "../Utility/ResultHandling";
-import PathHandling from "../Utility/PathHandling";
 
 export default {
     /**
@@ -14,16 +13,12 @@ export default {
      * not 200.
      * @cancel aborts the HTTP request.
      */
-    "all": function (locale = "") {
-        let path = PathHandling.pathMaybeWithLocale(
-            "/api/survey", locale
-        );
-
+    "all": function () {
         return Future((reject, resolve) => {
             const controller = new AbortController();
             const signal = controller.signal;
             fetch(
-                path,
+                "/api/survey",
                 {
                     "method": "GET",
                     "mode": "cors",
