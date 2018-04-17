@@ -1,11 +1,11 @@
 const angular = require("angular");
-const Future = require("fluture");
-const R = require("ramda");
 const $ = require("jquery");
-
 require("angular-route");
 require("angular-flash-alert");
 require("./API");
+
+import Future from "fluture";
+import * as R from "ramda";
 
 angular.module("Surveys", ["ngRoute", "ngFlash", "API"])
     .config(["FlashProvider", function (FlashProvider) {

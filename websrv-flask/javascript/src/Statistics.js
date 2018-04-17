@@ -1,10 +1,10 @@
 const angular = require("angular");
-const R = require("ramda");
 const RadarChart = require("radar-chart-d3");
-
 require("angular-route");
 require("angular-flash-alert");
 require("./API");
+
+import * as R from "ramda";
 
 angular.module("Statistics", ["ngRoute", "ngFlash", "API"])
     .config(["FlashProvider", function (FlashProvider) {

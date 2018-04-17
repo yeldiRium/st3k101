@@ -1,8 +1,8 @@
 const angular = require("angular");
-const Future = require("fluture");
-const R = require("ramda");
-
 require("angular-flash-alert");
+
+import Future from "fluture";
+import * as R from "ramda";
 
 angular.module("API", [])
     .factory("ResultHandling", ["Flash", function (Flash) {

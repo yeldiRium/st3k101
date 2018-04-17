@@ -1,11 +1,11 @@
 const angular = require("angular");
-const Future = require("fluture");
-const R = require("ramda");
-
 require("angular-route");
 require("angular-flash-alert");
 require("./API");
 require("./Utility");
+
+import Future from "fluture";
+import * as R from "ramda";
 
 angular.module("Account", ["ngRoute", "API", "Utility"])
     .config(["FlashProvider", function (FlashProvider) {
