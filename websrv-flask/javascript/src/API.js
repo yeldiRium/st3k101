@@ -142,137 +142,66 @@ angular.module("API", [])
                 }
             }
         }])
-    .factory("Questionnaires", ["$http", "PathHandling", "ResultHandling",
-        function ($http, PathHandling, ResultHandling) {
+    .factory("Questionnaires", ["ResultHandling",
+        function (ResultHandling) {
             return {
                 "create": function (data) {
-                    const {survey_uuid, name, description, template = null} =
-                        data;
-                    return Future.tryP(() => $http({
-                        "method": "POST",
-                        "url": "/api/questionnaire",
-                        "data": {
-                            "survey_uuid": survey_uuid,
-                            "questionnaire": {
-                                "name": name,
-                                "description": description,
-                                "template": template
-                            }
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData)
+                    return Api.Questionnaire.create(data)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "get": function (questionnaire_uuid, locale = "") {
-                    const path = PathHandling.pathMaybeWithLocale(
-                        `/api/questionnaire/${questionnaire_uuid}`, locale
-                    );
-                    return Future.tryP(() => {
-                        return $http.get(path);
-                    })
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractDataAndLocale);
+                    return Api.Questionnaire.get(questionnaire_uuid, locale)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "update": function (questionnaire_uuid, data) {
-                    const {name = null, description = null} = data;
-                    return Future.tryP(() => $http({
-                        "method": "PUT",
-                        "url": `/api/questionnaire/${questionnaire_uuid}`,
-                        "data": {
-                            "name": name,
-                            "description": description
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.update(questionnaire_uuid, data)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "publish": function (questionnaire_uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "PATCH",
-                        "url": `/api/questionnaire/${questionnaire_uuid}/publish`
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.publish(questionnaire_uuid)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "unpublish": function (questionnaire_uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "PATCH",
-                        "url": `/api/questionnaire/${questionnaire_uuid}/unpublish`
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.unpublish(questionnaire_uuid)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "delete": function (questionnaire_uuid, survey_uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "DELETE",
-                        "url": `/api/questionnaire/${questionnaire_uuid}`,
-                        "data": {
-                            "survey_uuid": survey_uuid
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData)
+                    return Api.Questionnaire.delete(
+                        questionnaire_uuid, survey_uuid
+                    )
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "listTemplates": function () {
-                    return Future.tryP(() => $http({
-                        "method": "GET",
-                        "url": "/api/questionnaire/templates"
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.listTemplates()
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "listQACs": function (questionnaire_uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "GET",
-                        "url": `/api/questionnaire/${questionnaire_uuid}/qac`
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.listQACs(questionnaire_uuid)
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "getQACConfig": function (questionnaire_uuid, qac_name) {
-                    return Future.tryP(() => $http({
-                        "method": "GET",
-                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.getQACConfig(
+                        questionnaire_uuid, qac_name
+                    )
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "enableQAC": function (questionnaire_uuid, qac_name) {
-                    return Future.tryP(() => $http({
-                        "method": "POST",
-                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.enableQAC(
+                        questionnaire_uuid, qac_name
+                    )
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "configureQAC": function (questionnaire_uuid, qac_name, data) {
-                    return Future.tryP(() => $http({
-                        "method": "PUT",
-                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`,
-                        "data": data,
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.configureQAC(
+                        questionnaire_uuid, qac_name, data
+                    )
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
                 "disableQAC": function (questionnaire_uuid, qac_name) {
-                    return Future.tryP(() => $http({
-                        "method": "DELETE",
-                        "url": `/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Questionnaire.disableQAC(
+                        questionnaire_uuid, qac_name
+                    )
+                        .chainRej(ResultHandling.checkLoggedIn);
                 },
             }
         }])
