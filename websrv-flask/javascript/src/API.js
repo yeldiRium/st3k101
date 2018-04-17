@@ -87,8 +87,8 @@ angular.module("API", [])
             }
         };
     }])
-    .factory("Locales", ["$http", "ResultHandling",
-        function ($http, ResultHandling) {
+    .factory("Locales", [
+        function () {
             return Api.Locale;
         }])
     .factory("Surveys", ["$http", "PathHandling", "ResultHandling",
