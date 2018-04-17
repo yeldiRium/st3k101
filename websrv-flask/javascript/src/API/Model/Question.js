@@ -32,7 +32,8 @@ export default {
                     "questionnaire_uuid": questionnaire_uuid,
                     "question_group_uuid": questionGroup_uuid,
                     "text": text
-                })
+                }),
+                signal
             })
                 .then(resolve)
                 .catch(reject);
@@ -67,7 +68,8 @@ export default {
                 "credentials": "include",
                 "body": JSON.stringify({
                     "text": text
-                })
+                }),
+                signal
             })
                 .then(resolve)
                 .catch(reject);
@@ -104,7 +106,8 @@ export default {
                 "body": JSON.stringify({
                     "questionnaire_uuid": questionnaire_uuid,
                     "question_group_uuid": questionGroup_uuid
-                })
+                }),
+                signal
             })
                 .then(resolve)
                 .catch(reject);

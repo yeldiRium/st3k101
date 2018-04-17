@@ -30,7 +30,8 @@ export default {
                 "body": JSON.stringify({
                     "questionnaire_uuid": questionnaire_uuid,
                     "name": name,
-                })
+                }),
+                signal
             })
                 .then(resolve)
                 .catch(reject);
@@ -69,7 +70,8 @@ export default {
                     "name": name,
                     "color": color,
                     "text_color": textColor
-                })
+                }),
+                signal
             })
                 .then(resolve)
                 .catch(reject);
@@ -104,7 +106,8 @@ export default {
                     "credentials": "include",
                     "body": JSON.stringify({
                         "questionnaire_uuid": questionnaire_uuid
-                    })
+                    }),
+                    signal
                 })
                     .then(resolve)
                     .catch(reject);
