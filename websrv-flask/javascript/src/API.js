@@ -332,50 +332,21 @@ angular.module("API", [])
             return {
                 "create": function (questionnaire_uuid, questionGroup_uuid,
                                     text) {
-                    return Future.tryP(() => $http({
-                        "method": "POST",
-                        "url": "/api/question",
-                        "data": {
-                            "questionnaire_uuid": questionnaire_uuid,
-                            "question_group_uuid": questionGroup_uuid,
-                            "text": text
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Question.create(
+                        questionnaire_uuid, questionGroup_uuid, text
+                    )
+                        .mapRej(ResultHandling.checkLoggedIn);
                 },
                 "update": function (question_uuid, text) {
-                    return Future.tryP(() => $http({
-                        "method": "PUT",
-                        "url": `/api/question/${question_uuid}`,
-                        "data": {
-                            "text": text
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Question.update(question_uuid, text)
+                        .mapRej(ResultHandling.checkLoggedIn);
                 },
                 "delete": function (question_uuid, questionnaire_uuid,
                                     questionGroup_uuid) {
-                    return Future.tryP(() => $http({
-                        "method": "DELETE",
-                        "url": `/api/question/${question_uuid}`,
-                        "data": {
-                            "questionnaire_uuid": questionnaire_uuid,
-                            "question_group_uuid": questionGroup_uuid
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        }
-                    }))
-                        .mapRej(ResultHandling.check403)
-                        .map(ResultHandling.extractData);
+                    return Api.Question.delete(
+                        question_uuid, questionnaire_uuid, questionGroup_uuid
+                    )
+                        .mapRej(ResultHandling.checkLoggedIn);
                 }
             }
         }])
