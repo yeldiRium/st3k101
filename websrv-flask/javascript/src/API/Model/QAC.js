@@ -5,9 +5,9 @@ export default {
     /**
      * @returns a Future.
      * @resolves with a list of all available QACs.
-     * @rejects with either a TypeError, if a connection problem occured, or with
-     * the server's response detailling the error, if the status code is not
-     * 200.
+     * @rejects with either a TypeError, if a connection problem occured, or
+     * with the server's response detailling the error, if the status code is
+     * not 200.
      * @cancel aborts the HTTP request.
      */
     "list": function () {

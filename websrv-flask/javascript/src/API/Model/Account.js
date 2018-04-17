@@ -7,9 +7,9 @@ export default {
      *
      * @returns a Future.
      * @resolves with the current Account's data.
-     * @rejects with either a TypeError, if a connection problem occured, or with
-     * the server's response detailling the error, if the status code is not
-     * 200.
+     * @rejects with either a TypeError, if a connection problem occured, or
+     * with the server's response detailling the error, if the status code is
+     * not 200.
      * @cancel aborts the HTTP request.
      */
     "current": function () {
@@ -35,9 +35,9 @@ export default {
      * @param locale
      * @returns a Future.
      * @resolves with the server's response to the update request.
-     * @rejects with either a TypeError, if a connection problem occured, or with
-     * the server's response detailling the error, if the status code is not
-     * 200.
+     * @rejects with either a TypeError, if a connection problem occured, or
+     * with the server's response detailling the error, if the status code is
+     * not 200.
      * @cancel aborts the HTTP request.
      */
     "update": function ({email = null, locale = null}) {
