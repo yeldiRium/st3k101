@@ -1,12 +1,19 @@
 __pycache__/
 
+# General
+.DS_Store
+
 # IDE
-.idea/
-.vscode/
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
 # Frontend
-websrv-flask/node_modules/*
-**/.sass-cache/
+node_modules
+.sass-cache
 websrv-flask/app/static/fonts/*
 websrv-flask/app/static/css/*
 websrv-flask/app/static/js/bundle.js
@@ -14,4 +21,14 @@ websrv-flask/app/static/js/bundle.js
 # Compiled translations
 **/*.mo
 
-db-mongo/data/
+db-mongo/data
+
+# Frontend
+frontend/dist
+frondend/npm-debug.log*
+frondend/yarn-debug.log*
+frondend/yarn-error.log*
+frondend/test/unit/coverage
+frondend/test/e2e/reports
+frondend/selenium-debug.log
+

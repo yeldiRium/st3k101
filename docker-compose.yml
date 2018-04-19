@@ -16,10 +16,33 @@ services:
     build: ./websrv-flask
     restart: always
     ports:
-      - 80:80
-      - 443:443
+      - 1337:80
     links:
       - db-mongo
       - memcached
     volumes:
       - ./websrv-flask/app:/app
+
+  frontend-dev:
+    build: ./frontend
+    volumes:
+      - ./frontend/src:/usr/app/src:rw
+      - ./frontend/static:/usr/app/static:rw
+      - ./frontend/node_modules:/usr/app/node_modules
+    ports:
+      - 80:80
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  frontend-prod:
+    build: ./frontend
+    volumes:
+      - ./frontend/src:/usr/app/src:rw
+      - ./frontend/static:/usr/app/static:rw
+      - ./frontend/node_modules:/usr/app/node_modules
+    ports:
+      - 80:80
+    environment:
+      - NODE_ENV=production
+    command: bash -c "npm run build && npm install -g http-server && http-server -a 0.0.0.0 -p 80 ./dist"
