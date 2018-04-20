@@ -9,5 +9,3 @@ RUN pybabel compile -d translations
 
 ENV FLASK_CONFIG_PATH="/app/flask.cfg"
 ENV FLASK_APP="main.py"
-
-COPY ./nginx /etc/nginx
