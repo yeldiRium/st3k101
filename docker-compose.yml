@@ -8,6 +8,17 @@ services:
     volumes:
       - ./db-mongo/data:/data/db
 
+  mariadb:
+    build: ./mariadb
+    restart: always
+    environment:
+      - MYSQL_DATABASE=survey-web
+      - MYSQL_USER=flask
+      - MYSQL_PASSWORD=ew8nzrc984zbr9
+      - MYSQL_ROOT_PASSWORD=e832cc98798u3QZ
+    volumes:
+      - ./mariadb/data:/var/lib/mysql
+
   memcached:
     build: ./memcached
     restart: always

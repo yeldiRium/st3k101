@@ -15,3 +15,4 @@ websrv-flask/app/static/js/bundle.js
 **/*.mo
 
 db-mongo/data/
+mariadb/data/
