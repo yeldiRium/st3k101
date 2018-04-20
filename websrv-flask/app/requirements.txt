@@ -1,4 +1,4 @@
-python-binary-memcached
+python-memcached
 pymongo
 argon2
 Flask-Babel

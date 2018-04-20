@@ -59,7 +59,7 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
         self.initialized = False
         self.__readonly = False
         super().__init__(uuid)
-        self.__memcached_client = get_memcache()
+        self.__memcached_client = mc = get_memcache()
 
         if uuid:  # initialize self from mongodb document with the given uuid
             try:
@@ -87,7 +87,8 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
                         self.__class__.__name__
                 )
         else:  # create a new mongodb document for self. Init members here.
-            self._id = self._collection().insert_one(self._document_skeleton()).inserted_id
+            skeleton = self._document_skeleton()
+            self._id = self._collection().insert_one(skeleton).inserted_id
             setattr(self, "__ref_count", 0)
 
             # Init ownership related data
@@ -110,24 +111,29 @@ class DataObject(UniqueObject, metaclass=UniqueHandle):
             if mutex_uuid in g._local_mutexes:  # if this context has already acquired the mutex, don't acquire again
                 return
 
-        get_memcache().add(mutex_uuid, False)  # ensure key exists, doesn't set if already exists
+        mc.add(mutex_uuid, False)  # ensure key exists in mc
 
-        while True:  # until mutex is acquired
+        # object level locking logic
+        mutex_acquired = False
+        while not mutex_acquired:
 
-            mutex_locked, cas = get_memcache().gets(mutex_uuid)
-            while mutex_locked:
-                # wait random time to avoid deadlocks
-                time.sleep(mutex_polling_time + random.uniform(0, mutex_polling_time / 10))
-                mutex_locked, cas = get_memcache().gets(mutex_uuid)
+            mutex_locked = mc.gets(mutex_uuid)
+            while mutex_locked:  # wait around until mutex is no longer locked
+                random_time = random.uniform(0, mutex_polling_time / 10)
+                wait_time = mutex_polling_time + random_time
+                time.sleep(wait_time)  # wait random time to avoid deadlocks
+                mutex_locked = mc.gets(mutex_uuid)
 
-            if not get_memcache().cas(mutex_uuid, True, cas):  # atomic write, if memcached wasn't modified
-                continue  # atomic write failed
+            # set mutex to locked, only if it's not been altered since the
+            # last call to mc.gets
+            mutex_acquired = mc.cas(mutex_uuid, True) != 0
+            if mutex_acquired:
+                break
 
-            break  # atomic write succeeded, mutex is acquired
-
+        # save mutex uuid in request context; we only acquire 1 mutex per thread
         if not hasattr(g, "_local_mutexes"):
             g._local_mutexes = []
-        g._local_mutexes.append(mutex_uuid)  # save mutex uuid in request context
+        g._local_mutexes.append(mutex_uuid)
 
         self.initialized = True
 
