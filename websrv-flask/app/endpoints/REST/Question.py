@@ -10,7 +10,7 @@ from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException
 from framework.flask_request import expect
 from framework.internationalization import _
-from main import app
+from app import app
 from model.Question import Question
 from model.QuestionGroup import QuestionGroup
 from model.Questionnaire import Questionnaire

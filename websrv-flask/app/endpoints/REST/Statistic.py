@@ -4,7 +4,7 @@ from flask.json import jsonify
 from framework.internationalization import _
 from framework import make_error
 from framework.services import update_dirty_statistics, update_all_statistics
-from main import app
+from app import app
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

@@ -11,7 +11,7 @@ from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException, QACAlreadyEnabledException, \
     QACNotEnabledException
 from framework.internationalization import _
-from main import app
+from app import app
 from model.Questionnaire import Questionnaire
 from model.query_access_control.QACModule import QACModule
 

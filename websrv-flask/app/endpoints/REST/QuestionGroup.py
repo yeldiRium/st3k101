@@ -11,7 +11,7 @@ from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException
 from framework.flask_request import expect, expect_optional
 from framework.internationalization import _
-from main import app
+from app import app
 from model.QuestionGroup import QuestionGroup
 from model.Questionnaire import Questionnaire
 

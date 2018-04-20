@@ -1,65 +1,21 @@
 import sys
-import traceback
-from logging.handlers import SMTPHandler
-import logging
-from flask import Flask, render_template, g, request, make_response, abort
-from flask.ext.babel import Babel
+
+from flask import render_template, g, request, make_response, abort
 from werkzeug.wrappers import Response
 
 import auth
+from app import app as original_app
 from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages
 from framework.memcached import get_memcache
-from framework.odm.DataObjectEncoder import DataObjectEncoder
 from model.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
 
-# Setup of flask environment
-app = Flask(__name__)
-app.config.from_envvar('FLASK_CONFIG_PATH')  # this path is set in Dockerfile
-app.json_encoder = DataObjectEncoder  # to allow us to encode DataObjects
-
-# Setup of logging for critical errors, critical errors are logged by email
-# For configuration, see flask.cfg
-mail_handler = SMTPHandler(
-    mailhost=(app.config["SMTP_SERVER"], app.config["SMTP_PORT"]),
-    fromaddr=app.config["SMTP_FROM_ADDRESS"],
-    toaddrs=[app.config["ERROR_NOTIFICATION_EMAIL_ADDRESS"]],
-    subject='[EFLA-web] Application Error',
-    credentials=(app.config["SMTP_FROM_ADDRESS"], app.config["SMTP_PASSWORD"]),
-    secure=()
-)
-mail_handler.setLevel(logging.ERROR)
-mail_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
-))
-app.logger.addHandler(mail_handler)
-
-# Setup of flask_babel to ba able to use gettext() for translating strings
-babel = Babel(app)
-@babel.localeselector
-def get_locale():
-    """
-    Uses the sanest locale according to g._locale, that is set in before_request
-    :return: str The locale that should be used for the current request
-    by babel
-    """
-    return g._locale.lower()
-
-@babel.timezoneselector
-def get_timezone():
-    """
-    Returns the timezone flask_babel will use.
-    We could make an effort here and select one based on locale or browser
-    settings, but we don't handle time information, so we just use one
-    fixed timezone that is set in flask.cfg
-    :return: str The timezone set in flask.cfg
-    """
-    return g._config["BABEL_DEFAULT_TIMEZONE"]
+app = original_app
 
 
 # Things that happen on each request

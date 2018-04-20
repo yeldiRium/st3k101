@@ -9,7 +9,7 @@ from framework import make_error
 from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException
 from framework.internationalization import _
-from main import app
+from app import app
 from framework.flask_request import expect
 from model.Survey import Survey
 

@@ -8,7 +8,7 @@ import utils
 from framework.exceptions import ObjectDoesntExistException, \
     AccessControlException
 from framework.internationalization import _
-from main import app
+from app import app
 from model.Questionnaire import Questionnaire
 from model.query_access_control.QACModules import EMailVerificationQAC
 from utils.email import send_mail

@@ -7,7 +7,7 @@ from flask import render_template, request, make_response, redirect
 from auth import users
 from framework.exceptions import UserExistsException, BadCredentialsException, \
     UserNotLoggedInException
-from main import app
+from app import app
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

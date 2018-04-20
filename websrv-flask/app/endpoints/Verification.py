@@ -1,6 +1,6 @@
 from flask import render_template, make_response, redirect
 
-from main import app
+from app import app
 from model.QuestionResult import QuestionResult
 from model.Questionnaire import Questionnaire
 

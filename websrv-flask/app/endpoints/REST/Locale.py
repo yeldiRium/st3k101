@@ -5,7 +5,7 @@
 from flask import make_response
 from flask.json import jsonify
 
-from main import app
+from app import app
 from framework.internationalization import list_sorted_by_long_name
 
 __author__ = "Noah Hummel, Hannes Leutloff"
