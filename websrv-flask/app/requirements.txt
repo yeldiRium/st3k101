@@ -3,3 +3,5 @@ pymongo
 argon2
 Flask-Babel
 pyyaml
+Flask-SQLAlchemy
+mysqlclient

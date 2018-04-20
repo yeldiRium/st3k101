@@ -194,3 +194,6 @@ import endpoints.REST.QAC
 import endpoints.REST.Account
 import endpoints.REST.Locale
 import endpoints.REST.Statistic
+
+# CLI commands
+import cli
