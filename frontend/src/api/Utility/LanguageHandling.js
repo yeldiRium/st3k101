@@ -1,27 +1,27 @@
 import * as R from "ramda";
 
-const getStringLocale = R.curry(
-    function (locale, i15dString) {
-        const defaultLocale = R.path(
+const getStringLanguage = R.curry(
+    function (language, i15dString) {
+        const defaultLanguage = R.path(
             ["fields", "default_locale"], i15dString
         );
         return R.pathOr(
-            R.path(["fields", "locales", defaultLocale], i15dString),
-            ["fields", "locales", locale],
+            R.path(["fields", "locales", defaultLanguage], i15dString),
+            ["fields", "locales", language],
             i15dString
         )
     }
 );
 
-const getDefaultStringLocale = function (i15dString) {
-    const defaultLocale = R.path(
+const getDefaultStringLanguage = function (i15dString) {
+    const defaultLanguage = R.path(
         ["fields", "default_locale"], i15dString
     );
-    return R.path(["fields", "locales", defaultLocale], i15dString);
+    return R.path(["fields", "locales", defaultLanguage], i15dString);
 };
 
 const getSurveyTranslation = R.curry(
-    function (locale, survey) {
+    function (language, survey) {
         const name = R.path(["fields", "name"], survey);
         const questionnaires = R.path(
             ["fields", "questionnaires"], survey
@@ -29,12 +29,12 @@ const getSurveyTranslation = R.curry(
         return R.pipe(
             R.assocPath(
                 ["fields", "name"],
-                getStringLocale(locale, name)
+                getStringLanguage(language, name)
             ),
             R.assocPath(
                 ["fields", "questionnaires"],
                 R.map(
-                    getQuestionnaireTranslation(locale), questionnaires
+                    getQuestionnaireTranslation(language), questionnaires
                 )
             )
         )(survey);
@@ -42,8 +42,8 @@ const getSurveyTranslation = R.curry(
 );
 
 const getQuestionnaireTranslation = R.curry(
-    function (locale, questionnaire) {
-        const getString = getStringLocale(locale);
+    function (language, questionnaire) {
+        const getString = getStringLanguage(language);
 
         const name = R.path(["fields", "name"], questionnaire);
         const description = R.path(
@@ -64,7 +64,7 @@ const getQuestionnaireTranslation = R.curry(
             R.assocPath(
                 ["fields", "questiongroups"],
                 R.map(
-                    getQuestionGroupTranslation(locale), questionGroups
+                    getQuestionGroupTranslation(language), questionGroups
                 )
             )
         )(questionnaire);
@@ -72,7 +72,7 @@ const getQuestionnaireTranslation = R.curry(
 );
 
 const getQuestionGroupTranslation = R.curry(
-    function (locale, questionGroup) {
+    function (language, questionGroup) {
         const name = R.path(["fields", "name"], questionGroup);
         const questions = R.path(
             ["fields", "questions"], questionGroup
@@ -80,12 +80,12 @@ const getQuestionGroupTranslation = R.curry(
         return R.pipe(
             R.assocPath(
                 ["fields", "name"],
-                getStringLocale(locale, name)
+                getStringLanguage(language, name)
             ),
             R.assocPath(
                 ["fields", "questions"],
                 R.map(
-                    getQuestionTranslation(locale), questions
+                    getQuestionTranslation(language), questions
                 )
             )
         )(questionGroup);
@@ -93,25 +93,25 @@ const getQuestionGroupTranslation = R.curry(
 );
 
 const getQuestionTranslation = R.curry(
-    function (locale, question) {
+    function (language, question) {
         const text = R.path(["fields", "text"], question);
         return R.assocPath(
             ["fields", "text"],
-            getStringLocale(locale, text),
+            getStringLanguage(language, text),
             question
         );
     }
 );
 
 const getQacTranslation = R.curry(
-    function (locale, qac) {
+    function (language, qac) {
         const name = R.path(["fields", "name"], qac);
         const description = R.path(["fields", "description"], qac);
         const parameters = R.path(["fields", "parameters"], qac);
         return R.assocPath(
             ["fields", "parameters"],
             R.map(
-                getQacParameterTranslation(locale),
+                getQacParameterTranslation(language),
                 parameters
             ),
             qac
@@ -120,18 +120,18 @@ const getQacTranslation = R.curry(
 );
 
 const getQacParameterTranslation = R.curry(
-    function (locale, parameter) {
+    function (language, parameter) {
         if (parameter.class === "model.query_access_control.QACI15dTextParameter.QACI15dTextParameter") {
             parameter = R.assocPath(
                 ["fields", "text"],
-                getStringLocale(locale, R.path(["fields", "text"], parameter)),
+                getStringLanguage(language, R.path(["fields", "text"], parameter)),
                 parameter
             );
         } else if (parameter.class === "model.query_access_control.QACCheckboxParameter.QACCheckboxParameter") {
             parameter = R.assocPath(
                 ["fields", "choices"],
                 R.map(
-                    getDataStringContent(locale),
+                    getDataStringContent(language),
                     R.path(["fields", "choices"])
                 ),
                 parameter
@@ -139,7 +139,7 @@ const getQacParameterTranslation = R.curry(
             parameter = R.assocPath(
                 ["fields", "values"],
                 R.map(
-                    getDataStringContent(locale),
+                    getDataStringContent(language),
                     R.path(["fields", "values"])
                 ),
                 parameter
@@ -150,8 +150,8 @@ const getQacParameterTranslation = R.curry(
 );
 
 export default {
-    "getStringLocale": getStringLocale,
-    "getDefaultStringLocale": getDefaultStringLocale,
+    "getStringLanguage": getStringLanguage,
+    "getDefaultStringLanguage": getDefaultStringLanguage,
     "getSurveyTranslation": getSurveyTranslation,
     "getQuestionnaireTranslation": getQuestionnaireTranslation,
     "getQuestionGroupTranslation": getQuestionGroupTranslation,

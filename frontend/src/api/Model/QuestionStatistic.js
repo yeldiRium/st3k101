@@ -49,17 +49,17 @@ let get = function (question_uuid) {
 };
 
 /**
- * Formats the given question and statisticsResult according to the locale.
+ * Formats the given question and statisticsResult according to the language.
  *
  * @param question
- * @param locale
+ * @param language
  * @param statisticResult
  */
 let formatQuestionResult = R.curry(
-    function (locale, question, statisticResult) {
+    function (language, question, statisticResult) {
         return {
-            "text": LanguageHandling.getStringLocale(
-                locale, question.fields.text
+            "text": LanguageHandling.getStringLanguage(
+                language, question.fields.text
             ),
             "answers": statisticResult.answer_count,
             "statistic": statisticResult
@@ -82,7 +82,7 @@ export default {
     "getWholeQuestionnaire": function (questionnaire_uuid) {
         return Questionnaire
             .get(questionnaire_uuid)
-            .map(({data: questionnaireData, locale}) => {
+            .map(({data: questionnaireData, language}) => {
                 return R.pipe(
                     R.map(questionGroup => ({
                         "name": questionGroup.fields.name,
@@ -94,7 +94,7 @@ export default {
                         "questions",
                         R.map(
                             question => get(question.uuid)
-                                .map(formatQuestionResult(locale, question)),
+                                .map(formatQuestionResult(language, question)),
                             questionGroup.questions
                         ),
                         questionGroup

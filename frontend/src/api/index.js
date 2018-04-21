@@ -1,5 +1,5 @@
 import Account from "./Model/Account";
-import Locale from "./Model/Locale";
+import Language from "./Model/Language";
 import Survey from "./Model/Survey";
 import Questionnaire from "./Model/Questionnaire";
 import QuestionGroup from "./Model/QuestionGroup";
@@ -17,7 +17,7 @@ export default {
     PathHandling,
 
     Account,
-    Locale,
+    Language,
     Survey,
     Questionnaire,
     QuestionGroup,

@@ -35,7 +35,7 @@ export default {
      * Updates the currently logged in account.
      *
      * @param email
-     * @param locale
+     * @param language
      * @returns a Future.
      * @resolves with the server's response to the update request.
      * @rejects with either a TypeError, if a connection problem occured, or
@@ -43,7 +43,7 @@ export default {
      * not 200.
      * @cancel aborts the HTTP request.
      */
-    "update": function ({email = null, locale = null}) {
+    "update": function ({email = null, language = null}) {
         return Future((reject, resolve) => {
             const controller = new AbortController();
             const signal = controller.signal;
@@ -55,7 +55,7 @@ export default {
                     "credentials": "include",
                     "body": JSON.stringify({
                         email,
-                        locale
+                        "locale": language
                     }),
                     "headers": {
                         "Content-Type": "application/json"

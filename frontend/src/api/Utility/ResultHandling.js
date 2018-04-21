@@ -2,10 +2,10 @@ import Future from "fluture";
 import {curry} from "ramda";
 
 export default {
-    "extractDataAndLocale": function (result) {
+    "extractDataAndLanguage": function (result) {
         return {
             "data": result.data,
-            "locale": result.headers("Content-Language")
+            "language": result.headers("Content-Language")
         };
     },
     "extractData": function (result) {
@@ -51,11 +51,11 @@ export default {
      * @returns a Future.
      * @resolves with the Response's JSON content and content-language.
      */
-    "extractJsonPlusLocale": function (response) {
+    "extractJsonPlusLanguage": function (response) {
         return Future.tryP(() => response.json())
             .map(data => ({
                 "data": data,
-                "locale": response.headers.get("Content-Language")
+                "language": response.headers.get("Content-Language")
             }));
     }
 }

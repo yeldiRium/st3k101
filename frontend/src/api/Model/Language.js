@@ -6,7 +6,7 @@ import PathHandling from "../Utility/PathHandling";
 export default {
     /**
      * @returns a Future.
-     * @resolves with a locale list of the form [[short, long], [short, long]..]
+     * @resolves with a language list of the form [[short, long], [short, long]..]
      * sorted by the long form ascending.
      * @reject with either a TypeError, if a connection problem occured, or with
      * the server's response detailling the error, if the status code is not

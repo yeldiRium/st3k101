@@ -30,12 +30,12 @@ export default {
             return controller.abort;
         })
             .chain(ResultHandling.checkStatus(200))
-            .chain(ResultHandling.extractJsonPlusLocale)
+            .chain(ResultHandling.extractJsonPlusLanguage)
             .chainRej(ResultHandling.extractJson);
     },
     /**
      * Creates a new survey with the given name.
-     * It's original locale will be the currently active one.
+     * It's original language will be the currently active one.
      *
      * @param name
      * @returns a Future.

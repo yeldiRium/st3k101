@@ -7,7 +7,7 @@ export default {
      * ters conveying global state.
      *
      * Currently no additional query parameters are added; In the future this
-     * could be used to e.g. handle locale requesting.
+     * could be used to e.g. handle language requesting.
      *
      * @param endpointPath An absolute path to an API endpoint.
      */

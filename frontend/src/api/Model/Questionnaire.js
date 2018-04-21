@@ -81,7 +81,7 @@ export default {
             return controller.abort;
         })
             .chain(ResultHandling.checkStatus(200))
-            .chain(ResultHandling.extractJsonPlusLocale)
+            .chain(ResultHandling.extractJsonPlusLanguage)
             .chainRej(ResultHandling.extractJson);
     },
     /**
