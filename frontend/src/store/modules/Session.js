@@ -13,6 +13,11 @@ const store = {
         },
         sessionToken: null
     },
+    getters: {
+        isLoggedIn(state) {
+            return state.sessionToken !== null;
+        }
+    },
     actions: {
         /**
          * Logs in a user with the given credentials, if those match a user.

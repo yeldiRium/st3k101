@@ -14,7 +14,7 @@ export default new Router({
     routes: [
         {
             path: "/",
-            name: "Public",
+            name: "PublicBase",
             component: PublicBase,
 
             children: [
@@ -26,7 +26,7 @@ export default new Router({
             ]
         },
         {
-            path: "/private",
+            path: "/private/",
             name: "Private",
             component: PrivateBase,
 

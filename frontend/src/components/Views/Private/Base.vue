@@ -49,7 +49,11 @@
         components: {LanguagePicker},
         name: "App",
         created() {
-
+            if (!this.$store.getters["session/isLoggedIn"]) {
+                this.$router.replace({
+                    name: "PublicBase"
+                })
+            }
         },
         data: () => ({
             drawer: true,
