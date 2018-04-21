@@ -31,6 +31,7 @@
                         @click.stop="drawer = !drawer"/>
                 <v-toolbar-title>Trashbin</v-toolbar-title>
                 <v-spacer/>
+                <language-picker />
                 <v-toolbar-side-icon @click.stop="searchBar = true">
                     <v-icon>search</v-icon>
                 </v-toolbar-side-icon>
@@ -64,7 +65,10 @@
 </template>
 
 <script>
+    import LanguagePicker from "./LanguagePicker";
+
     export default {
+        components: {LanguagePicker},
         name: "App",
         data: () => ({
             drawer: true,
