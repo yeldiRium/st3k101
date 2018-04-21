@@ -18,7 +18,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo("/api/locales"), {
+            fetch(PathHandling.buildApiPath("/api/locales"), {
                 "mode": "cors"
             })
                 .then(resolve)

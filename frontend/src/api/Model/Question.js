@@ -22,7 +22,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo("/api/question"), {
+            fetch(PathHandling.buildApiPath("/api/question"), {
                 "method": "POST",
                 "headers": {
                     "Content-Type": "application/json"
@@ -62,7 +62,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/question/${question_uuid}`), {
+            fetch(PathHandling.buildApiPath(`/api/question/${question_uuid}`), {
                 "method": "PUT",
                 "headers": {
                     "Content-Type": "application/json"
@@ -101,7 +101,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/question/${question_uuid}`), {
+            fetch(PathHandling.buildApiPath(`/api/question/${question_uuid}`), {
                 "method": "DELETE",
                 "headers": {
                     "Content-Type": "application/json"

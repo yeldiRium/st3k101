@@ -18,7 +18,7 @@ export default {
         return Future((reject, resolve) => {
             const controller = new AbortController();
             const signal = controller.signal;
-            fetch(PathHandling.buildApiPathTo("/api/survey"), {
+            fetch(PathHandling.buildApiPath("/api/survey"), {
                 "method": "GET",
                 "mode": "cors",
                 "credentials": "include",
@@ -49,7 +49,7 @@ export default {
         return Future((reject, resolve) => {
             const controller = new AbortController();
             const signal = controller.signal;
-            fetch(PathHandling.buildApiPathTo("/api/survey"), {
+            fetch(PathHandling.buildApiPath("/api/survey"), {
                 "method": "POST",
                 "headers": {
                     "Content-Type": "application/json"
@@ -86,7 +86,7 @@ export default {
         return Future((reject, resolve) => {
             const controller = new AbortController();
             const signal = controller.signal;
-            fetch(PathHandling.buildApiPathTo(`/api/survey/${uuid}`), {
+            fetch(PathHandling.buildApiPath(`/api/survey/${uuid}`), {
                 "method": "PUT",
                 "headers": {
                     "Content-Type": "application/json"
@@ -122,7 +122,7 @@ export default {
         return Future((reject, resolve) => {
             const controller = new AbortController();
             const signal = controller.signal;
-            fetch(PathHandling.buildApiPathTo(`/api/survey/${uuid}`), {
+            fetch(PathHandling.buildApiPath(`/api/survey/${uuid}`), {
                 "method": "DELETE",
                 "mode": "cors",
                 "credentials": "include",

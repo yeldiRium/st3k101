@@ -17,7 +17,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo("/api/qac_module"), {
+            fetch(PathHandling.buildApiPath("/api/qac_module"), {
                 "method": "GET",
                 "mode": "cors",
                 signal

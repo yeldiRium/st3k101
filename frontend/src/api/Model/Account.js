@@ -18,7 +18,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo("/api/account/current"), {
+            fetch(PathHandling.buildApiPath("/api/account/current"), {
                 "credentials": "include",
                 signal
             })

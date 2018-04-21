@@ -27,7 +27,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo("/api/questionnaire"), {
+            fetch(PathHandling.buildApiPath("/api/questionnaire"), {
                 "method": "POST",
                 "headers": {
                     "Content-Type": "application/json"
@@ -69,7 +69,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}`), {
                 "method": "GET",
                 "mode": "cors",
                 "credentials": "include",
@@ -103,7 +103,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}`), {
                 "method": "PUT",
                 "headers": {
                     "Content-Type": "application/json"
@@ -142,7 +142,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}/publish`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/publish`), {
                 "method": "PATCH",
                 "mode": "cors",
                 "credentials": "include",
@@ -173,7 +173,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}/unpublish`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/unpublish`), {
                 "method": "PATCH",
                 "mode": "cors",
                 "credentials": "include",
@@ -206,7 +206,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}`), {
                 "method": "DELETE",
                 "headers": {
                     "Content-Type": "application/json"
@@ -242,7 +242,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo("/api/questionnaire/templates"), {
+            fetch(PathHandling.buildApiPath("/api/questionnaire/templates"), {
                 "method": "GET",
                 "mode": "cors",
                 "credentials": "include",
@@ -273,7 +273,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}/qac`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac`), {
                 "method": "GET",
                 "mode": "cors",
                 "credentials": "include",
@@ -303,7 +303,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
                 "method": "GET",
                 "mode": "cors",
                 "credentials": "include",
@@ -335,7 +335,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
                 "method": "POST",
                 "mode": "cors",
                 "credentials": "include",
@@ -370,7 +370,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
                 "method": "PUT",
                 "headers": {
                     "Content-Type": "application/json"
@@ -406,7 +406,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
+            fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
                 "method": "DELETE",
                 "mode": "cors",
                 "credentials": "include",

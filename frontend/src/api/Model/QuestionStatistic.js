@@ -21,7 +21,7 @@ let get = function (question_uuid) {
         const controller = new AbortController();
         const signal = controller.signal;
 
-        fetch(PathHandling.buildApiPathTo(`/api/question/${question_uuid}/statistic`), {
+        fetch(PathHandling.buildApiPath(`/api/question/${question_uuid}/statistic`), {
             "method": "GET",
             "mode": "cors",
             "credentials": "include",
@@ -144,7 +144,7 @@ export default {
             const controller = new AbortController();
             const signal = controller.signal;
 
-            fetch(PathHandling.buildApiPathTo(path), {
+            fetch(PathHandling.buildApiPath(path), {
                 "method": "POST",
                 "mode": "cors",
                 "credentials": "include",
