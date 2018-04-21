@@ -65,7 +65,7 @@
 </template>
 
 <script>
-    import LanguagePicker from "./LanguagePicker";
+    import LanguagePicker from "./Partials/LanguagePicker";
 
     export default {
         components: {LanguagePicker},

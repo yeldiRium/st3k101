@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import Questionnaire from "../api/Model/Questionnaire";
+    import Questionnaire from "../../api/Model/Questionnaire";
 
     export default {
         data() {
