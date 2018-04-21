@@ -40,7 +40,6 @@ export default {
      * @resolves with the Response's JSON content.
      */
     "extractJson": function (response) {
-        console.log(response);
         return Future.tryP(() => response.json());
     },
 

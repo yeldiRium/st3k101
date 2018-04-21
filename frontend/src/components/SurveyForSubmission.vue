@@ -27,11 +27,9 @@
             Questionnaire.get("blub")
                 .fork(
                     data => {
-                        console.error(data);
                         this.loading = "error";
                     },
                     data => {
-                        console.log(data);
                         this.questionnaire = data;
                         this.loading = "done";
                     }
