@@ -2,7 +2,7 @@ import Future from "fluture";
 import * as R from "ramda";
 
 import Questionnaire from "./Questionnaire";
-import ResultHandling from "../Utility/ResultHandling";
+import ResultHandling from "../Utility/ResponseHandling";
 import LanguageHandling from "../Utility/LanguageHandling";
 import PathHandling from "../Utility/PathHandling";
 

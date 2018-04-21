@@ -1,6 +1,6 @@
 import Future from "fluture";
 
-import ResultHandling from "../Utility/ResultHandling";
+import ResultHandling from "../Utility/ResponseHandling";
 import PathHandling from "../Utility/PathHandling";
 
 export default {

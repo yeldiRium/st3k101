@@ -7,12 +7,12 @@ import Question from "./Model/Question";
 import QAC from "./Model/QAC";
 import QuestionStatistic from "./Model/QuestionStatistic";
 
-import ResultHandling from "./Utility/ResultHandling";
+import ResponseHandling from "./Utility/ResponseHandling";
 import LanguageHandling from "./Utility/LanguageHandling";
 import PathHandling from "./Utility/PathHandling";
 
 export default {
-    ResultHandling,
+    ResponseHandling,
     LanguageHandling,
     PathHandling,
 
