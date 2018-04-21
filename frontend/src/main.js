@@ -4,7 +4,7 @@ import Vue from "vue";
 import "vuetify/dist/vuetify.css";
 import Vuetify from "vuetify";
 
-import {App} from "./app";
+import App from "./components/App";
 import router from "./router";
 import store from "./store";
 

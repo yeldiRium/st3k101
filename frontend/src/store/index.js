@@ -1,12 +1,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import { vuex as modules } from "../app";
 
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== "production";
 
 export default new Vuex.Store({
-    modules: modules,
+    modules: {},
     strict: debug
 });
