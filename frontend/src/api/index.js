@@ -1,3 +1,5 @@
+import Authentication from "./Authentication";
+
 import Account from "./Model/Account";
 import Language from "./Model/Language";
 import Survey from "./Model/Survey";
@@ -12,6 +14,8 @@ import LanguageHandling from "./Utility/LanguageHandling";
 import PathHandling from "./Utility/PathHandling";
 
 export default {
+    Authentication,
+
     ResponseHandling,
     LanguageHandling,
     PathHandling,

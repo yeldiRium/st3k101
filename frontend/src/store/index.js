@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import Future from "fluture";
 
 import {store as language, initialize as initializeLanguageStore} from "./modules/Language";
+import {store as session} from "./modules/Session";
 
 Vue.use(Vuex);
 
@@ -19,7 +20,8 @@ const store = new Vuex.Store({
         }
     },
     modules: {
-        language
+        language,
+        session
     }
 });
 
