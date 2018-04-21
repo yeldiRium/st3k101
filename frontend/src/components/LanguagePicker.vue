@@ -1,18 +1,26 @@
 <template>
-    <div class="btn-group language_menu">
-        <v-select
-                :items="languageOptions"
-                v-model="currentLanguage"
-                label="Language"
-                single-line
-                item-text="long"
-                item-value="short"
-                return-object
-        ></v-select>
-        <!--
-        TODO: make this look less shitty. position it centered vertically
-         -->
-    </div>
+    <v-menu offset-y
+            allow-overflow
+            lazy
+            content-class="languageMenu"
+            transition="slide-y-reverse-transition"
+    >
+        <v-btn flat
+               slot="activator"
+        >
+            {{ currentLanguage.long }}
+        </v-btn>
+        <v-list>
+            <v-list-tile v-for="language in languageOptions"
+                         :key="language.short"
+                         @click="setLanguage(language)"
+            >
+                <v-list-tile-title>
+                    {{ language.long }}
+                </v-list-tile-title>
+            </v-list-tile>
+        </v-list>
+    </v-menu>
 </template>
 
 <script>
@@ -63,25 +71,16 @@
              *
              * TODO: replace with store action
              */
-            persistLanguageChange(language) {
+            setLanguage(language) {
+                this.currentLanguage = language;
                 console.log(language);
-            }
-        },
-        watch: {
-            /**
-             * When the selected language changes, call the persist method to
-             * update the global state.
-             *
-             * @param newVal
-             * @param oldVal
-             */
-            currentLanguage(newVal, oldVal) {
-                this.persistLanguageChange(newVal);
             }
         }
     }
 </script>
 
 <style lang="scss">
-
+    .languageMenu {
+        max-height: 80%;
+    }
 </style>
