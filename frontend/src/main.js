@@ -3,6 +3,7 @@
 import Vue from "vue";
 import "vuetify/dist/vuetify.css";
 import Vuetify from "vuetify";
+import "abortcontroller-polyfill";
 
 import App from "./components/App";
 import router from "./router";

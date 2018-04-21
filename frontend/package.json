@@ -14,6 +14,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "abortcontroller-polyfill": "^1.1.8",
     "jquery": "^3.3.1",
     "svg-icon-inline-loader": "^3.1.0",
     "vue": "^2.5.2",
