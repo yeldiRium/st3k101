@@ -24,7 +24,6 @@ let get = function (question_uuid) {
         fetch(PathHandling.buildApiPath(`/api/question/${question_uuid}/statistic`), {
             "method": "GET",
             "mode": "cors",
-            "credentials": "include",
             signal
         })
             .then(resolve)
@@ -147,7 +146,6 @@ export default {
             fetch(PathHandling.buildApiPath(path), {
                 "method": "POST",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)

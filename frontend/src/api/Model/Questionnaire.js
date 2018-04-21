@@ -33,7 +33,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "survey_uuid": survey_uuid,
                     "questionnaire": {
@@ -72,7 +71,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}`), {
                 "method": "GET",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -109,7 +107,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "name": name,
                     "description": description
@@ -145,7 +142,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/publish`), {
                 "method": "PATCH",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -176,7 +172,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/unpublish`), {
                 "method": "PATCH",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -212,7 +207,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "survey_uuid": survey_uuid
                 }),
@@ -245,7 +239,6 @@ export default {
             fetch(PathHandling.buildApiPath("/api/questionnaire/templates"), {
                 "method": "GET",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -276,7 +269,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac`), {
                 "method": "GET",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -306,7 +298,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
                 "method": "GET",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -338,7 +329,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
                 "method": "POST",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -376,7 +366,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify(data),
                 signal
             })
@@ -409,7 +398,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/questionnaire/${questionnaire_uuid}/qac/${qac_name}`), {
                 "method": "DELETE",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)

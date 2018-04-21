@@ -19,7 +19,6 @@ export default {
             const signal = controller.signal;
 
             fetch(PathHandling.buildApiPath("/api/account/current"), {
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -52,7 +51,6 @@ export default {
                 {
                     "method": "PUT",
                     "mode": "cors",
-                    "credentials": "include",
                     "body": JSON.stringify({
                         email,
                         "locale": language

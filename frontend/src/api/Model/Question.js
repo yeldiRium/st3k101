@@ -28,7 +28,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "questionnaire_uuid": questionnaire_uuid,
                     "question_group_uuid": questionGroup_uuid,
@@ -68,7 +67,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "text": text
                 }),
@@ -107,7 +105,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "questionnaire_uuid": questionnaire_uuid,
                     "question_group_uuid": questionGroup_uuid

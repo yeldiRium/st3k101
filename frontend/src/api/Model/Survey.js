@@ -21,7 +21,6 @@ export default {
             fetch(PathHandling.buildApiPath("/api/survey"), {
                 "method": "GET",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
@@ -55,7 +54,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "name": name
                 }),
@@ -92,7 +90,6 @@ export default {
                     "Content-Type": "application/json"
                 },
                 "mode": "cors",
-                "credentials": "include",
                 "body": JSON.stringify({
                     "name": name
                 }),
@@ -125,7 +122,6 @@ export default {
             fetch(PathHandling.buildApiPath(`/api/survey/${uuid}`), {
                 "method": "DELETE",
                 "mode": "cors",
-                "credentials": "include",
                 signal
             })
                 .then(resolve)
