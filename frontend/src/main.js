@@ -24,7 +24,7 @@ new Vue({
 });
 
 
-fetch("http://localhost:1337/api/locales", {
+fetch(PathHandling.buildApiPathTo("http://localhost:1337/api/locales"), {
     "method": "GET",
     "mode": "cors"
 }).then(console.log).catch(console.error);

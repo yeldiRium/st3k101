@@ -11,7 +11,7 @@
                              :key="item.name"
                              router
                              exact
-                             :to="{ name: item.action }">
+                             :to="{ name: item.action, params: item.payload }">
                     <v-list-tile-action>
                         <v-icon>{{ item.icon }}</v-icon>
                     </v-list-tile-action>
@@ -76,9 +76,12 @@
                     text: "Dashboard"
                 },
                 {
-                    action: "RandomMedium",
+                    action: "SurveyForSubmission",
                     icon: "image",
-                    text: "Random Image"
+                    text: "Survey",
+                    payload: {
+                        id: "blub"
+                    }
                 }
             ]
         }),
