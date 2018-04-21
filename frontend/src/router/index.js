@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import SurveyForSubmission from "../app/components/SurveyForSubmission";
+import SurveyForSubmission from "../components/SurveyForSubmission";
 
 Vue.use(Router);
 
