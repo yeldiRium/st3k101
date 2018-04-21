@@ -1,13 +1,12 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from "vue";
+import "vuetify/dist/vuetify.css";
+import Vuetify from "vuetify";
+
 import {App} from "./app";
 import router from "./router";
 import store from "./store";
-
-import "vuetify/dist/vuetify.css";
-
-import Vuetify from "vuetify";
 
 Vue.use(Vuetify);
 
@@ -22,9 +21,3 @@ new Vue({
     components: {App},
     template: "<App/>"
 });
-
-
-fetch(PathHandling.buildApiPathTo("http://localhost:1337/api/locales"), {
-    "method": "GET",
-    "mode": "cors"
-}).then(console.log).catch(console.error);
