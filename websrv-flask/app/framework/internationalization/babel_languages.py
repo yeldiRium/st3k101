@@ -7,6 +7,9 @@ characters.
 __author__ = "Noah Hummel, Hannes Leutloff"
 
 
+from enum import Enum
+
+
 babel_languages = {
     "zu": "isiZulu",
     "zh": "中文",
@@ -204,3 +207,5 @@ babel_languages = {
     "agq": "Aghem",
     "af": "Afrikaans"
 }
+
+BabelLanguage = Enum(value='Locale', names=babel_languages)
