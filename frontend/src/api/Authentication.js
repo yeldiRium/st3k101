@@ -1,4 +1,8 @@
 import Future from "fluture";
+import {prop} from "ramda";
+
+import PathHandling from "./Utility/PathHandling";
+import ResultHandling from "./Utility/ResponseHandling";
 
 export default {
     /**
@@ -14,9 +18,28 @@ export default {
      * @cancel
      */
     login: function (email, password) {
-        return Future.reject({
-            reason: "Not implemented yet."
-        });
+        return Future((reject, resolve) => {
+            const controller = new AbortController();
+            const signal = controller.signal;
+
+            fetch(PathHandling.buildApiPath("/api/auth/login"), {
+                "method": "POST",
+                "mode": "cors",
+                "data": JSON.stringify({
+                    email,
+                    password
+                }),
+                signal
+            })
+                .then(resolve)
+                .catch(reject);
+
+            return controller.abort;
+        })
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .map(prop("session_token"))
+            .chainRej(ResultHandling.extractJson);
     },
     /**
      * TODO: implement
@@ -24,14 +47,29 @@ export default {
      *
      * @param sessionToken
      * @returns a Future.
-     * @resolve with a server reponse, if everything went well.
+     * @resolve with True, if everything went well.
      * @rejects with a reason, if an error occured.
      * @cancel
      */
     logout: function (sessionToken) {
-        return Future.reject({
-            reason: "Not implemented yet."
-        });
+        return Future((reject, resolve) => {
+            const controller = new AbortController();
+            const signal = controller.signal;
+
+            fetch(PathHandling.buildApiPath("/api/auth/logout"), {
+                "method": "GET",
+                "mode": "cors",
+                signal
+            })
+                .then(resolve)
+                .catch(reject);
+
+            return controller.abort;
+        })
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .map(() => true)
+            .chainRej(ResultHandling.extractJson);
     },
     /**
      * TODO: implement
@@ -44,8 +82,23 @@ export default {
      * @cancel
      */
     isSessionValid: function (sessionToken) {
-        return Future.reject({
-            reason: "Not implemented yet."
-        });
+        return Future((reject, resolve) => {
+            const controller = new AbortController();
+            const signal = controller.signal;
+
+            fetch(PathHandling.buildApiPath(`/api/auth/${sessionToken}/isValid`), {
+                "method": "GET",
+                "mode": "cors",
+                signal
+            })
+                .then(resolve)
+                .catch(reject);
+
+            return controller.abort;
+        })
+            .chain(ResultHandling.checkStatus(200))
+            .chain(ResultHandling.extractJson)
+            .map(prop("result"))
+            .chainRej(ResultHandling.extractJson);
     }
 }
