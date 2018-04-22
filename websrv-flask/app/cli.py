@@ -1,7 +1,7 @@
 import click
 
 from app import app
-from model import db
+from model.SQLAlchemy import db
 
 
 @app.cli.command()
