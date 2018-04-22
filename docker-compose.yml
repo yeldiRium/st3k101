@@ -19,6 +19,12 @@ services:
     volumes:
       - ./mariadb/data:/var/lib/mysql
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
   memcached:
     build: ./memcached
     restart: always
