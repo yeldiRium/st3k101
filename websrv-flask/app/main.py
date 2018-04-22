@@ -230,6 +230,7 @@ import endpoints.Verification
 import endpoints.Auth
 
 # APIs
+import endpoints.REST.Authentication
 import endpoints.REST.Survey
 import endpoints.REST.Questionnaire
 import endpoints.REST.QuestionGroup
