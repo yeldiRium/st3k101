@@ -3,21 +3,22 @@ from typing import List, Optional, Dict, Any
 
 import yaml
 from flask import g
+from model.ODM.Question import Question
+from model.ODM.QuestionGroup import QuestionGroup
+from model.ODM.query_access_control.QACModule import QACModule
+from model.ODM.query_access_control.QACModules.EMailVerificationQAC import \
+    EMailVerificationQAC
+from model.ODM.query_access_control.QACModules.TOSQAC import TOSQAC
 
 from framework.exceptions import *
 from framework.exceptions import YAMLTemplateInvalidException
+from framework.internationalization import _
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
-from framework.internationalization import _
-from model.I15dString import I15dString
-from model.Question import Question
-from model.QuestionGroup import QuestionGroup
-from model.query_access_control.QACModule import QACModule
-from model.query_access_control.QACModules import EMailVerificationQAC
-from model.query_access_control.QACModules.TOSQAC import TOSQAC
+from model.ODM.I15dString import I15dString
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

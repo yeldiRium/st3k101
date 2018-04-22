@@ -1,8 +1,8 @@
 from flask import render_template, make_response, redirect
+from model.ODM.Questionnaire import Questionnaire
 
 from app import app
-from model.QuestionResult import QuestionResult
-from model.Questionnaire import Questionnaire
+from model.ODM.QuestionResult import QuestionResult
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

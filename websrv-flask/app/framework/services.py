@@ -3,7 +3,8 @@ This file contains methods for maintenance jobs etc.
 """
 
 from flask import g
-from model.Question import Question
+
+from model.ODM.Question import Question
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

@@ -1,6 +1,6 @@
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataString import DataString
-from model.query_access_control.QACParameter import QACParameter
+from model.ODM.query_access_control.QACParameter import QACParameter
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

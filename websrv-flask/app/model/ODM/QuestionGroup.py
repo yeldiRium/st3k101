@@ -1,14 +1,14 @@
 import re
 
 from flask import g
+from model.ODM.Question import Question
 
 from framework.exceptions import *
+from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
-from framework.odm.DataAttribute import DataAttribute
-from model.I15dString import I15dString
-from model.Question import Question
+from model.ODM.I15dString import I15dString
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

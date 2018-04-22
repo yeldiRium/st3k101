@@ -10,7 +10,7 @@ from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages
 from framework.memcached import get_memcache
-from model.DataClient import DataClient
+from model.ODM.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -176,24 +176,27 @@ def backend():
 
 
 # Leave the following imports in place, even if your IDE tries to optimize them
-# away. Importing these modules will load the http endpoints for our app.
+# away.
+
+# Database models
+import model.SQLAlchemy.models
 
 # Survey Frontend, what DataSubject sees
-import endpoints.SurveyFrontend
-import endpoints.Verification
+import api.v1.SurveyFrontend
+import api.v1.Verification
 
 # Auth related pages like login, registration
-import endpoints.Auth
+import api.v1.Auth
 
 # APIs
-import endpoints.REST.Survey
-import endpoints.REST.Questionnaire
-import endpoints.REST.QuestionGroup
-import endpoints.REST.Question
-import endpoints.REST.QAC
-import endpoints.REST.Account
-import endpoints.REST.Locale
-import endpoints.REST.Statistic
+import api.v1.REST.Survey
+import api.v1.REST.Questionnaire
+import api.v1.REST.QuestionGroup
+import api.v1.REST.Question
+import api.v1.REST.QAC
+import api.v1.REST.Account
+import api.v1.REST.Locale
+import api.v1.REST.Statistic
 
 # CLI commands
 import cli

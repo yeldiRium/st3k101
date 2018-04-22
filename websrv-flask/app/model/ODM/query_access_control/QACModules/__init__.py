@@ -5,16 +5,16 @@ the DataClients to enable on their Questionnaires.
 
 from enum import Enum
 
-from model.query_access_control.QACModules.EMailVerificationQAC import \
-    EMailVerificationQAC
-from model.query_access_control.QACModules.EMailWhitelistQAC import \
-    EMailWhitelistQAC
-from model.query_access_control.QACModules.EMailBlacklistQAC import \
+from model.ODM.query_access_control.QACModules.EMailBlacklistQAC import \
     EMailBlacklistQAC
-from model.query_access_control.QACModules.PasswordQAC import PasswordQAC
-from model.query_access_control.QACModules.TOSQAC import TOSQAC
+from model.ODM.query_access_control.QACModules.EMailVerificationQAC import \
+    EMailVerificationQAC
+from model.ODM.query_access_control.QACModules.EMailWhitelistQAC import \
+    EMailWhitelistQAC
+from model.ODM.query_access_control.QACModules.TOSQAC import TOSQAC
 
 from framework.internationalization import _
+from model.ODM.query_access_control.QACModules.PasswordQAC import PasswordQAC
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

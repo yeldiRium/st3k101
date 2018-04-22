@@ -1,13 +1,14 @@
 from typing import Iterable
 
+from model.ODM.DataSubject import DataSubject
+from model.ODM.I15dString import I15dString
+from model.ODM.QuestionResult import QuestionResult
+
 from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
-from model.DataSubject import DataSubject
-from model.I15dString import I15dString
-from model.QuestionResult import QuestionResult
-from model.QuestionStatistic import QuestionStatistic
+from model.ODM.QuestionStatistic import QuestionStatistic
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

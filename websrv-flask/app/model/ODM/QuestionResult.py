@@ -1,8 +1,9 @@
+from model.ODM.DataClient import DataClient
+
+from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
-from framework.odm.DataAttribute import DataAttribute
-from model.DataClient import DataClient
-from model.DataSubject import DataSubject
+from model.ODM.DataSubject import DataSubject
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

@@ -5,11 +5,11 @@
 from flask import g
 from flask.json import jsonify
 
+from app import app
 from framework import make_error
 from framework.flask_request import expect_optional
 from framework.internationalization import _, babel_languages
-from app import app
-from model.DataClient import DataClient
+from model.ODM.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

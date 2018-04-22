@@ -5,15 +5,15 @@
 
 from flask import g
 from flask.json import jsonify
+from model.ODM.QuestionGroup import QuestionGroup
 
+from app import app
 from framework import make_error
 from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException
 from framework.flask_request import expect, expect_optional
 from framework.internationalization import _
-from app import app
-from model.QuestionGroup import QuestionGroup
-from model.Questionnaire import Questionnaire
+from model.ODM.Questionnaire import Questionnaire
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

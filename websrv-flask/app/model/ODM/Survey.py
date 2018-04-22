@@ -1,16 +1,16 @@
-from flask import g
-
 from datetime import datetime
 
+from flask import g
+from model.ODM.DataClient import DataClient
+from model.ODM.Questionnaire import Questionnaire
+
 from framework.exceptions import *
+from framework.internationalization import _
+from framework.odm.DataAttribute import DataAttribute
 from framework.odm.DataObject import DataObject
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataPointerSet import DataPointerSet
-from framework.odm.DataAttribute import DataAttribute
-from framework.internationalization import _
-from model.DataClient import DataClient
-from model.I15dString import I15dString
-from model.Questionnaire import Questionnaire
+from model.ODM.I15dString import I15dString
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

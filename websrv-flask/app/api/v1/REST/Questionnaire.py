@@ -10,15 +10,15 @@ from typing import Any
 
 from flask import make_response, g
 from flask.json import jsonify
+from model.ODM.Questionnaire import Questionnaire
 
+from app import app
 from framework import make_error
 from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException
 from framework.flask_request import expect, expect_optional
 from framework.internationalization import _
-from app import app
-from model.Questionnaire import Questionnaire
-from model.Survey import Survey
+from model.ODM.Survey import Survey
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

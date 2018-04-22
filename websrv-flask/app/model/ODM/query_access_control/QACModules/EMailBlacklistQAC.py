@@ -1,13 +1,14 @@
 from typing import List, Any
 
 from flask import request, render_template
+from model.ODM.query_access_control.QACModule import QACModule
+from model.ODM.query_access_control.QACModules.EMailWhitelistQAC import \
+    EMailWhitelistQAC
 
+from framework.internationalization import _
 from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
-from framework.internationalization import _
-from model.query_access_control.QACModule import QACModule
-from model.query_access_control.QACModules import EMailWhitelistQAC
-from model.query_access_control.QACTextParameter import QACTextParameter
+from model.ODM.query_access_control.QACTextParameter import QACTextParameter
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

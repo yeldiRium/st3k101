@@ -1,8 +1,9 @@
+from model.ODM.I15dString import I15dString
+
 from framework.internationalization import _
 from framework.odm.DataPointer import DataPointer
 from framework.odm.DataString import DataString
-from model.I15dString import I15dString
-from model.query_access_control.QACParameter import QACParameter
+from model.ODM.query_access_control.QACParameter import QACParameter
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

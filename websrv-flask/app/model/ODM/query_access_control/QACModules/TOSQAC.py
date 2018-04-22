@@ -1,12 +1,12 @@
 from typing import List
 
+from flask import request, render_template
+from model.ODM.query_access_control.QACModule import QACModule
+
 from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
-
-from model.query_access_control.QACModule import QACModule
-from flask import request, render_template, g
-
-from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
+from model.ODM.query_access_control.QACI15dTextParameter import \
+    QACI15dTextParameter
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

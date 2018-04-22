@@ -4,16 +4,16 @@
 
 from flask import make_response, request
 from flask.json import jsonify
+from model.ODM.Questionnaire import Questionnaire
+from model.ODM.query_access_control.QACModule import QACModule
 
-from model.query_access_control.QACModules import QAC
+from app import app
 from framework import make_error
 from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException, QACAlreadyEnabledException, \
     QACNotEnabledException
 from framework.internationalization import _
-from app import app
-from model.Questionnaire import Questionnaire
-from model.query_access_control.QACModule import QACModule
+from model.ODM.query_access_control.QACModules import QAC
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

@@ -6,7 +6,7 @@ from flask import g
 import auth
 from framework.exceptions import UserExistsException, BadCredentialsException, \
     UserNotLoggedInException
-from model.DataClient import DataClient
+from model.ODM.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

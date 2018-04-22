@@ -3,14 +3,15 @@
 """
 
 from flask import render_template, make_response, redirect, request
+from model.ODM.Questionnaire import Questionnaire
 
 import utils
+from app import app
 from framework.exceptions import ObjectDoesntExistException, \
     AccessControlException
 from framework.internationalization import _
-from app import app
-from model.Questionnaire import Questionnaire
-from model.query_access_control.QACModules import EMailVerificationQAC
+from model.ODM.query_access_control.QACModules.EMailVerificationQAC import \
+    EMailVerificationQAC
 from utils.email import send_mail
 
 __author__ = "Noah Hummel, Hannes Leutloff"

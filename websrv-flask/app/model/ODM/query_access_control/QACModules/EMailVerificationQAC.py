@@ -2,7 +2,7 @@ from typing import List
 
 from framework.odm.DataString import I18n, DataString
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
-from model.query_access_control.QACModule import QACModule
+from model.ODM.query_access_control.QACModule import QACModule
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -20,7 +20,7 @@ class EMailVerificationQAC(QACModule):
     For a full documentation of the methods see model/qac/QACModule
     
     For a better understanding of how email verification works, see 
-    endpoints/SurveyFrontend.py
+    api/SurveyFrontend.py
     """
 
     @staticmethod

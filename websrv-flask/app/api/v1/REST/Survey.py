@@ -5,13 +5,13 @@
 from flask import g
 from flask.json import jsonify
 
+from app import app
 from framework import make_error
 from framework.exceptions import AccessControlException, \
     ObjectDoesntExistException
-from framework.internationalization import _
-from app import app
 from framework.flask_request import expect
-from model.Survey import Survey
+from framework.internationalization import _
+from model.ODM.Survey import Survey
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

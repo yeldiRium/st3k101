@@ -1,15 +1,17 @@
 from abc import abstractmethod
 from typing import Any, Optional, List
 
+from model.ODM.query_access_control.QACCheckboxParameter import QACCheckboxParameter
+from model.ODM.query_access_control.QACParameter import QACParameter
+from model.ODM.query_access_control.QACSelectParameter import QACSelectParameter
+from model.ODM.query_access_control.QACTextParameter import QACTextParameter
+
+from framework.internationalization import _
 from framework.odm.DataObject import DataObject
 from framework.odm.DataString import DataString, I18n
 from framework.odm.MixedDataPointerSet import MixedDataPointerSet
-from framework.internationalization import _
-from model.query_access_control.QACCheckboxParameter import QACCheckboxParameter
-from model.query_access_control.QACParameter import QACParameter
-from model.query_access_control.QACSelectParameter import QACSelectParameter
-from model.query_access_control.QACTextParameter import QACTextParameter
-from model.query_access_control.QACI15dTextParameter import QACI15dTextParameter
+from model.ODM.query_access_control.QACI15dTextParameter import \
+    QACI15dTextParameter
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
