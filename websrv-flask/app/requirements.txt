@@ -4,4 +4,5 @@ argon2
 Flask-Babel
 pyyaml
 Flask-SQLAlchemy
-mysqlclient
+sqlalchemy_utils
+psycopg2

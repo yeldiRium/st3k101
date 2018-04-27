@@ -8,16 +8,15 @@ services:
     volumes:
       - ./db-mongo/data:/data/db
 
-  mariadb:
-    build: ./mariadb
+  postgres:
+    build: ./postgres
     restart: always
     environment:
-      - MYSQL_DATABASE=survey-web
-      - MYSQL_USER=flask
-      - MYSQL_PASSWORD=ew8nzrc984zbr9
-      - MYSQL_ROOT_PASSWORD=e832cc98798u3QZ
-    volumes:
-      - ./mariadb/data:/var/lib/mysql
+      - POSTGRES_PASSWORD=kksrk0vv3zigez6
+      - POSTGRES_USER=flask
+      - POSTGRES_DB=st3k101
+    #volumes: TODO: reactivate when sqlalchemy model is stable
+    #  - ./postgres/data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
