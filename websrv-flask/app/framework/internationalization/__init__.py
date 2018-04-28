@@ -14,6 +14,29 @@ def _(msgid: str) -> str:
     """
     return gettext(msgid)
 
+
+def __(msgid: str) -> str:
+    """
+    Syntactical sugar for marking a string for translation. Does _not_ actually
+    translate the string, but instead just returns the string as-is.
+    This is useful for when you want to store the string to translate in a
+    variable and pass that variable to gettext later.
+    Wrapping a string in __() will add it to the message catalogue so that it
+    may be extracted with pybabel.
+
+    Example:
+    >>> some_string = __('This will be translated at some point, but not now.')
+    >>> some_string
+    'This will be translated at some point, but not now.'
+    >>> _(some_string)
+    'Dies wird irgendwann übersetzt werden, aber nicht jetzt.'
+
+    :param msgid: The string to mark for translation.
+    :return: The string as-ís.
+    """
+    return msgid
+
+
 def list_sorted_by_long_name() -> List[Tuple[str, str]]:
     """
     Utility function which returns the supported languages listed in 

@@ -208,4 +208,4 @@ babel_languages = {
     "af": "Afrikaans"
 }
 
-BabelLanguage = Enum(value='Locale', names=babel_languages)
+BabelLanguage = Enum(value='BabelLanguage', names=babel_languages)
