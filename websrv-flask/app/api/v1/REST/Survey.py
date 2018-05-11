@@ -7,11 +7,13 @@ from flask.json import jsonify
 
 from app import app
 from framework import make_error
-from framework.exceptions import AccessControlException, \
-    ObjectDoesntExistException
 from framework.flask_request import expect
 from framework.internationalization import _
-from model.ODM.Survey import Survey
+from framework.ownership import owned
+from model.SQLAlchemy import db
+
+from model.SQLAlchemy.models.Survey import Survey
+from view.views.Survey import LegacyView
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -37,14 +39,7 @@ def api_survey_list():
     """
     if g._current_user is None:
         return make_error(_("Lacking credentials"), 403)
-    return jsonify(g._current_user.surveys)
-        # we previously listed out all surveys here.
-        # This makes it, with the help of the other
-        # endpoints, possible to list out all surveys
-        # and all of their questions. We might need an endpoint to list
-        # all surveys for admins of the platform, but
-        # for this I would add a privilege check here.
-        #surveys = Survey.many_from_query({})
+    return LegacyView.jsonify(g._current_user.surveys)
 
 
 @app.route("/api/survey", methods=["POST"])
@@ -72,17 +67,18 @@ def api_survey_create(name: str=None):
     if g._current_user is None:
         return make_error(_("Lacking credentials"), 403)
 
-    survey = Survey.create_survey(name)
-    g._current_user.surveys.add(survey)
+    survey = Survey(name=name)
+    g._current_user.surveys.append(survey)
+    db.session.commit()
 
     return jsonify({
         "result": _("Survey created."),
-        "survey": survey
+        "survey": LegacyView.render(survey)
     })
 
 
-@app.route("/api/survey/<string:survey_uuid>", methods=["GET"])
-def api_survey_get(survey_uuid: str):
+@app.route("/api/survey/<int:survey_uuid>", methods=["GET"])
+def api_survey_get(survey_uuid: int):
     """
     Parameters:
         survey_uuid: String The uuid for the Survey to retrieve.
@@ -123,17 +119,15 @@ def api_survey_get(survey_uuid: str):
             "result": "error"
         }
     """
-    try:
-        return jsonify(Survey(survey_uuid))
-    except ObjectDoesntExistException:
-        return make_error(_("No such Survey."), 404)
-    except AccessControlException:
+    survey = Survey.query.get_or_404(survey_uuid)
+    if not owned(survey):
         return make_error(_("Lacking credentials"), 403)
+    return LegacyView.jsonify(survey)
 
 
-@app.route("/api/survey/<string:survey_uuid>", methods=["PUT"])
+@app.route("/api/survey/<int:survey_uuid>", methods=["PUT"])
 @expect(('name', str))
-def api_survey_update(survey_uuid: str, name: str= ""):
+def api_survey_update(survey_uuid: int, name: str= ""):
     """
     Parameters:
         survey_uuid: String The uuid for the Survey that shall be updated.
@@ -159,21 +153,21 @@ def api_survey_update(survey_uuid: str, name: str= ""):
             "result": "error"
         }
     """
-    try:
-        survey = Survey(survey_uuid)
-        survey.set_name(name)
-        return jsonify({
-            "result": _("Survey updated."),
-            "survey": survey
-        })
-    except ObjectDoesntExistException:
-        return make_error(_("No such Survey."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials."), 403)
+    survey = Survey.query.get_or_404(survey_uuid)
+    if not owned(survey):
+        return make_error(_("Lacking credentials"), 403)
+
+    survey.set_name(name)
+    db.session.commit()
+
+    return jsonify({
+        "result": _("Survey updated."),
+        "survey": LegacyView.render(survey)
+    })
 
 
-@app.route("/api/survey/<string:survey_uuid>", methods=["DELETE"])
-def api_survey_delete(survey_uuid: str= ''):
+@app.route("/api/survey/<int:survey_uuid>", methods=["DELETE"])
+def api_survey_delete(survey_uuid: int=None):
     """
     Parameters:
         survey_uuid: String The uuid for the Survey that shall be deleted.
@@ -197,12 +191,11 @@ def api_survey_delete(survey_uuid: str= ''):
             "result": "error"
         }
     """
-    try:
-        survey = Survey(survey_uuid)
-        g._current_user.surveys.discard(survey)
-        survey.remove()
-        return jsonify({"result": _("Survey deleted.")})
-    except ObjectDoesntExistException:
-        return make_error(_("No such Survey."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials."), 403)
+    survey = Survey.query.get_or_404(survey_uuid)
+    if not owned(survey):
+        return make_error(_("Lacking credentials"), 403)
+
+    db.session.delete(survey)
+    db.session.commit()
+
+    return jsonify({"result": _("Survey deleted.")})

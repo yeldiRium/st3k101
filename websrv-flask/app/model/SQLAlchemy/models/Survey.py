@@ -41,7 +41,7 @@ class Survey(db.Model):
     def __init__(self, **kwargs):
         super(Survey, self).__init__(**kwargs)
         self.date_created = datetime.today()
-        self.original_language = g._language  # TODO: set before request
+        self.original_language = g._language
 
     @staticmethod
     @deprecated(version='2.0', reason='Use Survey() constructor directly')

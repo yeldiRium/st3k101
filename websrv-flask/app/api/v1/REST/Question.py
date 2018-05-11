@@ -4,30 +4,32 @@
 
 from flask import g
 from flask.json import jsonify
-from model.ODM.QuestionGroup import QuestionGroup
-from model.ODM.Questionnaire import Questionnaire
 
 from app import app
 from framework import make_error
-from framework.exceptions import AccessControlException, \
-    ObjectDoesntExistException
 from framework.flask_request import expect
 from framework.internationalization import _
-from model.ODM.Question import Question
+from framework.ownership import owned
+from model.SQLAlchemy import db
+
+from model.SQLAlchemy.models.Question import Question
+from model.SQLAlchemy.models.QuestionGroup import QuestionGroup
+from view.views.Question import LegacyView
+from view.views.QuestionStatistic import LegacyView as QuestionStatistic_LegacyView
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
 
 @app.route("/api/question", methods=["POST"])
 @expect(
-    ('questionnaire_uuid', str),
-    ('question_group_uuid', str),
+    ('questionnaire_uuid', int),
+    ('question_group_uuid', int),
     ('text', str)
 )
 def api_question_create(
-        questionnaire_uuid: str=None,
-        question_group_uuid: str=None,
-        text: str =None
+        questionnaire_uuid: int=None,
+        question_group_uuid: int=None,
+        text: str=None
 ):
     """
     Parameters:
@@ -58,34 +60,26 @@ def api_question_create(
             "result": "error"
         }
     """
-    if g._current_user is None:
-        return make_error(_("Lacking credentials"), 403)
 
-    try:
-        the_questionnaire = Questionnaire(questionnaire_uuid)
-        the_question_group = QuestionGroup(question_group_uuid)
-    except ObjectDoesntExistException as e:
-        if e.args[1] is "Questionnaire":
-            return make_error(_("No such Questionnaire."), 404)
-        else:
-            return make_error(_("No such QuestionGroup."), 404)
-    except AccessControlException:
+    question_group = QuestionGroup.query.get_or_404(question_group_uuid)
+    if question_group.questionnaire_id != questionnaire_uuid:
+        return make_error(_("No such QuestionGroup."), 404)
+
+    if not owned(question_group):
         return make_error(_("Lacking credentials."), 403)
 
-    if not the_questionnaire.accessible():
-        return make_error(_("Lacking credentials"), 403)
-
-    question = the_questionnaire.add_question_to_group(
-        the_question_group, text)
+    question = Question(text=text)
+    question_group.questions.append(question)
+    db.session.commit()
 
     return jsonify({
         "result": _("Question created."),
-        "question": question
+        "question": LegacyView.render(question)
     })
 
 
-@app.route("/api/question/<string:question_uuid>", methods=["GET"])
-def api_question_get(question_uuid: str):
+@app.route("/api/question/<int:question_uuid>", methods=["GET"])
+def api_question_get(question_uuid: int):
     """
     Parameters:
         question_uuid: String The uuid for the Question to retrieve.
@@ -116,19 +110,13 @@ def api_question_get(question_uuid: str):
             "result": "error"
         }
     """
-    try:
-        question = Question(question_uuid)
-    except ObjectDoesntExistException:
-        return make_error(_("No such Question."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials."), 403)
-
-    return jsonify(question)
+    question = Question.query.get_or_404(question_uuid)
+    return LegacyView.jsonify(question)
 
 
-@app.route("/api/question/<string:question_uuid>", methods=["PUT"])
+@app.route("/api/question/<int:question_uuid>", methods=["PUT"])
 @expect(('text', str))
-def api_question_update(question_uuid: str, text: str=None):
+def api_question_update(question_uuid: int, text: str=None):
     """
     Parameters:
         question_uuid: String The uuid for the Question to update.
@@ -160,32 +148,29 @@ def api_question_update(question_uuid: str, text: str=None):
             "result": "error"
         }
     """
-    try:
-        question = Question(question_uuid)
-        question.update_text(text)
-    except ObjectDoesntExistException:
-        return make_error(_("No such Question."), 404)
-    except AccessControlException:
+    question = Question.query.get_or_404(question_uuid)
+
+    if not owned(question):
         return make_error(_("Lacking credentials."), 403)
 
-    if not question.accessible():
-        return make_error(_("Lacking credentials"), 403)
+    question.text = text
+    db.session.commit()
 
     return jsonify({
         "result": _("Question updated."),
-        "question": question
+        "question": LegacyView.render(question)
     })
 
 
-@app.route("/api/question/<string:question_uuid>", methods=["DELETE"])
+@app.route("/api/question/<int:question_uuid>", methods=["DELETE"])
 @expect(
-    ('question_group_uuid', str),
-    ('questionnaire_uuid', str)
+    ('question_group_uuid', int),
+    ('questionnaire_uuid', int)
 )
 def api_question_delete(
-        question_uuid: str,
-        question_group_uuid: str=None,
-        questionnaire_uuid: str=None
+        question_uuid: int,
+        question_group_uuid: int=None,
+        questionnaire_uuid: int=None
 ):
     """
     Parameters:
@@ -216,30 +201,23 @@ def api_question_delete(
             "result": "error"
         }
     """
-    try:
-        question = Question(question_uuid)
-        the_question_group = QuestionGroup(question_group_uuid)
-        the_questionnaire = Questionnaire(questionnaire_uuid)
-    except ObjectDoesntExistException as e:
-        if e.args[1] is "Question":
-            return make_error(_("No such Question."), 404)
-        elif e.args[1] is "Questionnaire":
-            return make_error(_("No such Questionnaire."), 404)
-        else:
-            return make_error(_("No such QuestionGroup."), 404)
-    except AccessControlException:
+    question = Question.query.get_or_404(question_uuid)
+
+    if question.question_group_id != question_group_uuid:
+        return make_error(_("No such Question."), 404)
+    elif question.question_group.questionnaire_id != questionnaire_uuid:
+        return make_error(_("No such Question."), 404)
+    elif not owned(question):
         return make_error(_("Lacking credentials."), 403)
 
-    if not the_questionnaire.accessible():
-        return make_error(_("Lacking credentials"), 403)
-
-    the_questionnaire.remove_question_from_group(the_question_group, question)
+    db.session.delete(question)
+    db.session.commit()
 
     return jsonify({"result": _("Question deleted.")})
 
 
-@app.route("/api/question/<string:question_uuid>/statistic", methods=["GET"])
-def api_question_statistic(question_uuid: str):
+@app.route("/api/question/<int:question_uuid>/statistic", methods=["GET"])
+def api_question_statistic(question_uuid: int):
     """
     Parameters:
         question_uuid: String The uuid for the Question to retrieve the statis-
@@ -273,15 +251,9 @@ def api_question_statistic(question_uuid: str):
             "result": "error"
         }
     """
-    try:
-        question = Question(question_uuid)
+    question = Question.query.get_or_404(question_uuid)
 
-    except ObjectDoesntExistException:
-        return make_error(_("Not found."), 404)
-    except AccessControlException:
+    if not owned(question):
         return make_error(_("Lacking credentials"), 403)
 
-    if not question.accessible():
-        return make_error(_("Lacking credentials"), 403)
-
-    return jsonify(question.statistic)
+    return QuestionStatistic_LegacyView.jsonify(question.statistic)

@@ -60,7 +60,6 @@ class QuestionGroup(db.Model):
         Removes a Question from the QuestionGroup.
         :param question: The Question to remove.
         """
-        # TODO: implement via cascading delete
         self.questions.remove(question)
         db.session.delete(question)
 

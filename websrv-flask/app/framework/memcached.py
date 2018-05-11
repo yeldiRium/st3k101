@@ -13,7 +13,7 @@ def get_memcache() -> Client:
 
     mc = getattr(g, '_memcache_client', None)
     if mc is None:
-        mc = g._memcache_client = Client(['memcached'],
+        mc = g._memcache_client = Client(['memcached:11211'],
                                          debug=g._config['DEBUG'])
 
     return mc

@@ -6,8 +6,6 @@ from logging.handlers import SMTPHandler
 from flask import Flask, logging, g
 from flask_babel import Babel
 
-from framework.odm.DataObjectEncoder import DataObjectEncoder
-
 __author__ = "Noah Hummel"
 
 
@@ -16,7 +14,6 @@ app = Flask(__name__)
 
 # Setup of flask environment
 app.config.from_envvar('FLASK_CONFIG_PATH')  # this path is set in Dockerfile
-app.json_encoder = DataObjectEncoder  # to allow us to encode DataObjects
 
 
 # Setup of logging for critical errors, critical errors are logged by email
@@ -47,7 +44,7 @@ def get_locale():
     :return: str The locale that should be used for the current request
     by babel
     """
-    return g._locale.lower()
+    return g._language.name
 
 
 @babel.timezoneselector

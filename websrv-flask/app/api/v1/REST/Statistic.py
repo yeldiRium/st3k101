@@ -5,6 +5,7 @@ from framework.internationalization import _
 from framework import make_error
 from framework.services import update_dirty_statistics, update_all_statistics
 from app import app
+from model.SQLAlchemy import db
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -34,10 +35,12 @@ def update_statistics():
     if g._current_user is None:
         return make_error(_("Lacking credentials"), 403)
     count = update_dirty_statistics()
+    db.session.commit()
     return jsonify({
         "result": _("Statistics updated."),
         "count": count
     })
+
 
 @app.route("/api/statistics/update/force", methods=["POST"])
 def force_update_statistics():
@@ -45,7 +48,7 @@ def force_update_statistics():
     Parameters:
         None
 
-    Updates the statistics for all Questions. Froces update, even if nothing
+    Updates the statistics for all Questions. Forces update, even if nothing
     has changed since the last update.
 
     Response Codes:
@@ -62,14 +65,10 @@ def force_update_statistics():
             "result": "error"
         }
     """
-    """
-    Updates all QuestionStatistics which the currently logged in user can
-    access.
-    :return:
-    """
     if g._current_user is None:
         return make_error(_("Lacking credentials"), 403)
     count = update_all_statistics()
+    db.session.commit()
     return jsonify({
         "result": _("Statistics updated"),
         "count": count

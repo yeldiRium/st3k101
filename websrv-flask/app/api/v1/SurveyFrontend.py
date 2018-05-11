@@ -2,40 +2,38 @@
     All http endpoints that are used when a DataSubject interacts with the site
 """
 
-from flask import render_template, make_response, redirect, request
-from model.ODM.Questionnaire import Questionnaire
+from flask import render_template, request
 
 import utils
 from app import app
-from framework.exceptions import ObjectDoesntExistException, \
-    AccessControlException
+from framework import make_error
 from framework.internationalization import _
-from model.ODM.query_access_control.QACModules.EMailVerificationQAC import \
-    EMailVerificationQAC
+from model.SQLAlchemy import db
 from utils.email import send_mail
+
+from model.SQLAlchemy.models.QAC.QACModules.EMailVerificationQAC import \
+    EMailVerificationQAC
+from model.SQLAlchemy.models.Questionnaire import Questionnaire
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
 
-@app.route("/survey/<string:questionnaire_uuid>", methods=["GET"])
-def survey(questionnaire_uuid):
+@app.route("/survey/<int:questionnaire_uuid>", methods=["GET"])
+def survey(questionnaire_uuid: int):
     """
     Endpoint for accessing questionnaires as a DataSubject.
     Serves the Questionnaire.
     :param questionnaire_uuid: str The uuid of the questionnaire in question
     :return: A response containing html
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_response(redirect("/"))
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
 
     if not questionnaire.published:
-        return make_response(redirect("/"))
+        return make_error(_("Not found."), 404)
 
     # generate templates for qacs without any error parameters
     qac_templates = []
-    for qac_module in questionnaire.get_qac_modules():
+    for qac_module in questionnaire.qac_modules:
         qac_templates.append(qac_module.render_questionnaire_template([]))
 
     return render_template(
@@ -48,8 +46,8 @@ def survey(questionnaire_uuid):
     )
 
 
-@app.route("/survey/<string:questionnaire_uuid>", methods=["POST"])
-def survey_submit(questionnaire_uuid):
+@app.route("/survey/<int:questionnaire_uuid>", methods=["POST"])
+def survey_submit(questionnaire_uuid: int):
     """
     Survey submit
 
@@ -62,26 +60,24 @@ def survey_submit(questionnaire_uuid):
     The field with the error must be a key on the error dict. The value is an
     optional message.
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-    except (AccessControlException, ObjectDoesntExistException):
-        return make_response(redirect("/"))
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
 
     if not questionnaire.published:
-        return make_response(redirect("/"))
+        return make_error(_("Not found."), 404)
 
     # check if email address was entered and all questions were answered
     error = {}
     if "email" not in request.form or request.form["email"] == "":
         error["email"] = _("Please enter an E-Mail.")
-    for question_group in questionnaire.questiongroups:
+    for question_group in questionnaire.question_groups:
         for question in question_group.questions:
-            if ("question_" + question.uuid) not in request.form:
-                error["question_" + question.uuid] = _("Please choose a value.")
+            question_str_id = "question_{}".format(question.id)
+            if question_str_id not in request.form:
+                error[question_str_id] = _("Please choose a value.")
 
     # control all qacs and generate possibly error containing templates
     qac_templates = []
-    for qac_module in questionnaire.get_qac_modules():
+    for qac_module in questionnaire.qac_modules:
         qac_errors = qac_module.control()
         qac_templates.append(qac_module.render_questionnaire_template(
             qac_errors))
@@ -91,37 +87,32 @@ def survey_submit(questionnaire_uuid):
 
     # display errors in frontend
     if error:
-        try:
-            questionnaire = Questionnaire(questionnaire_uuid)
-            return render_template(
-                "survey_survey.html",
-                uuid=questionnaire_uuid,
-                questionnaire=questionnaire,
-                qac_templates=qac_templates,
-                values=request.form,
-                error=error
-            )
-        except (AccessControlException, ObjectDoesntExistException):
-            return make_response(redirect("/"))
+        questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+        return render_template(
+            "survey_survey.html",
+            uuid=questionnaire_uuid,
+            questionnaire=questionnaire,
+            qac_templates=qac_templates,
+            values=request.form,
+            error=error
+        )
 
     needs_verification = False
     token = utils.generate_verification_token()
-    for qac_module in questionnaire.get_qac_modules():
-        if type(qac_module) is EMailVerificationQAC:
+    for qac_module in questionnaire.qac_modules:
+        if isinstance(qac_module, EMailVerificationQAC):
             needs_verification = True
 
     # update QuestionResults
     email = request.form["email"]
     answer_is_new = False
-    for question_group in questionnaire.questiongroups:
+    for question_group in questionnaire.question_groups:
         for question in question_group.questions:
-            answer_value = request.form["question_{}".format(question.uuid)]
+            answer_value = request.form["question_{}".format(question.id)]
             answer_is_new |= question.add_question_result(answer_value, email,
                                                           needs_verification,
                                                           token)
-
-    if answer_is_new and not needs_verification:
-            questionnaire.answer_count += 1
+    db.session.commit()
 
     if needs_verification:
         url = utils.generate_verification_url("/verify/survey", token)
@@ -129,7 +120,7 @@ def survey_submit(questionnaire_uuid):
         message = render_template(
             "mail/verification_mail.txt",
             verification_url=url,
-            questionnaire_name=questionnaire.name.get(),
+            questionnaire_name=questionnaire.name,
             questionnaire_url=questionnaire_url
         )
         try:

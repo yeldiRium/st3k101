@@ -8,27 +8,30 @@ import csv
 import io
 from typing import Any
 
-from flask import make_response, g
+from flask import make_response
 from flask.json import jsonify
-from model.ODM.Questionnaire import Questionnaire
 
 from app import app
 from framework import make_error
-from framework.exceptions import AccessControlException, \
-    ObjectDoesntExistException
+from framework.exceptions import ObjectDoesntExistException
 from framework.flask_request import expect, expect_optional
 from framework.internationalization import _
-from model.ODM.Survey import Survey
+from framework.ownership import owned
+from model.SQLAlchemy import db
+
+from model.SQLAlchemy.models.Questionnaire import Questionnaire
+from model.SQLAlchemy.models.Survey import Survey
+from view.views.Questionnaire import LegacyView
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
 
 @app.route("/api/questionnaire", methods=["POST"])
 @expect(
-    ('survey_uuid', str),
+    ('survey_uuid', int),
     ('questionnaire', Any)
 )
-def api_questionnaire_create(survey_uuid: str=None, questionnaire: Any=None):
+def api_questionnaire_create(survey_uuid: int=None, questionnaire: Any=None):
     """
     Parameters:
         survey_uuid: String The uuid for the Survey to create a Questionnaire
@@ -64,16 +67,9 @@ def api_questionnaire_create(survey_uuid: str=None, questionnaire: Any=None):
             "result": "error"
         }
     """
-    if g._current_user is None:
-        return make_error(_("Lacking credentials"), 403)
-    try:
-        the_survey = Survey(survey_uuid)
-    except ObjectDoesntExistException:
-        return make_error(_("No such Survey."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials."), 403)
+    survey = Survey.query.get_or_404(survey_uuid)
 
-    if not the_survey.accessible():
+    if not owned(survey):
         return make_error(_("Lacking credentials"), 403)
 
     required_args = {"name", "description"}
@@ -83,27 +79,30 @@ def api_questionnaire_create(survey_uuid: str=None, questionnaire: Any=None):
 
     if "template" in questionnaire and questionnaire["template"] is not None:
         try:
-            the_questionnaire = the_survey.add_new_questionnaire_from_template(
+            the_questionnaire = survey.add_new_questionnaire_from_template(
                 questionnaire["name"],
                 questionnaire["description"],
                 questionnaire["template"]
             )
         except ObjectDoesntExistException:
+            db.session.rollback()
             return make_error(_("No such template."), 404)
     else:
-        the_questionnaire = the_survey.add_new_questionnaire(
-            questionnaire["name"],
-            questionnaire["description"]
+        the_questionnaire = Questionnaire(
+            questionnaire['name'],
+            questionnaire['description']
         )
+        survey.questionnaires.append(the_questionnaire)
 
+    db.session.commit()
     return jsonify({
         "result": "Questionnaire created.",
-        "questionnaire": the_questionnaire
+        "questionnaire": LegacyView.render(the_questionnaire)
     })
 
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["GET"])
-def api_questionnaire_get(questionnaire_uuid: str):
+@app.route("/api/questionnaire/<int:questionnaire_uuid>", methods=["GET"])
+def api_questionnaire_get(questionnaire_uuid: int):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire to retrieve.
@@ -149,16 +148,14 @@ def api_questionnaire_get(questionnaire_uuid: str):
             "result": "error"
         }
     """
-    try:
-        return jsonify(Questionnaire(questionnaire_uuid))
-    except ObjectDoesntExistException:
-        return make_error(_("Not found."), 404)
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    return LegacyView.jsonify(questionnaire)
 
 
-@app.route("/api/questionnaire/<questionnaire_uuid>", methods=["PUT"])
+@app.route("/api/questionnaire/<int:questionnaire_uuid>", methods=["PUT"])
 @expect_optional(('name', str), ('description', str))
 def api_questionnaire_update(
-        questionnaire_uuid: str= '',
+        questionnaire_uuid: int=None,
         name: str=None,
         description: str=None
 ):
@@ -191,30 +188,26 @@ def api_questionnaire_update(
             "result": "error"
         }
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-
-        if name is not None:
-            questionnaire.set_name(name)
-        if description is not None:
-            questionnaire.set_description(description)
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials."), 403)
-
-    if not questionnaire.accessible():
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    if not owned(questionnaire):
         return make_error(_("Lacking credentials"), 403)
 
+    if name is not None:
+        questionnaire.name = name
+    if description is not None:
+        questionnaire.description = description
+
+    db.session.commit()
     return jsonify({
             "result": _("Questionnaire updated."),
-            "questionnaire": questionnaire
+            "questionnaire": LegacyView.render(questionnaire)
         })
 
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>", methods=["DELETE"])
-@expect(('survey_uuid', str))
-def api_questionnaire_delete(questionnaire_uuid: str=None, survey_uuid: str=None):
+@app.route("/api/questionnaire/<int:questionnaire_uuid>", methods=["DELETE"])
+@expect(('survey_uuid', int))
+def api_questionnaire_delete(questionnaire_uuid: int=None,
+                             survey_uuid: int=None):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire to update.
@@ -241,26 +234,23 @@ def api_questionnaire_delete(questionnaire_uuid: str=None, survey_uuid: str=None
             "result": "error"
         }
     """
-    try:
-        the_survey = Survey(survey_uuid)
-        questionnaire = Questionnaire(questionnaire_uuid)
+    survey = Survey.query.get_or_404(survey_uuid)
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    if questionnaire not in survey.questionnaires:
+        return make_error(_("Not found."), 404)
 
-        # might raise AccessControlException if readonly
-        the_survey.remove_questionnaire(questionnaire)
-    except ObjectDoesntExistException as e:
-        if e.args[1] == "Questionnaire":
-            return make_error(_("No such Questionnaire."), 404)
-        else:
-            return make_error(_("No such Survey."), 404)
-    except AccessControlException:
+    if not owned(questionnaire):
         return make_error(_("Lacking credentials."), 403)
+
+    survey.questionnaires.remove(questionnaire)
+    db.session.commit()
 
     return jsonify({"result": _("Questionnaire deleted.")})
 
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>/publish",
+@app.route("/api/questionnaire/<int:questionnaire_uuid>/publish",
            methods=["PATCH"])
-def api_questionnaire_publish(questionnaire_uuid: str):
+def api_questionnaire_publish(questionnaire_uuid: int):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire to update.
@@ -288,22 +278,22 @@ def api_questionnaire_publish(questionnaire_uuid: str):
             "result": "error"
         }
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-        questionnaire.published = True
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    if not owned(questionnaire):
         return make_error(_("Lacking credentials."), 403)
+
+    questionnaire.published = True
+    db.session.commit()
 
     return jsonify({
             "result": _("Questionnaire updated."),
-            "questionnaire": questionnaire
+            "questionnaire": LegacyView.render(questionnaire)
         })
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>/unpublish",
+
+@app.route("/api/questionnaire/<int:questionnaire_uuid>/unpublish",
            methods=["PATCH"])
-def api_questionnaire_unpublish(questionnaire_uuid: str):
+def api_questionnaire_unpublish(questionnaire_uuid: int):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire to update.
@@ -331,23 +321,22 @@ def api_questionnaire_unpublish(questionnaire_uuid: str):
             "result": "error"
         }
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-        questionnaire.published = False
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    if not owned(questionnaire):
         return make_error(_("Lacking credentials."), 403)
+
+    questionnaire.published = False
+    db.session.commit()
 
     return jsonify({
             "result": _("Questionnaire updated."),
-            "questionnaire": questionnaire
+            "questionnaire": LegacyView.render(questionnaire)
         })
 
 
-@app.route("/api/questionnaire/<string:questionnaire_uuid>/dl/csv",
+@app.route("/api/questionnaire/<int:questionnaire_uuid>/dl/csv",
            methods=["GET"])
-def api_questionnaire_download_csv(questionnaire_uuid: str):
+def api_questionnaire_download_csv(questionnaire_uuid: int):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire for which to
@@ -369,29 +358,20 @@ def api_questionnaire_download_csv(questionnaire_uuid: str):
             "result": "error"
         }
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials."), 403)
-
-    # QuestionResults are not readable_by_anonymous, so the following code
-    # will fail if Questionnaire was accessed anonymously
-    # In other words: only the real owner may download results
-    if not questionnaire.accessible():
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    if not owned(questionnaire):
         return make_error(_("Lacking credentials."), 403)
 
     output = io.StringIO()
     writer = csv.writer(output)
     writer.writerow(["question_group", "question_text", "answer_value"])
 
-    for question_group in questionnaire.questiongroups:
+    for question_group in questionnaire.question_groups:
         for question in question_group.questions:
             for result in filter(lambda x: x.verified, question.results):
-                writer.writerow([question_group.name.get_default_text(),
-                                 question.text.get_default_text(),
-                                 result.answer_value])
+                writer.writerow(
+                    [question_group.name, question.text, result.answer_value]
+                )
 
     filename = "{}.csv".format(questionnaire_uuid)
     response = make_response(output.getvalue())

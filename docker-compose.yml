@@ -2,12 +2,6 @@ version: '3.1'
 
 services:
 
-  db-mongo:
-    build: ./db-mongo
-    restart: always
-    volumes:
-      - ./db-mongo/data:/data/db
-
   postgres:
     build: ./postgres
     restart: always
@@ -34,8 +28,5 @@ services:
     ports:
       - 80:80
       - 443:443
-    links:
-      - db-mongo
-      - memcached
     volumes:
       - ./websrv-flask/app:/app

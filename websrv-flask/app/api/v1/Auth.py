@@ -8,6 +8,8 @@ from auth import users
 from framework.exceptions import UserExistsException, BadCredentialsException, \
     UserNotLoggedInException
 from app import app
+from framework.internationalization import _
+from model.SQLAlchemy import db
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -26,21 +28,23 @@ def registration_post():
     Registration endpoint that takes post information for new account
     """
     # TODO: make users start out as unverified
-    if not (request.form["password"] == request.form["confirmation"]):
+    if request.form["password"] != request.form["confirmation"]:
         return render_template(
             "home_registration.html",
-            reason="Password and Confirmation did not match.",
+            reason=_("Password and Confirmation did not match."),
             email=request.form["email"]
         )
 
     try:
         data_client = users.register(request.form["email"],
                                      request.form["password"])
+        db.session.commit()
         return render_template(
             "home_registration_successful.html",
             data_client=data_client
         )
     except UserExistsException as e:
+        db.session.rollback()
         return render_template(
             "home_registration.html",
             reason=e.args[0]

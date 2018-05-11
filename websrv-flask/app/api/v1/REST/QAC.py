@@ -2,18 +2,21 @@
     All http endpoints that concern the rest-like api for QAC
 """
 
-from flask import make_response, request
+from flask import make_response, request, g
 from flask.json import jsonify
-from model.ODM.Questionnaire import Questionnaire
-from model.ODM.query_access_control.QACModule import QACModule
 
 from app import app
 from framework import make_error
-from framework.exceptions import AccessControlException, \
-    ObjectDoesntExistException, QACAlreadyEnabledException, \
-    QACNotEnabledException
+from framework.exceptions import QACAlreadyEnabledException
 from framework.internationalization import _
-from model.ODM.query_access_control.QACModules import QAC
+from framework.ownership import owned
+from model.SQLAlchemy import db
+
+from model.SQLAlchemy.models.QAC.QACModules import QAC
+from model.SQLAlchemy.models.Questionnaire import Questionnaire
+from model.SQLAlchemy.models.QAC.QACModule import QACModule
+from view.views.QACModule import LegacyView
+from view.views.Questionnaire import LegacyView as Questionnaire_LegacyView
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -34,16 +37,17 @@ def api_qac_modules():
                 ]
             }
     """
+
     return jsonify({
-        "qacModules": {qac.name: qac.value[1] for qac in QAC}
+        "qacModules": {qac.name: _(qac.value.get_qac_id()) for qac in QAC}
     })
 
 
 @app.route(
-    "/api/questionnaire/<string:questionnaire_uuid>/qac",
+    "/api/questionnaire/<int:questionnaire_uuid>/qac",
     methods=["GET"]
 )
-def api_questionnaire_list_qacs(questionnaire_uuid: str):
+def api_questionnaire_list_qacs(questionnaire_uuid: int):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire whose qacs
@@ -72,27 +76,21 @@ def api_questionnaire_list_qacs(questionnaire_uuid: str):
         each object is. Bot the description and name properties will tell even
         more about that.
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
 
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials"), 403)
-
-    if not questionnaire.accessible():
+    if not owned(questionnaire):
         # only the owner can list the qacs of an Questionnaire via the api,
         # they're not serialized with questionnaire
         return make_error(_("Lacking credentials"), 403)
 
-    return jsonify(questionnaire.get_qac_modules())
+    return LegacyView.jsonify(questionnaire.get_qac_modules())
 
 
 @app.route(
-    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    "/api/questionnaire/<int:questionnaire_uuid>/qac/<string:qac_name>",
     methods=["GET"]
 )
-def api_questionnaire_get_qac(questionnaire_uuid: str, qac_name: str):
+def api_questionnaire_get_qac(questionnaire_uuid: int, qac_name: str):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire whose qac is
@@ -132,16 +130,9 @@ def api_questionnaire_get_qac(questionnaire_uuid: str, qac_name: str):
             "result": "error"
         }
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
 
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials"), 403)
-
-    if not questionnaire.accessible():
-        # again, only the owner may view qac parameters
+    if not owned(questionnaire):
         return make_error(_("Lacking credentials"), 403)
 
     try:
@@ -149,18 +140,20 @@ def api_questionnaire_get_qac(questionnaire_uuid: str, qac_name: str):
     except KeyError:
         return make_error(_("No such QAC."), 404)
 
-    qac_instance = questionnaire.get_qac_module(qac_name)
+    qac_name = QAC[qac_name].value.get_qac_id()  # TODO use qac_ids in enum to begin with...
+
+    qac_instance = questionnaire.get_qac_module_by_qac_id(qac_name)
     if qac_instance is None:
         return make_error(_("QAC is not enabled."), 404)
 
-    return jsonify(qac_instance)
+    return LegacyView.jsonify(qac_instance)
 
 
 @app.route(
-    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    "/api/questionnaire/<int:questionnaire_uuid>/qac/<string:qac_name>",
     methods=["POST"]
 )
-def api_qac_enable(questionnaire_uuid: str, qac_name: str):
+def api_qac_enable(questionnaire_uuid: int, qac_name: str):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire in question.
@@ -189,37 +182,34 @@ def api_qac_enable(questionnaire_uuid: str, qac_name: str):
             "result": "error"
         }
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
-        return make_error(_("Lacking credentials"), 403)
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
 
-    if not questionnaire.accessible():
+    if not owned(questionnaire):
         return make_error(_("Lacking credentials"), 403)
 
     try:
-        qac_module = QAC[qac_name].value[0]  # type: QACModule
+        qac_module = QAC[qac_name].value
     except KeyError:
         return make_error(_("No such QAC."), 404)
 
     try:
-        questionnaire.add_qac_module(qac_module.new())
+        questionnaire.add_qac_module(qac_module())
     except QACAlreadyEnabledException:
-        pass
-    finally:
+        db.session.rollback()
+        return make_error(_("QACModule is already enabled."))
+    else:
+        db.session.commit()
         return jsonify({
             "result": _("QACModule added to Questionnaire."),
-            "questionnaire": questionnaire
+            "questionnaire": Questionnaire_LegacyView.render(questionnaire)
         })
 
 
 @app.route(
-    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    "/api/questionnaire/<int:questionnaire_uuid>/qac/<string:qac_name>",
     methods=["PUT"]
 )
-def api_qac_configure(questionnaire_uuid: str, qac_name: str):
+def api_qac_configure(questionnaire_uuid: int, qac_name: str):
     """
     Parameters:
         questionnaire_uuid: String The uuid for the Questionnaire in question.
@@ -272,17 +262,11 @@ def api_qac_configure(questionnaire_uuid: str, qac_name: str):
     """
     request_data = request.get_json()
 
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-    except ObjectDoesntExistException:
-        return make_error(_("No such Questionnaire."), 404)
-    except AccessControlException:
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    if g._current_user != questionnaire.survey.data_client:
         return make_error(_("Lacking credentials"), 403)
 
-    if not questionnaire.accessible():
-        return make_error(_("Lacking credentials"), 403)
-
-    qac_module = questionnaire.get_qac_module(qac_name)
+    qac_module = questionnaire.get_qac_module_by_qac_id(qac_name)
     if qac_module is None:
         return make_error("QAC {} is not enabled.".format(qac_name), 404)
 
@@ -291,8 +275,8 @@ def api_qac_configure(questionnaire_uuid: str, qac_name: str):
 
     missing_params = []
     for p in qac_module.parameters:
-        if request_data is None or p.name.msgid not in request_data:
-            missing_params.append("'{}'".format(p.name.msgid))
+        if request_data is None or p.name_msgid not in request_data:
+            missing_params.append("'{}'".format(p.name_msgid))
     if missing_params:
         return make_error(
             _("Missing parameter(s) ") + "{}".format(", ".join(missing_params)),
@@ -300,14 +284,14 @@ def api_qac_configure(questionnaire_uuid: str, qac_name: str):
         )
 
     for p in qac_module.parameters:
-        err = qac_module.set_config_value(p.uuid, request_data[p.name.msgid])
+        err = qac_module.set_config_value(p.id, request_data[p.name_msgid])
         if err:
             errors.append({
-                "parameter": p.name.msgid,
+                "parameter": p.name_msgid,
                 "error": err
             })
         else:
-            updated_params.append(p.name.msgid)
+            updated_params.append(p.name_msgid)
 
     if not updated_params:
         result = _("Nothing updated.")
@@ -316,18 +300,20 @@ def api_qac_configure(questionnaire_uuid: str, qac_name: str):
     else:
         result = _("Partially updated.")
 
+    db.session.commit()
+
     return make_response(jsonify({
         "result": result,
         "errors": errors,
-        "qacModule": qac_module
+        "qacModule": LegacyView.render(qac_module)
     }), 200)
 
 
 @app.route(
-    "/api/questionnaire/<string:questionnaire_uuid>/qac/<string:qac_name>",
+    "/api/questionnaire/<int:questionnaire_uuid>/qac/<string:qac_name>",
     methods=["DELETE"]
 )
-def api_qac_disable(questionnaire_uuid: str, qac_name: str):
+def api_qac_disable(questionnaire_uuid: int, qac_name: str):
     """
     TODO: throws 500
 
@@ -359,19 +345,19 @@ def api_qac_disable(questionnaire_uuid: str, qac_name: str):
             "result": "error"
         }
     """
-    try:
-        questionnaire = Questionnaire(questionnaire_uuid)
-    except (AccessControlException, ObjectDoesntExistException):
+    questionnaire = Questionnaire.query.get_or_404(questionnaire_uuid)
+    qac_module = questionnaire.get_qac_module_by_qac_id(qac_name)
+
+    if qac_module is None:
         return make_error(_("Not found."), 404)
 
-    if not questionnaire.accessible():
+    if g._current_user != questionnaire.survey.data_client:
         return make_error(_("Lacking credentials"), 403)
 
-    try:
-        questionnaire.remove_qac_module(qac_name)
-        return jsonify({
-            "result": _("QACModule disabled."),
-            "questionnaire": questionnaire
-        })
-    except QACNotEnabledException:
-        return make_error(_("Not found."), 404)
+    questionnaire.qac_modules.remove(qac_module)
+    db.session.commit()
+
+    return jsonify({
+        "result": _("QACModule disabled."),
+        "questionnaire": Questionnaire_LegacyView.render(questionnaire)
+    })

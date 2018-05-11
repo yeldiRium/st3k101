@@ -1,5 +1,3 @@
-import sys
-
 from flask import render_template, g, request, make_response, abort
 from werkzeug.wrappers import Response
 
@@ -8,9 +6,8 @@ from app import app as original_app
 from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
-from framework.internationalization.babel_languages import babel_languages
-from framework.memcached import get_memcache
-from model.ODM.DataClient import DataClient
+from framework.internationalization.babel_languages import babel_languages, BabelLanguage
+from model.SQLAlchemy.models.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -37,25 +34,25 @@ def before_request():
         # also validates token, raises ClientIpChangedException if
         # IP pinning fails
         if auth.validate_activity(session_token):
-            g._current_user = DataClient(auth.who_is(session_token))
+            g._current_user = DataClient.query.get_or_404(auth.who_is(session_token))
             g._current_session_token = session_token
 
     # Setting the locale for the current request
-    g._locale = g._config[
-        "BABEL_DEFAULT_LOCALE"]  # use default locale if all fails
+    g._language = BabelLanguage[g._config[
+        "BABEL_DEFAULT_LOCALE"]]  # use default locale if all fails
 
     # check HTTP accept-language
     http_locale = request.accept_languages.best_match(babel_languages.keys())
     if http_locale is not None:  # match available locales against HTTP header
-        g._locale = http_locale.lower()
+        g._language = BabelLanguage[http_locale.lower()]
 
     # if user is logged in, set locale based on user prefs, override HTTP header
     if g._current_user:
-        g._locale = g._current_user.locale
+        g._language = g._current_user.language
 
     # we also hand out a cookie the first time a locale is set and just
-    if request.cookies.get('locale'):
-        g._locale = request.cookies.get('locale').lower()
+    if request.cookies.get('locale') is not None:
+        g._language = BabelLanguage[request.cookies.get('locale').lower()]
 
     # Allow frontend to override locale set by browser or user.
     # This is needed to show locales to the user, even if the locale doesn't
@@ -66,7 +63,7 @@ def before_request():
     if requested_locale is not None:
         try:
             requested_locale = requested_locale.lower()
-            g._locale = requested_locale
+            g._language = BabelLanguage[requested_locale]
         except (AttributeError, KeyError):
             pass  # use previously set locale if malformed locale was requested
 
@@ -86,10 +83,10 @@ def after_request(response: Response):
     # set the locale as cookie, keeps locale constant for a period of time
     if request.args.get('locale'):
         if request.args.get('locale_cookie', 1) == 1:
-            response.set_cookie('locale', g._locale.lower())
+            response.set_cookie('locale', g._language.name)
 
     # we respond in the user's language
-    response.headers['Content-Language'] = g._locale.lower()
+    response.headers['Content-Language'] = g._language.name
     return response
 
 
@@ -121,13 +118,6 @@ def internal_server_error_handler(error):
     :param error: The exception 
     :return: Response that is sent back to the user
     """
-    # free all mutexes in memcache so that we don't lock up any DataObjects
-    if hasattr(g, "_local_mutexes"):
-        for mutex_uuid in g._local_mutexes:
-            get_memcache().delete(mutex_uuid)
-            print("Freeing {}".format(mutex_uuid), file=sys.stderr)
-    else:
-        print("No mutexes to free.", file=sys.stderr)
     return make_response(error, 500)  # TODO: nice error page
 
 
@@ -148,8 +138,8 @@ def inject_languages():
     Injects languages parameters into all jinja templates.
     """
     language = {
-        "current": babel_languages[g._locale],
-        "current_short": g._locale,
+        "current": g._language.value,
+        "current_short": g._language.name,
         "languages": list_sorted_by_long_name()
     }
     return dict(language=language)

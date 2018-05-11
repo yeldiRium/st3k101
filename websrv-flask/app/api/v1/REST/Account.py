@@ -9,7 +9,10 @@ from app import app
 from framework import make_error
 from framework.flask_request import expect_optional
 from framework.internationalization import _, babel_languages
-from model.ODM.DataClient import DataClient
+from model.SQLAlchemy import db
+
+from model.SQLAlchemy.models.DataClient import DataClient
+from view.views.DataClient import LegacyView
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -43,7 +46,7 @@ def api_account_current():
     """
     if not g._current_user:
         return make_error(_("Lacking credentials."), 403)
-    return jsonify(g._current_user)
+    return LegacyView.jsonify(g._current_user)
 
 
 @app.route("/api/account/current", methods=["PUT"])
@@ -93,7 +96,7 @@ def api_account_update(email: str=None, locale: str=None):
         return make_error(_("Lacking credentials."), 403)
 
     if email is not None:
-        user_with_email = DataClient.one_from_query({"email": email})
+        user_with_email = DataClient.query.filter_by(email=email).first()
         if user_with_email is not None:
             return make_error(_("That email address is already in use."), 400)
         g._current_user.email = email
@@ -103,7 +106,9 @@ def api_account_update(email: str=None, locale: str=None):
             return make_error(_("Invalid locale."), 400)
         g._current_user.locale = locale
 
+    db.session.commit()
+
     return jsonify({
         "result": _("Account updated."),
-        "account": g._current_user
+        "account": LegacyView.render(g._current_user)
     })

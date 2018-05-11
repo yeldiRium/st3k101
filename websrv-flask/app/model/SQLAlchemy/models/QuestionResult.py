@@ -35,7 +35,6 @@ class QuestionResult(db.Model):
         :param verification_token: The email verification token
         :return: The newly created QuestionResult instance
         """
-        # TODO: move verification token to g._session_verification_token
         result = QuestionResult(question=question, data_subject=data_subject,
                                 value=value, verified=(not needs_verification),
                                 verification_token=verification_token)

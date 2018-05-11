@@ -35,7 +35,7 @@ def _get_session_record(session_token: str) -> dict:
     return mc.get(_get_session_record_id(session_token))
 
 
-def new_session(session_token: str, client_uuid: str, ttl: int=1800) -> bool:
+def new_session(session_token: str, client_uuid, ttl: int=1800) -> bool:
     """
     Inserts a new session record for the given session token.
     Only works if token has no record yet.
@@ -49,9 +49,6 @@ def new_session(session_token: str, client_uuid: str, ttl: int=1800) -> bool:
     if is_valid(session_token):
         return False
 
-    if not type(client_uuid) == str:
-        return False
-
     if not type(ttl) == int:
         return False
 
@@ -63,7 +60,7 @@ def new_session(session_token: str, client_uuid: str, ttl: int=1800) -> bool:
     }
 
     mc = get_memcache()
-    return mc.set(_get_session_record_id(session_token), session_record) != 0
+    return mc.set(_get_session_record_id(session_token), session_record)
 
 
 def invalidate(session_token: str) -> bool:

@@ -1,14 +1,14 @@
 from flask import render_template, make_response, redirect
-from model.ODM.Questionnaire import Questionnaire
-
 from app import app
-from model.ODM.QuestionResult import QuestionResult
+from model.SQLAlchemy import db
+
+from model.SQLAlchemy.models.QuestionResult import QuestionResult
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
 
 @app.route("/verify/survey/<string:token>", methods=["GET"])
-def verify_survey_submission(token:str):
+def verify_survey_submission(token: str):
     """
     An endpoint used, when email verification is enabled and the DataSubject
     follows the link sent to them via email.
@@ -21,36 +21,28 @@ def verify_survey_submission(token:str):
     :param token: str A random string generated on survey submission.
     :return: str HTML
     """
-    unverified_results = QuestionResult.many_from_query({
-        "verification_token": token,
-        "verified": False
-    })
+    unverified_results = QuestionResult.query.filter_by(
+        verification_token=token,
+        verified=False
+        ).all()
 
     if len(unverified_results) == 0:  # nothing to verify
         return make_response(redirect("/"))
 
     email = None
-    new_answers = dict({})
-
     for result in unverified_results:  # verify all results with same token
-        questionnaire_uuid = result.question.questionnaire.uuid
-        # check if the answer count needs to be updated on Questionnaire
-        new_answers[questionnaire_uuid] = result.verify()
+        result.verify()
 
-        # get hashed email to display it to the user
+        # get email to display it to the user
         if email is None:
-            email = result.data_subject.email_hash
+            email = result.data_subject.email
 
-    # update answer count on questionnaire if needed
-    for questionnaire_uuid, new_answer in new_answers.items():
-        if new_answer:
-            Questionnaire(questionnaire_uuid).answer_count += 1
-
+    db.session.commit()
     return render_template("survey_thanks.html", email=email)
 
 
-#@app.route("/verify/users/<string:token>", methods=["GET"])
-#def verify_user_account(token:str):
+# @app.route("/verify/users/<string:token>", methods=["GET"])
+# def verify_user_account(token:str):
     # TODO: get DataClient from db by unverfied, token
     # TODO: make verified
     # TODO: redirect to backend
