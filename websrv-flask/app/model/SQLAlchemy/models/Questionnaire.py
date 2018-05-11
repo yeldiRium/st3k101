@@ -1,5 +1,5 @@
 import os
-from typing import Sized, List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any
 
 import yaml
 from deprecated import deprecated
@@ -9,7 +9,8 @@ from framework.exceptions import QuestionGroupNotFoundException, QACNotEnabledEx
     QACAlreadyEnabledException
 from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
-from model.SQLAlchemy import db, translation_hybrid, HSTORE
+from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
+from model.SQLAlchemy.models.DataClient import DataClient
 from model.SQLAlchemy.models.QAC.QACModule import QACModule
 from model.SQLAlchemy.models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
 from model.SQLAlchemy.models.QAC.QACModules.TOSQAC import TOSQAC
@@ -29,20 +30,21 @@ class Questionnaire(db.Model):
     A Questionnaire is contained in a survey.
     """
     # columns
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
     published = db.Column(db.Boolean, nullable=False, default=False)
 
     # translatable columns
-    name_translations = db.Column(HSTORE)
+    name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
-    description_translations = db.Column(HSTORE)
+    description_translations = db.Column(MUTABLE_HSTORE)
     description = translation_hybrid(description_translations)
 
     # relationships
     question_groups = db.relationship('QuestionGroup', backref='questionnaire',
                                       cascade='all, delete-orphan')
-    qac_modules = db.relationship('QACModule')
+    qac_modules = db.relationship('QACModule', backref='questionnaire',
+                                  cascade='all, delete-orphan')
 
     # foreign keys
     survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'))
@@ -60,7 +62,7 @@ class Questionnaire(db.Model):
 
     @property
     @deprecated(version='2.0', reason='Attribute has been renamed to "question_groups"')
-    def questiongroups(self) -> Sized[QuestionGroup]:
+    def questiongroups(self) -> List[QuestionGroup]:
         return self.question_groups
 
     @property
@@ -81,16 +83,19 @@ class Questionnaire(db.Model):
         count = 0
         for qg in self.question_groups:
             for q in qg.questions:
-                verified_results = QuestionResult.query.filter_by(question=q,
-                                                                  verified=True)
+                verified_results = QuestionResult.query.\
+                    filter_by(question=q, verified=True).all()
                 count += len(verified_results)
-        return count
+        n_questions = self.question_count
+        if n_questions < 1:
+            n_questions = 1
+        return count // n_questions
 
     def __init__(self, name: str, description: str, **kwargs):
         super(Questionnaire, self).__init__(name=name, description=description,
                                             **kwargs)
         self.qac_modules = [TOSQAC(), EMailVerificationQAC()]
-        self.original_language = BabelLanguage[g._language]  # FIXME: set g._language before request
+        self.original_language = g._language
 
     @staticmethod
     @deprecated(version='2.0', reason='Use Questionnaire() constructor directly')
@@ -157,7 +162,7 @@ class Questionnaire(db.Model):
         return self.qac_modules
 
     def add_qac_module(self, qac_module: QACModule):
-        if qac_module in self.qac_modules:
+        if qac_module.qac_id in (qm.qac_id for qm in self.qac_modules):
             raise QACAlreadyEnabledException
         self.qac_modules.append(qac_module)
 
@@ -193,7 +198,7 @@ class Questionnaire(db.Model):
         if qac_module is None:
             raise QACNotEnabledException
         self.qac_modules.remove(qac_module)
-        db.session.delete(qac_module)  # TODO: implement as cascade
+        db.session.delete(qac_module)
 
     @staticmethod
     def parse_yaml(path_to_yaml: str) -> Dict[str, Any]:
@@ -265,3 +270,7 @@ class Questionnaire(db.Model):
             db.session.add(questionnaire)
 
         return questionnaire
+
+    @property
+    def owner(self) -> DataClient:
+        return self.survey.data_client

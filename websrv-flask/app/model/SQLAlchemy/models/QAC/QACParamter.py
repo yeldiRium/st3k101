@@ -5,7 +5,7 @@ __author__ = "Noah Hummel"
 
 
 class QACParameter(db.Model):
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True)
     name_msgid = db.Column(db.String(120), nullable=False)
     description_msgid = db.Column(db.String(500), nullable=False)
 
@@ -16,6 +16,9 @@ class QACParameter(db.Model):
         'polymorphic_identity': 'qac_parameter',
         'polymorphic_on': type
     }
+
+    # foreign keys
+    qac_module_id = db.Column(db.Integer, db.ForeignKey('qac_module.id'))
 
     def __init__(self, **kwargs):
         super(QACParameter, self).__init__(**kwargs)

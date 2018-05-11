@@ -10,7 +10,7 @@ __author__ = "Noah Hummel, Hannes Leutloff"
 
 class QuestionStatistic(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True)
     smallest = db.Column(db.SmallInteger, nullable=False, default=0)
     biggest = db.Column(db.SmallInteger, nullable=False, default=0)
     q1 = db.Column(db.Float, nullable=False, default=0)
@@ -55,7 +55,7 @@ class QuestionStatistic(db.Model):
         """
         results = QuestionResult.query\
                                 .filter_by(question=self.question, verified=True)\
-                                .order_by(QuestionResult.value)
+                                .order_by(QuestionResult.value).all()
         self.smallest = None
         self.biggest = None
 

@@ -12,7 +12,7 @@ from model.SQLAlchemy.models.QAC.QACTextParameter import QACTextParameter
 __author__ = "Noah Hummel"
 
 
-class EMailBlackListQAC(QACModule):
+class EMailBlacklistQAC(QACModule):
     # polymorphism configuration
     id = db.Column(db.Integer, db.ForeignKey('qac_module.id'),
                    primary_key=True)
@@ -22,13 +22,13 @@ class EMailBlackListQAC(QACModule):
     }
 
     # QACModule configuration
-    __qac_id = __('Email Blacklist')
-    __description = __('Blocks users with a certain email address from '
+    _qac_id = __('Email Blacklist')
+    _description = __('Blocks users with a certain email address from '
                        'submitting. Not that this is only useful when '
                        'email verification is also enabled.')
 
     def __init__(self, **kwargs):
-        super(EMailBlackListQAC, self).__init__(**kwargs)
+        super(EMailBlacklistQAC, self).__init__(**kwargs)
         blacklist = QACTextParameter(text='*@em.uni-frankfurt.de')
         blacklist.name = __('Email Blacklist')
         blacklist.description = __('A comma separated list of email '
@@ -42,15 +42,15 @@ class EMailBlackListQAC(QACModule):
 
     @staticmethod
     @deprecated(version='2.0', reason='Use EMailBlacklistQAC class constructor directly.')
-    def new() -> 'EMailBlackListQAC':
-        return EMailBlackListQAC()
+    def new() -> 'EMailBlacklistQAC':
+        return EMailBlacklistQAC()
 
     def set_config_value(self, param_id: str, value: Any):
         """
         Overridden to implement syntax checking when updating the email list
         For a full documentation of the method see model/qac/QACModule
         """
-        super(EMailBlackListQAC, self).set_config_value(param_id, value)
+        super(EMailBlacklistQAC, self).set_config_value(param_id, value)
         blacklist = self.get_parameter_by_name('Email Blacklist').text
         try:
             EMailWhitelistQAC.parse_email_list(blacklist)
@@ -67,7 +67,7 @@ class EMailBlackListQAC(QACModule):
         if 'email' not in request.form or not request.form['email']:
             return [_('Please enter your email address.')]
         email = request.form['email']
-        blacklist = self.get_parameter_by_name('Email Blacklist')
+        blacklist = self.get_parameter_by_name('Email Blacklist').text
         regexes = EMailWhitelistQAC.parse_email_list(blacklist)
 
         if any((m is not None for m in (r.match(email) for r in regexes))):

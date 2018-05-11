@@ -14,7 +14,7 @@ __author__ = "Noah Hummel"
 
 
 class QACModule(db.Model):
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True)
 
     parameters = db.relationship('QACParameter', backref='qac_module',
                                  cascade='all, delete-orphan')
@@ -27,16 +27,23 @@ class QACModule(db.Model):
         'polymorphic_on': type
     }
 
+    # foreign keys
+    questionnaire_id = db.Column(db.Integer, db.ForeignKey('questionnaire.id'))
+
     # non ORM-related attributes
-    __qac_id = __('QACModule')
-    __description = __('The base class for all QACModules. '
-                       'If you see this in the front end, '
-                       'you haven\'t assigned a __description '
-                       'to the QACModule.')
+    _qac_id = __('QACModule')
+    _description = __('The base class for all QACModules. '
+                      'If you see this in the front end, '
+                      'you haven\'t assigned a _description '
+                      'to the QACModule.')
+
+    @classmethod
+    def get_qac_id(cls):
+        return cls._qac_id
 
     @property
     def qac_id(self) -> str:
-        return self.__qac_id
+        return self.get_qac_id()
 
     @property
     def name(self) -> str:
@@ -44,7 +51,14 @@ class QACModule(db.Model):
 
     @property
     def description(self) -> str:
-        return _(self.__description)
+        return _(self._description)
+
+    @property
+    @deprecated(version='2.0', reason='This property exists as a compatibility '
+                                      'shim for the 1.0 API and will likely be '
+                                      'removed in the future.')
+    def description_msgid(self) -> str:
+        return self._description
 
     def set_config_value(self, param_id: str, value: Any) -> Optional[str]:
         """
@@ -58,7 +72,7 @@ class QACModule(db.Model):
         updated = False
 
         for param in self.parameters:  # type: QACParameter
-            if param.uuid != param_id:
+            if param.id != param_id:
                 continue
 
             try:

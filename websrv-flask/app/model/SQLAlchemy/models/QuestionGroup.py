@@ -1,9 +1,10 @@
 from deprecated import deprecated
 
 from model.ODM.QuestionGroup import check_color
-from model.SQLAlchemy import db, translation_hybrid, HSTORE
+from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
 from flask import g
 
+from model.SQLAlchemy.models.DataClient import DataClient
 from model.SQLAlchemy.models.Question import Question
 
 __author__ = "Noah Hummel"
@@ -11,14 +12,12 @@ __author__ = "Noah Hummel"
 
 class QuestionGroup(db.Model):
     # columns
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
-    color = db.Column(db.String(7), nullable=False,
-                      default=g._config['QUESTIONGROUP_DEFAULT_COLOR'])
-    text_color = db.Column(db.String(7), nullable=False,
-                           default=g._config('QUESTIONGROUP_DEFAULT_TEXTCOLOR'))
+    id = db.Column(db.Integer, primary_key=True)
+    color = db.Column(db.String(7), nullable=False, default='#aeaeae')
+    text_color = db.Column(db.String(7), nullable=False, default='#000000')
 
     # translatable columns
-    name_translations = db.Column(HSTORE)
+    name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
 
     # relationships
@@ -27,6 +26,13 @@ class QuestionGroup(db.Model):
 
     # foreign keys
     questionnaire_id = db.Column(db.Integer, db.ForeignKey('questionnaire.id'))
+
+    def __init__(self, **kwargs):
+        super(QuestionGroup, self).__init__(**kwargs)
+        if 'color' not in kwargs:
+            self.color = g._config['QUESTIONGROUP_DEFAULT_COLOR']
+        if 'text_color' not in kwargs:
+            self.text_color = g._config['QUESTIONGROUP_DEFAULT_TEXTCOLOR']
 
     @staticmethod
     @deprecated(version='2.0', reason='Use QuestionGroup() constructor directly')
@@ -48,7 +54,7 @@ class QuestionGroup(db.Model):
         """
         return Question(text, question_group=self)
 
-    @deprecated(vesion='2.0', reason='Will be implemented by db triggers in the future')
+    @deprecated(version='2.0', reason='Will be implemented by db triggers in the future')
     def remove_question(self, question: Question):
         """
         Removes a Question from the QuestionGroup.
@@ -77,3 +83,11 @@ class QuestionGroup(db.Model):
         """
         check_color(color)
         self.text_color = color
+
+    @property
+    def owner(self) -> DataClient:
+        return self.questionnaire.owner
+
+    @property
+    def original_language(self) -> str:
+        return self.questionnaire.original_language

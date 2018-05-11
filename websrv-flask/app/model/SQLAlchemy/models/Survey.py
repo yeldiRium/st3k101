@@ -3,10 +3,11 @@ from datetime import datetime
 from deprecated import deprecated
 from flask import g
 
-from framework.exceptions import QuestionnaireNotFoundException
+from framework.exceptions import QuestionnaireNotFoundException, ObjectDoesntExistException
 from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
-from model.SQLAlchemy import db, translation_hybrid, HSTORE
+from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
+from model.SQLAlchemy.models.DataClient import DataClient
 from model.SQLAlchemy.models.QAC.QACModules import QAC
 from model.SQLAlchemy.models.Question import Question
 from model.SQLAlchemy.models.QuestionGroup import QuestionGroup
@@ -17,12 +18,12 @@ __author__ = "Noah Hummel"
 
 class Survey(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
     date_created = db.Column(db.Date, nullable=False)
 
     # translatable columns
-    name_translations = db.Column(HSTORE)
+    name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
 
     # relationships
@@ -75,11 +76,13 @@ class Survey(db.Model):
         if template_id in template_files:
             template_path = template_files[template_id]
             questionnaire = Questionnaire.from_yaml(template_path)
-            self.questionnaires.add(questionnaire)
+            self.questionnaires.append(questionnaire)
             return questionnaire
 
         # if template is not found on disk try getting by uuid
         template = Questionnaire.query.get(template_id)
+        if template is None:
+            raise ObjectDoesntExistException
 
         # if template is in a different language, indicate that foreign
         # language was copied
@@ -132,3 +135,7 @@ class Survey(db.Model):
             self.questionnaires.remove(questionnaire)
         except KeyError as _:
             raise QuestionnaireNotFoundException(self.name, questionnaire.name)
+
+    @property
+    def owner(self) -> DataClient:
+        return self.data_client

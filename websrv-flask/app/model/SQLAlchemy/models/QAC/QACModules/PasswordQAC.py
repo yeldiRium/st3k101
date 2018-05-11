@@ -21,8 +21,8 @@ class PasswordQAC(QACModule):
     }
 
     # QACModule configuration
-    __qac_id = __('Password')
-    __description = __('Prompts the user to enter a password '
+    _qac_id = __('Password')
+    _description = __('Prompts the user to enter a password '
                        'before they may submit their answers.')
 
     def __init__(self, **kwargs):

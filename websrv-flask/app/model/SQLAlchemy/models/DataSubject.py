@@ -15,7 +15,7 @@ class DataSubject(db.Model):
 
     @staticmethod
     def get_or_create(email: str) -> "DataSubject":
-        subject = DataSubject.query.filter_by(email=email)
+        subject = DataSubject.query.filter_by(email=email).first()
         if subject is None:
             subject = DataSubject(email=email)
             db.session.add(subject)

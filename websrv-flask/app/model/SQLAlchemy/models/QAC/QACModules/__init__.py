@@ -5,7 +5,7 @@ the DataClients to enable on their Questionnaires.
 
 from enum import Enum
 
-from model.SQLAlchemy.models.QAC.QACModules import EMailBlacklistQAC
+from model.SQLAlchemy.models.QAC.QACModules.EMailBlacklistQAC import EMailBlacklistQAC
 from model.SQLAlchemy.models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
 from model.SQLAlchemy.models.QAC.QACModules.EMailWhitelistQAC import EMailWhitelistQAC
 from model.SQLAlchemy.models.QAC.QACModules.PasswordQAC import PasswordQAC
@@ -18,7 +18,8 @@ class QAC(Enum):
     """
     Format: NAME = QACModuleSubclass
     """
-    TOS = TOSQAC
+    # TODO: use qac_ids as enum keys here
+    TOSQAC = TOSQAC
     PASSWORD = PasswordQAC
     EMAIL_VERIFICATION = EMailVerificationQAC
     EMAIL_BLACKLIST = EMailBlacklistQAC

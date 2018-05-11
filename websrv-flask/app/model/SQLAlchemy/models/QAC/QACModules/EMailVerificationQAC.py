@@ -19,8 +19,8 @@ class EMailVerificationQAC(QACModule):
     }
 
     # QACModule configuration
-    __qac_id = __('Email Verification')
-    __description = __('Sends an email to the user after they submit. In order '
+    _qac_id = __('Email Verification')
+    _description = __('Sends an email to the user after they submit. In order '
                        'to make their answers count. This ensures that the '
                        'user has access to the provided email account. '
                        'Note that if this is disabled, users may submit '

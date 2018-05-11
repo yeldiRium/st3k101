@@ -1,5 +1,7 @@
+from flask import g
+
 from model.SQLAlchemy import db
-from framework.internationalization.babel_languages import BabelLanguage
+from framework.internationalization.babel_languages import BabelLanguage, babel_languages
 
 from deprecated import deprecated
 
@@ -17,6 +19,11 @@ class DataClient(db.Model):
     # relationships
     surveys = db.relationship('Survey', backref='data_client', lazy=True,
                               cascade='all, delete-orphan')
+
+    def __init__(self, **kwargs):
+        super(DataClient, self).__init__(**kwargs)
+        if 'language' not in kwargs:
+            self.language = g._language
 
     @property
     @deprecated(version='2.0', reason='Attribute has been renamed to "language"')
@@ -38,4 +45,6 @@ class DataClient(db.Model):
         DataClient.locale will be renamed to DataClient.language
         in version 2.0
         """
-        self.locale = new_locale
+        if new_locale not in babel_languages:
+            raise ValueError
+        self.language = BabelLanguage[new_locale]

@@ -1,7 +1,9 @@
 from deprecated import deprecated
+from flask import g
 
 from framework.internationalization import _
-from model.SQLAlchemy import db, translation_hybrid, HSTORE
+from framework.internationalization.babel_languages import BabelLanguage
+from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
 from model.SQLAlchemy.models.QAC.QACParamter import QACParameter
 
 __author__ = "Noah Hummel"
@@ -11,20 +13,22 @@ class QACI15dTextParameter(QACParameter):
     # polymorphism configuration
     id = db.Column(db.Integer, db.ForeignKey('qac_parameter.id'),
                    primary_key=True)
+    original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
     __tablename__ = 'qac_i15d_text_parameter'
     __mapper_args__ = {
         'polymorphic_identity': 'qac_i15d_text_parameter',
     }
 
     # translatable columns
-    text_translations = db.Column(HSTORE)
+    text_translations = db.Column(MUTABLE_HSTORE)
     __text = translation_hybrid(text_translations)
 
-    def __init(self, text: str=None, **kwargs):
-        super(QACI15dTextParameter, self).__init__(text=text, **kwargs)
+    def __init__(self, text: str=None, **kwargs):
         if text is None:
-            self.text = _("This is a placeholder text, replace it to your "
-                          "liking.")
+            text = _("This is a placeholder text, replace it to your liking.")
+        super(QACI15dTextParameter, self).__init__(text=text, **kwargs)
+        if 'original_language' not in kwargs:
+            self.original_language = g._language
 
     @staticmethod
     @deprecated(version='2.0', reason='Use class constructor directly.')

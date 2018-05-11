@@ -22,8 +22,8 @@ class EMailWhitelistQAC(QACModule):
     }
 
     # QACModule configuration
-    __qac_id = __('Email Whitelist')
-    __description = __('Only allows users with a certain email address '
+    _qac_id = __('Email Whitelist')
+    _description = __('Only allows users with a certain email address '
                        '(for example a university issued address) to'
                        'submit. Not that this is only useful, when '
                        'email verification is also enabled.')

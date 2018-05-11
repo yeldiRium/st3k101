@@ -20,10 +20,9 @@ class QACTextParameter(QACParameter):
     __text = db.Column(db.String(1000), nullable=False, default='')
 
     def __init__(self, text: str=None, **kwargs):
-        super(QACTextParameter, self).__init__(text=text, **kwargs)
         if text is None:
-            self.text = _("This is a placeholder text, replace it to your "
-                          "liking.")
+            text = _("This is a placeholder text, replace it to your liking.")
+        super(QACTextParameter, self).__init__(text=text, **kwargs)
 
     @staticmethod
     @deprecated(version='2.0', reason='Use the class constructor directly.')

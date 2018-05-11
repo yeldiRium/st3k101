@@ -21,8 +21,8 @@ class TOSQAC(QACModule):
     }
 
     # QACModule configuration
-    __qac_id = __('Terms of Service')
-    __description = __('Displays an internationalized terms of '
+    _qac_id = __('Terms of Service')
+    _description = __('Displays an internationalized terms of '
                        'service text to the user when they '
                        'submit a survey. The user has to agree'
                        'to the terms of service before a survey '

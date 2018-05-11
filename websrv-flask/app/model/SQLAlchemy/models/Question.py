@@ -1,8 +1,7 @@
 from typing import List
 
-from sqlalchemy.dialects.postgresql import HSTORE
-
-from model.SQLAlchemy import db, translation_hybrid
+from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
+from model.SQLAlchemy.models.DataClient import DataClient
 from model.SQLAlchemy.models.DataSubject import DataSubject
 from model.SQLAlchemy.models.QuestionResult import QuestionResult
 
@@ -20,7 +19,7 @@ class Question(db.Model):
     dirty = db.Column(db.Boolean, default=False, nullable=False)
 
     # translatable columns
-    text_translations = db.Column(HSTORE)
+    text_translations = db.Column(MUTABLE_HSTORE)
     text = translation_hybrid(text_translations)
 
     # relationships
@@ -118,3 +117,11 @@ class Question(db.Model):
 
         # TODO: not necessary anymore because answer count is selected on the fly
         return False  # signal that answer count has not changed
+
+    @property
+    def owner(self) -> DataClient:
+        return self.question_group.owner
+
+    @property
+    def original_language(self) -> str:
+        return self.question_group.original_language

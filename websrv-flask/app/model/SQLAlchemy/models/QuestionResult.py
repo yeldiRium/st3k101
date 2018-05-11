@@ -6,7 +6,7 @@ __author__ = "Noah Hummel"
 
 
 class QuestionResult(db.Model):
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.SmallInteger, nullable=False)
     verified = db.Column(db.Boolean, default=False, nullable=False)
     verification_token = db.Column(db.String(32))

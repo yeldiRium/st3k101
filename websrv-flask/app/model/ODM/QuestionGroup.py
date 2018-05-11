@@ -1,5 +1,6 @@
 import re
 
+from deprecated import deprecated
 from flask import g
 from model.ODM.Question import Question
 
@@ -88,7 +89,7 @@ class QuestionGroup(DataObject):
         check_color(color)
         self.color = color
 
-    def set_background_color(self, text_color: str) -> None:
+    def set_text_color(self, text_color: str) -> None:
         """
         Setter for QuestionGroup.text_color, checks if color is valid
         :param text_color: str A html hex color code
