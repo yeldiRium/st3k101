@@ -1,6 +1,6 @@
 from deprecated import deprecated
 
-from model.ODM.QuestionGroup import check_color
+from utils import check_color
 from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
 from flask import g
 

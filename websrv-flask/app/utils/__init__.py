@@ -1,4 +1,5 @@
 import os
+import re
 
 from flask import g
 
@@ -43,3 +44,16 @@ def generate_questionnaire_url(questionnaire_uuid: str) -> str:
         "/survey",
         questionnaire_uuid
     )
+
+
+def check_color(color: str) -> None:
+    """
+    A helper function to check the validity of hex color codes. Raises
+    ValueError if color format is invalid.
+    :param color: str The hex color code to check
+    :return: None
+    """
+    regex = re.compile(r'^#[0-9a-fA-F]{6}$')
+    if regex.match(color) is None:
+        raise ValueError("'{}' is not a well formatted color value. It must be "
+                         "a hex-string beginning with #.".format(color))

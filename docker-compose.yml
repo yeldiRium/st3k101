@@ -9,8 +9,8 @@ services:
       - POSTGRES_PASSWORD=kksrk0vv3zigez6
       - POSTGRES_USER=flask
       - POSTGRES_DB=st3k101
-    #volumes: TODO: reactivate when sqlalchemy model is stable
-    #  - ./postgres/data:/var/lib/postgresql/data
+    volumes: TODO: reactivate when sqlalchemy model is stable
+      - ./postgres/data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
