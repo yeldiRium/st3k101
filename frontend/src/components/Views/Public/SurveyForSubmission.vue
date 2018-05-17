@@ -5,6 +5,7 @@
         </div>
         <div v-if="loading == 'done'">
             {{ $route.params.id }}
+            {{ this.questionnaire }}
         </div>
         <div v-if="loading == 'error'">
             ERROR!
@@ -23,8 +24,7 @@
             };
         },
         mounted() {
-            // Doesn't work. API does not yet respect the server domain
-            Questionnaire.get("blub")
+            Questionnaire.get(this.$route.params.id)
                 .fork(
                     data => {
                         this.loading = "error";
