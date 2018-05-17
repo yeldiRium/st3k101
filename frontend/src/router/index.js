@@ -9,7 +9,8 @@ import PrivateBase from "../components/Views/Private/Base";
 import Dashboard from "../components/Views/Private/Dashboard";
 
 import TestingBase from "../components/Views/Testing/Base";
-import DiamondFloatingButton from "../components/Partials/Buttons/DiamondFloatingButton";
+import TestDiamondFloatingButton from "../components/Views/Testing/TestDiamondFloatingButton";
+import TestButtonBar from "../components/Views/Testing/TestButtonBar";
 
 Vue.use(Router);
 
@@ -50,7 +51,12 @@ export default new Router({
                 {
                     path: "DFB",
                     name: "DiamondFloatingButton",
-                    component: DiamondFloatingButton
+                    component: TestDiamondFloatingButton
+                },
+                {
+                    path: "ButtonBar",
+                    name: "ButtonBar",
+                    component: TestButtonBar
                 }
             ]
         }

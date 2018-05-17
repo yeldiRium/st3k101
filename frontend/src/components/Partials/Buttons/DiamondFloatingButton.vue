@@ -1,26 +1,27 @@
 <template>
-    <div class="diamondFloatingButton-outer">
+    <div class="diamondFloatingButton-outer" :style="styles">
         <a :click="callback">
-            <svg viewBox="0 0 64 64">
+            <svg :viewBox="viewBox">
                 <defs>
-                    <DropShadowFilter :thickness="3"
+                    <DropShadowFilter :thickness="elevation/4"
                                       :offsetX="0"
                                       :offsetY="0"
-                                      :width="64"
-                                      :height="64"
-                                      :x="-8"
-                                      :y="-8"
+                                      :width="width*1.5"
+                                      :height="height*1.5"
+                                      :x="-width*0.25"
+                                      :y="-height*0.25"
                     />
                 </defs>
-                <RoundedDiamond :color="color"
-                                :border-color="borderColor"
-                                :radius="4"
-                                :x="8"
-                                :y="8"
-                                :width="48"
-                                :height="48"
-                                :strokeWidth="2"
-                                filter="url(#DropShadowFilter)"
+                <Square class="shape_square"
+                        :x="0.25*width"
+                        :y="0.25*height"
+                        :width="width"
+                        :height="height"
+                        :rx="radius"
+                        :ry="radius"
+                        :deg="45"
+                        v-bind="$attrs"
+                        filter="url(#DropShadowFilter)"
                 />
             </svg>
         </a>
@@ -28,20 +29,38 @@
 </template>
 
 <script>
-    import RoundedDiamond from "../SVG/Shapes/RoundedDiamond";
+    import Square from "../SVG/Shapes/Square";
     import DropShadowFilter from "../SVG/Filter/DropShadowFilter";
 
+    import {atLeastZero} from "../../Validators";
+
+    /**
+     * Careful! Resulting element-size is always 1.5 times of the given value
+     * due to the shadow taking up space around it.
+     */
     export default {
         name: "DiamondFloatingButton",
-        components: {RoundedDiamond, DropShadowFilter},
+        components: {Square, DropShadowFilter},
         props: {
-            color: {
-                type: String,
-                default: "#FFFFFF"
+            width: {
+                type: Number,
+                default: 48,
+                validator: atLeastZero
             },
-            borderColor: {
-                type: String,
-                default: "#000000"
+            height: {
+                type: Number,
+                default: 48,
+                validator: atLeastZero
+            },
+            radius: {
+                type: Number,
+                default: 4,
+                validator: atLeastZero
+            },
+            elevation: {
+                type: Number,
+                default: 12,
+                validator: atLeastZero
             },
             /**
              * Executed when the button is clicked.
@@ -50,15 +69,23 @@
                 type: Function,
                 default: () => null
             }
+        },
+        computed: {
+            viewBox() {
+                return `0 0 ${this.width*1.5} ${this.height*1.5}`;
+            },
+            styles() {
+                return {
+                    width: `${this.width*1.5}px`,
+                    height: `${this.height*1.5}px`
+                }
+            }
         }
     };
 </script>
 
 <style lang="scss">
     .diamondFloatingButton-outer {
-        width: 64px;
-        height: 64px;
-
         > a {
             width: 100%;
             height: 100%;
@@ -68,5 +95,11 @@
                 height: 100%;
             }
         }
+    }
+
+    .shape_square {
+        fill: "#FFFFFF";
+        stroke: "#000000";
+        stroke-width: 3;
     }
 </style>
