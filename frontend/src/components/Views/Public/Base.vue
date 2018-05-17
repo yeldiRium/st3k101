@@ -1,15 +1,13 @@
 <template>
-    <v-app id="inspire">
-        <transition transition-mode="out-in">
-            <v-toolbar
-                    app
-                    fixed
-                    clipped-left>
-                <v-toolbar-title>Trashbin</v-toolbar-title>
-                <v-spacer/>
-                <language-picker />
-            </v-toolbar>
-        </transition>
+    <v-app>
+        <v-toolbar
+                app
+                fixed
+                clipped-left>
+            <v-toolbar-title>Trashbin</v-toolbar-title>
+            <v-spacer/>
+            <language-picker />
+        </v-toolbar>
         <v-content>
             <v-container fill-height>
                 <router-view/>

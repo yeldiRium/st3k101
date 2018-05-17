@@ -8,6 +8,9 @@ import SurveyForSubmission from
 import PrivateBase from "../components/Views/Private/Base";
 import Dashboard from "../components/Views/Private/Dashboard";
 
+import TestingBase from "../components/Views/Testing/Base";
+import DiamondFloatingButton from "../components/Partials/Buttons/DiamondFloatingButton";
+
 Vue.use(Router);
 
 export default new Router({
@@ -35,6 +38,19 @@ export default new Router({
                     path: "",
                     name: "Dashboard",
                     component: Dashboard
+                }
+            ]
+        },
+        {
+            path: "/testing/",
+            name: "Testing",
+            component: TestingBase,
+
+            children: [
+                {
+                    path: "DFB",
+                    name: "DiamondFloatingButton",
+                    component: DiamondFloatingButton
                 }
             ]
         }
