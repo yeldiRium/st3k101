@@ -24,8 +24,8 @@ class EMailBlacklistQAC(QACModule):
     # QACModule configuration
     _qac_id = __('Email Blacklist')
     _description = __('Blocks users with a certain email address from '
-                       'submitting. Not that this is only useful when '
-                       'email verification is also enabled.')
+                      'submitting. Not that this is only useful when '
+                      'email verification is also enabled.')
 
     def __init__(self, **kwargs):
         super(EMailBlacklistQAC, self).__init__(**kwargs)

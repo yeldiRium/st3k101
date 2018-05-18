@@ -2,7 +2,6 @@
     All http endpoints that concern the rest-like api for Question
 """
 
-from flask import g
 from flask.json import jsonify
 
 from app import app
