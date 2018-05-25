@@ -31,12 +31,13 @@ class Questionnaire(SurveyBase):
         'Dimension',
         backref='questionnaire',
         cascade='all, delete-orphan',
-        foreign_keys=['dimension.id']
+        foreign_keys=[Dimension.questionnaire_id]
     )
     qac_modules = db.relationship(
         'QACModule',
         backref='questionnaire',
-        cascade='all, delete-orphan'
+        cascade='all, delete-orphan',
+        foreign_keys=[QACModule.questionnaire_id]
     )
 
     def __init__(self, name: str, description: str, **kwargs):

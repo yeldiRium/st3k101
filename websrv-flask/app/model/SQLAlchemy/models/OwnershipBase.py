@@ -14,11 +14,11 @@ class OwnershipBase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # polymorphic config
-    type = db.Column(db.String(50))
+    ownership_base_type = db.Column(db.String(50))
     __tablename__ = 'ownership_base'
     __mapper_args__ = {
         'polymorphic_identity': __tablename__,
-        'polymorphic_on': type
+        'polymorphic_on': ownership_base_type
     }
 
     owners = db.relationship('Person', back_populates='owned_objects',

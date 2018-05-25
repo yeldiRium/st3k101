@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Dict
 
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
+from model.SQLAlchemy.models.Question import Question
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
 from utils import check_color
 
@@ -22,7 +23,7 @@ class Dimension(SurveyBase):
         'Question',
         backref='dimension',
         cascade='all, delete-orphan',
-        foreign_keys=['question.id']
+        foreign_keys=[Question.dimension_id]
     )
 
     @property

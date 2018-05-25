@@ -17,19 +17,23 @@ __author__ = "Noah Hummel"
 class QACModule(OwnershipBase):
     id = db.Column(db.Integer, db.ForeignKey(OwnershipBase.id), primary_key=True)
 
-    parameters = db.relationship('QACParameter', backref='qac_module',
-                                 cascade='all, delete-orphan')
-
     # polymorphism on, this is a base class
-    type = db.Column(db.String(50))
+    module_type = db.Column(db.String(50))
     __tablename__ = 'qac_module'
     __mapper_args__ = {
         'polymorphic_identity': 'qac_module',
-        'polymorphic_on': type
+        'polymorphic_on': module_type
     }
 
     # foreign keys
     questionnaire_id = db.Column(db.Integer, db.ForeignKey('questionnaire.id'))
+
+    parameters = db.relationship(
+        'QACParameter',
+        backref='qac_module',
+        cascade='all, delete-orphan',
+        foreign_keys=[QACParameter.qac_module_id]
+    )
 
     # non ORM-related attributes
     _qac_id = __('QACModule')

@@ -12,11 +12,11 @@ class QACParameter(OwnershipBase):
     description_msgid = db.Column(db.String(500), nullable=False)
 
     # polymorphism on, this is a base class
-    type = db.Column(db.String(50))
+    parameter_type = db.Column(db.String(50))
     __tablename__ = 'qac_parameter'
     __mapper_args__ = {
         'polymorphic_identity': 'qac_parameter',
-        'polymorphic_on': type
+        'polymorphic_on': parameter_type
     }
 
     # foreign keys

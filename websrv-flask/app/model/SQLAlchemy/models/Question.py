@@ -28,18 +28,19 @@ class Question(SurveyBase):
         backref='question',
         lazy=True,
         cascade='all, delete-orphan',
-        foreign_keys=['question_result.id']
+        foreign_keys=[QuestionResult.question_id]
     )
     statistic = db.relationship(
         'QuestionStatistic',
         uselist=False,
         backref='question',
         cascade='all, delete-orphan',
-        foreign_keys=[statistic_id]
+        foreign_keys=[statistic_id],
+        single_parent=True
     )
 
-    def __init__(self, text: str, **kwargs):
-        super(Question, self).__init__(text=text, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(Question, self).__init__(*args, **kwargs)
         self.statistic = QuestionStatistic()
 
     @property
@@ -130,6 +131,9 @@ class ConcreteQuestion(Question):
     # translatable columns
     text_translations = db.Column(MUTABLE_HSTORE)
     text = translation_hybrid(text_translations)
+
+    def __init__(self, text: str, **kwargs):
+        super(ConcreteQuestion, self).__init__(text=text, **kwargs)
 
 
 class ShadowQuestion(Question):
