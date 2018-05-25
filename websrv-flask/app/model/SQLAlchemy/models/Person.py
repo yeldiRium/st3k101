@@ -1,5 +1,5 @@
 from model.SQLAlchemy import db
-from model.SQLAlchemy.v2_models.OwnershipBase import ownership_table
+from model.SQLAlchemy.models.OwnershipBase import ownership_table
 
 
 class Person(db.Model):

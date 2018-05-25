@@ -5,11 +5,11 @@ from deprecated import deprecated
 
 from framework.internationalization import _, __
 from model.SQLAlchemy import db
-from model.SQLAlchemy.v2_models.QAC.QACCheckboxParameter import QACCheckboxParameter
-from model.SQLAlchemy.v2_models.QAC.QACI15dTextParameter import QACI15dTextParameter
-from model.SQLAlchemy.v2_models.QAC.QACParamter import QACParameter
-from model.SQLAlchemy.v2_models.QAC.QACTextParameter import QACTextParameter
-from model.SQLAlchemy.v2_models.OwnershipBase import OwnershipBase
+from model.SQLAlchemy.models.QAC.QACCheckboxParameter import QACCheckboxParameter
+from model.SQLAlchemy.models.QAC.QACI15dTextParameter import QACI15dTextParameter
+from model.SQLAlchemy.models.QAC.QACParamter import QACParameter
+from model.SQLAlchemy.models.QAC.QACTextParameter import QACTextParameter
+from model.SQLAlchemy.models.OwnershipBase import OwnershipBase
 
 __author__ = "Noah Hummel"
 

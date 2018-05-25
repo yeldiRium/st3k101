@@ -2,7 +2,7 @@ __author__ = "Noah Hummel"
 
 
 from model.SQLAlchemy import db
-from model.SQLAlchemy.v2_models.Person import Person
+from model.SQLAlchemy.models.Person import Person
 
 
 class DataSubject(Person):

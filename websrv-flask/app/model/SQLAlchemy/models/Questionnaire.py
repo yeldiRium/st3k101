@@ -9,13 +9,13 @@ from framework.exceptions import QACAlreadyEnabledException, YAMLTemplateInvalid
 from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
-from model.SQLAlchemy.v2_models.Dimension import Dimension
-from model.SQLAlchemy.v2_models.QAC.QACModule import QACModule
-from model.SQLAlchemy.v2_models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
-from model.SQLAlchemy.v2_models.QAC.QACModules.TOSQAC import TOSQAC
-from model.SQLAlchemy.v2_models.Question import Question
-from model.SQLAlchemy.v2_models.QuestionResult import QuestionResult
-from model.SQLAlchemy.v2_models.SurveyBase import SurveyBase
+from model.SQLAlchemy.models.Dimension import Dimension
+from model.SQLAlchemy.models.QAC.QACModule import QACModule
+from model.SQLAlchemy.models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
+from model.SQLAlchemy.models.QAC.QACModules.TOSQAC import TOSQAC
+from model.SQLAlchemy.models.Question import Question
+from model.SQLAlchemy.models.QuestionResult import QuestionResult
+from model.SQLAlchemy.models.SurveyBase import SurveyBase
 
 __author__ = "Noah Hummel"
 

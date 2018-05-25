@@ -4,7 +4,7 @@ __author__ = "Noah Hummel"
 from flask import g
 
 from model.SQLAlchemy import db
-from model.SQLAlchemy.v2_models.Person import Person
+from model.SQLAlchemy.models.Person import Person
 from framework.internationalization.babel_languages import BabelLanguage
 
 

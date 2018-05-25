@@ -2,8 +2,8 @@ from typing import List
 
 
 from model.SQLAlchemy import db
-from model.SQLAlchemy.v2_models.OwnershipBase import OwnershipBase
-from model.SQLAlchemy.v2_models.QuestionResult import QuestionResult
+from model.SQLAlchemy.models.OwnershipBase import OwnershipBase
+from model.SQLAlchemy.models.QuestionResult import QuestionResult
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

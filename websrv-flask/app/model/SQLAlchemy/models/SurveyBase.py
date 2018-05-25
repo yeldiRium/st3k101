@@ -1,5 +1,5 @@
 from model.SQLAlchemy import db
-from model.SQLAlchemy.v2_models.OwnershipBase import OwnershipBase
+from model.SQLAlchemy.models.OwnershipBase import OwnershipBase
 
 
 __author__ = "Noah Hummel"

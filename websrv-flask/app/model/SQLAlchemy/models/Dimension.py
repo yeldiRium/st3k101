@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Dict
 
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
-from model.SQLAlchemy.v2_models.SurveyBase import SurveyBase
+from model.SQLAlchemy.models.SurveyBase import SurveyBase
 from utils import check_color
 
 __author__ = "Noah Hummel"

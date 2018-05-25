@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from typing import Dict
 
-from model.SQLAlchemy.v2_models.DataSubject import DataSubject
-from model.SQLAlchemy.v2_models.QuestionResult import QuestionResult
-from model.SQLAlchemy.v2_models.QuestionStatistic import QuestionStatistic
-from model.SQLAlchemy.v2_models.SurveyBase import SurveyBase
+from model.SQLAlchemy.models.DataSubject import DataSubject
+from model.SQLAlchemy.models.QuestionResult import QuestionResult
+from model.SQLAlchemy.models.QuestionStatistic import QuestionStatistic
+from model.SQLAlchemy.models.SurveyBase import SurveyBase
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
 
 __author__ = "Noah Hummel"
