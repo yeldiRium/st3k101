@@ -1,16 +1,17 @@
 from typing import List
 
-from deprecated import deprecated
 
 from model.SQLAlchemy import db
-from model.SQLAlchemy.models.QuestionResult import QuestionResult
+from model.SQLAlchemy.v2_models.OwnershipBase import OwnershipBase
+from model.SQLAlchemy.v2_models.QuestionResult import QuestionResult
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
 
-class QuestionStatistic(db.Model):
+class QuestionStatistic(OwnershipBase):
+    id = db.Column(db.Integer, db.ForeignKey(OwnershipBase.id), primary_key=True)
 
-    id = db.Column(db.Integer, primary_key=True)
+    # columns
     smallest = db.Column(db.SmallInteger, nullable=False, default=0)
     biggest = db.Column(db.SmallInteger, nullable=False, default=0)
     q1 = db.Column(db.Float, nullable=False, default=0)
@@ -20,16 +21,6 @@ class QuestionStatistic(db.Model):
 
     # foreign keys
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-
-    @property
-    @deprecated(version='2.0', reason='Attribute has been renamed to "n"')
-    def answer_count(self) -> int:
-        return self.n
-
-    @answer_count.setter
-    @deprecated(version='2.0', reason='Attribute has been renamed to "n"')
-    def answer_count(self, n: int):
-        self.n = n
 
     @staticmethod
     def median(values: List[QuestionResult]) -> float:

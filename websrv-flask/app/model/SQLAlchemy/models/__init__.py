@@ -1,9 +1,0 @@
-import model.SQLAlchemy.models.DataClient
-import model.SQLAlchemy.models.DataSubject
-import model.SQLAlchemy.models.Question
-import model.SQLAlchemy.models.QuestionResult
-import model.SQLAlchemy.models.QuestionStatistic
-import model.SQLAlchemy.models.QuestionGroup
-import model.SQLAlchemy.models.Questionnaire
-import model.SQLAlchemy.models.Survey
-import model.SQLAlchemy.models.QAC

@@ -1,11 +1,13 @@
 from framework.internationalization import _, __
 from model.SQLAlchemy import db
+from model.SQLAlchemy.v2_models.OwnershipBase import OwnershipBase
 
 __author__ = "Noah Hummel"
 
 
-class QACParameter(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class QACParameter(OwnershipBase):
+    id = db.Column(db.Integer, db.ForeignKey(OwnershipBase.id), primary_key=True)
+
     name_msgid = db.Column(db.String(120), nullable=False)
     description_msgid = db.Column(db.String(500), nullable=False)
 

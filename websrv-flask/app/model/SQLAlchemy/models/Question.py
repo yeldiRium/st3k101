@@ -1,72 +1,72 @@
-from typing import List
+from abc import abstractmethod
+from typing import Dict
 
-from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
-from model.SQLAlchemy.models.DataClient import DataClient
-from model.SQLAlchemy.models.DataSubject import DataSubject
-from model.SQLAlchemy.models.QuestionResult import QuestionResult
-
-from deprecated import deprecated
-
-from model.SQLAlchemy.models.QuestionStatistic import QuestionStatistic
+from model.SQLAlchemy.v2_models.DataSubject import DataSubject
+from model.SQLAlchemy.v2_models.QuestionResult import QuestionResult
+from model.SQLAlchemy.v2_models.QuestionStatistic import QuestionStatistic
+from model.SQLAlchemy.v2_models.SurveyBase import SurveyBase
+from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
 
 __author__ = "Noah Hummel"
 
 
-class Question(db.Model):
-    # columns
-    id = db.Column(db.Integer, primary_key=True)
-    range = db.Column(db.SmallInteger, default=10, nullable=False)
+class Question(SurveyBase):
+    id = db.Column(db.Integer, db.ForeignKey(SurveyBase.id), primary_key=True)
+
+    __tablename__ = 'question'
+    __mapper_args__ = {'polymorphic_identity': __tablename__}
+
     dirty = db.Column(db.Boolean, default=False, nullable=False)
 
-    # translatable columns
-    text_translations = db.Column(MUTABLE_HSTORE)
-    text = translation_hybrid(text_translations)
+    # foreign keys
+    dimension_id = db.Column(db.Integer, db.ForeignKey('dimension.id'))
+    statistic_id = db.Column(db.Integer, db.ForeignKey('question_statistic.id'))
 
     # relationships
-    results = db.relationship('QuestionResult', backref='question', lazy=True,
-                              cascade='all, delete-orphan')
-    statistic = db.relationship('QuestionStatistic', uselist=False,
-                                backref='question',
-                                cascade='all, delete-orphan')
-
-    # foreign keys
-    question_group_id = db.Column(db.Integer,
-                                  db.ForeignKey('question_group.id'))
+    results = db.relationship(
+        'QuestionResult',
+        backref='question',
+        lazy=True,
+        cascade='all, delete-orphan',
+        foreign_keys=['question_result.id']
+    )
+    statistic = db.relationship(
+        'QuestionStatistic',
+        uselist=False,
+        backref='question',
+        cascade='all, delete-orphan',
+        foreign_keys=[statistic_id]
+    )
 
     def __init__(self, text: str, **kwargs):
         super(Question, self).__init__(text=text, **kwargs)
         self.statistic = QuestionStatistic()
 
+    @property
+    @abstractmethod
+    def text(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def text_translations(self) -> Dict[str, str]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def range(self) -> int:
+        raise NotImplementedError
+
+    @property
+    def original_language(self) -> str:
+        return self.dimension.original_language
+
     @staticmethod
-    @deprecated(version='2.0', reason='Use Question() constructor directly')
-    def create_question(text: str) -> 'Question':
-        """
-        Factory method to create a Question with default values and an asso-
-        ciated statistics object.
-        :param text: The text for the new question
-        :return: The newly created Question instance
-        """
-
-        return Question(text=text)
-
-    @deprecated(version='2.0', reason='Is implemented by database cascades.'
-                                      'Use Question.results.remove(result) instead.')
-    def remove_question_result(self, question_result: QuestionResult):
-        """
-        Removes a QuestionResult from this Question and the database.
-        :param question_result: The result to remove
-        """
-        self.results.remove(question_result)
-
-    @deprecated(version='2.0', reason='Use Question.text attribute directly.')
-    def update_text(self, text: str):
-        self.text = text
-
-    def get_results_by_subject(self, subject: DataSubject) \
-            -> List[QuestionResult]:
-        query = QuestionResult.query.filter_by(data_subject=subject,
-                                               question=self)
-        return query.all()
+    def get_results_by_subject(subject: DataSubject):
+        results = QuestionResult.query.filter(
+            QuestionResult.owners.any(id=subject.id)
+        ).all()
+        return results
 
     def add_question_result(self, answer_value: int, subject_email: str,
                             needs_verification: bool=True,
@@ -118,10 +118,40 @@ class Question(db.Model):
         # TODO: not necessary anymore because answer count is selected on the fly
         return False  # signal that answer count has not changed
 
-    @property
-    def owner(self) -> DataClient:
-        return self.question_group.owner
+
+class ConcreteQuestion(Question):
+    id = db.Column(db.Integer, db.ForeignKey(Question.id), primary_key=True)
+
+    __tablename__ = 'concrete_question'
+    __mapper_args__ = {'polymorphic_identity': __tablename__}
+
+    range = db.Column(db.SmallInteger, default=10, nullable=False)
+
+    # translatable columns
+    text_translations = db.Column(MUTABLE_HSTORE)
+    text = translation_hybrid(text_translations)
+
+
+class ShadowQuestion(Question):
+    id = db.Column(db.Integer, db.ForeignKey(Question.id), primary_key=True)
+
+    __tablename__ = 'shadow_question'
+    __mapper_args__ = {'polymorphic_identity': __tablename__}
+
+    _referenced_object_id = db.Column(db.Integer,
+                                      db.ForeignKey(ConcreteQuestion.id))
+    _referenced_object = db.relationship(ConcreteQuestion,
+                                         foreign_keys=[_referenced_object_id],
+                                         backref='copies')
 
     @property
-    def original_language(self) -> str:
-        return self.question_group.original_language
+    def text(self) -> str:
+        return self._referenced_object.text
+
+    @property
+    def text_translations(self) -> Dict[str, str]:
+        return self._referenced_object.text_translations
+
+    @property
+    def range(self) -> int:
+        return self._referenced_object.range

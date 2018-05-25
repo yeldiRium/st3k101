@@ -1,69 +1,93 @@
 import os
-from typing import List, Optional, Dict, Any
+from abc import abstractmethod
+from typing import Dict, Optional, Any
 
 import yaml
-from deprecated import deprecated
 from flask import g
 
-from framework.exceptions import QuestionGroupNotFoundException, QACNotEnabledException, YAMLTemplateInvalidException, \
-    QACAlreadyEnabledException
+from framework.exceptions import QACAlreadyEnabledException, YAMLTemplateInvalidException
 from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
-from model.SQLAlchemy import db, translation_hybrid, MUTABLE_HSTORE
-from model.SQLAlchemy.models.DataClient import DataClient
-from model.SQLAlchemy.models.QAC.QACModule import QACModule
-from model.SQLAlchemy.models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
-from model.SQLAlchemy.models.QAC.QACModules.TOSQAC import TOSQAC
-from model.SQLAlchemy.models.Question import Question
-from model.SQLAlchemy.models.QuestionGroup import QuestionGroup
-from model.SQLAlchemy.models.QuestionResult import QuestionResult
+from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
+from model.SQLAlchemy.v2_models.Dimension import Dimension
+from model.SQLAlchemy.v2_models.QAC.QACModule import QACModule
+from model.SQLAlchemy.v2_models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
+from model.SQLAlchemy.v2_models.QAC.QACModules.TOSQAC import TOSQAC
+from model.SQLAlchemy.v2_models.Question import Question
+from model.SQLAlchemy.v2_models.QuestionResult import QuestionResult
+from model.SQLAlchemy.v2_models.SurveyBase import SurveyBase
 
 __author__ = "Noah Hummel"
 
 
-class Questionnaire(db.Model):
-    """
-    A Questionnaire is a collection of Questions which are grouped into
-    QuestionGroups. A Questionnaire is targeted to a specific audience.
-    It can have a number of Questionnaire Access Control Modules (QACModules)
-    enabled on it.
-    A Questionnaire is contained in a survey.
-    """
-    # columns
-    id = db.Column(db.Integer, primary_key=True)
-    original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
-    published = db.Column(db.Boolean, nullable=False, default=False)
+class Questionnaire(SurveyBase):
+    id = db.Column(db.Integer, db.ForeignKey(SurveyBase.id), primary_key=True)
 
-    # translatable columns
-    name_translations = db.Column(MUTABLE_HSTORE)
-    name = translation_hybrid(name_translations)
-    description_translations = db.Column(MUTABLE_HSTORE)
-    description = translation_hybrid(description_translations)
+    __tablename__ = 'questionnaire'
+    __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # relationships
-    question_groups = db.relationship('QuestionGroup', backref='questionnaire',
-                                      cascade='all, delete-orphan')
-    qac_modules = db.relationship('QACModule', backref='questionnaire',
-                                  cascade='all, delete-orphan')
+    dimensions = db.relationship(
+        'Dimension',
+        backref='questionnaire',
+        cascade='all, delete-orphan',
+        foreign_keys=['dimension.id']
+    )
+    qac_modules = db.relationship(
+        'QACModule',
+        backref='questionnaire',
+        cascade='all, delete-orphan'
+    )
 
-    # foreign keys
-    survey_id = db.Column(db.Integer, db.ForeignKey('survey.id'))
-
-    @property
-    @deprecated(version='2.0', reason='Attribute has been renamed to "original_language", new type: BabelLanguage')
-    def original_locale(self) -> str:
-        return self.original_language.name
-
-    @original_locale.setter
-    @deprecated(version='2.0', reason='Attribute has been renamed to "original_language", new type: BabelLanguage')
-    def original_locale(self, language_id: str):
-        lang = BabelLanguage[language_id]
-        self.original_language = lang
+    def __init__(self, name: str, description: str, **kwargs):
+        super(Questionnaire, self).__init__(name=name, description=description,
+                                            **kwargs)
+        self.qac_modules = [TOSQAC(), EMailVerificationQAC()]
 
     @property
-    @deprecated(version='2.0', reason='Attribute has been renamed to "question_groups"')
-    def questiongroups(self) -> List[QuestionGroup]:
-        return self.question_groups
+    @abstractmethod
+    def name(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def name_translations(self) -> Dict[str, str]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def description(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def description_translations(self) -> Dict[str, str]:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def original_language(self) -> BabelLanguage:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def published(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def randomize_question_order(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def allow_embedded(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def xapi_target(self) -> str:
+        raise NotImplementedError
 
     @property
     def question_count(self) -> int:
@@ -71,8 +95,8 @@ class Questionnaire(db.Model):
         :return: The number of questions associated with the Questionnaire.
         """
         count = 0
-        for qg in self.question_groups:
-            count += len(qg.questions)
+        for dim in self.dimensions:
+            count += len(dim.questions)
         return count
 
     @property
@@ -90,76 +114,6 @@ class Questionnaire(db.Model):
         if n_questions < 1:
             n_questions = 1
         return count // n_questions
-
-    def __init__(self, name: str, description: str, **kwargs):
-        super(Questionnaire, self).__init__(name=name, description=description,
-                                            **kwargs)
-        self.qac_modules = [TOSQAC(), EMailVerificationQAC()]
-        self.original_language = g._language
-
-    @staticmethod
-    @deprecated(version='2.0', reason='Use Questionnaire() constructor directly')
-    def create_questionnaire(name: str, description: str) -> 'Questionnaire':
-        """
-        Factory method for creating a new Questionnaire with default values.
-        :param name: The name of the new Questionnaire.
-        :param description: The description text of the new Questionnaire.
-        :return: The newly created Questionnaire instance.
-        """
-        return Questionnaire(name=name, description=description)
-
-    @deprecated(version='2.0', reason='Use Questionnaire.name directly')
-    def set_name(self, name: str):
-        self.name = name
-
-    @deprecated(version='2.0', reason='Use Questionnaire.description directly')
-    def set_description(self, description: str):
-        self.description = description
-
-    @deprecated(version='2.0', reason='Use QuestionGroup() constructor directly and pass questionnaire')
-    def add_question_group(self, name: str) -> QuestionGroup:
-        """
-        Creates a new QuestionGroup and adds it to the Questionnaire.
-        :param name: The name of the new QuestionGroup.
-        :return: The newly created QuestionGroup instance.
-        """
-        return QuestionGroup(name=name, questionnaire=self)
-
-    @deprecated(version='2.0', reason='Will be implemented by db triggers in the future')
-    def remove_question_group(self, question_group: QuestionGroup):
-        """
-        Removes a QuestionGroup from the Questionnaire and the database.
-        :param question_group: The QuestionGroup to remove.
-        """
-        self.question_groups.remove(question_group)
-        db.session.delete(question_group)
-
-    @deprecated(version='2.0', reason='Use Question() constructor directly and pass question_group')
-    def add_question_to_group(self, question_group: QuestionGroup,
-                              text: str) -> Question:
-        if question_group not in self.question_groups:
-            raise QuestionGroupNotFoundException
-        return Question(text=text, question_group=question_group)
-
-    @deprecated(version='2.0', reason='Will be implemented by db triggers in the future')
-    def remove_question_from_group(self, question_group: QuestionGroup,
-                                   question: Question) -> QuestionGroup:
-        """
-        Removes a Question from the given QuestionGroup.
-        The QuestionGroup has to belong to the Questionnaire.
-        :param question_group: The QuestionGroup to remove from.
-        :param question: The Question to remove.
-        :return: The QuestionGroup that was removed from.
-        """
-        if question_group not in self.question_groups:
-            raise QuestionGroupNotFoundException
-        self.question_groups.remove(question)
-        db.session.delete(question)
-        return question_group
-
-    @deprecated(version='2.0', reason='Use Questionnaire.qac_modules directly')
-    def get_qac_modules(self) -> List[QACModule]:
-        return self.qac_modules
 
     def add_qac_module(self, qac_module: QACModule):
         if qac_module.qac_id in (qm.qac_id for qm in self.qac_modules):
@@ -179,26 +133,6 @@ class Questionnaire(db.Model):
                 qac_module = qm
                 break
         return qac_module
-
-    @deprecated(version='2.0', reason='QACModule.name is deprecated, use QACModule.qac_id instead.')
-    def get_qac_module(self, name: str) -> Optional[QACModule]:
-        return self.get_qac_module_by_qac_id(name)
-
-    @deprecated(version='2.0', reason='Will be implemented by db triggers in the future. '
-                                      'Use Questionnaire.get_qac_module_by_qac_id to acquire qac and remove directly.')
-    def remove_qac_module(self, qac_id: str):
-        """
-        Removes a QACModule from this Questionnaire and the database.
-        Raises QACNotEnabledException if QACModule is not present
-        in the Questionnaire.
-        :param qac_id: The qac_id (previously name.msgid) of
-                       the QACModule
-        """
-        qac_module = self.get_qac_module_by_qac_id(qac_id)
-        if qac_module is None:
-            raise QACNotEnabledException
-        self.qac_modules.remove(qac_module)
-        db.session.delete(qac_module)
 
     @staticmethod
     def parse_yaml(path_to_yaml: str) -> Dict[str, Any]:
@@ -262,15 +196,82 @@ class Questionnaire(db.Model):
         contents = Questionnaire.parse_yaml(path_to_yaml)
         questionnaire = Questionnaire(name=contents["name"],
                                       description=contents["description"])
-        for group_name, question_texts in contents["questions"].items():
-            question_group = QuestionGroup(name=group_name,
-                                           questionnaire=questionnaire)
+        for dimension_name, question_texts in contents["questions"].items():
+            dimension = Dimension(name=dimension_name,
+                                  questionnaire=questionnaire)
             for text in question_texts:
-                Question(text=text, question_group=question_group)
+                Question(text=text, dimension=dimension)
             db.session.add(questionnaire)
 
         return questionnaire
 
+
+class ConcreteQuestionnaire(Questionnaire):
+    id = db.Column(db.Integer, db.ForeignKey(Questionnaire.id), primary_key=True)
+
+    __tablename__ = 'concrete_questionnaire'
+    __mapper_args__ = {'polymorphic_identity': __tablename__}
+
+    name_translations = db.Column(MUTABLE_HSTORE)
+    name = translation_hybrid(name_translations)
+    description_translations = db.Column(MUTABLE_HSTORE)
+    description = translation_hybrid(description_translations)
+    original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
+    published = db.Column(db.Boolean, nullable=False, default=False)
+    randomize_question_order = db.Column(db.Boolean, nullable=False,
+                                         default=False)
+    allow_embedded = db.Column(db.Boolean, nullable=False, default=False)
+    xapi_target = db.Column(db.String(512))
+
+    def __init__(self, *args, **kwargs):
+        super(ConcreteQuestionnaire, self).__init__(*args, **kwargs)
+        self.original_language = g._language
+
+
+class ShadowQuestionnaire(Questionnaire):
+    id = db.Column(db.Integer, db.ForeignKey(Questionnaire.id), primary_key=True)
+
+    __tablename__ = 'shadow_questionnaire'
+    __mapper_args__ = {'polymorphic_identity': __tablename__}
+
+    _referenced_object_id = db.Column(db.Integer,
+                                      db.ForeignKey(ConcreteQuestionnaire.id))
+    _referenced_object = db.relationship(ConcreteQuestionnaire,
+                                         foreign_keys=[_referenced_object_id],
+                                         backref='copies')
+
     @property
-    def owner(self) -> DataClient:
-        return self.survey.data_client
+    def name(self) -> str:
+        return self._referenced_object.name
+
+    @property
+    def name_translations(self) -> Dict[str, str]:
+        return self._referenced_object.name_translations
+
+    @property
+    def description(self) -> str:
+        return self._referenced_object.description
+
+    @property
+    def description_translations(self) -> Dict[str, str]:
+        return self._referenced_object.description_translations
+
+    @property
+    def original_language(self) -> BabelLanguage:
+        return self._referenced_object.original_language
+
+    @property
+    def published(self) -> bool:
+        return self._referenced_object.published
+
+    @property
+    def randomize_question_order(self) -> bool:
+        return self._referenced_object.randomize_question_order
+
+    @property
+    def allow_embedded(self) -> bool:
+        return self._referenced_object.allow_embedded
+
+    @property
+    def xapi_target(self) -> str:
+        return self._referenced_object.xapi_target
