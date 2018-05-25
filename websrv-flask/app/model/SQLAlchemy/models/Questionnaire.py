@@ -241,6 +241,10 @@ class ShadowQuestionnaire(Questionnaire):
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
 
+    def __init__(self, questionnaire, *args, **kwargs):
+        super(ShadowQuestionnaire, self).__init__(*args, **kwargs)
+        self._referenced_object = questionnaire
+
     @property
     def name(self) -> str:
         return self._referenced_object.name

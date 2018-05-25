@@ -92,6 +92,10 @@ class ShadowDimension(Dimension):
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
 
+    def __init__(self, dimension, *args, **kwargs):
+        super(ShadowDimension, self).__init__(*args, **kwargs)
+        self._referenced_object = dimension
+
     @property
     def name(self) -> str:
         return self._referenced_object.name

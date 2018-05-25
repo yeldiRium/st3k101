@@ -148,6 +148,10 @@ class ShadowQuestion(Question):
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
 
+    def __init__(self, question, *args, **kwargs):
+        super(ShadowQuestion, self).__init__(*args, **kwargs)
+        self._referenced_object = question
+
     @property
     def text(self) -> str:
         return self._referenced_object.text
