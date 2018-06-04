@@ -1,13 +1,9 @@
 <template>
-    <v-app>
-        <v-content>
-            <v-container fill-height fluid>
-                <div class="centered">
-                    <router-view/>
-                </div>
-            </v-container>
-        </v-content>
-    </v-app>
+    <div class="testing-centered">
+        <div class="testing-bordered">
+            <router-view/>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -16,13 +12,21 @@
     };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     * {
         padding: 0;
         margin: 0;
     }
 
-    .centered {
+    .testing-centered {
         margin: auto;
+        display: grid;
+        justify-items: center;
+        align-items: center;
+    }
+
+    .testing-bordered {
+        border: 1px solid black;
+        padding: 15px;
     }
 </style>
