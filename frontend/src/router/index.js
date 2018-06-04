@@ -7,6 +7,8 @@ import SurveyForSubmission from
 
 import PrivateBase from "../components/Views/Private/Base";
 import Dashboard from "../components/Views/Private/Dashboard";
+import Questionnaires from "../components/Views/Private/Questionnaires";
+import Account from "../components/Views/Private/Account";
 
 import TestingBase from "../components/Views/Testing/Base";
 import TestDiamondFloatingButton from "../components/Views/Testing/TestDiamondFloatingButton";
@@ -36,7 +38,18 @@ export default new Router({
 
             children: [
                 {
+                    path: "questionnaires/",
+                    name: "Questionnaires",
+                    component: Questionnaires
+                },
+                {
+                    path: "account/",
+                    name: "Account",
+                    component: Account
+                },
+                {
                     path: "",
+                    alias: "dashboard/",
                     name: "Dashboard",
                     component: Dashboard
                 }
