@@ -1,8 +1,6 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from "vue";
-import "vuetify/dist/vuetify.css";
-import Vuetify from "vuetify";
 import Vuex from "vuex";
 
 import "abortcontroller-polyfill";

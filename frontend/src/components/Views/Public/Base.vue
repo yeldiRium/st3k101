@@ -1,19 +1,8 @@
 <template>
-    <v-app>
-        <v-toolbar
-                app
-                fixed
-                clipped-left>
-            <v-toolbar-title>Trashbin</v-toolbar-title>
-            <v-spacer/>
-            <language-picker />
-        </v-toolbar>
-        <v-content>
-            <v-container fill-height>
-                <router-view/>
-            </v-container>
-        </v-content>
-    </v-app>
+    <!-- menubar with languagepicker-->
+    <!-- content -->
+        <router-view/>
+    <!-- end content -->
 </template>
 
 <script>

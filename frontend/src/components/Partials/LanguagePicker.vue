@@ -1,26 +1,6 @@
 <template>
-    <v-menu offset-y
-            allow-overflow
-            lazy
-            content-class="languageMenu"
-            transition="slide-y-reverse-transition"
-    >
-        <v-btn flat
-               slot="activator"
-        >
-            {{ currentLanguage.long }}
-        </v-btn>
-        <v-list>
-            <v-list-tile v-for="language in languageOptions"
-                         :key="language.short"
-                         @click="setCurrentLanguage(language)"
-            >
-                <v-list-tile-title>
-                    {{ language.long }}
-                </v-list-tile-title>
-            </v-list-tile>
-        </v-list>
-    </v-menu>
+    <!-- dropdown select box of all languages -->
+    <!-- preview with language.long, language.short as value -->
 </template>
 
 <script>
