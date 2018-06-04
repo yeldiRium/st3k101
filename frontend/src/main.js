@@ -12,7 +12,6 @@ import router from "./router";
 import { initialize as initializeStore } from "./store";
 import store from "./store";
 
-Vue.use(Vuetify);
 Vue.use(Vuex);
 
 Vue.config.productionTip = false;
