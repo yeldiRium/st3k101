@@ -7,6 +7,10 @@ import Account from "../../api/Model/Account";
 const store = {
     namespaced: true,
     state: {
+        loading: {
+            state: "done",
+            error: null
+        },
         account: {
             email: null,
             language: null
@@ -14,6 +18,12 @@ const store = {
         sessionToken: null
     },
     getters: {
+        loading: state => {
+            return {
+                loadingState: state.loading.state,
+                error: state.loading.error
+            };
+        },
         isLoggedIn(state) {
             return state.sessionToken !== null;
         }
@@ -32,6 +42,7 @@ const store = {
          * @cancel
          */
         logIn(context, email, password) {
+            context.commit("setLoadingState", {loadingState: "loading"});
             return Authentication.login(email, password)
                 .chain(sessionToken => {
                     context.commit("startSession", {
@@ -39,10 +50,26 @@ const store = {
                     });
 
                     return Future.tryP(() => context.dispatch("fetchAccount"))
-                        .map(account => ({
-                            sessionToken,
-                            account
-                        }));
+                        .map(account => {
+                            context.commit(
+                                "setLoadingState", {
+                                    loadingState: "done"
+                                }
+                            );
+                            return ({
+                                sessionToken,
+                                account
+                            });
+                        });
+                })
+                .chainRej(error => {
+                    context.commit(
+                        "setLoadingState", {
+                            loadingState: "error",
+                            error: error
+                        }
+                    );
+                    return error;
                 });
         },
         /**
@@ -55,10 +82,25 @@ const store = {
          * @cancel
          */
         logOut(context) {
+            context.commit("setLoadingState", {loadingState: "loading"});
             return Authentication.logout(context.state.sessionToken)
                 .chain(data => {
                     context.commit("endSession");
+                    context.commit(
+                        "setLoadingState", {
+                            loadingState: "done"
+                        }
+                    );
                     return Future.of(true);
+                })
+                .chainRej(error => {
+                    context.commit(
+                        "setLoadingState", {
+                            loadingState: "error",
+                            error: error
+                        }
+                    );
+                    return error;
                 });
         },
         /**
@@ -73,6 +115,7 @@ const store = {
          * @cancel
          */
         fetchAccount({commit}) {
+            context.commit("setLoadingState", {loadingState: "loading"});
             return Account.current()
                 .chain(data => {
                     let email = path(["fields", "email"], data);
@@ -82,15 +125,33 @@ const store = {
                         email,
                         language
                     });
+                    context.commit(
+                        "setLoadingState", {
+                            loadingState: "done"
+                        }
+                    );
 
                     return Future.of({
                         email,
                         language
                     });
+                })
+                .chainRej(error => {
+                    context.commit(
+                        "setLoadingState", {
+                            loadingState: "error",
+                            error: error
+                        }
+                    );
+                    return error;
                 });
         }
     },
     mutations: {
+        setLoadingState(state, {loadingState, error}) {
+            state.loading.state = loadingState;
+            state.loading.error = error;
+        },
         startSession(state, {sessionToken}) {
             state.sessionToken = sessionToken;
         },

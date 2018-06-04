@@ -11,11 +11,17 @@ const store = new Vuex.Store({
     state: {
         initialLoading: "loading"
     },
+    getters: {
+        loading: (state, getters, rootState, rootGetters) => {
+            // TODO: respect submodules' loading states
+            return state.initialLoading;
+        }
+    },
     mutations: {
-        initialLoadingDone: function(state, data) {
+        initialLoadingDone: (state, data) => {
             state.initialLoading = "done";
         },
-        initialLoadingError: function(state, error) {
+        initialLoadingError: (state, error) => {
             state.initialLoading = "error";
         }
     },

@@ -6,12 +6,23 @@ import Language from "../../api/Model/Language";
 const store = {
     namespaced: true,
     state: {
-        loading: "loading",
+        loading: {
+            state: "loading",
+            error: null
+        },
         currentLanguage: {
             short: "de",
             long: "Deutsch"
         },
         languageOptions: []
+    },
+    getters: {
+        loading: state => {
+            return {
+                loadingState: state.loading.state,
+                error: state.loading.error
+            };
+        },
     },
     actions: {
         /**
@@ -21,7 +32,12 @@ const store = {
         fetchLanguages({commit}) {
             return Language.all().fork(
                 data => {
-                    commit("setLoadingState", "error");
+                    commit(
+                        "setLoadingState", {
+                            loadingState: "error",
+                            error: error
+                        }
+                    );
                 },
                 data => {
                     data = map(
@@ -31,15 +47,20 @@ const store = {
                         }),
                         data
                     );
-                    commit("setLoadingState", "done");
+                    commit(
+                        "setLoadingState", {
+                            loadingState: "done"
+                        }
+                    );
                     commit("setLanguageOptions", data);
                 }
             );
         }
     },
     mutations: {
-        setLoadingState(state, loadingState) {
-            state.loading = loadingState;
+        setLoadingState(state, {loadingState, error}) {
+            state.loading.state = loadingState;
+            state.loading.error = error;
         },
         setCurrentLanguage(state, language) {
             state.currentLanguage = language;
