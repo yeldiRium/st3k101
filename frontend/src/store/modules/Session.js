@@ -1,4 +1,4 @@
-import {path} from "ramda";
+import {path, isNil} from "ramda";
 import Future from "fluture";
 
 import Authentication from "../../api/Authentication";
@@ -36,33 +36,14 @@ const store = {
          * @param context
          * @param email
          * @param password
-         * @return a Future.
+         * @return a Promise.
          * @resolves with the session object.
          * @rejects with a reason for failure.
-         * @cancel
          */
         logIn(context, email, password) {
             context.commit("setLoadingState", {loadingState: "loading"});
             return Authentication.login(email, password)
-                .chain(sessionToken => {
-                    context.commit("startSession", {
-                        sessionToken
-                    });
-
-                    return Future.tryP(() => context.dispatch("fetchAccount"))
-                        .map(account => {
-                            context.commit(
-                                "setLoadingState", {
-                                    loadingState: "done"
-                                }
-                            );
-                            return ({
-                                sessionToken,
-                                account
-                            });
-                        });
-                })
-                .chainRej(error => {
+                .mapRej(error => {
                     context.commit(
                         "setLoadingState", {
                             loadingState: "error",
@@ -70,30 +51,36 @@ const store = {
                         }
                     );
                     return error;
-                });
+                })
+                .chain(sessionToken => {
+                    context.commit("setLoadingState", {loadingState: "done"});
+                    context.commit("startSession", {
+                        sessionToken
+                    });
+                })
+                .promise()
         },
         /**
          * Ends the current session.
          *
          * @param context
-         * @return a Future.
+         * @return a Promise.
          * @resolves with True, if the logout process was successful.
          * @rejects with an error message, if not.
-         * @cancel
          */
         logOut(context) {
             context.commit("setLoadingState", {loadingState: "loading"});
             return Authentication.logout(context.state.sessionToken)
                 .chain(data => {
-                    context.commit("endSession");
                     context.commit(
                         "setLoadingState", {
                             loadingState: "done"
                         }
                     );
+                    context.commit("endSession");
                     return Future.of(true);
                 })
-                .chainRej(error => {
+                .mapRej(error => {
                     context.commit(
                         "setLoadingState", {
                             loadingState: "error",
@@ -101,42 +88,46 @@ const store = {
                         }
                     );
                     return error;
-                });
+                })
+                .promise();
         },
         /**
          * Retrieves the account data for the currently logged in user.
-         * Only works, if a logIn was executed, since it relies on cookies set
-         * by the API.
+         * Only works, if a logIn was executed and successful, since it relies
+         * on cookies set by the API.
          *
          * @param commit
-         * @return a Future.
+         * @return a Promise.
          * @resolves with the account object.
          * @rejects with an error message.
-         * @cancel
          */
         fetchAccount({commit}) {
+            if (isNil(state.sessionToken)) {
+                return Promise.reject("Not logged in.");
+            }
+
             context.commit("setLoadingState", {loadingState: "loading"});
             return Account.current()
                 .chain(data => {
                     let email = path(["fields", "email"], data);
                     let language = path(["fields", "locale_name"], data);
 
-                    commit("setAccountData", {
-                        email,
-                        language
-                    });
                     context.commit(
                         "setLoadingState", {
                             loadingState: "done"
                         }
                     );
+                    commit("setAccountData", {
+                        email,
+                        language
+                    });
 
                     return Future.of({
                         email,
                         language
                     });
                 })
-                .chainRej(error => {
+                .mapRej(error => {
                     context.commit(
                         "setLoadingState", {
                             loadingState: "error",
@@ -144,7 +135,8 @@ const store = {
                         }
                     );
                     return error;
-                });
+                })
+                .promise();
         }
     },
     mutations: {
