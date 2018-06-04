@@ -58,7 +58,8 @@ const store = {
 
                         return data;
                     }
-                );
+                )
+                .promise();
         }
     },
     mutations: {
@@ -91,14 +92,9 @@ export default store;
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return Future((reject, resolve) => {
-        Future.tryP(
-            () => rootStore.dispatch(`${namespace}/fetchLanguages`)
-        )
-        // The Promise return from the fetchLanguages action will always re-
-        // solve to a Future.
-            .value(resolve);
-    });
+    return Future.tryP(
+        () => rootStore.dispatch(`${namespace}/fetchLanguages`)
+    );
 };
 
 export {
