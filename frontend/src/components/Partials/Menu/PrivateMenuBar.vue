@@ -36,7 +36,7 @@
             iconStyle: {}
         }),
         methods: {
-            resizeHandler() {
+            handleWindowResize() {
                 const side = document.documentElement.clientHeight / (10 * 24);
                 this.iconStyle = {
                     transform: `scale(${side}, ${side})`,
@@ -45,11 +45,11 @@
             }
         },
         mounted() {
-            window.addEventListener("resize", this.resizeHandler);
-            this.resizeHandler("lel");
+            window.addEventListener("resize", this.handleWindowResize);
+            this.handleWindowResize();
         },
         beforeDestroy() {
-            window.removeEventListener("resize", this.resizeHandler);
+            window.removeEventListener("resize", this.handleWindowResize);
         }
     }
 </script>
