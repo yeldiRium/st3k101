@@ -69,7 +69,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent imperdiet feug
     .content {
         grid-area: content;
 
-        overflow: scroll;
+        overflow-y: scroll;
     }
 
     .menubar-container {
