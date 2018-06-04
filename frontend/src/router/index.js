@@ -2,8 +2,7 @@ import Vue from "vue";
 import Router from "vue-router";
 
 import PublicBase from "../components/Views/Public/Base";
-import SurveyForSubmission from
-        "../components/Views/Public/SurveyForSubmission";
+import SurveyForSubmission from "../components/Views/Public/SurveyForSubmission";
 
 import PrivateBase from "../components/Views/Private/Base";
 import Dashboard from "../components/Views/Private/Dashboard";
@@ -32,24 +31,24 @@ export default new Router({
             ]
         },
         {
-            path: "/private/",
+            path: "/private",
+            redirect: "/private/dashboard",
             name: "Private",
             component: PrivateBase,
 
             children: [
                 {
-                    path: "questionnaires/",
+                    path: "questionnaires",
                     name: "Questionnaires",
                     component: Questionnaires
                 },
                 {
-                    path: "account/",
+                    path: "account",
                     name: "Account",
                     component: Account
                 },
                 {
-                    path: "",
-                    alias: "dashboard/",
+                    path: "dashboard",
                     name: "Dashboard",
                     component: Dashboard
                 }
