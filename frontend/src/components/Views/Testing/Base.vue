@@ -27,6 +27,6 @@
 
     .testing-bordered {
         border: 1px solid black;
-        padding: 15px;
+        padding: 2vw;
     }
 </style>
