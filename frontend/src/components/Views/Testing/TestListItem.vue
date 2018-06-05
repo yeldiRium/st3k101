@@ -1,5 +1,5 @@
 <template>
-    <div class="TestQuestion_container">
+    <div class="TestListItem_container">
         <ListItem text="Dies ist scheinbar ein ListItem."
                   subtext="Und das hier soll ein Subtext sein?!? Mach mal besser länger."
         >
