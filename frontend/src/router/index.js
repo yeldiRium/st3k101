@@ -12,6 +12,7 @@ import Account from "../components/Views/Private/Account";
 import TestingBase from "../components/Views/Testing/Base";
 import TestDiamondFloatingButton from "../components/Views/Testing/TestDiamondFloatingButton";
 import TestButtonBar from "../components/Views/Testing/TestButtonBar";
+import TestQuestion from "../components/Views/Testing/TestQuestion";
 
 Vue.use(Router);
 
@@ -69,6 +70,11 @@ export default new Router({
                     path: "ButtonBar",
                     name: "ButtonBar",
                     component: TestButtonBar
+                },
+                {
+                    path: "Question",
+                    name: "Question",
+                    component: TestQuestion
                 }
             ]
         }
