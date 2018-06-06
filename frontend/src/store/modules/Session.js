@@ -17,7 +17,7 @@ const store = {
             state: "done",
             error: null
         },
-        user: null,
+        dataClient: null,
         sessionToken: null
     },
     getters: {
@@ -155,13 +155,10 @@ const store = {
         },
         endSession(state) {
             state.sessionToken = null;
-            state.account = {
-                email: null,
-                language: null
-            };
+            state.dataClient = null;
         },
-        setDataClient(state, dataClient) {
-            state.account = dataClient;
+        setDataClient(state, {dataClient}) {
+            state.dataClient = dataClient;
         }
     }
 };
