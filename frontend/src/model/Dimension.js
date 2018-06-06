@@ -1,10 +1,6 @@
 import OwnedResource from "./OwnedResource";
 import Party from "./Party";
-import Question, {
-    ConcreteQuestion,
-    populateOwnedIncomingReferences,
-    ShadowQuestion
-} from "./Question";
+import Question, {populateOwnedIncomingReferences} from "./Question";
 import Future from "fluture";
 
 class Dimension extends OwnedResource {
@@ -13,14 +9,18 @@ class Dimension extends OwnedResource {
      * @param {Party}  owner See OwnedResource.
      * @param {string} name The Dimension's name.
      * @param {Array.<Question>} questions An Array of all connected Questions.
+     * @param {boolean} randomizeQuestions Whether the Questions should be dis-
+     *  played in a random order to DataSubjects.
      */
     constructor(href,
                 owner,
                 name,
-                questions) {
+                questions,
+                randomizeQuestions) {
         super(href, owner);
         this.name = name;
         this.questions = questions;
+        this.randomizeQuestions = randomizeQuestions;
     }
 
     /**
@@ -49,6 +49,7 @@ class ConcreteDimension extends Dimension {
      * @param {Party}  owner See OwnedResource.
      * @param {string} name See Dimension.
      * @param {Array.<Question>} questions See Dimension.
+     * @param {boolean} randomizeQuestions See Dimension.
      * @param {number}  incomingReferenceCount Number of references to this
      *  Dimension.
      *  This counts references not owned by the current user and can thus be
@@ -61,9 +62,10 @@ class ConcreteDimension extends Dimension {
                 owner,
                 name,
                 questions,
+                randomizeQuestions,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
-        super(href, owner, name, questions);
+        super(href, owner, name, questions, randomizeQuestions);
 
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
@@ -95,6 +97,7 @@ class ShadowDimension extends Dimension {
      * @param {Party}  owner See OwnedResource.
      * @param {string} name See Dimension.
      * @param {Array.<Question>} questions See Dimension.
+     * @param {boolean} randomizeQuestions See Dimension.
      * @param {Resource|ConcreteDimension} referenceTo Href or instance of the
      *  referenced Dimension.
      */
@@ -102,8 +105,9 @@ class ShadowDimension extends Dimension {
                 owner,
                 name,
                 questions,
+                randomizeQuestions,
                 referenceTo) {
-        super(href, owner, name, questions);
+        super(href, owner, name, questions, randomizeQuestions);
         this.referenceTo = referenceTo;
     }
 
