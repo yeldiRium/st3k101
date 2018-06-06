@@ -92,11 +92,13 @@ class ConcreteQuestion extends Question {
      * @param {number}  end See Question.
      * @param {number}  step See Question.
      * @param {boolean} isOwn See Question.
-     * @param {number}  incomingReferenceCount Number of references to this Question.
+     * @param {number}  incomingReferenceCount Number of references to this
+     *  Question.
      *  This counts references not owned by the current user and can thus be
      *  bigger than the number of ownedIncomingReferences.
-     * @param {Array.<Resource|ShadowQuestion>} ownedIncomingReferences List of all references (in form of
-     *  hrefs or ShadowQuestion instances) to this Question, which the current user owns.
+     * @param {Array.<Resource|ShadowQuestion>} ownedIncomingReferences List of
+     *  all references (in form of hrefs or ShadowQuestion instances) to this
+     *  Question, which the current user owns.
      */
     constructor(href,
                 text,
@@ -180,10 +182,8 @@ class ShadowQuestion extends Question {
      * @param {number}  end See Question.
      * @param {number}  step See Question.
      * @param {boolean} isOwn See Question.
-     * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the re-
-     *  ferenced Question.
-     *  If this is set, this Question is a ShadowQuestion.
-     *  If this is not set (null), this Question is a ConcreteQuestion.
+     * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the
+     *  referenced Question.
      */
     constructor(href,
                 text,
