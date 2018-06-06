@@ -1,3 +1,5 @@
+import Resource from "./Resource";
+
 /**
  * A Party.
  * \o/
