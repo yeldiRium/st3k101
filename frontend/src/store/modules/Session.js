@@ -30,6 +30,9 @@ const store = {
         isLoggedIn(state) {
             //return state.sessionToken !== null;
             return true;
+        },
+        dataClient(state) {
+            return state.dataClient;
         }
     },
     actions: {
