@@ -1,3 +1,5 @@
+import Future from "fluture";
+
 import OwnedResource from "./OwnedResource";
 
 import {isRangeValid} from "./Range";
@@ -137,55 +139,68 @@ class ShadowQuestion extends Question {
 }
 
 /**
- * Takes in a Question and populates its incoming references field.
- * Removes all elements in the references array which are neither Resources nor
- * ShadowQuestions and fetches a ShadowQuestion for each Resource (if possible).
- * If a reference of type Resource can't be resolved to a ShadowQuestion, it is
- * removed.
+ * Takes in a Question and populates its incoming references field by replacing
+ * all resolvable References with their corresponding ShadowQuestion instances.
  *
  * Accesses the API to load the Questions.
  *
- * TODO: implement. currently this just removes all references of type Resource
- *       and everything that is neither Resource nor ShadowQuestion.
+ * TODO: implement. currently this replaces all Resource-type references with
+ *       empty objects.
  *
  * @param {ConcreteQuestion} concreteQuestion
+ * @return {Future}
+ * @resolve with nothing, since the change is made in place.
+ * @reject with an API error message.
+ * @cancel TODO: can this actually be cancelled?
  */
 function populateOwnedIncomingReferences(concreteQuestion) {
-    const resolvedShadowQuestions = [];
-    for (const reference in concreteQuestion.ownedIncomingReferences) {
-        if (instanceOf(reference, ShadowQuestion)) {
-            resolvedShadowQuestions.push(reference);
-            continue;
-        }
+    const resolvedShadowQuestionFutures = [];
+
+    // Use basic for loop to easily replace values.
+    for (let i = 0; i < concreteQuestion.ownedIncomingReferences.length; i++) {
+        let reference = concreteQuestion.ownedIncomingReferences[i];
+
         if (instanceOf(reference, Resource)) {
             // TODO: fetch ShadowQuestion and replace
-            // const newShadowQuestion = ...
-            // resolvedShadowQuestions.push(newShadowQuestion);
+            const shadowQuestionFuture = Future.of({}) // <- replace with actual API call
+                .map(shadowQuestion => {
+                    concreteQuestion.ownedIncomingReferences[i] =
+                        shadowQuestion;
+                    return true;
+                });
+
+            resolvedShadowQuestionFutures.push(shadowQuestionFuture);
         }
     }
-    concreteQuestion.ownedIncomingReferences = resolvedShadowQuestions;
-    return concreteQuestion;
+    return Future.parallel(Infinity, resolvedShadowQuestionFutures);
 }
 
 /**
  * If the referenceTo field contains a Resource, it is resolved to a
  * ConcreteQuestion instance. Otherwise it is left as is.
  *
+ * Accesses the API to load the Question.
+ *
  * If it is invalid or does not resolve to anything, an error is thrown.
  *
- * TODO: implement this. currently it does nothing
+ * TODO: implement this. currently it replaces the reference with an empty
+ *       object.
  *
  * @param {ShadowQuestion} shadowQuestion
+ * @return {Future}
+ * @resolve with nothing, since the change is made in place.
+ * @reject with an API error message.
+ * @cancel TODO: can this actually be cancelled?
  */
 function populateReferenceTo(shadowQuestion) {
-    if (instanceOf(shadowQuestion.referenceTo, ConcreteQuestion)) {
-        return;
-    }
     if (instanceOf(shadowQuestion.referenceTo, Resource)) {
         // TODO: fetch ConcreteQuestion and replace
-        return;
+        return Future.of({}) // <- replace with actual API call
+            .map(concreteQuestion => {
+                shadowQuestion.referenceTo = concreteQuestion;
+            });
     }
-    throw new Error("ReferenceTo value was invalid!");
+    return Future.of(true);
 }
 
 /**
@@ -193,13 +208,17 @@ function populateReferenceTo(shadowQuestion) {
  * references or its referenceTo field.
  *
  * @param {Question} question
+ * @return {Future}
+ * @resolve with nothing, since the change is made in place.
+ * @reject with an API error message.
+ * @cancel TODO: can this actually be cancelled?
  */
 function populateQuestion(question) {
     if (instanceOf(question, ShadowQuestion)) {
-        populateReferenceTo(question);
+        return populateReferenceTo(question);
     }
     if (instanceOf(question, ConcreteQuestion)) {
-        populateOwnedIncomingReferences(question);
+        return populateOwnedIncomingReferences(question);
     }
 }
 
