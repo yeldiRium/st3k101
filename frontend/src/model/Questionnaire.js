@@ -1,7 +1,5 @@
 import OwnedResource from "./OwnedResource";
-import {ConcreteDimension, ShadowDimension} from "./Dimension";
 import Future from "fluture";
-import {ConcreteQuestion, ShadowQuestion} from "./Question";
 
 class Questionnaire extends OwnedResource {
     /**
