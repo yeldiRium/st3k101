@@ -23,6 +23,12 @@ initializeStore().fork(
     }
 );
 
+// TODO: remove these three lines. These register a fake DataClient for testing
+// purposes.
+import DataClient from "./model/DataClient";
+store.commit("session/startSession", {sessionToken: "randomSessionToken"});
+store.commit("session/setDataClient", {dataClient: new DataClient("randomHref", "a@b.c", "de")});
+
 new Vue({
     el: "#container",
     router,
