@@ -1,3 +1,5 @@
+import {isRangeValid} from "./Range";
+
 class Question {
     /**
      * Constructs the full Question with valid data.
@@ -25,11 +27,19 @@ class Question {
                 referenceCount,
                 ownedReferences,
                 referenceTo = null) {
+        if (!isRangeValid({start, end, step})) {
+            throw new Error(`Invalid range options: {start: ${start}, end: ${end}, step: ${step}.`);
+        }
+
         if (
             referenceTo !== null
             && (referenceCount > 0 || ownedReferences.length > 0)
         ) {
             throw new Error("A ShadowQuestion can't be referenced!");
+        }
+
+        if (referenceCount < 0) {
+            throw new Error("ReferenceCount can't be less than zero!");
         }
 
         this.text = text;
