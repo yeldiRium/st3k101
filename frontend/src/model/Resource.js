@@ -5,7 +5,7 @@
 class Resource {
     /**
      *
-     * @param {String} href
+     * @param {string} href
      */
     constructor(href) {
         this._href = href;
@@ -13,7 +13,7 @@ class Resource {
 
     /**
      *
-     * @param {String} href
+     * @param {string} href
      */
     set href(href) {
         this._href = href;
@@ -21,7 +21,7 @@ class Resource {
 
     /**
      *
-     * @returns {String}
+     * @returns {string}
      */
     get href() {
         return this._href;

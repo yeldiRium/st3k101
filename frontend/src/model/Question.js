@@ -9,7 +9,7 @@ import {isRangeValid} from "./Range";
  */
 class Question extends Resource {
     /**
-     * @param {String}  href See Resource
+     * @param {string}  href See Resource
      * @param {string}  text The Question text.
      * @param {number}  start Start of the range interval. Defaults to 0.
      * @param {number}  end End of the range interval.
