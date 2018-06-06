@@ -1,3 +1,5 @@
+import Resource from "./Resource";
+
 import {isRangeValid} from "./Range";
 
 /**
@@ -5,8 +7,9 @@ import {isRangeValid} from "./Range";
  * Don't instantiate this. Only use the extensions. If JavaScript had abstract
  * classes, this would be one.
  */
-class Question {
+class Question extends Resource {
     /**
+     * @param {String}  href See Resource
      * @param {string}  text The Question text.
      * @param {number}  start Start of the range interval. Defaults to 0.
      * @param {number}  end End of the range interval.
@@ -14,9 +17,12 @@ class Question {
      * @param {boolean} isOwn Whether this Question is owned by the current
      *  user.
      */
-    constructor(text,
+    constructor(href,
+                text,
                 {start = 0, end, step = 1},
                 isOwn) {
+        super(href);
+
         if (!isRangeValid({start, end, step})) {
             throw new Error(`Invalid range options: {start: ${start}, end: ${end}, step: ${step}.`);
         }
@@ -80,6 +86,7 @@ class Question {
  */
 class ConcreteQuestion extends Question {
     /**
+     * @param {String}  href See Resource
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.
@@ -88,19 +95,20 @@ class ConcreteQuestion extends Question {
      * @param {number}  incomingReferenceCount Number of references to this Question.
      *  This counts references not owned by the current user and can thus be
      *  bigger than the number of ownedIncomingReferences.
-     * @param {Array.<string|ShadowQuestion>} ownedIncomingReferences List of all references (in form of
+     * @param {Array.<Resource|ShadowQuestion>} ownedIncomingReferences List of all references (in form of
      *  hrefs or ShadowQuestion instances) to this Question, which the current user owns.
      */
-    constructor(text,
+    constructor(href,
+                text,
                 {start = 0, end, step = 1},
                 isOwn,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
-        if(incomingReferenceCount < ownedIncomingReferences.length) {
+        if (incomingReferenceCount < ownedIncomingReferences.length) {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
 
-        super(text, {start, end, step}, isOwn);
+        super(href, text, {start, end, step}, isOwn);
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
     }
@@ -166,21 +174,23 @@ class ConcreteQuestion extends Question {
  */
 class ShadowQuestion extends Question {
     /**
+     * @param {String}  href See Resource
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.
      * @param {number}  step See Question.
      * @param {boolean} isOwn See Question.
-     * @param {string|ConcreteQuestion} referenceTo Href or instance of the re-
+     * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the re-
      *  ferenced Question.
      *  If this is set, this Question is a ShadowQuestion.
      *  If this is not set (null), this Question is a ConcreteQuestion.
      */
-    constructor(text,
+    constructor(href,
+                text,
                 {start = 0, end, step = 1},
                 isOwn,
                 referenceTo) {
-        super(text, {start, end, step}, isOwn);
+        super(href, text, {start, end, step}, isOwn);
         this.referenceTo = referenceTo;
     }
 
@@ -213,14 +223,15 @@ class ShadowQuestion extends Question {
 
 /**
  * Takes in a Question and populates its incoming references field.
- * Removes all elements in the references array which are neither Strings nor
- * ShadowQuestions and fetches a ShadowQuestion for each String (if possible).
- * If a reference of type String can't be resolved to a Question, it is removed.
+ * Removes all elements in the references array which are neither Resources nor
+ * ShadowQuestions and fetches a ShadowQuestion for each Resource (if possible).
+ * If a reference of type Resource can't be resolved to a ShadowQuestion, it is
+ * removed.
  *
  * Accesses the API to load the Questions.
  *
- * TODO: implement. currently this just removes all references of type String
- *       and everything that is neither String nor ShadowQuestion.
+ * TODO: implement. currently this just removes all references of type Resource
+ *       and everything that is neither Resource nor ShadowQuestion.
  *
  * @param {ConcreteQuestion} concreteQuestion
  */
@@ -231,7 +242,7 @@ function populateOwnedIncomingReferences(concreteQuestion) {
             resolvedShadowQuestions.push(reference);
             continue;
         }
-        if (instanceOf(reference, String)) {
+        if (instanceOf(reference, Resource)) {
             // TODO: fetch ShadowQuestion and replace
             // const newShadowQuestion = ...
             // resolvedShadowQuestions.push(newShadowQuestion);
@@ -242,7 +253,7 @@ function populateOwnedIncomingReferences(concreteQuestion) {
 }
 
 /**
- * If the referenceTo field contains a String, it is resolved to a
+ * If the referenceTo field contains a Resource, it is resolved to a
  * ConcreteQuestion instance. Otherwise it is left as is.
  *
  * If it is invalid or does not resolve to anything, an error is thrown.
@@ -255,7 +266,7 @@ function populateReferenceTo(shadowQuestion) {
     if (instanceOf(shadowQuestion.referenceTo, ConcreteQuestion)) {
         return;
     }
-    if (instanceOf(shadowQuestion.referenceTo, String)) {
+    if (instanceOf(shadowQuestion.referenceTo, Resource)) {
         // TODO: fetch ConcreteQuestion and replace
         return;
     }

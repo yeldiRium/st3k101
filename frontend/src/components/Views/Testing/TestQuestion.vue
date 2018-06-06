@@ -13,6 +13,7 @@
 
 <script>
     import Question from "../../Partials/List/Question";
+    import Resource from "../../../model/Resource";
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
 
     export default {
@@ -26,39 +27,43 @@
                     // Owned ConcreteQuestion with 5 incoming references.
                     // Two of those references are from owned Questions.
                     new ConcreteQuestion(
+                        "http://blubblab/api/question/1",
                         "Diese ConcreteQuestion gehört mir.",
                         {end: 5},
                         true,
                         5,
                         [
-                            "http://blubblab/api/question/myidlel",
-                            "http://blubblab/api/question/myid2lul"
+                            new Resource("http://blubblab/api/question/myidlel"),
+                            new Resource("http://blubblab/api/question/myid2lul")
                         ]
                     ),
                     // Owned ShadowQuestion.
                     new ShadowQuestion(
+                        "http://blubblab/api/question/2",
                         "Diese ShadowQuestion gehört mir.",
                         {start: 2, end: 10, step: 2},
                         true,
-                        "http://blubblab/api/question/someonesidlel"
+                        new Resource("http://blubblab/api/question/someonesidlel")
                     ),
                     // Not owned ConcreteQuestion with 3 incoming references.
                     // One of those reference is from an owned Question.
                     new ConcreteQuestion(
+                        "http://blubblab/api/question/3",
                         "Diese ConcreteQuestion gehört mir nicht.",
                         {start: 0, end: 7},
                         false,
                         3,
                         [
-                            "http://blubblab/api/question/myotheridkek"
+                            new Resource("http://blubblab/api/question/myotheridkek")
                         ]
                     ),
                     // Not owned ShadowQuestion.
                     new ShadowQuestion(
+                        "http://blubblab/api/question/4",
                         "Diese ShadowQuestion gehört mir nicht.",
                         {end: 5, step: 2},
                         false,
-                        "http://blubblab/api/question/someonesotheridtrell"
+                        new Resource("http://blubblab/api/question/someonesotheridtrell")
                     )
                 ]
             }
