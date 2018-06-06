@@ -1,5 +1,10 @@
 import {isRangeValid} from "./Range";
 
+/**
+ * BaseClass for ShadowQuestion and ConcreteQuestion.
+ * Don't instantiate this. Only use the extensions. If JavaScript had abstract
+ * classes, this would be one.
+ */
 class Question {
     /**
      * Constructs the full Question with valid data.
@@ -10,44 +15,44 @@ class Question {
      * @param {number}  step Step of the range interval. Defaults to 1.
      * @param {boolean} isOwn Whether this Question is owned by the current
      *  user.
-     * @param {number}  referenceCount Number of references to this Question.
-     *  This counts references not owned by the current user and can thus be
-     *  bigger than the number of ownedReferences.
-     *  If isShadow is true, this must be 0.
-     * @param {Array.<string>} ownedReferences List of all references (in form of
-     *  hrefs) to this Question, which the current user owns.
-     *  If isShadow is true, this must be an empty Array.
-     * @param {string} referenceTo Href of the referenced Question.
-     *  If this is set, this Question is a ShadowQuestion.
-     *  If this is not set (null), this Question is a ConcreteQuestion.
      */
     constructor(text,
                 {start = 0, end, step = 1},
-                isOwn,
-                referenceCount,
-                ownedReferences,
-                referenceTo = null) {
+                isOwn) {
         if (!isRangeValid({start, end, step})) {
             throw new Error(`Invalid range options: {start: ${start}, end: ${end}, step: ${step}.`);
         }
 
-        if (
-            referenceTo !== null
-            && (referenceCount > 0 || ownedReferences.length > 0)
-        ) {
-            throw new Error("A ShadowQuestion can't be referenced!");
-        }
+        this._text = text;
+        this._range = {start, end, step};
+        this._isOwn = isOwn;
+    }
 
-        if (referenceCount < 0) {
-            throw new Error("ReferenceCount can't be less than zero!");
-        }
+    /**
+     * Getter for text.
+     * Setter only in ConcreteQuestion.
+     * @returns {string}
+     */
+    get text() {
+        return this._text;
+    }
 
-        this.text = text;
-        this.range = {start, end, step};
-        this.isOwn = isOwn;
-        this.referenceTo = referenceTo;
-        this.referenceCount = referenceCount;
-        this.ownedReferences = ownedReferences;
+    /**
+     * Getter for range.
+     * Setter only in ConcreteQuestion.
+     * @returns {{start: number, end: number, step: number}}
+     */
+    get range() {
+        return this._range;
+    }
+
+    /**
+     * Getter for isOwn.
+     * This is read-only.
+     * @returns {boolean}
+     */
+    get isOwn() {
+        return this._isOwn;
     }
 
     /**
@@ -56,7 +61,70 @@ class Question {
      * @returns {boolean}
      */
     isShadow() {
-        return this.referenceTo !== null;
+        throw new Error("Please override this.");
+    };
+
+    /**
+     * True, if this Question is a ConcreteQuestion.
+     *
+     * @returns {boolean}
+     */
+    isConcrete() {
+        throw new Error("Please override this.");
+    }
+}
+
+/**
+ * A ConcreteQuestion is a Question which can be referenced from
+ * ShadowQuestions. It is a real Question with own, editable content.
+ */
+class ConcreteQuestion extends Question {
+    /**
+     * @param {string}  text See Question.
+     * @param {number}  start See Question.
+     * @param {number}  end See Question.
+     * @param {number}  step See Question.
+     * @param {boolean} isOwn See Question.
+     * @param {number}  referenceCount Number of references to this Question.
+     *  This counts references not owned by the current user and can thus be
+     *  bigger than the number of ownedReferences.
+     * @param {Array.<string>} ownedReferences List of all references (in form of
+     *  hrefs) to this Question, which the current user owns.
+     */
+    constructor(text,
+                {start = 0, end, step = 1},
+                isOwn,
+                referenceCount,
+                ownedReferences) {
+        super(text, {start, end, step}, isOwn);
+        this.referenceCount = referenceCount;
+        this.ownedReferences = ownedReferences;
+    }
+
+    /**
+     * Setter for text.
+     * @param {string} text
+     */
+    set text(text) {
+        this._text = text;
+    }
+
+    /**
+     * Setter for range.
+     * @param {number} start
+     * @param {number} end
+     * @param {number} step
+     */
+    set range({start = 0, end, step = 1}) {
+        this._range = {start, end, step};
+    }
+
+    isShadow() {
+        return false;
+    }
+
+    isConcrete() {
+        return true;
     }
 
     /**
@@ -67,6 +135,38 @@ class Question {
      */
     ownedReferenceCount() {
         return this.ownedReferences.length;
+    }
+}
+
+/**
+ * A ShadowQuestion is a reference to a ConcreteQuestion and is immutable, since
+ * its content is just a shadow of the reference.
+ */
+class ShadowQuestion extends Question {
+    /**
+     * @param {string}  text See Question.
+     * @param {number}  start See Question.
+     * @param {number}  end See Question.
+     * @param {number}  step See Question.
+     * @param {boolean} isOwn See Question.
+     * @param {string} referenceTo Href of the referenced Question.
+     *  If this is set, this Question is a ShadowQuestion.
+     *  If this is not set (null), this Question is a ConcreteQuestion.
+     */
+    constructor(text,
+                {start = 0, end, step = 1},
+                isOwn,
+                referenceTo = null) {
+        super(text, {start, end, step}, isOwn);
+        this.referenceTo = referenceTo;
+    }
+
+    isShadow() {
+        return true;
+    }
+
+    isConcrete() {
+        return false;
     }
 }
 
@@ -88,5 +188,7 @@ export default Question;
 
 export {
     Question,
+    ConcreteQuestion,
+    ShadowQuestion,
     getOwnedReferencesToQuestion
 }
