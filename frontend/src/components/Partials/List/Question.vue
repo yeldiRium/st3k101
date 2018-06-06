@@ -13,6 +13,8 @@
 </template>i
 
 <script>
+    import {mapGetters} from "vuex";
+
     import {Question} from "../../../model/Question";
 
     import ListItem from "./Item";
@@ -33,10 +35,9 @@
             }
         },
         computed: {
+            ...mapGetters("session", ["dataClient"]),
             isOwnedByCurrentDataClient() {
-                const currentDataClient =
-                    this.$store.getters["session/dataClient"];
-                return this.question.isOwnedBy(currentDataClient);
+                return this.question.isOwnedBy(this.dataClient);
             },
             disabled() {
                 return !this.isOwnedByCurrentDataClient || this.question.isShadow;
