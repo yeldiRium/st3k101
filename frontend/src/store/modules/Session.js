@@ -1,9 +1,15 @@
 import {path, isNil} from "ramda";
 import Future from "fluture";
 
+import DataClient from "../../model/DataClient";
+
 import Authentication from "../../api/Authentication";
 import Account from "../../api/Model/Account";
 
+/**
+ * TODO: refactor API so that DataClient information is returned directly when
+ *       logging in.
+ */
 const store = {
     namespaced: true,
     state: {
@@ -11,10 +17,7 @@ const store = {
             state: "done",
             error: null
         },
-        account: {
-            email: null,
-            language: null
-        },
+        user: null,
         sessionToken: null
     },
     getters: {
@@ -118,10 +121,12 @@ const store = {
                             loadingState: "done"
                         }
                     );
-                    commit("setAccountData", {
+                    // TODO: set correct href
+                    commit("setDataClient", new DataClient(
+                        "randomHref",
                         email,
                         language
-                    });
+                    ));
 
                     return Future.of({
                         email,
@@ -155,11 +160,8 @@ const store = {
                 language: null
             };
         },
-        setAccountData(state, {email, language}) {
-            state.account = {
-                email,
-                language
-            };
+        setDataClient(state, dataClient) {
+            state.account = dataClient;
         }
     }
 };
