@@ -13,6 +13,7 @@ import TestingBase from "../components/Views/Testing/Base";
 import TestDiamondFloatingButton from "../components/Views/Testing/TestDiamondFloatingButton";
 import TestButtonBar from "../components/Views/Testing/TestButtonBar";
 import TestListItem from "../components/Views/Testing/TestListItem";
+import TestQuestion from "../components/Views/Testing/TestQuestion";
 
 Vue.use(Router);
 
@@ -75,6 +76,11 @@ export default new Router({
                     path: "ListItem",
                     name: "ListItem",
                     component: TestListItem
+                },
+                {
+                    path: "Question",
+                    name: "Question",
+                    component: TestQuestion
                 }
             ]
         }
