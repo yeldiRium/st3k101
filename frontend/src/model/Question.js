@@ -31,24 +31,6 @@ class Question extends OwnedResource {
     }
 
     /**
-     * Getter for text.
-     * Setter only in ConcreteQuestion.
-     * @returns {string}
-     */
-    get text() {
-        throw new Error("Please override this.");
-    }
-
-    /**
-     * Getter for range.
-     * Setter only in ConcreteQuestion.
-     * @returns {{start: number, end: number, step: number}}
-     */
-    get range() {
-        throw new Error("Please override this.");
-    }
-
-    /**
      * True, if this Question is a ShadowQuestion.
      *
      * @returns {boolean}
@@ -63,6 +45,24 @@ class Question extends OwnedResource {
      * @returns {boolean}
      */
     get isConcrete() {
+        throw new Error("Please override this.");
+    }
+
+    /**
+     * Getter for text.
+     * Setter only in ConcreteQuestion.
+     * @returns {string}
+     */
+    get text() {
+        throw new Error("Please override this.");
+    }
+
+    /**
+     * Getter for range.
+     * Setter only in ConcreteQuestion.
+     * @returns {{start: number, end: number, step: number}}
+     */
+    get range() {
         throw new Error("Please override this.");
     }
 }
@@ -102,6 +102,14 @@ class ConcreteQuestion extends Question {
         this.ownedIncomingReferences = ownedIncomingReferences;
     }
 
+    get isShadow() {
+        return false;
+    }
+
+    get isConcrete() {
+        return true;
+    }
+
     /**
      * Setter for text.
      * @param {string} text
@@ -136,14 +144,6 @@ class ConcreteQuestion extends Question {
      */
     get range() {
         return this._range;
-    }
-
-    get isShadow() {
-        return false;
-    }
-
-    get isConcrete() {
-        return true;
     }
 
     /**
@@ -181,6 +181,14 @@ class ShadowQuestion extends Question {
         this.referenceTo = referenceTo;
     }
 
+    get isShadow() {
+        return true;
+    }
+
+    get isConcrete() {
+        return false;
+    }
+
     /**
      * Getter for text.
      * Setter only in ConcreteQuestion.
@@ -197,14 +205,6 @@ class ShadowQuestion extends Question {
      */
     get range() {
         return this._range;
-    }
-
-    get isShadow() {
-        return true;
-    }
-
-    get isConcrete() {
-        return false;
     }
 }
 
