@@ -7,8 +7,6 @@ import {isRangeValid} from "./Range";
  */
 class Question {
     /**
-     * Constructs the full Question with valid data.
-     *
      * @param {string}  text The Question text.
      * @param {number}  start Start of the range interval. Defaults to 0.
      * @param {number}  end End of the range interval.
@@ -34,7 +32,7 @@ class Question {
      * @returns {string}
      */
     get text() {
-        return this._text;
+        throw new Error("Please override this.");
     }
 
     /**
@@ -43,12 +41,14 @@ class Question {
      * @returns {{start: number, end: number, step: number}}
      */
     get range() {
-        return this._range;
+        throw new Error("Please override this.");
     }
 
     /**
      * Getter for isOwn.
      * This is read-only.
+     * Please never define a Setter for this.
+     * Questions don't change their owner.
      * @returns {boolean}
      */
     get isOwn() {
@@ -60,7 +60,7 @@ class Question {
      *
      * @returns {boolean}
      */
-    isShadow() {
+    get isShadow() {
         throw new Error("Please override this.");
     };
 
@@ -69,7 +69,7 @@ class Question {
      *
      * @returns {boolean}
      */
-    isConcrete() {
+    get isConcrete() {
         throw new Error("Please override this.");
     }
 }
@@ -96,6 +96,10 @@ class ConcreteQuestion extends Question {
                 isOwn,
                 referenceCount,
                 ownedReferences) {
+        if(referenceCount < ownedReferences.length) {
+            throw new Error("ReferenceCount can't be smaller than list of owned references.");
+        }
+
         super(text, {start, end, step}, isOwn);
         this.referenceCount = referenceCount;
         this.ownedReferences = ownedReferences;
@@ -110,6 +114,15 @@ class ConcreteQuestion extends Question {
     }
 
     /**
+     * Getter for text.
+     * Setter only in ConcreteQuestion.
+     * @returns {string}
+     */
+    get text() {
+        return this._text;
+    }
+
+    /**
      * Setter for range.
      * @param {number} start
      * @param {number} end
@@ -119,11 +132,20 @@ class ConcreteQuestion extends Question {
         this._range = {start, end, step};
     }
 
-    isShadow() {
+    /**
+     * Getter for range.
+     * Setter only in ConcreteQuestion.
+     * @returns {{start: number, end: number, step: number}}
+     */
+    get range() {
+        return this._range;
+    }
+
+    get isShadow() {
         return false;
     }
 
-    isConcrete() {
+    get isConcrete() {
         return true;
     }
 
@@ -156,16 +178,34 @@ class ShadowQuestion extends Question {
     constructor(text,
                 {start = 0, end, step = 1},
                 isOwn,
-                referenceTo = null) {
+                referenceTo) {
         super(text, {start, end, step}, isOwn);
         this.referenceTo = referenceTo;
     }
 
-    isShadow() {
+    /**
+     * Getter for text.
+     * Setter only in ConcreteQuestion.
+     * @returns {string}
+     */
+    get text() {
+        return this._text;
+    }
+
+    /**
+     * Getter for range.
+     * Setter only in ConcreteQuestion.
+     * @returns {{start: number, end: number, step: number}}
+     */
+    get range() {
+        return this._range;
+    }
+
+    get isShadow() {
         return true;
     }
 
-    isConcrete() {
+    get isConcrete() {
         return false;
     }
 }
