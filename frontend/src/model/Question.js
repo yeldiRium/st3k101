@@ -26,8 +26,8 @@ class Question extends OwnedResource {
             throw new Error(`Invalid range options: {start: ${start}, end: ${end}, step: ${step}.`);
         }
 
-        this._text = text;
-        this._range = {start, end, step};
+        this.text = text;
+        this.range = {start, end, step};
     }
 
     /**
@@ -45,24 +45,6 @@ class Question extends OwnedResource {
      * @returns {boolean}
      */
     get isConcrete() {
-        throw new Error("Please override this.");
-    }
-
-    /**
-     * Getter for text.
-     * Setter only in ConcreteQuestion.
-     * @returns {string}
-     */
-    get text() {
-        throw new Error("Please override this.");
-    }
-
-    /**
-     * Getter for range.
-     * Setter only in ConcreteQuestion.
-     * @returns {{start: number, end: number, step: number}}
-     */
-    get range() {
         throw new Error("Please override this.");
     }
 }
@@ -111,42 +93,6 @@ class ConcreteQuestion extends Question {
     }
 
     /**
-     * Setter for text.
-     * @param {string} text
-     */
-    set text(text) {
-        this._text = text;
-    }
-
-    /**
-     * Getter for text.
-     * Setter only in ConcreteQuestion.
-     * @returns {string}
-     */
-    get text() {
-        return this._text;
-    }
-
-    /**
-     * Setter for range.
-     * @param {number} start
-     * @param {number} end
-     * @param {number} step
-     */
-    set range({start = 0, end, step = 1}) {
-        this._range = {start, end, step};
-    }
-
-    /**
-     * Getter for range.
-     * Setter only in ConcreteQuestion.
-     * @returns {{start: number, end: number, step: number}}
-     */
-    get range() {
-        return this._range;
-    }
-
-    /**
      * Number of reference to this Question, which are owned by the current
      * user.
      *
@@ -187,24 +133,6 @@ class ShadowQuestion extends Question {
 
     get isConcrete() {
         return false;
-    }
-
-    /**
-     * Getter for text.
-     * Setter only in ConcreteQuestion.
-     * @returns {string}
-     */
-    get text() {
-        return this._text;
-    }
-
-    /**
-     * Getter for range.
-     * Setter only in ConcreteQuestion.
-     * @returns {{start: number, end: number, step: number}}
-     */
-    get range() {
-        return this._range;
     }
 }
 
