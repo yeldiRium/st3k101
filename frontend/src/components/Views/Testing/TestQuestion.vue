@@ -15,6 +15,7 @@
     import Question from "../../Partials/List/Question";
     import Resource from "../../../model/Resource";
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
+    import DataClient from "../../../model/DataClient";
 
     export default {
         name: "TestQuestion",
@@ -22,15 +23,17 @@
             Question
         },
         data() {
+            const dataClient = this.$store.getters["session/dataClient"];
+            const someoneElse = new DataClient("somehrefNOT", "blub@blub.blub", "en");
             return {
                 questions: [
                     // Owned ConcreteQuestion with 5 incoming references.
                     // Two of those references are from owned Questions.
                     new ConcreteQuestion(
                         "http://blubblab/api/question/1",
+                        dataClient,
                         "Diese ConcreteQuestion gehört mir.",
                         {end: 5},
-                        true,
                         5,
                         [
                             new Resource("http://blubblab/api/question/myidlel"),
@@ -40,18 +43,18 @@
                     // Owned ShadowQuestion.
                     new ShadowQuestion(
                         "http://blubblab/api/question/2",
+                        dataClient,
                         "Diese ShadowQuestion gehört mir.",
                         {start: 2, end: 10, step: 2},
-                        true,
                         new Resource("http://blubblab/api/question/someonesidlel")
                     ),
                     // Not owned ConcreteQuestion with 3 incoming references.
                     // One of those reference is from an owned Question.
                     new ConcreteQuestion(
                         "http://blubblab/api/question/3",
+                        someoneElse,
                         "Diese ConcreteQuestion gehört mir nicht.",
                         {start: 0, end: 7},
-                        false,
                         3,
                         [
                             new Resource("http://blubblab/api/question/myotheridkek")
@@ -60,9 +63,9 @@
                     // Not owned ShadowQuestion.
                     new ShadowQuestion(
                         "http://blubblab/api/question/4",
+                        someoneElse,
                         "Diese ShadowQuestion gehört mir nicht.",
                         {end: 5, step: 2},
-                        false,
                         new Resource("http://blubblab/api/question/someonesotheridtrell")
                     )
                 ]

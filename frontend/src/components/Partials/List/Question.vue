@@ -6,7 +6,7 @@
               class="question"
               :class="classes"
     >
-        <IconEdit v-if="question.isShadow && question.isOwn"
+        <IconEdit v-if="question.isShadow && isOwnedByCurrentDataClient"
                   class="list-item-icon"/>
         <IconReorder class="list-item-icon"/>
     </ListItem>
@@ -33,8 +33,13 @@
             }
         },
         computed: {
+            isOwnedByCurrentDataClient() {
+                const currentDataClient =
+                    this.$store.getters["session/dataClient"];
+                return this.question.isOwnedBy(currentDataClient);
+            },
             disabled() {
-                return !this.question.isOwn || this.question.isShadow;
+                return !this.isOwnedByCurrentDataClient || this.question.isShadow;
             },
             subtext() {
                 if (this.question.isShadow) {

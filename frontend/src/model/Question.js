@@ -1,4 +1,4 @@
-import Resource from "./Resource";
+import OwnedResource from "./OwnedResource";
 
 import {isRangeValid} from "./Range";
 
@@ -7,21 +7,20 @@ import {isRangeValid} from "./Range";
  * Don't instantiate this. Only use the extensions. If JavaScript had abstract
  * classes, this would be one.
  */
-class Question extends Resource {
+class Question extends OwnedResource {
     /**
-     * @param {string}  href See Resource
+     * @param {string}  href See Resource.
+     * @param {Party}   owner See OwnedResource.
      * @param {string}  text The Question text.
      * @param {number}  start Start of the range interval. Defaults to 0.
      * @param {number}  end End of the range interval.
      * @param {number}  step Step of the range interval. Defaults to 1.
-     * @param {boolean} isOwn Whether this Question is owned by the current
-     *  user.
      */
     constructor(href,
+                owner,
                 text,
-                {start = 0, end, step = 1},
-                isOwn) {
-        super(href);
+                {start = 0, end, step = 1}) {
+        super(href, owner);
 
         if (!isRangeValid({start, end, step})) {
             throw new Error(`Invalid range options: {start: ${start}, end: ${end}, step: ${step}.`);
@@ -29,7 +28,6 @@ class Question extends Resource {
 
         this._text = text;
         this._range = {start, end, step};
-        this._isOwn = isOwn;
     }
 
     /**
@@ -48,17 +46,6 @@ class Question extends Resource {
      */
     get range() {
         throw new Error("Please override this.");
-    }
-
-    /**
-     * Getter for isOwn.
-     * This is read-only.
-     * Please never define a Setter for this.
-     * Questions don't change their owner.
-     * @returns {boolean}
-     */
-    get isOwn() {
-        return this._isOwn;
     }
 
     /**
@@ -86,12 +73,12 @@ class Question extends Resource {
  */
 class ConcreteQuestion extends Question {
     /**
-     * @param {String}  href See Resource
+     * @param {String}  href See Resource.
+     * @param {Party}   owner See OwnedResource.
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.
      * @param {number}  step See Question.
-     * @param {boolean} isOwn See Question.
      * @param {number}  incomingReferenceCount Number of references to this
      *  Question.
      *  This counts references not owned by the current user and can thus be
@@ -101,16 +88,16 @@ class ConcreteQuestion extends Question {
      *  Question, which the current user owns.
      */
     constructor(href,
+                owner,
                 text,
                 {start = 0, end, step = 1},
-                isOwn,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
         if (incomingReferenceCount < ownedIncomingReferences.length) {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
 
-        super(href, text, {start, end, step}, isOwn);
+        super(href, owner, text, {start, end, step});
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
     }
@@ -176,21 +163,21 @@ class ConcreteQuestion extends Question {
  */
 class ShadowQuestion extends Question {
     /**
-     * @param {String}  href See Resource
+     * @param {String}  href See Resource.
+     * @param {Party}   owner See OwnedResource.
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.
      * @param {number}  step See Question.
-     * @param {boolean} isOwn See Question.
      * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the
      *  referenced Question.
      */
     constructor(href,
+                owner,
                 text,
                 {start = 0, end, step = 1},
-                isOwn,
                 referenceTo) {
-        super(href, text, {start, end, step}, isOwn);
+        super(href, owner, text, {start, end, step});
         this.referenceTo = referenceTo;
     }
 
