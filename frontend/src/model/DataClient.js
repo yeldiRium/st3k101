@@ -41,3 +41,9 @@ class DataClient extends Party {
         return this._language;
     }
 }
+
+export default DataClient;
+
+export {
+    DataClient
+};
