@@ -85,24 +85,24 @@ class ConcreteQuestion extends Question {
      * @param {number}  end See Question.
      * @param {number}  step See Question.
      * @param {boolean} isOwn See Question.
-     * @param {number}  referenceCount Number of references to this Question.
+     * @param {number}  incomingReferenceCount Number of references to this Question.
      *  This counts references not owned by the current user and can thus be
-     *  bigger than the number of ownedReferences.
-     * @param {Array.<string>} ownedReferences List of all references (in form of
-     *  hrefs) to this Question, which the current user owns.
+     *  bigger than the number of ownedIncomingReferences.
+     * @param {Array.<string|ShadowQuestion>} ownedIncomingReferences List of all references (in form of
+     *  hrefs or ShadowQuestion instances) to this Question, which the current user owns.
      */
     constructor(text,
                 {start = 0, end, step = 1},
                 isOwn,
-                referenceCount,
-                ownedReferences) {
-        if(referenceCount < ownedReferences.length) {
+                incomingReferenceCount,
+                ownedIncomingReferences) {
+        if(incomingReferenceCount < ownedIncomingReferences.length) {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
 
         super(text, {start, end, step}, isOwn);
-        this.referenceCount = referenceCount;
-        this.ownedReferences = ownedReferences;
+        this.incomingReferenceCount = incomingReferenceCount;
+        this.ownedIncomingReferences = ownedIncomingReferences;
     }
 
     /**
@@ -155,8 +155,8 @@ class ConcreteQuestion extends Question {
      *
      * @returns {number}
      */
-    ownedReferenceCount() {
-        return this.ownedReferences.length;
+    ownedIncomingReferenceCount() {
+        return this.ownedIncomingReferences.length;
     }
 }
 
@@ -171,7 +171,8 @@ class ShadowQuestion extends Question {
      * @param {number}  end See Question.
      * @param {number}  step See Question.
      * @param {boolean} isOwn See Question.
-     * @param {string} referenceTo Href of the referenced Question.
+     * @param {string|ConcreteQuestion} referenceTo Href or instance of the re-
+     *  ferenced Question.
      *  If this is set, this Question is a ShadowQuestion.
      *  If this is not set (null), this Question is a ConcreteQuestion.
      */
@@ -211,17 +212,69 @@ class ShadowQuestion extends Question {
 }
 
 /**
- * Takes in a Question and returns an Array of all references to that Question.
+ * Takes in a Question and populates its incoming references field.
+ * Removes all elements in the references array which are neither Strings nor
+ * ShadowQuestions and fetches a ShadowQuestion for each String (if possible).
+ * If a reference of type String can't be resolved to a Question, it is removed.
  *
  * Accesses the API to load the Questions.
- * Should this provide context to the Questions? Or should that be done via
- * mapping another function over this function's result?
+ *
+ * TODO: implement. currently this just removes all references of type String
+ *       and everything that is neither String nor ShadowQuestion.
+ *
+ * @param {ConcreteQuestion} concreteQuestion
+ */
+function populateOwnedIncomingReferences(concreteQuestion) {
+    const resolvedShadowQuestions = [];
+    for (const reference in concreteQuestion.ownedIncomingReferences) {
+        if (instanceOf(reference, ShadowQuestion)) {
+            resolvedShadowQuestions.push(reference);
+            continue;
+        }
+        if (instanceOf(reference, String)) {
+            // TODO: fetch ShadowQuestion and replace
+            // const newShadowQuestion = ...
+            // resolvedShadowQuestions.push(newShadowQuestion);
+        }
+    }
+    concreteQuestion.ownedIncomingReferences = resolvedShadowQuestions;
+    return concreteQuestion;
+}
+
+/**
+ * If the referenceTo field contains a String, it is resolved to a
+ * ConcreteQuestion instance. Otherwise it is left as is.
+ *
+ * If it is invalid or does not resolve to anything, an error is thrown.
+ *
+ * TODO: implement this. currently it does nothing
+ *
+ * @param {ShadowQuestion} shadowQuestion
+ */
+function populateReferenceTo(shadowQuestion) {
+    if (instanceOf(shadowQuestion.referenceTo, ConcreteQuestion)) {
+        return;
+    }
+    if (instanceOf(shadowQuestion.referenceTo, String)) {
+        // TODO: fetch ConcreteQuestion and replace
+        return;
+    }
+    throw new Error("ReferenceTo value was invalid!");
+}
+
+/**
+ * Based on the type of the given Question this either populates its incoming
+ * references or its referenceTo field.
  *
  * @param {Question} question
- * @return {Array.<Question>}
  */
-function getOwnedReferencesToQuestion(question) {
-    // TODO: implement
+function populateQuestion(question) {
+    if (instanceOf(question, ShadowQuestion)) {
+        populateReferenceTo(question);
+    }
+    if (instanceOf(question, ConcreteQuestion)) {
+        populateOwnedIncomingReferences(question);
+    }
 }
 
 export default Question;
@@ -230,5 +283,7 @@ export {
     Question,
     ConcreteQuestion,
     ShadowQuestion,
-    getOwnedReferencesToQuestion
+    populateOwnedIncomingReferences,
+    populateReferenceTo,
+    populateQuestion
 }

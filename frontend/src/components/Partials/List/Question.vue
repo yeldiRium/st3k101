@@ -10,7 +10,7 @@
                   class="list-item-icon"/>
         <IconReorder class="list-item-icon"/>
     </ListItem>
-</template>
+</template>i
 
 <script>
     import {Question} from "../../../model/Question";
@@ -40,7 +40,7 @@
                 if (this.question.isShadow) {
                     return "";
                 } else {
-                    return `${this.question.referenceCount} references.`;
+                    return `${this.question.incomingReferenceCount} references.`;
                 }
             },
             classes() {
