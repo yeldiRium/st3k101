@@ -83,7 +83,9 @@
         margin: 0;
     }
 
-    .list-item {
+    .full-question {
         width: 90vw;
+
+        margin-bottom: 20px;
     }
 </style>

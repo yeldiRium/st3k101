@@ -1,5 +1,5 @@
 <template>
-    <div class="question-full"
+    <div class="full-question"
          :class="classes"
     >
         <ListQuestion :question="question"
@@ -8,12 +8,12 @@
                       :disableIcons="true"
                       :ellipseText="false"
         />
-        <div class="question-full-body">
+        <div class="full-question-body">
             <References :object="question"
                         v-if="question.isConcrete"
             />
         </div>
-        <div class="question-full-footer">
+        <div class="full-question-footer">
 
         </div>
     </div>
@@ -52,7 +52,7 @@
         }
     }
 
-    .question-full {
+    .full-question {
         display: flex;
         flex-flow: column;
 
@@ -63,7 +63,7 @@
         }
     }
 
-    .question-full-body {
+    .full-question-body {
         display: flex;
         flex-flow: column;
         align-items: center;
