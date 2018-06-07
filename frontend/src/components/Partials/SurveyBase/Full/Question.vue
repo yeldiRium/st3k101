@@ -4,7 +4,7 @@
     >
         <ListQuestion :question="question"
                       :mini="true"
-                      :draggable="false"
+                      :draggable="draggable"
                       :disableIcons="true"
                       :ellipseText="false"
         />
@@ -30,6 +30,15 @@
         components: {
             ListQuestion,
             References
+        },
+        props: {
+            /**
+             * Override this to change the default value.
+             */
+            draggable: {
+                type: Boolean,
+                default: false
+            }
         },
         computed: {
             classes() {
