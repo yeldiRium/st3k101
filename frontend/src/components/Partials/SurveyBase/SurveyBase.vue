@@ -52,7 +52,7 @@
              */
             convertable(ownedResource) {
                 return ownedResource.isShadow
-                    && this.isOwnedByCurrentDataClient;
+                    && this.isOwnedByCurrentDataClient(ownedResource);
             }
         }
     }
