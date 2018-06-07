@@ -2,12 +2,8 @@
     <div class="TestListQuestion_container">
         <ListQuestion :question="questions[0]"/>
         <ListQuestion :question="questions[1]"/>
-        <ListQuestion :question="questions[2]"
-                  :mini="true"
-        />
-        <ListQuestion :question="questions[3]"
-                  :mini="true"
-        />
+        <ListQuestion :question="questions[2]"/>
+        <ListQuestion :question="questions[3]"/>
     </div>
 </template>
 
