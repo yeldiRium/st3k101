@@ -2,16 +2,16 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+    import {mapGetters} from "vuex";
 
-import {Question} from "../../../model/Question";
+    import {Question} from "../../../model/Question";
 
-/**
- * Defines some properties and computed propertes for OwnedResources.
- *
- * Can and should be used as BaseComponent for all SurveyBase components.
- */
-export default {
+    /**
+     * Defines some properties and computed propertes for OwnedResources.
+     *
+     * Can and should be used as BaseComponent for all SurveyBase components.
+     */
+    export default {
         name: "QuestionBase",
         props: {
             question: {
