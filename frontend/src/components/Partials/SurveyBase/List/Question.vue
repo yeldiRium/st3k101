@@ -5,10 +5,14 @@
               :disabled="disabled"
               class="question-list"
               :class="classes"
+              :icons="iconsNeeded"
     >
-        <IconEdit v-if="question.isShadow && isOwnedByCurrentDataClient"
-                  class="list-item-icon"/>
-        <IconReorder class="list-item-icon"/>
+        <IconEdit class="list-item-icon"
+                  v-if="convertable"
+        />
+        <IconReorder class="list-item-icon"
+                     v-if="draggable"
+        />
     </ListItem>
 </template>
 
@@ -41,16 +45,31 @@
         props: {
             question: {
                 type: Question
+            },
+            draggable: {
+                type: Boolean,
+                default: true
             }
         },
         computed: {
             ...mapGetters("session", ["dataClient"]),
+            /**
+             * Whether the Question is owned by the current DataClient.
+             * @returns {boolean}
+             */
             isOwnedByCurrentDataClient() {
                 return this.question.isOwnedBy(this.dataClient);
             },
+            /**
+             * Whether the Question is editable.
+             * @returns {boolean}
+             */
             disabled() {
                 return !this.isOwnedByCurrentDataClient || this.question.isShadow;
             },
+            /**
+             * @returns {string}
+             */
             subtext() {
                 if (this.question.isShadow) {
                     return "";
@@ -62,6 +81,21 @@
                 return {
                     mini: this.question.isShadow
                 };
+            },
+            /**
+             * Whether a ShadowQuestion can be converted to a ConcreteQuestion.
+             * @returns {boolean}
+             */
+            convertable() {
+                return this.question.isShadow
+                    && this.isOwnedByCurrentDataClient;
+            },
+            /**
+             * Whether Icons on the ListElement will be needed.
+             * @returns {boolean}
+             */
+            iconsNeeded() {
+                return this.draggable || this.convertable;
             }
         }
     }
