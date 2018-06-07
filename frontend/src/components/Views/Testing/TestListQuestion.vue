@@ -28,7 +28,7 @@
                     new ConcreteQuestion(
                         "http://blubblab/api/question/1",
                         dataClient,
-                        "Diese ConcreteQuestion gehört mir.",
+                        "Diese ConcreteQuestion gehört mir.Sie hat einen extra langen Text zum testen.",
                         {end: 5},
                         5,
                         [
@@ -49,7 +49,7 @@
                     new ConcreteQuestion(
                         "http://blubblab/api/question/3",
                         someoneElse,
-                        "Diese ConcreteQuestion gehört mir nicht.",
+                        "Diese ConcreteQuestion gehört mir nicht.Sie hat einen extra langen Text zum testen.",
                         {start: 0, end: 7},
                         3,
                         [
