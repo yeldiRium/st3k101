@@ -63,7 +63,7 @@
 
         &.big {
             grid-template-rows: 50% 50%;
-            grid-template-areas: ". text ." ". subtext ";
+            grid-template-areas: ". text ." ". subtext .";
 
             &.icons {
                 grid-template-columns: 2.5% 70% 25% 2.5%;
