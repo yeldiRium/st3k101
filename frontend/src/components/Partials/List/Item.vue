@@ -7,7 +7,9 @@
             {{ subtext }}
         </div>
 
-        <div class="list-item-icons">
+        <div class="list-item-icons"
+             v-if="icons"
+        >
             <slot></slot>
         </div>
     </div>
@@ -30,13 +32,18 @@
             mini: {
                 type: Boolean,
                 default: false
+            },
+            icons: {
+                type: Boolean,
+                default: true
             }
         },
         computed: {
             classes() {
                 return {
                     mini: this.mini,
-                    disabled: this.disabled
+                    disabled: this.disabled,
+                    icons: this.icons
                 };
             }
         }
@@ -47,12 +54,17 @@
     @import "../../scss/_variables.scss";
 
     .list-item {
-        display: grid;
-        grid-template-columns: 2.5% 70% 25% 2.5%;
+        display:grid;
+        grid-template-columns: 2.5% auto 2.5%;
         grid-template-rows: 50% 50%;
-        grid-template-areas: ". text icons ." ". subtext icons .";
+        grid-template-areas: ". text ." ". subtext ";
 
-        background-color: $primary;
+        background-color: $primary-light;
+
+        &.icons {
+            grid-template-columns: 2.5% 70% 25% 2.5%;
+            grid-template-areas: ". text icons ." ". subtext icons .";
+        }
     }
 
     .list-item-text {
