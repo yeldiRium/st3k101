@@ -85,10 +85,5 @@
 
     .list-item {
         width: 90vw;
-        height: 3em;
-
-        &.mini {
-            height: 2em;
-        }
     }
 </style>

@@ -3,7 +3,7 @@
               :text="question.text"
               :subtext="subtext"
               :disabled="disabled"
-              class="question-list"
+              class="list-question"
               :class="classes"
               :icons="iconsNeeded"
     >
@@ -102,5 +102,11 @@
 </script>
 
 <style lang="scss">
+    .list-item.list-question {
+        min-height: 3em;
 
+        &.mini {
+            min-height: 2em;
+        }
+    }
 </style>
