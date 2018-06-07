@@ -1,18 +1,18 @@
 <template>
-    <div class="TestQuestion_container">
-        <Question :question="questions[0]"/>
-        <Question :question="questions[1]"/>
-        <Question :question="questions[2]"
+    <div class="TestListQuestion_container">
+        <ListQuestion :question="questions[0]"/>
+        <ListQuestion :question="questions[1]"/>
+        <ListQuestion :question="questions[2]"
                   :mini="true"
         />
-        <Question :question="questions[3]"
+        <ListQuestion :question="questions[3]"
                   :mini="true"
         />
     </div>
 </template>
 
 <script>
-    import Question from "../../Partials/SurveyBase/List/Question";
+    import ListQuestion from "../../Partials/SurveyBase/List/Question";
     import Resource from "../../../model/Resource";
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
     import DataClient from "../../../model/DataClient";
@@ -20,7 +20,7 @@
     export default {
         name: "TestQuestion",
         components: {
-            Question
+            ListQuestion
         },
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
@@ -49,7 +49,7 @@
                         new Resource("http://blubblab/api/question/someonesidlel")
                     ),
                     // Not owned ConcreteQuestion with 3 incoming references.
-                    // One of those reference is from an owned Question.
+                    // One of those reference is from an owned ListQuestion.
                     new ConcreteQuestion(
                         "http://blubblab/api/question/3",
                         someoneElse,
@@ -75,7 +75,7 @@
 </script>
 
 <style lang="scss">
-    .TestQuestion_container {
+    .TestListQuestion_container {
         width: 100%;
         height: 100%;
 

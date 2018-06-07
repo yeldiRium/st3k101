@@ -3,7 +3,7 @@
               :text="question.text"
               :subtext="subtext"
               :disabled="disabled"
-              class="question"
+              class="question-list"
               :class="classes"
     >
         <IconEdit v-if="question.isShadow && isOwnedByCurrentDataClient"
