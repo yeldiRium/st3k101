@@ -14,6 +14,7 @@ import TestDiamondFloatingButton from "../components/Views/Testing/TestDiamondFl
 import TestButtonBar from "../components/Views/Testing/TestButtonBar";
 import TestListItem from "../components/Views/Testing/TestListItem";
 import TestListQuestion from "../components/Views/Testing/TestListQuestion";
+import TestFullQuestion from "../components/Views/Testing/TestFullQuestion";
 
 Vue.use(Router);
 
@@ -81,6 +82,11 @@ export default new Router({
                     path: "ListQuestion",
                     name: "ListQuestion",
                     component: TestListQuestion
+                },
+                {
+                    path: "FullQuestion",
+                    name: "FullQuestion",
+                    component: TestFullQuestion
                 }
             ]
         }
