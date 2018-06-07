@@ -3,7 +3,7 @@
          :class="classes"
     >
         <ListQuestion :question="question"
-                      :mini="true"
+                      :disableSubText="true"
                       :draggable="draggable"
                       :disableIcons="true"
                       :ellipseText="false"
@@ -34,6 +34,7 @@
         props: {
             /**
              * Override this to change the default value.
+             * @type boolean
              */
             draggable: {
                 type: Boolean,

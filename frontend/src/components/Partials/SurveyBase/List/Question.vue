@@ -3,7 +3,7 @@
               v-bind="$attrs"
               :text="question.text"
               :subtext="subtext"
-              :mini="question.isShadow"
+              :mini="question.isShadow || disableSubText"
               :disabled="disabled(question)"
               :icons="iconsNeeded(question)"
     >
@@ -42,6 +42,10 @@
         },
         props: {
             disableIcons: {
+                type: Boolean,
+                default: false
+            },
+            disableSubText: {
                 type: Boolean,
                 default: false
             }
