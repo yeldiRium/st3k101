@@ -1,10 +1,10 @@
 <template>
-    <ListItem v-bind="$attrs"
+    <ListItem class="list-question"
+              v-bind="$attrs"
               :text="question.text"
               :subtext="subtext"
+              :mini="question.isShadow"
               :disabled="disabled"
-              class="list-question"
-              :class="classes"
               :icons="iconsNeeded"
     >
         <IconEdit class="list-item-icon"
@@ -17,10 +17,7 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex";
-
-    import {Question} from "../../../../model/Question";
-
+    import QuestionBase from "../QuestionBase";
     import ListItem from "../../List/Item";
 
     import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
@@ -37,36 +34,19 @@
      */
     export default {
         name: "List-Question",
+        extends: QuestionBase,
         components: {
             ListItem,
             IconEdit,
             IconReorder
         },
         props: {
-            question: {
-                type: Question
-            },
-            draggable: {
+            disableIcons: {
                 type: Boolean,
-                default: true
+                default: false
             }
         },
         computed: {
-            ...mapGetters("session", ["dataClient"]),
-            /**
-             * Whether the Question is owned by the current DataClient.
-             * @returns {boolean}
-             */
-            isOwnedByCurrentDataClient() {
-                return this.question.isOwnedBy(this.dataClient);
-            },
-            /**
-             * Whether the Question is editable.
-             * @returns {boolean}
-             */
-            disabled() {
-                return !this.isOwnedByCurrentDataClient || this.question.isShadow;
-            },
             /**
              * @returns {string}
              */
@@ -77,25 +57,13 @@
                     return `${this.question.incomingReferenceCount} references.`;
                 }
             },
-            classes() {
-                return {
-                    mini: this.question.isShadow
-                };
-            },
-            /**
-             * Whether a ShadowQuestion can be converted to a ConcreteQuestion.
-             * @returns {boolean}
-             */
-            convertable() {
-                return this.question.isShadow
-                    && this.isOwnedByCurrentDataClient;
-            },
             /**
              * Whether Icons on the ListElement will be needed.
              * @returns {boolean}
              */
             iconsNeeded() {
-                return this.draggable || this.convertable;
+                return !this.disableIcons
+                    && (this.draggable || this.convertable);
             }
         }
     }
