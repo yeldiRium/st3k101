@@ -1,9 +1,15 @@
 <template>
     <div class="list-item" :class="classes">
-        <div class="list-item-text" :title="text">
+        <div class="list-item-text"
+             :class="textClasses"
+             :title="text"
+        >
             {{ text }}
         </div>
-        <div class="list-item-subtext" :title="subtext">
+        <div class="list-item-subtext"
+             :class="subTextClasses"
+             :title="subtext"
+        >
             {{ subtext }}
         </div>
 
@@ -36,6 +42,14 @@
             icons: {
                 type: Boolean,
                 default: true
+            },
+            ellipseText: {
+                type: Boolean,
+                default: true
+            },
+            ellipseSubText: {
+                type: Boolean,
+                default: true
             }
         },
         computed: {
@@ -47,6 +61,16 @@
                     icons: this.icons,
                     "no-icons": !this.icons
                 };
+            },
+            textClasses() {
+                return {
+                    ellipse: this.ellipseText
+                }
+            },
+            subTextClasses() {
+                return {
+                    ellipse: this.ellipseSubText
+                }
             }
         }
     }
@@ -54,6 +78,7 @@
 
 <style lang="scss">
     @import "../../scss/_variables.scss";
+    @import "../../scss/_mixins.scss";
 
     .list-item {
         display:grid;
@@ -62,7 +87,6 @@
         background-color: $primary-light;
 
         &.big {
-            grid-template-rows: 50% 50%;
             grid-template-areas: ". text ." ". subtext .";
 
             &.icons {
@@ -97,23 +121,23 @@
     .list-item-text {
         grid-area: text;
         align-self: end;
-        max-height: 100%;
-        overflow: hidden;
 
         font-size: 1.1em;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+
+        &.ellipse {
+            @include ellipse;
+        }
     }
 
     .list-item-subtext {
         grid-area: subtext;
         align-self: start;
-        max-height: 100%;
-        overflow: hidden;
 
         font-size: 0.9em;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+
+        &.ellipse {
+            @include ellipse;
+        }
     }
 
     .list-item-icons {
