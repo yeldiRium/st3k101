@@ -6,6 +6,7 @@
                       :mini="true"
                       :draggable="false"
                       :disableIcons="true"
+                      :ellipseText="false"
         />
         <div class="question-full-body">
             <References :object="question"
