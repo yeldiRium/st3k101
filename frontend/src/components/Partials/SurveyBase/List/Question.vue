@@ -4,11 +4,11 @@
               :text="question.text"
               :subtext="subtext"
               :mini="question.isShadow"
-              :disabled="disabled"
-              :icons="iconsNeeded"
+              :disabled="disabled(question)"
+              :icons="iconsNeeded(question)"
     >
         <IconEdit class="list-item-icon"
-                  v-if="convertable"
+                  v-if="convertable(question)"
         />
         <IconReorder class="list-item-icon"
                      v-if="draggable"
@@ -56,14 +56,16 @@
                 } else {
                     return `${this.question.incomingReferenceCount} references.`;
                 }
-            },
+            }
+        },
+        methods: {
             /**
              * Whether Icons on the ListElement will be needed.
              * @returns {boolean}
              */
-            iconsNeeded() {
+            iconsNeeded(question) {
                 return !this.disableIcons
-                    && (this.draggable || this.convertable);
+                    && (this.draggable || this.convertable(question));
             }
         }
     }

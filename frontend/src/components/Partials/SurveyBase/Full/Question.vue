@@ -34,7 +34,7 @@
         computed: {
             classes() {
                 return {
-                    disabled: this.disabled
+                    disabled: this.disabled(this.question)
                 }
             }
         }

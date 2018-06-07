@@ -14,36 +14,50 @@
     export default {
         name: "QuestionBase",
         props: {
+            /** @type {Question} */
             question: {
                 type: Question
             },
+            /** @type boolean */
             draggable: {
                 type: Boolean,
                 default: true
             }
         },
         computed: {
-            ...mapGetters("session", ["dataClient"]),
+            ...mapGetters("session", ["dataClient"])
+        },
+        methods: {
             /**
-             * Whether the SurveyBase is owned by the current DataClient.
+             * Whether the given resource is owned by the current DataClient.
+             * @param {OwnedResource} ownedResource
              * @returns {boolean}
              */
-            isOwnedByCurrentDataClient() {
-                return this.question.isOwnedBy(this.dataClient);
+            isOwnedByCurrentDataClient(ownedResource) {
+                return ownedResource.isOwnedBy(this.dataClient);
             },
             /**
-             * Whether the SurveyBase is editable.
+             * Whether the QuestionBase is editable.
+             *
+             * Expects ownedResource to have a `isShadow` getter.
+             *
+             * @param {OwnedResource} ownedResource
              * @returns {boolean}
              */
-            disabled() {
-                return !this.isOwnedByCurrentDataClient || this.question.isShadow;
+            disabled(ownedResource) {
+                return !this.isOwnedByCurrentDataClient(ownedResource)
+                    || ownedResource.isShadow;
             },
             /**
              * Whether a ShadowQuestion can be converted to a ConcreteQuestion.
+             *
+             * Expects ownedResource to have a `isShadow` getter.
+             *
+             * @param {OwnedResource} ownedResource
              * @returns {boolean}
              */
-            convertable() {
-                return this.question.isShadow
+            convertable(ownedResource) {
+                return ownedResource.isShadow
                     && this.isOwnedByCurrentDataClient;
             }
         }
