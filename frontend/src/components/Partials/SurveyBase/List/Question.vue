@@ -10,18 +10,27 @@
                   class="list-item-icon"/>
         <IconReorder class="list-item-icon"/>
     </ListItem>
-</template>i
+</template>
 
 <script>
     import {mapGetters} from "vuex";
 
-    import {Question} from "../../../model/Question";
+    import {Question} from "../../../../model/Question";
 
-    import ListItem from "./Item";
+    import ListItem from "../../List/Item";
 
-    import IconEdit from "../../../assets/icons/baseline-edit-24px.svg";
-    import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
+    import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
+    import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
 
+    /**
+     * Displays a Question as a ListElement.
+     *
+     * Does not display all the Question's state because of space reasons. To
+     * display all Question state use the Full/Question component.
+     *
+     * The Question will be disabled (uneditable), if it is a ShadowQuestion or
+     * any Question type not owned by the current DataClient.
+     */
     export default {
         name: "List-Question",
         components: {

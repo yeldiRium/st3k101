@@ -12,7 +12,7 @@
 </template>
 
 <script>
-    import Question from "../../Partials/List/Question";
+    import Question from "../../Partials/SurveyBase/List/Question";
     import Resource from "../../../model/Resource";
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
     import DataClient from "../../../model/DataClient";
