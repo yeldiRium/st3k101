@@ -76,6 +76,7 @@
             grid-template-areas: ". text .";
 
             &.icons {
+                grid-template-columns: 2.5% 70% 25% 2.5%;
                 grid-template-areas: ". text icons .";
             }
 
