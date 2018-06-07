@@ -42,8 +42,10 @@
             classes() {
                 return {
                     mini: this.mini,
+                    big: !this.mini,
                     disabled: this.disabled,
-                    icons: this.icons
+                    icons: this.icons,
+                    "no-icons": !this.icons
                 };
             }
         }
@@ -55,15 +57,39 @@
 
     .list-item {
         display:grid;
-        grid-template-columns: 2.5% auto 2.5%;
-        grid-template-rows: 50% 50%;
-        grid-template-areas: ". text ." ". subtext ";
+        grid-template-columns: 2.5% 95% 2.5%;
 
         background-color: $primary-light;
 
-        &.icons {
-            grid-template-columns: 2.5% 70% 25% 2.5%;
-            grid-template-areas: ". text icons ." ". subtext icons .";
+        &.big {
+            grid-template-rows: 50% 50%;
+            grid-template-areas: ". text ." ". subtext ";
+
+            &.icons {
+                grid-template-columns: 2.5% 70% 25% 2.5%;
+                grid-template-areas: ". text icons ." ". subtext icons .";
+            }
+        }
+
+        &.mini {
+            grid-template-rows: 100%;
+            grid-template-areas: ". text .";
+
+            &.icons {
+                grid-template-areas: ". text icons .";
+            }
+
+            .list-item-text {
+                align-self: center;
+            }
+
+            .list-item-subtext {
+                display: none;
+            }
+        }
+
+        &.no-icons .list-item-icons {
+            display: none;
         }
     }
 
@@ -100,15 +126,6 @@
             fill: $verydark;
 
             margin-left: 0.5em;
-        }
-    }
-
-    .list-item.mini {
-        grid-template-rows: 100%;
-        grid-template-areas: ". text icons .";
-
-        .list-item-text {
-            align-self: center;
         }
     }
 
