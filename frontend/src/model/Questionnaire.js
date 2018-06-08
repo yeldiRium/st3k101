@@ -6,7 +6,7 @@ class Questionnaire extends SurveyBase {
     /**
      * @param {string} href See Resource.
      * @param {Party} owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name The Questionnaire's name.
      * @param {string} description A description for the Questionnaire.
      * @param {boolean} isPublic Whether the Questionnaire can be filled out and
@@ -59,7 +59,7 @@ class ConcreteQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
      * @param {Party} owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
      * @param {boolean} isPublic See Questionnaire.
@@ -122,7 +122,7 @@ class ShadowQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
      * @param {Party} owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
      * @param {boolean} isPublic See Questionnaire.

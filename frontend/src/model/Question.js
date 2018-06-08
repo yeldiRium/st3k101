@@ -13,7 +13,7 @@ class Question extends SurveyBase {
     /**
      * @param {string}  href See Resource.
      * @param {Party}   owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text The Question text.
      * @param {number}  start Start of the range interval. Defaults to 0.
      * @param {number}  end End of the range interval.
@@ -61,7 +61,7 @@ class ConcreteQuestion extends Question {
     /**
      * @param {String}  href See Resource.
      * @param {Party}   owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.
@@ -117,7 +117,7 @@ class ShadowQuestion extends Question {
     /**
      * @param {String}  href See Resource.
      * @param {Party}   owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.

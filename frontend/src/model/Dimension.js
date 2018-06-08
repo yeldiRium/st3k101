@@ -8,7 +8,7 @@ class Dimension extends SurveyBase {
     /**
      * @param {string} href See Resource.
      * @param {Party}  owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name The Dimension's name.
      * @param {Array.<Question>} questions An Array of all connected Questions.
      * @param {boolean} randomizeQuestions Whether the Questions should be dis-
@@ -50,7 +50,7 @@ class ConcreteDimension extends Dimension {
      *
      * @param {string} href See Resource.
      * @param {Party}  owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Dimension.
      * @param {Array.<Question>} questions See Dimension.
      * @param {boolean} randomizeQuestions See Dimension.
@@ -100,7 +100,7 @@ class ShadowDimension extends Dimension {
      *
      * @param {string} href See Resource.
      * @param {Party}  owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
+     * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Dimension.
      * @param {Array.<Question>} questions See Dimension.
      * @param {boolean} randomizeQuestions See Dimension.

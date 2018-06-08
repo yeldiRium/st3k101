@@ -1,25 +1,11 @@
 import OwnedResource from "./OwnedResource";
-
-class SurveyBaseLanguageData {
-    /**
-     * Each in short version.
-     *
-     * @param {string} currentLanguage
-     * @param {string} originalLanguage
-     * @param {Array.<string>} availableLanguages
-     */
-    constructor(currentLanguage, originalLanguage, availableLanguages) {
-        this.currentLanguage = currentLanguage;
-        this.originalLanguage = originalLanguage;
-        this.availableLanguages = availableLanguages;
-    }
-}
+import LanguageData from "./LanguageData";
 
 class SurveyBase extends OwnedResource {
     /**
      * @param {string} href See Resource.
      * @param {Party} owner See OwnedResource.
-     * @param {SurveyBaseLanguageData} languageData Language information about
+     * @param {LanguageData} languageData Language information about
      *  the SurveyBase.
      */
     constructor(href,
@@ -51,6 +37,5 @@ class SurveyBase extends OwnedResource {
 export default SurveyBase;
 
 export {
-    SurveyBase,
-    SurveyBaseLanguageData
+    SurveyBase
 }
