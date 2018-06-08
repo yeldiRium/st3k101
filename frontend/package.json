@@ -17,6 +17,7 @@
     "abortcontroller-polyfill": "^1.1.8",
     "jquery": "^3.3.1",
     "svg-icon-inline-loader": "^3.1.0",
+    "v-click-outside": "^1.0.4",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
