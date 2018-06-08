@@ -1,12 +1,14 @@
-import OwnedResource from "./OwnedResource";
-import Party from "./Party";
-import Question, {populateOwnedIncomingReferences} from "./Question";
 import Future from "fluture";
 
-class Dimension extends OwnedResource {
+import Party from "./Party";
+import Question, {populateOwnedIncomingReferences} from "./Question";
+import SurveyBase from "./SurveyBase";
+
+class Dimension extends SurveyBase {
     /**
      * @param {string} href See Resource.
      * @param {Party}  owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string} name The Dimension's name.
      * @param {Array.<Question>} questions An Array of all connected Questions.
      * @param {boolean} randomizeQuestions Whether the Questions should be dis-
@@ -14,10 +16,11 @@ class Dimension extends OwnedResource {
      */
     constructor(href,
                 owner,
+                languageData,
                 name,
                 questions,
                 randomizeQuestions) {
-        super(href, owner);
+        super(href, owner, languageData);
         this.name = name;
         this.questions = questions;
         this.randomizeQuestions = randomizeQuestions;
@@ -47,6 +50,7 @@ class ConcreteDimension extends Dimension {
      *
      * @param {string} href See Resource.
      * @param {Party}  owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string} name See Dimension.
      * @param {Array.<Question>} questions See Dimension.
      * @param {boolean} randomizeQuestions See Dimension.
@@ -60,12 +64,13 @@ class ConcreteDimension extends Dimension {
      */
     constructor(href,
                 owner,
+                languageData,
                 name,
                 questions,
                 randomizeQuestions,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
-        super(href, owner, name, questions, randomizeQuestions);
+        super(href, owner, languageData, name, questions, randomizeQuestions);
 
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
@@ -95,6 +100,7 @@ class ShadowDimension extends Dimension {
      *
      * @param {string} href See Resource.
      * @param {Party}  owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string} name See Dimension.
      * @param {Array.<Question>} questions See Dimension.
      * @param {boolean} randomizeQuestions See Dimension.
@@ -103,11 +109,12 @@ class ShadowDimension extends Dimension {
      */
     constructor(href,
                 owner,
+                languageData,
                 name,
                 questions,
                 randomizeQuestions,
                 referenceTo) {
-        super(href, owner, name, questions, randomizeQuestions);
+        super(href, owner, languageData, name, questions, randomizeQuestions);
         this.referenceTo = referenceTo;
     }
 

@@ -1,10 +1,12 @@
-import OwnedResource from "./OwnedResource";
 import Future from "fluture";
 
-class Questionnaire extends OwnedResource {
+import SurveyBase from "./SurveyBase";
+
+class Questionnaire extends SurveyBase {
     /**
      * @param {string} href See Resource.
      * @param {Party} owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string} name The Questionnaire's name.
      * @param {string} description A description for the Questionnaire.
      * @param {boolean} isPublic Whether the Questionnaire can be filled out and
@@ -17,13 +19,14 @@ class Questionnaire extends OwnedResource {
      */
     constructor(href,
                 owner,
+                languageData,
                 name,
                 description,
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
                 dimensions) {
-        super(href, owner);
+        super(href, owner, languageData);
 
         this.name = name;
         this.description = description;
@@ -56,6 +59,7 @@ class ConcreteQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
      * @param {Party} owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
      * @param {boolean} isPublic See Questionnaire.
@@ -72,6 +76,7 @@ class ConcreteQuestionnaire extends Questionnaire {
      */
     constructor(href,
                 owner,
+                languageData,
                 name,
                 description,
                 isPublic,
@@ -82,6 +87,7 @@ class ConcreteQuestionnaire extends Questionnaire {
                 ownedIncomingReferences) {
         super(href,
             owner,
+            languageData,
             name,
             description,
             isPublic,
@@ -116,6 +122,7 @@ class ShadowQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
      * @param {Party} owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
      * @param {boolean} isPublic See Questionnaire.
@@ -127,6 +134,7 @@ class ShadowQuestionnaire extends Questionnaire {
      */
     constructor(href,
                 owner,
+                languageData,
                 name,
                 description,
                 isPublic,
@@ -136,6 +144,7 @@ class ShadowQuestionnaire extends Questionnaire {
                 referenceTo) {
         super(href,
             owner,
+            languageData,
             name,
             description,
             isPublic,

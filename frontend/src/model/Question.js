@@ -1,6 +1,6 @@
 import Future from "fluture";
 
-import OwnedResource from "./OwnedResource";
+import SurveyBase from "./SurveyBase";
 
 import {isRangeValid} from "./Range";
 
@@ -9,10 +9,11 @@ import {isRangeValid} from "./Range";
  * Don't instantiate this. Only use the extensions. If JavaScript had abstract
  * classes, this would be one.
  */
-class Question extends OwnedResource {
+class Question extends SurveyBase {
     /**
      * @param {string}  href See Resource.
      * @param {Party}   owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string}  text The Question text.
      * @param {number}  start Start of the range interval. Defaults to 0.
      * @param {number}  end End of the range interval.
@@ -20,9 +21,10 @@ class Question extends OwnedResource {
      */
     constructor(href,
                 owner,
+                languageData,
                 text,
                 {start = 0, end, step = 1}) {
-        super(href, owner);
+        super(href, owner, languageData);
 
         if (!isRangeValid({start, end, step})) {
             throw new Error(`Invalid range options: {start: ${start}, end: ${end}, step: ${step}.`);
@@ -59,6 +61,7 @@ class ConcreteQuestion extends Question {
     /**
      * @param {String}  href See Resource.
      * @param {Party}   owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.
@@ -73,6 +76,7 @@ class ConcreteQuestion extends Question {
      */
     constructor(href,
                 owner,
+                languageData,
                 text,
                 {start = 0, end, step = 1},
                 incomingReferenceCount,
@@ -81,7 +85,7 @@ class ConcreteQuestion extends Question {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
 
-        super(href, owner, text, {start, end, step});
+        super(href, owner, languageData, text, {start, end, step});
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
     }
@@ -113,6 +117,7 @@ class ShadowQuestion extends Question {
     /**
      * @param {String}  href See Resource.
      * @param {Party}   owner See OwnedResource.
+     * @param {SurveyBaseLanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
      * @param {number}  start See Question.
      * @param {number}  end See Question.
@@ -122,10 +127,11 @@ class ShadowQuestion extends Question {
      */
     constructor(href,
                 owner,
+                languageData,
                 text,
                 {start = 0, end, step = 1},
                 referenceTo) {
-        super(href, owner, text, {start, end, step});
+        super(href, owner, languageData, text, {start, end, step});
         this.referenceTo = referenceTo;
     }
 

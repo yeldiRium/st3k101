@@ -16,6 +16,7 @@
     import Resource from "../../../model/Resource";
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
     import DataClient from "../../../model/DataClient";
+    import {SurveyBaseLanguageData} from "../../../model/SurveyBase";
 
     export default {
         name: "TestQuestion",
@@ -25,6 +26,11 @@
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
             const someoneElse = new DataClient("somehrefNOT", "blub@blub.blub", "en");
+            const languageData = new SurveyBaseLanguageData(
+                "en",
+                "en",
+                ["en"]
+            );
             return {
                 questions: [
                     // Owned ConcreteQuestion with 5 incoming references.
@@ -32,6 +38,7 @@
                     new ConcreteQuestion(
                         "http://blubblab/api/question/1",
                         dataClient,
+                        languageData,
                         "Diese ConcreteQuestion gehört mir. Sie hat einen extra langen Text zum testen.",
                         {end: 5},
                         5,
@@ -44,6 +51,7 @@
                     new ShadowQuestion(
                         "http://blubblab/api/question/2",
                         dataClient,
+                        languageData,
                         "Diese ShadowQuestion gehört mir.",
                         {start: 2, end: 10, step: 2},
                         new Resource("http://blubblab/api/question/someonesidlel")
@@ -53,6 +61,7 @@
                     new ConcreteQuestion(
                         "http://blubblab/api/question/3",
                         someoneElse,
+                        languageData,
                         "Diese ConcreteQuestion gehört mir nicht. Sie hat einen extra langen Text zum testen.",
                         {start: 0, end: 7},
                         3,
@@ -64,6 +73,7 @@
                     new ShadowQuestion(
                         "http://blubblab/api/question/4",
                         someoneElse,
+                        languageData,
                         "Diese ShadowQuestion gehört mir nicht.",
                         {end: 5, step: 2},
                         new Resource("http://blubblab/api/question/someonesotheridtrell")
