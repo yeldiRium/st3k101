@@ -5,8 +5,7 @@
     >
         <ListQuestion :question="question"
                       :disableSubText="true"
-                      :draggable="draggable"
-                      :disableIcons="true"
+                      :draggable="true"
                       :ellipseText="false"
                       @click="toggleExpanded"
         />
@@ -50,14 +49,6 @@
             References
         },
         props: {
-            /**
-             * Override this to change the default value.
-             * @type boolean
-             */
-            draggable: {
-                type: Boolean,
-                default: false
-            },
             initiallyExpanded: {
                 type: Boolean,
                 default: false
