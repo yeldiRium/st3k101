@@ -9,6 +9,7 @@ import App from "./components/App";
 import router from "./router";
 import { initialize as initializeStore } from "./store";
 import store from "./store";
+import directives from "./directives";
 
 Vue.use(Vuex);
 
@@ -28,6 +29,10 @@ initializeStore().fork(
 import DataClient from "./model/DataClient";
 store.commit("session/startSession", {sessionToken: "randomSessionToken"});
 store.commit("session/setDataClient", {dataClient: new DataClient("randomHref", "a@b.c", "de")});
+
+for (let directive of directives) {
+    Vue.directive(directive.name, directive.config);
+}
 
 new Vue({
     el: "#container",
