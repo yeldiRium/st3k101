@@ -14,7 +14,13 @@ const store = {
             short: "de",
             long: "Deutsch"
         },
-        languageOptions: []
+        languageOptions: [],
+        /**
+         * TODO: this needs to be populated. Also find a middle ground between
+         *       babel languages and available icons!
+         * @type {Array.<string>} List of all languages in the system.
+         */
+        languages: []
     },
     getters: {
         loading: state => {
