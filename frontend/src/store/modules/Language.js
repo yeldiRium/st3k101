@@ -1,7 +1,8 @@
 import {__, allPass, has, map} from "ramda";
 import Future from "fluture";
 
-import Language from "../../api/Model/Language";
+import LanguageAPI from "../../api/Model/Language";
+import Language from "../../model/Language";
 
 const store = {
     namespaced: true,
@@ -17,29 +18,14 @@ const store = {
         languageOptions: [],
         /**
          * TODO: this needs to be populated.
-         * @type {Array.<string>} List of all languages in the system.
+         * @type {Array.<Language>} List of all languages in the system.
          */
         languages: [
-            {
-                shortName: "de",
-                longName: "German"
-            },
-            {
-                shortName: "en",
-                longName: "English"
-            },
-            {
-                shortName: "it",
-                longName: "Italian"
-            },
-            {
-                shortName: "es",
-                longName: "Spanish"
-            },
-            {
-                shortName: "ch",
-                longName: "Chinese"
-            }
+            new Language("de", "German"),
+            new Language("en", "English"),
+            new Language("it", "Italian"),
+            new Language("es", "Spanish"),
+            new Language("ch", "Chinese")
         ]
     },
     getters: {
@@ -56,7 +42,7 @@ const store = {
          * usable by the dropdown menu.
          */
         fetchLanguages({commit}) {
-            return Language.all()
+            return LanguageAPI.all()
                 .mapRej(error => {
                     commit(
                         "setLoadingState", {
