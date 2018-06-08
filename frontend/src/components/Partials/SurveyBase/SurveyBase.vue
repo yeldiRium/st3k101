@@ -12,6 +12,14 @@
     export default {
         name: "SurveyBase",
         props: {
+            /**
+             * Set this to prevent editing of any kind (including deletion or
+             * adding children).
+             */
+            disableEditing: {
+                type: Boolean,
+                default: false
+            },
             /** @type boolean */
             draggable: {
                 type: Boolean,
@@ -41,6 +49,9 @@
             editable(ownedResource) {
                 return this.isOwnedByCurrentDataClient(ownedResource)
                     && !ownedResource.isShadow;
+            },
+            disabled(ownedResource) {
+                return !this.editable(ownedResource) || this.disableEditing;
             },
             /**
              * Whether a ShadowObject can be converted to a ConcreteObject.

@@ -75,7 +75,7 @@
         computed: {
             classes() {
                 return {
-                    disabled: !this.editable(this.question)
+                    disabled: this.disabled(this.question)
                 }
             }
         },
