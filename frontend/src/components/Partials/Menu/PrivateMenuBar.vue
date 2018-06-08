@@ -21,6 +21,8 @@
 </template>
 
 <script>
+    import {mapState} from "vuex";
+
     import DashboardIcon from "../../../assets/icons/baseline-dashboard-24px.svg";
     import ListIcon from "../../../assets/icons/baseline-list-24px.svg";
     import IdentityIcon from "../../../assets/icons/baseline-perm_identity-24px.svg";
@@ -32,24 +34,15 @@
             ListIcon,
             IdentityIcon
         },
-        data: () => ({
-            iconStyle: {}
-        }),
-        methods: {
-            handleWindowResize() {
-                const side = document.documentElement.clientHeight / (10 * 24);
-                this.iconStyle = {
+        computed: {
+            ...mapState("global", ["window"]),
+            iconStyle() {
+                const side = this.window.height / (10 * 24);
+                return {
                     transform: `scale(${side}, ${side})`,
                     margin: `0 ${side * 12}px 0 ${side * 12}px`
-                };
+                }
             }
-        },
-        mounted() {
-            window.addEventListener("resize", this.handleWindowResize);
-            this.handleWindowResize();
-        },
-        beforeDestroy() {
-            window.removeEventListener("resize", this.handleWindowResize);
         }
     }
 </script>
