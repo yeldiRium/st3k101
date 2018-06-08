@@ -11,6 +11,12 @@
         <IconEdit class="list-item-icon"
                   v-if="convertable(question)"
         />
+        <LanguagePicker class="list-item-languagepicker"
+                        :language-data="question.languageData"
+                        v-if="!disableLanguagePicker"
+                        @change-language="changeLanguage"
+                        @change-language-unavailable="addNewTranslation"
+        />
         <IconReorder class="list-item-icon"
                      v-if="draggable"
         />
@@ -20,6 +26,7 @@
 <script>
     import QuestionBase from "../QuestionBase";
     import ListItem from "../../List/Item";
+    import LanguagePicker from "../../LanguagePicker";
 
     import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
     import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
@@ -38,15 +45,23 @@
         extends: QuestionBase,
         components: {
             ListItem,
+            LanguagePicker,
             IconEdit,
             IconReorder
         },
         props: {
+            /**
+             * If icons are disabled, the language picker is not available.
+             */
             disableIcons: {
                 type: Boolean,
                 default: false
             },
             disableSubText: {
+                type: Boolean,
+                default: false
+            },
+            disableLanguagePicker: {
                 type: Boolean,
                 default: false
             }
@@ -70,7 +85,28 @@
              */
             iconsNeeded(question) {
                 return !this.disableIcons
-                    && (this.draggable || this.convertable(question));
+                    && (
+                        this.draggable
+                        || this.convertable(question)
+                        || !this.disableLanguagePicker
+                    );
+            },
+            /**
+             * Switch the Question to the given language.
+             * @param {Language} language
+             */
+            changeLanguage(language) {
+                this.question.fetchTranslation(language);
+            },
+            /**
+             * Add a new translation to the Question.
+             * This means set new field values via API for the given lanugages
+             * and then fetch the question anew in the now existing language.
+             * @param language
+             */
+            addNewTranslation(language) {
+                // TODO: create new translation
+                // this.question.fetchTranslation(language);
             }
         }
     }
