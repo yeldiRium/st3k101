@@ -1,21 +1,34 @@
 <template>
     <div class="full-question"
          :class="classes"
+         v-if="expanded"
     >
         <ListQuestion :question="question"
                       :disableSubText="true"
                       :draggable="draggable"
                       :disableIcons="true"
                       :ellipseText="false"
+                      @click.native="toggleExpanded"
         />
-        <div class="full-question-body">
+
+        <div class="full-question-body"
+             ref="dropdown"
+             v-if="expanded"
+        >
             <References :object="question"
                         v-if="question.isConcrete"
             />
         </div>
-        <div class="full-question-footer">
-
-        </div>
+    </div>
+    <div class="full-question"
+         :class="classes"
+         v-else
+    >
+        <ListQuestion :question="question"
+                      :draggable="draggable"
+                      :ellipseText="true"
+                      @click.native="toggleExpanded"
+        />
     </div>
 </template>
 
@@ -39,6 +52,21 @@
             draggable: {
                 type: Boolean,
                 default: false
+            },
+            initiallyExpanded: {
+                type: Boolean,
+                default: false
+            }
+        },
+        data() {
+            return {
+                expanded: false,
+                header: {
+                    height: 0
+                },
+                dropdown: {
+                    height: 0
+                }
             }
         },
         computed: {
@@ -47,6 +75,14 @@
                     disabled: this.disabled(this.question)
                 }
             }
+        },
+        methods: {
+            toggleExpanded() {
+                this.expanded = !this.expanded;
+            },
+        },
+        created() {
+            this.expanded = this.initiallyExpanded;
         }
     }
 </script>
