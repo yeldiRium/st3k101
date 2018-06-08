@@ -1,5 +1,4 @@
 import OwnedResource from "./OwnedResource";
-import LanguageData from "./LanguageData";
 
 class SurveyBase extends OwnedResource {
     /**

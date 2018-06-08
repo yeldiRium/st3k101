@@ -20,7 +20,7 @@ class LanguageData {
     }
 }
 
-export default LanguageData;
+export default Language;
 
 export {
     Language,

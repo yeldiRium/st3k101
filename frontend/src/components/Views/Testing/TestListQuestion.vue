@@ -12,7 +12,7 @@
     import Resource from "../../../model/Resource";
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
     import DataClient from "../../../model/DataClient";
-    import {Language, LanguageData} from "../../../model/LanguageData";
+    import {Language, LanguageData} from "../../../model/Language";
 
     export default {
         name: "TestQuestion",
