@@ -18,7 +18,9 @@
             <References :object="question"
                         v-if="question.isConcrete"
             />
-            <div class="full-question-delete">
+            <div class="full-question-delete"
+                 v-if="!disabled(question)"
+            >
                 delete
             </div>
         </div>
