@@ -16,7 +16,7 @@
     import Resource from "../../../model/Resource";
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
     import DataClient from "../../../model/DataClient";
-    import LanguageData from "../../../model/LanguageData";
+    import {Language, LanguageData} from "../../../model/LanguageData";
 
     export default {
         name: "TestQuestion",
@@ -26,10 +26,11 @@
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
             const someoneElse = new DataClient("somehrefNOT", "blub@blub.blub", "en");
+            const english = new Language("en", "English");
             const languageData = new LanguageData(
-                "en",
-                "en",
-                ["en"]
+                english,
+                english,
+                [english]
             );
             return {
                 questions: [

@@ -1,10 +1,17 @@
+class Language {
+    constructor(shortName, longName) {
+        this.shortName = shortName;
+        this.longName = longName;
+    }
+}
+
 class LanguageData {
     /**
      * Each in short version.
      *
-     * @param {string} currentLanguage
-     * @param {string} originalLanguage
-     * @param {Array.<string>} availableLanguages
+     * @param {Language} currentLanguage
+     * @param {Language} originalLanguage
+     * @param {Array.<Language>} availableLanguages
      */
     constructor(currentLanguage, originalLanguage, availableLanguages) {
         this.currentLanguage = currentLanguage;
@@ -14,3 +21,8 @@ class LanguageData {
 }
 
 export default LanguageData;
+
+export {
+    Language,
+    LanguageData
+}
