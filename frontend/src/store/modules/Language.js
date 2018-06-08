@@ -16,11 +16,31 @@ const store = {
         },
         languageOptions: [],
         /**
-         * TODO: this needs to be populated. Also find a middle ground between
-         *       babel languages and available icons!
+         * TODO: this needs to be populated.
          * @type {Array.<string>} List of all languages in the system.
          */
-        languages: []
+        languages: [
+            {
+                shortName: "de",
+                longName: "German"
+            },
+            {
+                shortName: "en",
+                longName: "English"
+            },
+            {
+                shortName: "it",
+                longName: "Italian"
+            },
+            {
+                shortName: "es",
+                longName: "Spanish"
+            },
+            {
+                shortName: "ch",
+                longName: "Chinese"
+            }
+        ]
     },
     getters: {
         loading: state => {
