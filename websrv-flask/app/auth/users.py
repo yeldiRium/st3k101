@@ -72,3 +72,7 @@ def logout():
 
     if not auth.invalidate(g._current_session_token):
         raise UserNotLoggedInException()
+
+
+def current_user() -> DataClient:
+    return g._current_user
