@@ -4,7 +4,7 @@
               :text="question.text"
               :subtext="subtext"
               :mini="question.isShadow || disableSubText"
-              :disabled="disabled(question)"
+              :disabled="!editable(question)"
               :icons="iconsNeeded(question)"
     >
         <IconEdit class="list-item-icon"

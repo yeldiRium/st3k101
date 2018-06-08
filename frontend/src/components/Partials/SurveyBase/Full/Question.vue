@@ -18,6 +18,9 @@
             <References :object="question"
                         v-if="question.isConcrete"
             />
+            <div class="full-question-delete">
+                delete
+            </div>
         </div>
     </div>
     <div class="full-question"
@@ -72,7 +75,7 @@
         computed: {
             classes() {
                 return {
-                    disabled: this.disabled(this.question)
+                    disabled: !this.editable(this.question)
                 }
             }
         },
@@ -113,5 +116,9 @@
         display: flex;
         flex-flow: column;
         align-items: center;
+
+        .full-question-delete {
+            margin-top: 8px;
+        }
     }
 </style>

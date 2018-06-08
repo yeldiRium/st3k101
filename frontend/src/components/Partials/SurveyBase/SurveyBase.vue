@@ -38,9 +38,9 @@
              * @param {OwnedResource} ownedResource
              * @returns {boolean}
              */
-            disabled(ownedResource) {
-                return !this.isOwnedByCurrentDataClient(ownedResource)
-                    || ownedResource.isShadow;
+            editable(ownedResource) {
+                return this.isOwnedByCurrentDataClient(ownedResource)
+                    && !ownedResource.isShadow;
             },
             /**
              * Whether a ShadowObject can be converted to a ConcreteObject.
