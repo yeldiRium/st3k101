@@ -1,6 +1,6 @@
 import Future from "fluture";
 
-import Party from "./Party";
+import Party from "../Party";
 import Question, {populateOwnedIncomingReferences} from "./Question";
 import SurveyBase from "./SurveyBase";
 

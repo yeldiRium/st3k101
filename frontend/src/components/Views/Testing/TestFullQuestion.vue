@@ -14,7 +14,7 @@
 <script>
     import FullQuestion from "../../Partials/SurveyBase/Full/Question";
     import Resource from "../../../model/Resource";
-    import {ConcreteQuestion, ShadowQuestion} from "../../../model/Question";
+    import {ConcreteQuestion, ShadowQuestion} from "../../../model/SurveyBase/Question";
     import DataClient from "../../../model/DataClient";
     import {Language, LanguageData} from "../../../model/Language";
 

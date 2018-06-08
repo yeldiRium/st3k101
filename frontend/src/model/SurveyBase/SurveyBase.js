@@ -1,4 +1,4 @@
-import OwnedResource from "./OwnedResource";
+import OwnedResource from "../OwnedResource";
 
 class SurveyBase extends OwnedResource {
     /**

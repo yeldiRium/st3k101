@@ -2,7 +2,7 @@ import Future from "fluture";
 
 import SurveyBase from "./SurveyBase";
 
-import {isRangeValid} from "./Range";
+import {isRangeValid} from "./Config/Range";
 
 /**
  * BaseClass for ShadowQuestion and ConcreteQuestion.

@@ -2,7 +2,7 @@
 </template>
 
 <script>
-    import {Question} from "../../../model/Question";
+    import {Question} from "../../../model/SurveyBase/Question";
 
     import SurveyBase from "./SurveyBase";
 
