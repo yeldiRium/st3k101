@@ -57,13 +57,4 @@
         padding: 0;
         margin: 0;
     }
-
-    .list-item {
-        width: 90vw;
-        height: 3em;
-
-        &.mini {
-            height: 2em;
-        }
-    }
 </style>
