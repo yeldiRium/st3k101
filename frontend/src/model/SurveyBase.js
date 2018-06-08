@@ -20,6 +20,9 @@ class SurveyBase extends OwnedResource {
      * Updates all translatable information in place and updates the
      * `languageData` object.
      *
+     * Should also check, if the list of availableLanguages has changed and
+     * overwrite the old one.
+     *
      * @param language
      * @return Future
      * @resolve with nothing, since the SurveyBase is updated in place
