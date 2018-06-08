@@ -8,7 +8,7 @@
                       :draggable="draggable"
                       :disableIcons="true"
                       :ellipseText="false"
-                      @click.native="toggleExpanded"
+                      @click="toggleExpanded"
         />
 
         <div class="full-question-body"
@@ -32,7 +32,7 @@
         <ListQuestion :question="question"
                       :draggable="draggable"
                       :ellipseText="true"
-                      @click.native="toggleExpanded"
+                      @click="toggleExpanded"
         />
     </div>
 </template>
