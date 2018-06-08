@@ -7,4 +7,9 @@
 </script>
 
 <style lang="scss">
+    @import "./scss/_variables";
+
+    * {
+        color: $verydark;
+    }
 </style>
