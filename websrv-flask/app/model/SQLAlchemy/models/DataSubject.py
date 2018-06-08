@@ -2,11 +2,11 @@ __author__ = "Noah Hummel"
 
 
 from model.SQLAlchemy import db
-from model.SQLAlchemy.models.Person import Person
+from model.SQLAlchemy.models.Party import Party
 
 
-class DataSubject(Person):
-    id = db.Column(db.Integer, db.ForeignKey(Person.id), primary_key=True)
+class DataSubject(Party):
+    id = db.Column(db.Integer, db.ForeignKey(Party.id), primary_key=True)
 
     # polymorphic config
     __tablename__ = 'data_subject'

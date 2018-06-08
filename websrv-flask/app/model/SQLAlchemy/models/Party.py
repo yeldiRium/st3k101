@@ -2,7 +2,7 @@ from model.SQLAlchemy import db
 from model.SQLAlchemy.models.OwnershipBase import ownership_table
 
 
-class Person(db.Model):
+class Party(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # polymorphic config

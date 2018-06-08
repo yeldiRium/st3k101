@@ -21,5 +21,5 @@ class OwnershipBase(db.Model):
         'polymorphic_on': ownership_base_type
     }
 
-    owners = db.relationship('Person', back_populates='owned_objects',
+    owners = db.relationship('Party', back_populates='owned_objects',
                              secondary=ownership_table)

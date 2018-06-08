@@ -4,12 +4,12 @@ __author__ = "Noah Hummel"
 from flask import g
 
 from model.SQLAlchemy import db
-from model.SQLAlchemy.models.Person import Person
+from model.SQLAlchemy.models.Party import Party
 from framework.internationalization.babel_languages import BabelLanguage
 
 
-class DataClient(Person):
-    id = db.Column(db.Integer, db.ForeignKey(Person.id), primary_key=True)
+class DataClient(Party):
+    id = db.Column(db.Integer, db.ForeignKey(Party.id), primary_key=True)
 
     # polymorphic config
     __tablename__ = 'data_client'
