@@ -179,14 +179,14 @@ import api.v1.Verification
 import api.v1.Auth
 
 # APIs
-import api.v1.REST.Survey
-import api.v1.REST.Questionnaire
-import api.v1.REST.QuestionGroup
-import api.v1.REST.Question
-import api.v1.REST.QAC
-import api.v1.REST.Account
-import api.v1.REST.Locale
-import api.v1.REST.Statistic
+#import api.v1.REST.Survey
+#import api.v1.REST.Questionnaire
+#import api.v1.REST.QuestionGroup
+#import api.v1.REST.Question
+#import api.v1.REST.QAC
+#import api.v1.REST.Account
+#import api.v1.REST.Locale
+#import api.v1.REST.Statistic
 
 # CLI commands
 import cli
