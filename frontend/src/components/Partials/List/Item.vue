@@ -124,6 +124,8 @@
         grid-area: text;
         align-self: end;
 
+        padding-right: 5px;
+
         font-size: 1.1em;
 
         &.ellipse {
@@ -134,6 +136,8 @@
     .list-item-subtext {
         grid-area: subtext;
         align-self: start;
+
+        padding-right: 5px;
 
         font-size: 0.9em;
 
