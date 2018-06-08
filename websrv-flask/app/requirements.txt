@@ -7,3 +7,4 @@ Flask-SQLAlchemy
 sqlalchemy_utils
 psycopg2
 deprecated
+blinker

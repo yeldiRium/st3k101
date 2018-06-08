@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Dict
 
+from framework.tracker import TrackingType, TrackingArg
 from model.SQLAlchemy.models.DataSubject import DataSubject
 from model.SQLAlchemy.models.QuestionResult import QuestionResult
 from model.SQLAlchemy.models.QuestionStatistic import QuestionStatistic
@@ -38,6 +39,16 @@ class Question(SurveyBase):
         foreign_keys=[statistic_id],
         single_parent=True
     )
+
+    tracker_args = {
+        'text': [
+            TrackingType.TranslationHybrid,
+            TrackingArg.Accumulate
+        ],
+        'range': [
+            TrackingType.Primitive
+        ],
+    }
 
     def __init__(self, *args, **kwargs):
         super(Question, self).__init__(*args, **kwargs)
