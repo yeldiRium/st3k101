@@ -3,12 +3,14 @@
         <div class="list-item-text"
              :class="textClasses"
              :title="text"
+             v-on="$listeners"
         >
             {{ text }}
         </div>
         <div class="list-item-subtext"
              :class="subTextClasses"
              :title="subtext"
+             v-on="$listeners"
         >
             {{ subtext }}
         </div>
@@ -90,7 +92,7 @@
             grid-template-areas: ". text ." ". subtext .";
 
             &.icons {
-                grid-template-columns: 2.5% 70% 25% 2.5%;
+                grid-template-columns: 2.5% auto fit-content(25%) 2.5%;
                 grid-template-areas: ". text icons ." ". subtext icons .";
             }
         }
@@ -100,7 +102,7 @@
             grid-template-areas: ". text .";
 
             &.icons {
-                grid-template-columns: 2.5% 70% 25% 2.5%;
+                grid-template-columns: 2.5% auto fit-content(25%) 2.5%;
                 grid-template-areas: ". text icons .";
             }
 
