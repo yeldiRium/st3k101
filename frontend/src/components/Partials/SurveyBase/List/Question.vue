@@ -6,6 +6,7 @@
               :mini="question.isShadow || disableSubText"
               :disabled="disabled(question)"
               :icons="iconsNeeded(question)"
+              v-on="$listeners"
     >
         <IconEdit class="list-item-icon"
                   v-if="convertable(question)"
