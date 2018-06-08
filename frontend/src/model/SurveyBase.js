@@ -32,7 +32,6 @@ class SurveyBase extends OwnedResource {
     fetchTranslation(language) {
         this.languageData.currentLanguage = language;
         throw new Error("Please implement this!");
-        // TODO: implement in Question/Dimension/Questionnaire
     }
 }
 

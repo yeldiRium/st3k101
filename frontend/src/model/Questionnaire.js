@@ -53,6 +53,8 @@ class Questionnaire extends SurveyBase {
     get isConcrete() {
         throw new Error("Please override this.");
     }
+
+    // TODO: implement fetchTranslation(language)
 }
 
 class ConcreteQuestionnaire extends Questionnaire {
