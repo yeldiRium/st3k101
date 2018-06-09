@@ -36,19 +36,21 @@
                 />
             </g>
 
-            <line :x1="`${numberX(selector)}%`"
-                  :y1="`${selectorLineY1}%`"
-                  :x2="`${numberX(selector)}%`"
-                  :y2="`${selectorLineY2}%`"
-                  class="rangesvg-selectorline"
-            />
-            <text :x="`${numberX(selector)}%`"
-                  :y="`${selectorNumberY}%`"
-                  text-anchor="middle"
-                  class="rangesvg-selectornumber"
-            >
-                {{ selector }}
-            </text>
+            <g class="rangesvg-selector">
+                <line :x1="`${numberX(selector)}%`"
+                      :y1="`${selectorLineY1}%`"
+                      :x2="`${numberX(selector)}%`"
+                      :y2="`${selectorLineY2}%`"
+                      class="rangesvg-selector-line"
+                />
+                <text :x="`${numberX(selector)}%`"
+                      :y="`${selectorNumberY}%`"
+                      text-anchor="middle"
+                      class="rangesvg-selector-number"
+                >
+                    {{ selector }}
+                </text>
+            </g>
         </g>
 
         <g>
@@ -268,12 +270,12 @@
             selector(newSelector, oldSelector) {
                 this.$emit("selector-change", newSelector);
             },
-            "range.start": function(newStart, oldStart) {
+            "range.start": function (newStart, oldStart) {
                 if (!contains(this.selector, this.range.numbers)) {
                     this.selector = newStart;
                 }
             },
-            "range.end": function(newEnd, oldEnd) {
+            "range.end": function (newEnd, oldEnd) {
                 if (!contains(this.selector, this.range.numbers)) {
                     this.selector = newEnd;
                 }
@@ -288,7 +290,7 @@
     .rangesvg {
         width: 100%;
 
-        &-middleline, &-numberline, &-selectorline {
+        &-middleline, &-numberline, &-selector-line {
             stroke: $verydark;
             stroke-width: 2px;
         }
@@ -297,7 +299,7 @@
             stroke: $primary;
         }
 
-        &-number, &-selectornumber {
+        &-number, &-selector-number {
             fill: $verydark;
         }
 
@@ -309,12 +311,14 @@
             fill: rgba(0, 0, 0, 0);
         }
 
-        &-selectorline {
-            stroke-width: 3px;
-        }
+        &-selector {
+            &-line {
+                stroke-width: 3px;
+            }
 
-        &-selectornumber {
-            font-size: 1.2em;
+            &-number {
+                font-size: 1.2em;
+            }
         }
     }
 </style>
