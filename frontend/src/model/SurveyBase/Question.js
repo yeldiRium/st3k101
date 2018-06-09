@@ -2,7 +2,7 @@ import Future from "fluture";
 
 import SurveyBase from "./SurveyBase";
 
-import {isRangeValid} from "./Config/Range";
+import Range from "./Config/Range";
 
 /**
  * BaseClass for ShadowQuestion and ConcreteQuestion.
@@ -15,15 +15,13 @@ class Question extends SurveyBase {
      * @param {Party}   owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text The Question text.
-     * @param {number}  start Start of the range interval. Defaults to 0.
-     * @param {number}  end End of the range interval.
-     * @param {number}  step Step of the range interval. Defaults to 1.
+     * @param {Range}   range The range for the Question's answer.
      */
     constructor(href,
                 owner,
                 languageData,
                 text,
-                {start = 0, end, step = 1}) {
+                range) {
         super(href, owner, languageData);
 
         if (!isRangeValid({start, end, step})) {
@@ -31,7 +29,7 @@ class Question extends SurveyBase {
         }
 
         this.text = text;
-        this.range = {start, end, step};
+        this.range = range;
     }
 
     /**
@@ -65,9 +63,7 @@ class ConcreteQuestion extends Question {
      * @param {Party}   owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
-     * @param {number}  start See Question.
-     * @param {number}  end See Question.
-     * @param {number}  step See Question.
+     * @param {Range}   range See Question.
      * @param {number}  incomingReferenceCount Number of references to this
      *  Question.
      *  This counts references not owned by the current user and can thus be
@@ -80,14 +76,14 @@ class ConcreteQuestion extends Question {
                 owner,
                 languageData,
                 text,
-                {start = 0, end, step = 1},
+                range,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
         if (incomingReferenceCount < ownedIncomingReferences.length) {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
 
-        super(href, owner, languageData, text, {start, end, step});
+        super(href, owner, languageData, text, range);
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
     }
@@ -121,9 +117,7 @@ class ShadowQuestion extends Question {
      * @param {Party}   owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
-     * @param {number}  start See Question.
-     * @param {number}  end See Question.
-     * @param {number}  step See Question.
+     * @param {Range}   range See Question.
      * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the
      *  referenced Question.
      */
@@ -131,9 +125,9 @@ class ShadowQuestion extends Question {
                 owner,
                 languageData,
                 text,
-                {start = 0, end, step = 1},
+                range,
                 referenceTo) {
-        super(href, owner, languageData, text, {start, end, step});
+        super(href, owner, languageData, text, range);
         this.referenceTo = referenceTo;
     }
 
