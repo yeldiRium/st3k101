@@ -17,6 +17,8 @@
             <References :object="question"
                         v-if="question.isConcrete"
             />
+            <RangeEditor :range="question.range"
+            />
             <div class="full-question-delete"
                  v-if="!disabled(question)"
             >
@@ -40,13 +42,15 @@
     import QuestionBase from "../QuestionBase";
     import ListQuestion from "../List/Question";
     import References from "../Config/References";
+    import RangeEditor from "../Config/RangeEditor";
 
     export default {
         name: "Full-Question",
         extends: QuestionBase,
         components: {
             ListQuestion,
-            References
+            References,
+            RangeEditor
         },
         props: {
             initiallyExpanded: {
