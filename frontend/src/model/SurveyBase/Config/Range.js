@@ -36,7 +36,7 @@ class Range {
      * @param {number} newStart
      */
     set start(newStart) {
-        this._start = newStart;
+        this._start = Math.floor(newStart);
         this.calcNumbers();
     }
 
@@ -53,7 +53,7 @@ class Range {
      * @param {number} newEnd
      */
     set end(newEnd) {
-        this._end = newEnd;
+        this._end = Math.floor(newEnd);
         this.calcNumbers();
     }
 
