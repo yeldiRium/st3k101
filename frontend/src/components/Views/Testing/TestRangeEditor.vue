@@ -1,16 +1,23 @@
 <template>
     <div class="TestRange_container">
-        <RangeEditor/>
+        <RangeEditor :range="range"
+        />
     </div>
 </template>
 
 <script>
     import RangeEditor from "../../Partials/SurveyBase/Config/RangeEditor";
+    import Range from "../../../model/SurveyBase/Config/Range";
 
     export default {
         name: "TestRange",
         components: {
             RangeEditor
+        },
+        data() {
+            return {
+                range: new Range({start: 0, end: 10})
+            }
         }
     }
 </script>
@@ -22,5 +29,9 @@
 
         padding: 0;
         margin: 0;
+    }
+
+    .rangeeditor {
+        width: 400px;
     }
 </style>
