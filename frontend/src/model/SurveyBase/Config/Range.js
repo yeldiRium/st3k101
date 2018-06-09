@@ -26,7 +26,7 @@ class Range {
      */
     calcNumbers() {
         this._numbers = [];
-        for (let i = this._start; i < this._end; i++) {
+        for (let i = this._start; i <= this._end; i++) {
             this._numbers.push(i);
         }
     }
