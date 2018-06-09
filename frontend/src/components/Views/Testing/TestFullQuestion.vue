@@ -17,6 +17,7 @@
     import {ConcreteQuestion, ShadowQuestion} from "../../../model/SurveyBase/Question";
     import DataClient from "../../../model/DataClient";
     import {Language, LanguageData} from "../../../model/Language";
+    import Range from "../../../model/SurveyBase/Config/Range";
 
     export default {
         name: "TestQuestion",
@@ -41,7 +42,7 @@
                         dataClient,
                         languageData,
                         "Diese ConcreteQuestion gehört mir. Sie hat einen extra langen Text zum testen.",
-                        {end: 5},
+                        new Range({end: 5}),
                         5,
                         [
                             new Resource("http://blubblab/api/question/myidlel"),
@@ -54,7 +55,7 @@
                         dataClient,
                         languageData,
                         "Diese ShadowQuestion gehört mir.",
-                        {start: 2, end: 10, step: 2},
+                        new Range({start: 2, end: 10}),
                         new Resource("http://blubblab/api/question/someonesidlel")
                     ),
                     // Not owned ConcreteQuestion with 3 incoming references.
@@ -64,7 +65,7 @@
                         someoneElse,
                         languageData,
                         "Diese ConcreteQuestion gehört mir nicht. Sie hat einen extra langen Text zum testen.",
-                        {start: 0, end: 7},
+                        new Range({start: 0, end: 7}),
                         3,
                         [
                             new Resource("http://blubblab/api/question/myotheridkek")
@@ -76,7 +77,7 @@
                         someoneElse,
                         languageData,
                         "Diese ShadowQuestion gehört mir nicht.",
-                        {end: 5, step: 2},
+                        new Range({end: 5}),
                         new Resource("http://blubblab/api/question/someonesotheridtrell")
                     )
                 ]
