@@ -1,6 +1,3 @@
-/**
- * Immutable Range object.
- */
 class Range {
     /**
      * @param {number} start
@@ -27,16 +24,33 @@ class Range {
         this._step = step;
         /** @type {Array<number>} */
         this._numbers = [];
+        this.calcNumbers();
+    }
 
-        for (let i = start; i < end; i += step) {
+    /**
+     * Calculates the exact number range.
+     */
+    calcNumbers() {
+        this._numbers = [];
+        for (let i = this._start; i < this._end; i += this._step) {
             this._numbers.push(i);
         }
-        if (this._numbers[this._numbers.length - 1] !== end) {
-            this._numbers.push(end);
+        if (this._numbers[this._numbers.length - 1] !== this._end) {
+            this._numbers.push(this._end);
         }
     }
 
     /**
+     * Recalculates numbers when setting start value.
+     * @param {number} newStart
+     */
+    set start(newStart) {
+        this._start = newStart;
+        this.calcNumbers();
+    }
+
+    /**
+     * Getter for start.
      * @returns {number}
      */
     get start() {
@@ -44,6 +58,16 @@ class Range {
     }
 
     /**
+     * Recalculates numbers when setting end value.
+     * @param {number} newEnd
+     */
+    set end(newEnd) {
+        this._end = newEnd;
+        this.calcNumbers();
+    }
+
+    /**
+     * Getter for end.
      * @returns {number}
      */
     get end() {
@@ -51,6 +75,16 @@ class Range {
     }
 
     /**
+     * Recalculates numbers when setting step value.
+     * @param {number} newStep
+     */
+    set step(newStep) {
+        this._step = newStep;
+        this.calcNumbers();
+    }
+
+    /**
+     * Getter for step.
      * @returns {number}
      */
     get step() {
@@ -65,41 +99,8 @@ class Range {
     }
 }
 
-/**
- * Creates a new Range object with the given start value.
- *
- * @param {number} newStart
- * @param {Range} range
- */
-function setStart(newStart, range) {
-    return new Range({start: newStart, end: range.end, step: range.step});
-}
-
-/**
- * Creates a new Range object with the given end value.
- *
- * @param {number} newEnd
- * @param {Range} range
- */
-function setEnd(newEnd, range) {
-    return new Range({start: range.start, end: newEnd, step: range.step});
-}
-
-/**
- * Creates a new Range object with the given step value.
- *
- * @param {number} newStep
- * @param {Range} range
- */
-function setStep(newStep, range) {
-    return new Range({start: range.start, end: range.end, step: newStep});
-}
-
 export default Range;
 
 export {
-    Range,
-    setStart,
-    setEnd,
-    setStep
+    Range
 }
