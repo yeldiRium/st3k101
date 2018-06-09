@@ -1,19 +1,23 @@
 <template>
-    <nav class="menubar-container elevation-8">
-        <ul class="menubar-navigation">
+    <nav class="privatemenubar elevation-8">
+        <ul class="privatemenubar-navigation">
             <li>
-                <router-link to="/private/dashboard" class="menubar-link">
-                    <dashboard-icon class="menubar-icon" :style="iconStyle"/>
+                <router-link to="/private/dashboard"
+                             class="privatemenubar-link">
+                    <dashboard-icon class="privatemenubar-icon"
+                                    :style="iconStyle"/>
                 </router-link>
             </li>
             <li>
-                <router-link to="/private/questionnaires" class="menubar-link">
-                    <list-icon class="menubar-icon" :style="iconStyle"/>
+                <router-link to="/private/questionnaires"
+                             class="privatemenubar-link">
+                    <list-icon class="privatemenubar-icon" :style="iconStyle"/>
                 </router-link>
             </li>
             <li>
-                <router-link to="/private/account" class="menubar-link">
-                    <identity-icon class="menubar-icon" :style="iconStyle"/>
+                <router-link to="/private/account" class="privatemenubar-link">
+                    <identity-icon class="privatemenubar-icon"
+                                   :style="iconStyle"/>
                 </router-link>
             </li>
         </ul>
@@ -51,43 +55,42 @@
     @import "../../scss/_variables";
     @import "../../scss/_elevation";
 
-    .menubar-container {
+    .privatemenubar {
         background-color: $verydark;
-    }
 
-    .menubar-navigation {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        list-style: none;
-
-        > li {
+        &-navigation {
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
+            align-items: center;
+            list-style: none;
 
-            > a {
+            > li {
                 display: flex;
                 justify-content: center;
-                align-content: center;
+
+                > a {
+                    display: flex;
+                    justify-content: center;
+                    align-content: center;
+                }
             }
         }
-    }
 
-    .menubar-link {
-        height: 100%;
+        &-link {
+            height: 100%;
 
-        .menubar-icon {
-            fill: $primary-dark;
-        }
+            .privatemenubar-icon {
+                fill: $primary-dark;
+            }
 
-
-        &.router-link-active {
-            fill: $primary-light;
-
-            .menubar-icon {
+            &.router-link-active {
                 fill: $primary-light;
+
+                .privatemenubar-icon {
+                    fill: $primary-light;
+                }
             }
         }
     }
