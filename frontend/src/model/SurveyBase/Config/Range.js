@@ -36,6 +36,9 @@ class Range {
      * @param {number} newStart
      */
     set start(newStart) {
+        if (newStart >= this._end) {
+            throw new Error("Start must be smaller than end.");
+        }
         this._start = Math.floor(newStart);
         this.calcNumbers();
     }
@@ -53,6 +56,9 @@ class Range {
      * @param {number} newEnd
      */
     set end(newEnd) {
+        if (newEnd <= this._start) {
+            throw new Error("End must be bigger than start.");
+        }
         this._end = Math.floor(newEnd);
         this.calcNumbers();
     }
