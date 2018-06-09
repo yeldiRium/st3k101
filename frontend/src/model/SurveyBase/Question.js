@@ -24,10 +24,6 @@ class Question extends SurveyBase {
                 range) {
         super(href, owner, languageData);
 
-        if (!isRangeValid({start, end, step})) {
-            throw new Error(`Invalid range options: {start: ${start}, end: ${end}, step: ${step}.`);
-        }
-
         this.text = text;
         this.range = range;
     }
