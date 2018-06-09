@@ -15,6 +15,7 @@ import TestButtonBar from "../components/Views/Testing/TestButtonBar";
 import TestListItem from "../components/Views/Testing/TestListItem";
 import TestListQuestion from "../components/Views/Testing/TestListQuestion";
 import TestFullQuestion from "../components/Views/Testing/TestFullQuestion";
+import TestRangeEditor from "../components/Views/Testing/TestRangeEditor";
 
 Vue.use(Router);
 
@@ -87,6 +88,11 @@ export default new Router({
                     path: "FullQuestion",
                     name: "FullQuestion",
                     component: TestFullQuestion
+                },
+                {
+                    path: "RangeEditor",
+                    name: "RangeEditor",
+                    component: TestRangeEditor
                 }
             ]
         }
