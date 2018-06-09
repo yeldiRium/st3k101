@@ -10,12 +10,11 @@ import Questionnaires from "../components/Views/Private/Questionnaires";
 import Account from "../components/Views/Private/Account";
 
 import TestingBase from "../components/Views/Testing/Base";
-import TestDiamondFloatingButton from "../components/Views/Testing/TestDiamondFloatingButton";
-import TestButtonBar from "../components/Views/Testing/TestButtonBar";
 import TestListItem from "../components/Views/Testing/TestListItem";
 import TestListQuestion from "../components/Views/Testing/TestListQuestion";
 import TestFullQuestion from "../components/Views/Testing/TestFullQuestion";
 import TestRangeEditor from "../components/Views/Testing/TestRangeEditor";
+import TestPrivateMenuBar from "../components/Views/Testing/TestPrivateMenuBar";
 
 Vue.use(Router);
 
@@ -65,33 +64,23 @@ export default new Router({
 
             children: [
                 {
-                    path: "DFB",
-                    name: "DiamondFloatingButton",
-                    component: TestDiamondFloatingButton
-                },
-                {
-                    path: "ButtonBar",
-                    name: "ButtonBar",
-                    component: TestButtonBar
+                    path: "PMB",
+                    component: TestPrivateMenuBar
                 },
                 {
                     path: "ListItem",
-                    name: "ListItem",
                     component: TestListItem
                 },
                 {
                     path: "ListQuestion",
-                    name: "ListQuestion",
                     component: TestListQuestion
                 },
                 {
                     path: "FullQuestion",
-                    name: "FullQuestion",
                     component: TestFullQuestion
                 },
                 {
                     path: "RangeEditor",
-                    name: "RangeEditor",
                     component: TestRangeEditor
                 }
             ]
