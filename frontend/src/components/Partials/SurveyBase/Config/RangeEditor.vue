@@ -5,6 +5,9 @@
                 start
                 <input type="number"
                        name="start"
+                       min="0"
+                       step="1"
+                       :max="range.end - 1"
                        class="rangeeditor-config-input"
                        v-model="range.start"
                 >
@@ -13,6 +16,8 @@
                 end
                 <input type="number"
                        name="end"
+                       :min="range.start + 1"
+                       step="1"
                        class="rangeeditor-config-input"
                        v-model="range.end"
                 >
@@ -20,8 +25,7 @@
         </div>
         <div class="rangeeditor-preview">
             <RangeComponent :range="range"
-                            :preview="false"
-                            :startSelector="3"
+                            :preview="true"
             />
         </div>
     </div>
