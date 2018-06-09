@@ -18,6 +18,7 @@
                         v-if="question.isConcrete"
             />
             <RangeEditor :range="question.range"
+                         v-if="!disabled(question)"
             />
             <div class="full-question-delete"
                  v-if="!disabled(question)"
@@ -91,6 +92,8 @@
     @import "../../../scss/_variables";
 
     .list-item.list-question {
+        cursor: pointer;
+
         background-color: $primary;
 
         &.disabled {
