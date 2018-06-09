@@ -8,7 +8,7 @@
             {{toUpper(languageData.currentLanguage.shortName)}}
         </div>
 
-        <div class="languagepicker-languagemenu"
+        <div class="languagepicker-languagemenu elevation-24"
              :style="menuStyle"
              v-click-outside="closeLanguageMenu"
              v-if="menuOpen"
@@ -116,7 +116,7 @@
 
 <style lang="scss">
     @import "../scss/_variables";
-    @import "../scss/_mixins";
+    @import "../scss/_elevation";
 
     .languagepicker-currentlanguage {
         background-color: $lighter;
@@ -126,8 +126,6 @@
     }
 
     .languagepicker-languagemenu {
-        @include card(5);
-
         position: absolute;
         padding-top: 5px;
         padding-bottom: 5px;
