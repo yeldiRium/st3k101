@@ -71,6 +71,14 @@ class Range {
     get numbers() {
         return this._numbers;
     }
+
+    /**
+     *
+     * @returns {number}
+     */
+    get span() {
+        return this._end - this._start + 1;
+    }
 }
 
 export default Range;
