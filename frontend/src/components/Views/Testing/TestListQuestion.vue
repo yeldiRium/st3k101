@@ -16,7 +16,7 @@
     import Range from "../../../model/SurveyBase/Config/Range";
 
     export default {
-        name: "TestQuestion",
+        name: "TestListQuestion",
         components: {
             ListQuestion
         },
