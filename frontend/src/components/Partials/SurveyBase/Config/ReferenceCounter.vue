@@ -1,5 +1,5 @@
 <template>
-    <div class="config-references">
+    <div class="referencecounter">
         {{ referenceLine }}
     </div>
 </template>
@@ -10,7 +10,7 @@
      * Dimension and Questionnaires by duck-typing.
      */
     export default {
-        name: "Config-References",
+        name: "ReferenceCounter",
         props: {
             object: {
                 type: Object

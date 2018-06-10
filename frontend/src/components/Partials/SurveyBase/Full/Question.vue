@@ -14,8 +14,8 @@
              ref="dropdown"
              v-if="expanded"
         >
-            <References :object="question"
-                        v-if="question.isConcrete"
+            <ReferenceCounter :object="question"
+                              v-if="question.isConcrete"
             />
             <RangeEditor :range="question.range"
                          v-if="!disabled(question)"
@@ -42,7 +42,7 @@
 <script>
     import QuestionBase from "../QuestionBase";
     import ListQuestion from "../List/Question";
-    import References from "../Config/References";
+    import ReferenceCounter from "../Config/ReferenceCounter";
     import RangeEditor from "../Config/RangeEditor";
 
     export default {
@@ -50,7 +50,7 @@
         extends: QuestionBase,
         components: {
             ListQuestion,
-            References,
+            ReferenceCounter,
             RangeEditor
         },
         props: {
@@ -116,6 +116,10 @@
         display: flex;
         flex-flow: column;
         align-items: center;
+
+        .referencecounter {
+            margin-bottom: 8px;
+        }
 
         .full-question-delete {
             margin-top: 8px;
