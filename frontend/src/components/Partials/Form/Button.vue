@@ -67,6 +67,7 @@
 
 <style lang="scss">
     @import "../../scss/_variables";
+    @import "../../scss/_elevation";
 
     .button {
         height: 1em;
