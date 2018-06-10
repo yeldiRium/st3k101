@@ -15,6 +15,7 @@ import TestListQuestion from "../components/Views/Testing/TestListQuestion";
 import TestFullQuestion from "../components/Views/Testing/TestFullQuestion";
 import TestRangeEditor from "../components/Views/Testing/TestRangeEditor";
 import TestPrivateMenuBar from "../components/Views/Testing/TestPrivateMenuBar";
+import TestToggle from "../components/Views/Testing/TestToggle";
 
 Vue.use(Router);
 
@@ -82,6 +83,10 @@ export default new Router({
                 {
                     path: "RangeEditor",
                     component: TestRangeEditor
+                },
+                {
+                    path: "Toggle",
+                    component: TestToggle
                 }
             ]
         }
