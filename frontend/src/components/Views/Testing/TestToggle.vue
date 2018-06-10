@@ -1,5 +1,5 @@
 <template>
-    <div class="TestRange_container">
+    <div class="TestToggle_container">
         <Toggle v-model="on1"
         >
             <template slot="off">
@@ -51,7 +51,7 @@
 </script>
 
 <style lang="scss">
-    .TestRange_container {
+    .TestToggle_container {
         width: 100%;
         height: 100%;
 
