@@ -1,5 +1,9 @@
 <template>
-    <router-view />
+    <div id="app">
+        <router-view />
+        <v-dialog />
+        <modals-container />
+    </div>
 </template>
 
 <script>
