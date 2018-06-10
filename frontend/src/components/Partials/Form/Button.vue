@@ -5,7 +5,7 @@
          @mouseover="raise"
          @mouseout="lower"
     >
-        {{ text }}
+        <slot></slot>
     </div>
 </template>
 
@@ -16,9 +16,6 @@
     export default {
         name: "Button",
         props: {
-            text: {
-                type: String
-            },
             elevation: {
                 type: Number,
                 default: 0

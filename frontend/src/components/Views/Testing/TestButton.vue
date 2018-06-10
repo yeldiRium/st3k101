@@ -1,16 +1,18 @@
 <template>
     <div class="TestButton_container">
-        <Button text="Dies ist ButtonText"
-                @click="handler1"
-        />
-        <Button text="Noch mehr Buttontext"
-                @click="handler2"
+        <Button @click="handler1">
+            Dies ist ButtonText
+        </Button>
+        <Button @click="handler2"
                 :elevation="6"
-        />
-        <Button text="Ein abgehobener Button mit viel content."
-                @click="handler2"
+        >
+            Noch mehr Buttontext
+        </Button>
+        <Button @click="handler2"
                 :elevation="12"
-        />
+        >
+            Ein abgehobener Button mit viel content.
+        </Button>
     </div>
 </template>
 
