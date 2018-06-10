@@ -17,6 +17,7 @@ import TestRangeEditor from "../components/Views/Testing/TestRangeEditor";
 import TestPrivateMenuBar from "../components/Views/Testing/TestPrivateMenuBar";
 import TestToggle from "../components/Views/Testing/TestToggle";
 import TestModal from "../components/Views/Testing/TestModal";
+import TestButton from "../components/Views/Testing/TestButton";
 
 Vue.use(Router);
 
@@ -92,6 +93,10 @@ export default new Router({
                 {
                     path: "Modal",
                     component: TestModal
+                },
+                {
+                    path: "Button",
+                    component: TestButton
                 }
             ]
         }
