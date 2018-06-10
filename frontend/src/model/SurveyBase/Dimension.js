@@ -1,7 +1,7 @@
 import Future from "fluture";
 
 import Party from "../Party";
-import Question, {populateOwnedIncomingReferences} from "./Question";
+import Question from "./Question";
 import SurveyBase from "./SurveyBase";
 
 class Dimension extends SurveyBase {
