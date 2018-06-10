@@ -14,8 +14,8 @@
         <LanguagePicker class="list-item-languagepicker"
                         :language-data="question.languageData"
                         v-if="!disableLanguagePicker"
-                        @change-language="changeLanguage"
-                        @change-language-unavailable="addNewTranslation"
+                        @choose-language="changeLanguage"
+                        @choose-language-unavailable="addNewTranslation"
         />
         <IconReorder class="list-item-icon"
                      v-if="draggable"

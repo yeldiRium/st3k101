@@ -21,7 +21,7 @@
             <div class="languagepicker-languagemenu-item"
                  v-for="language in languageData.availableLanguages"
                  :key="language.shortName"
-                 @click="$emit('change-language', language)"
+                 @click="$emit('choose-language', language)"
             >
                 <span class="languagepicker-languagemenu-short">
                     {{ toUpper(language.shortName) }}
@@ -40,7 +40,7 @@
             <div class="languagepicker-languagemenu-item"
                  v-for="language in unusedLanguages"
                  :key="language.shortName"
-                 @click="$emit('change-language-unavailable', language)"
+                 @click="$emit('choose-language-unavailable', language)"
             >
                 <span class="languagepicker-languagemenu-short">
                     {{ toUpper(language.shortName) }}
