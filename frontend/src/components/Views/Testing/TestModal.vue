@@ -11,21 +11,31 @@
         <button @click="click3">
             Dialog mit Question drin.
         </button>
+        <br/><br/>
+        <button @click="click4">
+            Create Resource Base-Dialog.
+        </button>
+        <br/><br/>
+        <button @click="click5">
+            Create Question Dialog.
+        </button>
     </div>
 </template>
 
 <script>
-    import FullQuestion from "../../Partials/SurveyBase/Full/Question";
+    import {mapState} from "vuex";
+
     import {ConcreteQuestion} from "../../../model/SurveyBase/Question";
     import {Resource} from "../../../model/Resource";
     import {Range} from "../../../model/SurveyBase/Config/Range";
     import {Language, LanguageData} from "../../../model/Language";
 
+    import FullQuestion from "../../Partials/SurveyBase/Full/Question";
+    import CreateResource from "../../Partials/Popup/CreateResource";
+    import CreateQuestion from "../../Partials/Popup/CreateQuestion";
+
     export default {
         name: "TestModal",
-        components: {
-            FullQuestion
-        },
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
             const english = new Language("en", "English");
@@ -94,7 +104,44 @@
                         width: "80%"
                     }
                 )
+            },
+            click4() {
+                let width = "80%";
+                if (this.window.width * .8 > 400) {
+                    width = "400px";
+                }
+
+                this.$modal.show(
+                    CreateResource,
+                    {},
+                    {
+                        height: "auto",
+                        width: width
+                    }
+                )
+            },
+            click5() {
+                let width = "80%";
+                if (this.window.width * .8 > 400) {
+                    width = "400px";
+                }
+
+                let english = new Language("en", "English");
+
+                this.$modal.show(
+                    CreateQuestion,
+                    {
+                        language: english
+                    },
+                    {
+                        height: "auto",
+                        width: width
+                    }
+                );
             }
+        },
+        computed: {
+            ...mapState("global", ["window"])
         }
     }
 </script>
