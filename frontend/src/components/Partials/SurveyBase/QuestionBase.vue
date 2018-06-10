@@ -7,9 +7,7 @@
     import SurveyBase from "./SurveyBase";
 
     /**
-     * Defines some properties and computed propertes for OwnedResources.
-     *
-     * Can and should be used as BaseComponent for all SurveyBase components.
+     * Defines some properties and computed propertes for Questions.
      */
     export default {
         name: "QuestionBase",
