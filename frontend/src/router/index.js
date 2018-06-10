@@ -18,6 +18,7 @@ import TestPrivateMenuBar from "../components/Views/Testing/TestPrivateMenuBar";
 import TestToggle from "../components/Views/Testing/TestToggle";
 import TestModal from "../components/Views/Testing/TestModal";
 import TestButton from "../components/Views/Testing/TestButton";
+import TestListDimension from "../components/Views/Testing/TestListDimension";
 
 Vue.use(Router);
 
@@ -97,6 +98,10 @@ export default new Router({
                 {
                     path: "Button",
                     component: TestButton
+                },
+                {
+                    path: "ListDimension",
+                    component: TestListDimension
                 }
             ]
         }
