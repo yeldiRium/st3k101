@@ -6,7 +6,7 @@
              v-on="$listeners"
         >
             <EditableText v-model="text"
-                          v-if="editableText"
+                          v-if="editableText && !disabled"
             />
             <template v-else>
                 {{ text }}
@@ -43,6 +43,7 @@
             subtext: {
                 type: String
             },
+            // Overrides editableText
             disabled: {
                 type: Boolean,
                 default: false
