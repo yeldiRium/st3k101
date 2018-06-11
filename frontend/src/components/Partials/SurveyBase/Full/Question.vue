@@ -8,6 +8,7 @@
                       :draggable="true"
                       :ellipseText="false"
                       @click="toggleExpanded"
+                      :disableEditing="disableEditing"
         />
 
         <div class="full-question-body"
@@ -35,6 +36,7 @@
                       :draggable="draggable"
                       :ellipseText="true"
                       @click="toggleExpanded"
+                      :disableEditing="disableEditing"
         />
     </div>
 </template>
