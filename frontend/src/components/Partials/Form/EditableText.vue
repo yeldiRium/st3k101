@@ -44,6 +44,9 @@
             startEditing() {
                 this.editing = true;
                 this.storedValue = this.value;
+                this.$nextTick(() => {
+                    this.$refs.input.focus();
+                })
             },
             finishEditing() {
                 this.editing = false;
