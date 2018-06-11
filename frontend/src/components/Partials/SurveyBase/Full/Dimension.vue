@@ -7,9 +7,17 @@
                        :disableSubText="true"
                        :draggable="true"
                        :ellipseText="false"
-                       @click="toggleExpanded"
                        :disableEditing="disableEditing"
-        />
+        >
+            <IconExpandLess class="list-item-icon"
+                            v-if="expanded"
+                            @click.native="toggleExpanded"
+            />
+            <IconExpandMore class="list-item-icon"
+                            v-else
+                            @click.native="toggleExpanded"
+            />
+        </ListDimension>
 
         <div class="full-dimension-body"
              ref="dropdown"
@@ -61,9 +69,17 @@
         <ListDimension :dimension="dimension"
                        :draggable="draggable"
                        :ellipseText="true"
-                       @click="toggleExpanded"
                        :disableEditing="disableEditing"
-        />
+        >
+            <IconExpandLess class="list-item-icon"
+                            v-if="expanded"
+                            @click.native="toggleExpanded"
+            />
+            <IconExpandMore class="list-item-icon"
+                            v-else
+                            @click.native="toggleExpanded"
+            />
+        </ListDimension>
     </div>
 </template>
 
@@ -79,6 +95,9 @@
     import ReferenceCounter from "../Config/ReferenceCounter";
     import Toggle from "../../Form/Toggle";
 
+    import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
+    import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
+
     export default {
         name: "Full-Dimension",
         extends: DimensionBase,
@@ -88,7 +107,9 @@
             CreateQuestion,
             ListItem,
             ReferenceCounter,
-            Toggle
+            Toggle,
+            IconExpandLess,
+            IconExpandMore
         },
         props: {
             initiallyExpanded: {

@@ -7,9 +7,17 @@
                       :disableSubText="true"
                       :draggable="true"
                       :ellipseText="false"
-                      @click="toggleExpanded"
                       :disableEditing="disableEditing"
-        />
+        >
+            <IconExpandLess class="list-item-icon"
+                            v-if="expanded"
+                            @click.native="toggleExpanded"
+            />
+            <IconExpandMore class="list-item-icon"
+                            v-else
+                            @click.native="toggleExpanded"
+            />
+        </ListQuestion>
 
         <div class="full-question-body"
              ref="dropdown"
@@ -35,9 +43,17 @@
         <ListQuestion :question="question"
                       :draggable="draggable"
                       :ellipseText="true"
-                      @click="toggleExpanded"
                       :disableEditing="disableEditing"
-        />
+        >
+            <IconExpandLess class="list-item-icon"
+                            v-if="expanded"
+                            @click.native="toggleExpanded"
+            />
+            <IconExpandMore class="list-item-icon"
+                            v-else
+                            @click.native="toggleExpanded"
+            />
+        </ListQuestion>
     </div>
 </template>
 
@@ -47,13 +63,18 @@
     import ReferenceCounter from "../Config/ReferenceCounter";
     import RangeEditor from "../Config/RangeEditor";
 
+    import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
+    import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
+
     export default {
         name: "Full-Question",
         extends: QuestionBase,
         components: {
             ListQuestion,
             ReferenceCounter,
-            RangeEditor
+            RangeEditor,
+            IconExpandLess,
+            IconExpandMore
         },
         props: {
             initiallyExpanded: {
