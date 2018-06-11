@@ -21,7 +21,7 @@
             <div class="languagepicker-languagemenu-item"
                  v-for="language in languageData.availableLanguages"
                  :key="language.shortName"
-                 @click="$emit('choose-language', language)"
+                 @click="chooseLanguage(language)"
             >
                 <span class="languagepicker-languagemenu-short">
                     {{ toUpper(language.shortName) }}
@@ -40,7 +40,7 @@
             <div class="languagepicker-languagemenu-item"
                  v-for="language in unusedLanguages"
                  :key="language.shortName"
-                 @click="$emit('choose-language-unavailable', language)"
+                 @click="chooseLanguage(language, false)"
             >
                 <span class="languagepicker-languagemenu-short">
                     {{ toUpper(language.shortName) }}
@@ -108,6 +108,14 @@
             },
             closeLanguageMenu() {
                 this.menuOpen = false;
+            },
+            chooseLanguage(language, available = true) {
+                if (available) {
+                    this.$emit('choose-language', language);
+                } else {
+                    this.$emit('choose-language-unavailable', language)
+                }
+                this.closeLanguageMenu();
             },
             toUpper
         }
