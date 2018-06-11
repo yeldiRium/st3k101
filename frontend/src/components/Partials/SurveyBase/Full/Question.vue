@@ -7,30 +7,29 @@
                       :disableSubText="true"
                       :draggable="true"
                       :ellipseText="false"
-                      :disableEditing="disableEditing"
         >
             <IconExpandLess class="list-item-icon"
-                            v-if="expanded"
-                            @click.native="toggleExpanded"
-            />
-            <IconExpandMore class="list-item-icon"
-                            v-else
                             @click.native="toggleExpanded"
             />
         </ListQuestion>
 
         <div class="full-question-body"
              ref="dropdown"
-             v-if="expanded"
         >
             <ReferenceCounter :object="question"
                               v-if="question.isConcrete"
             />
-            <RangeEditor :range="question.range"
-                         v-if="!disabled(question)"
-            />
+            <template>
+                <RangeEditor :range="question.range"
+                             v-if="isOwnedByCurrentDataClient(question)"
+                />
+                <Range :range="question.range"
+                       :preview="true"
+                       v-else
+                />
+            </template>
             <div class="full-question-delete"
-                 v-if="isOwnedByCurrentDataClient(question) && !undeletable"
+                 v-if="isDeletable(question)"
                  @click="deleteQuestion"
             >
                 delete
@@ -44,14 +43,8 @@
         <ListQuestion :question="question"
                       :draggable="draggable"
                       :ellipseText="true"
-                      :disableEditing="disableEditing"
         >
-            <IconExpandLess class="list-item-icon"
-                            v-if="expanded"
-                            @click.native="toggleExpanded"
-            />
             <IconExpandMore class="list-item-icon"
-                            v-else
                             @click.native="toggleExpanded"
             />
         </ListQuestion>
@@ -63,6 +56,7 @@
     import ListQuestion from "../List/Question";
     import ReferenceCounter from "../Config/ReferenceCounter";
     import RangeEditor from "../Config/RangeEditor";
+    import Range from "../Config/Range";
 
     import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
@@ -74,6 +68,7 @@
             ListQuestion,
             ReferenceCounter,
             RangeEditor,
+            Range,
             IconExpandLess,
             IconExpandMore
         },
@@ -97,7 +92,7 @@
         computed: {
             classes() {
                 return {
-                    disabled: this.disabled(this.question)
+                    disabled: !this.isEditable(this.question)
                 }
             }
         },
@@ -141,9 +136,17 @@
     }
 
     .full-question-body {
+        width: 80%;
+        align-self: center;
+
         display: flex;
         flex-flow: column;
         align-items: center;
+
+        > * {
+            width: 100%;
+            text-align: center;
+        }
 
         .referencecounter {
             margin-bottom: 8px;

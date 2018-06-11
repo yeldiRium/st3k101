@@ -5,14 +5,12 @@
               :text="dimension.name"
               :subtext="subtext"
               :mini="disableSubText"
-              :disabled="disabled(dimension)"
-              :icons="iconsNeeded(dimension)"
+              :disabled="!isEditable(dimension)"
               @edit="updateDimensionName"
     >
         <slot></slot>
         <LanguagePicker class="list-item-languagepicker"
                         :language-data="dimension.languageData"
-                        v-if="!disableLanguagePicker"
                         @choose-language="changeLanguage"
                         @choose-language-unavailable="addNewTranslation"
         />
@@ -31,13 +29,13 @@
     import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
 
     /**
-     * Displays a Question as a ListElement.
+     * Displays a Dimension as a ListElement.
      *
-     * Does not display all the Question's state because of space reasons. To
-     * display all Question state use the Full/Question component.
+     * Does not display all the Dimension's state because of space reasons. To
+     * display all Dimension state use the FullDimension component.
      *
-     * The Question will be disabled (uneditable), if it is a ShadowQuestion or
-     * any Question type not owned by the current DataClient.
+     * The Dimension will be uneditable, if it is a ShadowDimension or not owned
+     * by the current DataClient.
      */
     export default {
         name: "List-Dimension",
@@ -49,18 +47,7 @@
             IconReorder
         },
         props: {
-            /**
-             * If icons are disabled, the language picker is not available.
-             */
-            disableIcons: {
-                type: Boolean,
-                default: false
-            },
             disableSubText: {
-                type: Boolean,
-                default: false
-            },
-            disableLanguagePicker: {
                 type: Boolean,
                 default: false
             }
@@ -78,18 +65,6 @@
         },
         methods: {
             /**
-             * Whether Icons on the ListElement will be needed.
-             * @returns {boolean}
-             */
-            iconsNeeded(question) {
-                return !this.disableIcons
-                    && (
-                        this.draggable
-                        || this.convertable(question)
-                        || !this.disableLanguagePicker
-                    );
-            },
-            /**
              * Switch the Question to the given language.
              * @param {Language} language
              */
@@ -103,6 +78,7 @@
              * @param language
              */
             addNewTranslation(language) {
+                // TODO: clarify, when this should be available
                 // TODO: create new translation
                 // this.question.fetchTranslation(language);
             },

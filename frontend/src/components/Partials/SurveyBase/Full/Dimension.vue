@@ -7,27 +7,22 @@
                        :disableSubText="true"
                        :draggable="true"
                        :ellipseText="false"
-                       :disableEditing="disableEditing"
         >
             <IconExpandLess class="list-item-icon"
-                            v-if="expanded"
-                            @click.native="toggleExpanded"
-            />
-            <IconExpandMore class="list-item-icon"
-                            v-else
                             @click.native="toggleExpanded"
             />
         </ListDimension>
 
         <div class="full-dimension-body"
              ref="dropdown"
-             v-if="expanded"
         >
             <ReferenceCounter :object="dimension"
                               v-if="dimension.isConcrete"
             />
 
-            <Toggle v-model="dimension.randomizeQuestions">
+            <Toggle v-model="dimension.randomizeQuestions"
+                    :disabled="!isOwnedByCurrentDataClient(dimension)"
+            >
                 <template slot="off">
                     in order
                 </template>
@@ -40,25 +35,24 @@
                 <FullQuestion v-for="question in dimension.questions"
                               :key="question.href"
                               :question="question"
-                              :disableEditing="disableEditingQuestion(question)"
-                              :undeletable="dimension.isShadow"
+                              :deletable="dimension.isConcrete"
                               @question-deleted="handleDeletedQuestion"
                 />
 
                 <ListItem class="full-dimension-add-question"
-                          v-if="editable(dimension)"
+                          v-if="isEditable(dimension)"
                           text="Add new Question"
                           :disableSubtext="true"
                           @click="addNewQuestion"
                 />
-                <CreateQuestion v-if="editable(dimension)"
+                <CreateQuestion v-if="isEditable(dimension)"
                                 :language="dimension.languageData.currentLanguage"
                                 @question-created="handleCreatedQuestion"
                 />
             </div>
 
             <div class="full-dimension-delete"
-                 v-if="isOwnedByCurrentDataClient(dimension) && !undeletable"
+                 v-if="isDeletable(dimension)"
                  @click="deleteDimension"
             >
                 delete
@@ -72,14 +66,8 @@
         <ListDimension :dimension="dimension"
                        :draggable="draggable"
                        :ellipseText="true"
-                       :disableEditing="disableEditing"
         >
-            <IconExpandLess class="list-item-icon"
-                            v-if="expanded"
-                            @click.native="toggleExpanded"
-            />
             <IconExpandMore class="list-item-icon"
-                            v-else
                             @click.native="toggleExpanded"
             />
         </ListDimension>
@@ -87,7 +75,6 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
     import {without} from "ramda";
 
     import DimensionBase from "../DimensionBase";
@@ -135,7 +122,7 @@
         computed: {
             classes() {
                 return {
-                    disabled: this.disabled(this.dimension)
+                    disabled: !this.isEditable(this.dimension)
                 }
             }
         },
@@ -143,14 +130,9 @@
             toggleExpanded() {
                 this.expanded = !this.expanded;
             },
-            disableEditingQuestion(question) {
-                return !this.isOwnedByCurrentDataClient(this.dimension)
-                    || this.dimension.isShadow;
-            },
             addNewQuestion() {
                 this.$modal.show(
-                    "create-question",
-                    {}
+                    "create-question"
                 )
             },
             handleCreatedQuestion(question) {

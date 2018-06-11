@@ -13,24 +13,16 @@
         name: "SurveyBase",
         props: {
             /**
-             * Set this to prevent editing of any kind (including deletion or
-             * adding children).
+             * Set to false to prevent this from being deleted.
              */
-            disableEditing: {
+            deletable: {
                 type: Boolean,
-                default: false
+                default: true
             },
             /** @type boolean */
             draggable: {
                 type: Boolean,
                 default: true
-            },
-            /**
-             * Set to prevent this from being deleted.
-             */
-            undeletable: {
-                type: Boolean,
-                default: false
             }
         },
         computed: {
@@ -48,17 +40,25 @@
             /**
              * Whether the SurveyBase is editable.
              *
-             * Expects ownedResource to have an `isShadow` getter.
+             * This usually means if adding/removing children and changing cer-
+             * tain fields is allowed.
              *
              * @param {OwnedResource} ownedResource
-             * @returns {boolean}
+             * @returns {Boolean}
              */
-            editable(ownedResource) {
+            isEditable(ownedResource) {
                 return this.isOwnedByCurrentDataClient(ownedResource)
                     && !ownedResource.isShadow;
             },
-            disabled(ownedResource) {
-                return !this.editable(ownedResource) || this.disableEditing;
+            /**
+             * Whether the SurveyBase is deletable.
+             *
+             * @param {OwnedResource} ownedResource
+             * @returns {Boolean}
+             */
+            isDeletable(ownedResource) {
+                return this.isOwnedByCurrentDataClient(ownedResource)
+                    && this.deletable;
             },
             /**
              * Whether a ShadowObject can be converted to a ConcreteObject.

@@ -3,15 +3,12 @@
               v-bind="$attrs"
               v-on="$listeners"
               :text="question.text"
-              :subtext="subtext"
-              :mini="question.isShadow || disableSubText"
-              :disabled="disabled(question)"
-              :icons="iconsNeeded(question)"
+              :mini="true"
+              :disabled="!isEditable(question)"
               @edit="updateQuestionText"
     >
         <slot></slot>
         <LanguagePicker class="list-item-languagepicker"
-                        v-if="!disableLanguagePicker"
                         :language-data="question.languageData"
                         @choose-language="changeLanguage"
                         @choose-language-unavailable="addNewTranslation"
@@ -36,8 +33,8 @@
      * Does not display all the Question's state because of space reasons. To
      * display all Question state use the Full/Question component.
      *
-     * The Question will be disabled (uneditable), if it is a ShadowQuestion or
-     * any Question type not owned by the current DataClient.
+     * The Question will be uneditable (text can't be changed), if it is a Sha-
+     * dowQuestion or not owned by the current DataClient.
      */
     export default {
         name: "List-Question",
@@ -48,48 +45,7 @@
             IconEdit,
             IconReorder
         },
-        props: {
-            /**
-             * If icons are disabled, the language picker is not available.
-             */
-            disableIcons: {
-                type: Boolean,
-                default: false
-            },
-            disableSubText: {
-                type: Boolean,
-                default: false
-            },
-            disableLanguagePicker: {
-                type: Boolean,
-                default: false
-            }
-        },
-        computed: {
-            /**
-             * @returns {string}
-             */
-            subtext() {
-                if (this.question.isShadow) {
-                    return "";
-                } else {
-                    return `${this.question.incomingReferenceCount} references.`;
-                }
-            }
-        },
         methods: {
-            /**
-             * Whether Icons on the ListElement will be needed.
-             * @returns {boolean}
-             */
-            iconsNeeded(question) {
-                return !this.disableIcons
-                    && (
-                        this.draggable
-                        || this.convertable(question)
-                        || !this.disableLanguagePicker
-                    );
-            },
             /**
              * Switch the Question to the given language.
              * @param {Language} language
@@ -104,10 +60,14 @@
              * @param language
              */
             addNewTranslation(language) {
+                // TODO: clarify, when this should be available
                 // TODO: create new translation
                 // this.question.fetchTranslation(language);
             },
             updateQuestionText(text) {
+                if (!this.isEditable(this.question)) {
+                    return;
+                }
                 // TODO: set via API.
                 this.question.text = text;
             }
