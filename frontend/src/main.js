@@ -14,7 +14,7 @@ import store from "./store";
 
 Vue.use(Vuex);
 Vue.use(vClickOutside);
-Vue.use(vModal, { dialog: true, dynamic: true });
+Vue.use(vModal, { dialog: true });
 
 Vue.config.productionTip = false;
 

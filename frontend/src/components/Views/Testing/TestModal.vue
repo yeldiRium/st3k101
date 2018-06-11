@@ -13,12 +13,9 @@
         </button>
         <br/><br/>
         <button @click="click4">
-            Create Resource Base-Dialog.
-        </button>
-        <br/><br/>
-        <button @click="click5">
             Create Question Dialog.
         </button>
+        <CreateQuestion />
     </div>
 </template>
 
@@ -36,6 +33,9 @@
 
     export default {
         name: "TestModal",
+        components: {
+            CreateQuestion
+        },
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
             const english = new Language("en", "English");
@@ -111,25 +111,10 @@
                     width = "400px";
                 }
 
-                this.$modal.show(
-                    CreateResource,
-                    {},
-                    {
-                        height: "auto",
-                        width: width
-                    }
-                )
-            },
-            click5() {
-                let width = "80%";
-                if (this.window.width * .8 > 400) {
-                    width = "400px";
-                }
-
                 let english = new Language("en", "English");
 
                 this.$modal.show(
-                    CreateQuestion,
+                    "create-question",
                     {
                         language: english
                     },

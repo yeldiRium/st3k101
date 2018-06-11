@@ -1,19 +1,21 @@
 <template>
-    <CreateResource
-            @cancel="cancel"
-            @create="create"
-    >
-        <template slot="header">
-            Create new Question
-        </template>
-        <template slot="body">
-            <input class="popup-createquestion-questiontext"
-                   name="questiontext"
-                   v-model="text"
-            />
-            <RangeEditor :range="range"/>
-        </template>
-    </CreateResource>
+    <modal name="create-question">
+        <CreateResource
+                @cancel="cancel"
+                @create="create"
+        >
+            <template slot="header">
+                Create new Question
+            </template>
+            <template slot="body">
+                <input class="popup-createquestion-questiontext"
+                       name="questiontext"
+                       v-model="text"
+                />
+                <RangeEditor :range="range"/>
+            </template>
+        </CreateResource>
+    </modal>
 </template>
 
 <script>
@@ -49,7 +51,7 @@
         },
         methods: {
             cancel() {
-                this.$emit("close");
+                this.$modal.hide("create-question");
             },
             /**
              * Creates the question and emits it via a "question-created" event.
@@ -83,8 +85,8 @@
 
                 console.log(question);
 
-                this.$emit("close");
                 this.$emit("question-created", question);
+                this.$modal.hide("create-question");
             }
         }
     }
