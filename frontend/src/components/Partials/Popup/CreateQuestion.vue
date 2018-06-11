@@ -1,5 +1,7 @@
 <template>
-    <modal name="create-question">
+    <modal name="create-question"
+           height="auto"
+    >
         <CreateResource
                 @cancel="cancel"
                 @create="create"

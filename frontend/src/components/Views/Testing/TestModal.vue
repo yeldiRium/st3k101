@@ -106,10 +106,6 @@
                 )
             },
             click4() {
-                let width = "80%";
-                if (this.window.width * .8 > 400) {
-                    width = "400px";
-                }
 
                 let english = new Language("en", "English");
 
@@ -117,16 +113,9 @@
                     "create-question",
                     {
                         language: english
-                    },
-                    {
-                        height: "auto",
-                        width: width
                     }
                 );
             }
-        },
-        computed: {
-            ...mapState("global", ["window"])
         }
     }
 </script>
