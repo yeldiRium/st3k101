@@ -1,5 +1,7 @@
 <template>
-    <div class="popup-createresource">
+    <div class="popup-createresource"
+         @keyup.enter="enter"
+    >
         <div class="popup-createresource-header">
             <slot name="header"></slot>
         </div>
@@ -54,7 +56,26 @@
             },
             create() {
                 this.$emit("create");
+            },
+            onKeyUp() {
+                // Enter key was pressed
+                if (event.which == 13) {
+                    this.$emit("create");
+                    return;
+                }
+
+                // Escape key was pressed
+                if (event.which == 27) {
+                    this.$emit("cancel");
+                    return;
+                }
             }
+        },
+        beforeMount() {
+            window.addEventListener("keyup", this.onKeyUp);
+        },
+        beforeDestroy() {
+            window.removeEventListener("keyup", this.onKeyUp);
         }
     }
 </script>
