@@ -30,7 +30,8 @@
                          v-if="!disabled(question)"
             />
             <div class="full-question-delete"
-                 v-if="!disabled(question)"
+                 v-if="isOwnedByCurrentDataClient(question) && !undeletable"
+                 @click="deleteQuestion"
             >
                 delete
             </div>
@@ -104,6 +105,10 @@
             toggleExpanded() {
                 this.expanded = !this.expanded;
             },
+            deleteQuestion() {
+                // TODO: delete via API.
+                this.$emit("question-deleted", this.question);
+            }
         },
         created() {
             this.expanded = this.initiallyExpanded;

@@ -41,6 +41,8 @@
                               :key="question.href"
                               :question="question"
                               :disableEditing="disableEditingQuestion(question)"
+                              :undeletable="dimension.isShadow"
+                              @question-deleted="handleDeletedQuestion"
                 />
 
                 <ListItem class="full-dimension-add-question"
@@ -56,7 +58,8 @@
             </div>
 
             <div class="full-dimension-delete"
-                 v-if="!disabled(dimension)"
+                 v-if="isOwnedByCurrentDataClient(dimension) && !undeletable"
+                 @click="deleteDimension"
             >
                 delete
             </div>
@@ -85,6 +88,7 @@
 
 <script>
     import {mapState} from "vuex";
+    import {without} from "ramda";
 
     import DimensionBase from "../DimensionBase";
     import ListDimension from "../List/Dimension";
@@ -152,6 +156,17 @@
             handleCreatedQuestion(question) {
                 // TODO: update dimension via API.
                 this.dimension.questions.push(question);
+            },
+            handleDeletedQuestion(question) {
+                // TODO: delete via api
+                this.dimension.questions = without(
+                    [question],
+                    this.dimension.questions
+                );
+            },
+            deleteDimension() {
+                // TODO: delete via api
+                this.$emit("dimension-deleted");
             }
         },
         created() {

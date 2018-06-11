@@ -24,6 +24,13 @@
             draggable: {
                 type: Boolean,
                 default: true
+            },
+            /**
+             * Set to prevent this from being deleted.
+             */
+            undeletable: {
+                type: Boolean,
+                default: false
             }
         },
         computed: {
