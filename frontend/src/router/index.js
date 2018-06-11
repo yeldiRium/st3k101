@@ -19,6 +19,7 @@ import TestToggle from "../components/Views/Testing/TestToggle";
 import TestModal from "../components/Views/Testing/TestModal";
 import TestButton from "../components/Views/Testing/TestButton";
 import TestListDimension from "../components/Views/Testing/TestListDimension";
+import TestFullDimension from "../components/Views/Testing/TestFullDimension";
 
 Vue.use(Router);
 
@@ -102,6 +103,10 @@ export default new Router({
                 {
                     path: "ListDimension",
                     component: TestListDimension
+                },
+                {
+                    path: "FullDimension",
+                    component: TestFullDimension
                 }
             ]
         }
