@@ -8,9 +8,7 @@
               :disabled="disabled(question)"
               :icons="iconsNeeded(question)"
     >
-        <IconEdit class="list-item-icon"
-                  v-if="convertable(question)"
-        />
+        <slot></slot>
         <LanguagePicker class="list-item-languagepicker"
                         v-if="!disableLanguagePicker"
                         :language-data="question.languageData"

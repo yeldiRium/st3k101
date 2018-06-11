@@ -8,9 +8,7 @@
               :disabled="disabled(dimension)"
               :icons="iconsNeeded(dimension)"
     >
-        <IconEdit class="list-item-icon"
-                  v-if="convertable(dimension)"
-        />
+        <slot></slot>
         <LanguagePicker class="list-item-languagepicker"
                         :language-data="dimension.languageData"
                         v-if="!disableLanguagePicker"
