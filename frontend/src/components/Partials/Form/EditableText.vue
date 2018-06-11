@@ -4,7 +4,7 @@
         <div class="editabletext-form"
              v-if="editing"
         >
-            <input :value="value"
+            <input :value="text"
                    ref="input"
                    @keyup.enter="finishEditing"
                    @keyup.esc="cancelEditing"
@@ -17,7 +17,7 @@
              v-else
              @dblclick.prevent.stop="startEditing"
         >
-            {{ value }}
+            {{ text }}
         </div>
     </div>
 </template>
@@ -26,7 +26,7 @@
     export default {
         name: "EditableText",
         props: {
-            value: {
+            text: {
                 type: String
             }
         },
@@ -38,24 +38,22 @@
         },
         methods: {
             handleInput(event) {
-                console.log(event);
-                this.$emit("input", event);
+                this.$emit("edit", event);
             },
             startEditing() {
                 this.editing = true;
-                this.storedValue = this.value;
+                this.storedValue = this.text;
                 this.$nextTick(() => {
                     this.$refs.input.focus();
                 })
             },
             finishEditing() {
                 this.editing = false;
-                console.log(this.$refs);
-                this.$emit("input", this.$refs.input.value);
+                this.$emit("edit", this.$refs.input.value);
             },
             cancelEditing() {
                 this.editing = false;
-                this.$emit("input", this.storedValue);
+                this.$emit("edit", this.storedValue);
             }
         }
     }

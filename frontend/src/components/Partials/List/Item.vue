@@ -5,8 +5,9 @@
              :title="text"
              v-on="$listeners"
         >
-            <EditableText v-model="text"
+            <EditableText :text="text"
                           v-if="editableText && !disabled"
+                          @edit="$emit('edit', $event)"
             />
             <template v-else>
                 {{ text }}

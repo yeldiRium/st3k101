@@ -7,6 +7,7 @@
               :mini="question.isShadow || disableSubText"
               :disabled="disabled(question)"
               :icons="iconsNeeded(question)"
+              @edit="updateQuestionText"
     >
         <slot></slot>
         <LanguagePicker class="list-item-languagepicker"
@@ -105,6 +106,10 @@
             addNewTranslation(language) {
                 // TODO: create new translation
                 // this.question.fetchTranslation(language);
+            },
+            updateQuestionText(text) {
+                // TODO: set via API.
+                this.question.text = text;
             }
         }
     }

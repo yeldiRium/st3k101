@@ -7,6 +7,7 @@
               :mini="disableSubText"
               :disabled="disabled(dimension)"
               :icons="iconsNeeded(dimension)"
+              @edit="updateDimensionName"
     >
         <slot></slot>
         <LanguagePicker class="list-item-languagepicker"
@@ -104,6 +105,10 @@
             addNewTranslation(language) {
                 // TODO: create new translation
                 // this.question.fetchTranslation(language);
+            },
+            updateDimensionName(name) {
+                // TODO: set via API.
+                this.dimension.name = name;
             }
         }
     }
