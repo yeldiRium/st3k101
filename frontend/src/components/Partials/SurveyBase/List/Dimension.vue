@@ -1,7 +1,26 @@
 <template>
-    <div class="list-question">
-        test
-    </div>
+    <ListItem class="list-dimension"
+              v-bind="$attrs"
+              v-on="$listeners"
+              :text="dimension.name"
+              :subtext="subtext"
+              :mini="disableSubText"
+              :disabled="disabled(dimension)"
+              :icons="iconsNeeded(dimension)"
+    >
+        <IconEdit class="list-item-icon"
+                  v-if="convertable(dimension)"
+        />
+        <LanguagePicker class="list-item-languagepicker"
+                        :language-data="dimension.languageData"
+                        v-if="!disableLanguagePicker"
+                        @choose-language="changeLanguage"
+                        @choose-language-unavailable="addNewTranslation"
+        />
+        <IconReorder class="list-item-icon"
+                     v-if="draggable"
+        />
+    </ListItem>
 </template>
 
 <script>
@@ -49,14 +68,13 @@
         },
         computed: {
             /**
+             * Returns a message displaying the number of Questions in the Di-
+             * mension.
+             *
              * @returns {string}
              */
             subtext() {
-                if (this.question.isShadow) {
-                    return "";
-                } else {
-                    return `${this.question.incomingReferenceCount} references.`;
-                }
+                return `Contains ${this.dimension.questions.length} questions.`;
             }
         },
         methods: {
@@ -77,11 +95,11 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                this.question.fetchTranslation(language);
+                this.dimension.fetchTranslation(language);
             },
             /**
              * Add a new translation to the Question.
-             * This means set new field values via API for the given lanugages
+             * This means set new field values via API for the given langages
              * and then fetch the question anew in the now existing language.
              * @param language
              */
@@ -94,7 +112,7 @@
 </script>
 
 <style lang="scss">
-    .list-item.list-question {
+    .list-item.list-dimension {
         min-height: 3em;
 
         &.mini {
