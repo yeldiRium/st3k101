@@ -5,7 +5,12 @@
              :title="text"
              v-on="$listeners"
         >
-            {{ text }}
+            <EditableText v-model="text"
+                          v-if="editableText"
+            />
+            <template v-else>
+                {{ text }}
+            </template>
         </div>
         <div class="list-item-subtext"
              :class="subTextClasses"
@@ -24,8 +29,13 @@
 </template>
 
 <script>
+    import EditableText from "../Form/EditableText";
+
     export default {
         name: "List-Item",
+        components: {
+            EditableText
+        },
         props: {
             text: {
                 type: String
@@ -50,6 +60,10 @@
                 default: true
             },
             ellipseSubText: {
+                type: Boolean,
+                default: true
+            },
+            editableText: {
                 type: Boolean,
                 default: true
             }
@@ -83,7 +97,7 @@
     @import "../../scss/_mixins.scss";
 
     .list-item {
-        display:grid;
+        display: grid;
         grid-template-columns: 2.5% 95% 2.5%;
 
         background-color: $primary-light;
@@ -130,6 +144,12 @@
 
         &.ellipse {
             @include ellipse;
+        }
+
+        .editabletext-form {
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-columns: auto 4em;
         }
     }
 

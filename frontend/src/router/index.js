@@ -20,6 +20,7 @@ import TestModal from "../components/Views/Testing/TestModal";
 import TestButton from "../components/Views/Testing/TestButton";
 import TestListDimension from "../components/Views/Testing/TestListDimension";
 import TestFullDimension from "../components/Views/Testing/TestFullDimension";
+import TestEditableText from "../components/Views/Testing/TestEditableText";
 
 Vue.use(Router);
 
@@ -107,6 +108,10 @@ export default new Router({
                 {
                     path: "FullDimension",
                     component: TestFullDimension
+                },
+                {
+                    path: "EditableText",
+                    component: TestEditableText
                 }
             ]
         }
