@@ -1,19 +1,19 @@
 <template>
     <ListItem class="list-question"
               v-bind="$attrs"
+              v-on="$listeners"
               :text="question.text"
               :subtext="subtext"
               :mini="question.isShadow || disableSubText"
               :disabled="disabled(question)"
               :icons="iconsNeeded(question)"
-              v-on="$listeners"
     >
         <IconEdit class="list-item-icon"
                   v-if="convertable(question)"
         />
         <LanguagePicker class="list-item-languagepicker"
-                        :language-data="question.languageData"
                         v-if="!disableLanguagePicker"
+                        :language-data="question.languageData"
                         @choose-language="changeLanguage"
                         @choose-language-unavailable="addNewTranslation"
         />
