@@ -4,10 +4,13 @@
         <FullDimension :dimension="dimensions[1]"/>
         <FullDimension :dimension="dimensions[2]"/>
         <FullDimension :dimension="dimensions[3]"/>
+        <FullDimension :dimension="dimensions[4]"/>
     </div>
 </template>
 
 <script>
+    import {drop} from "ramda";
+
     import FullDimension from "../../Partials/SurveyBase/Full/Dimension";
 
     import DataClient from "../../../model/DataClient";
@@ -94,7 +97,7 @@
                         dataClient,
                         languageData,
                         "Diese ConcreteDimension gehört mir. Sie hat einen extra langen Text zum testen. Ihre Questions sind randomized.",
-                        questions,
+                        drop(0, questions),
                         true,
                         5,
                         [
@@ -108,7 +111,7 @@
                         dataClient,
                         languageData,
                         "Diese ShadowDimension gehört mir. Ihre Questions sind in fester Reihenfolge.",
-                        questions,
+                        drop(0, questions),
                         false,
                         new Resource("http://blubblab/api/dimension/someonesidlel")
                     ),
@@ -119,7 +122,7 @@
                         someoneElse,
                         languageData,
                         "Diese ConcreteDimension gehört mir nicht. Sie hat einen extra langen Text zum testen. Ihre Questions sind randomized.",
-                        questions,
+                        drop(0, questions),
                         true,
                         3,
                         [
@@ -132,9 +135,22 @@
                         someoneElse,
                         languageData,
                         "Diese ShadowDimension gehört mir nicht. Ihre Questions sind in fester Reihenfolge.",
-                        questions,
+                        drop(0, questions),
                         false,
                         new Resource("http://blubblab/api/dimension/someonesotheridtrell")
+                    ),
+                    new ConcreteDimension(
+                        "http://blubblab/api/dimension/1",
+                        dataClient,
+                        languageData,
+                        "Diese ConcreteDimension gehört mir. Sie hat einen extra langen Text zum testen. Ihre Questions sind randomized.",
+                        drop(0, questions),
+                        true,
+                        5,
+                        [
+                            new Resource("http://blubblab/api/dimension/myidlel"),
+                            new Resource("http://blubblab/api/dimension/myid2lul")
+                        ]
                     )
                 ]
             }
