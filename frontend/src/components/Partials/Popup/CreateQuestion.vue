@@ -1,6 +1,7 @@
 <template>
     <modal name="create-question"
            height="auto"
+           @before-open="beforeOpen"
     >
         <CreateResource
                 @cancel="cancel"
@@ -45,13 +46,16 @@
         data() {
             return {
                 text: "Question text",
-                range: new Range({end: 10})
+                range: null
             }
         },
         computed: {
             ...mapState("session", ["dataClient"])
         },
         methods: {
+            beforeOpen() {
+                this.range = new Range({end: 10});
+            },
             cancel() {
                 this.$modal.hide("create-question");
             },
