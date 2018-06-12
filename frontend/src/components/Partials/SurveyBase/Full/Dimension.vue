@@ -53,7 +53,7 @@
 
             <div class="full-dimension__delete-button"
                  v-if="isDeletable(dimension)"
-                 @click="deleteDimension"
+                 @click="confirmDeleteDimension"
             >
                 delete
             </div>
@@ -145,6 +145,29 @@
                     [question],
                     this.dimension.questions
                 );
+            },
+            /**
+             * Asks for confirmation, if the Dimension should be deleted, and
+             * does so if the user confirms.
+             */
+            confirmDeleteDimension() {
+                this.$modal.show(
+                    "dialog",
+                    {
+                        title: `Really delete Dimension?`,
+                        text: `Do you really want to delete Dimension "${this.dimension.name}"?`,
+                        buttons: [
+                            {
+                                text: "Cancel"
+                            },
+                            {
+                                text: "Confirm",
+                                handler: () => this.deleteDimension(),
+                                default: true
+                            }
+                        ]
+                    }
+                )
             },
             deleteDimension() {
                 // TODO: delete via api

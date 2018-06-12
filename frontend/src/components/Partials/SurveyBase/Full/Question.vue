@@ -30,7 +30,7 @@
             </template>
             <div class="full-question__delete-button"
                  v-if="isDeletable(question)"
-                 @click="deleteQuestion"
+                 @click="confirmDeleteQuestion"
             >
                 delete
             </div>
@@ -100,8 +100,31 @@
             toggleExpanded() {
                 this.expanded = !this.expanded;
             },
+            /**
+             * Asks for confirmation, if the Question should be deleted, and
+             * does so if the user confirms.
+             */
+            confirmDeleteQuestion() {
+                this.$modal.show(
+                    "dialog",
+                    {
+                        title: `Really delete Question?`,
+                        text: `Do you really want to delete Question "${this.question.name}"?`,
+                        buttons: [
+                            {
+                                text: "Cancel"
+                            },
+                            {
+                                text: "Confirm",
+                                handler: () => this.deleteQuestion(),
+                                default: true
+                            }
+                        ]
+                    }
+                )
+            },
             deleteQuestion() {
-                // TODO: delete via API.
+                // TODO: delete via api
                 this.$emit("question-deleted", this.question);
             }
         },

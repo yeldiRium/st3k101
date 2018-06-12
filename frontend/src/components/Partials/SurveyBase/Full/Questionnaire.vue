@@ -54,7 +54,7 @@
 
             <div class="full-questionnaire__delete-button"
                  v-if="isDeletable(questionnaire)"
-                 @click="deleteQuestionnaire"
+                 @click="confirmDeleteQuestionnaire"
             >
                 delete
             </div>
@@ -148,9 +148,32 @@
                     this.questionnaire.dimensions
                 );
             },
+            /**
+             * Asks for confirmation, if the Questionnaire should be deleted, and
+             * does so if the user confirms.
+             */
+            confirmDeleteQuestionnaire() {
+                this.$modal.show(
+                    "dialog",
+                    {
+                        title: `Really delete Questionnaire?`,
+                        text: `Do you really want to delete Questionnaire "${this.questionnaire.name}"?`,
+                        buttons: [
+                            {
+                                text: "Cancel"
+                            },
+                            {
+                                text: "Confirm",
+                                handler: () => this.deleteQuestionnaire(),
+                                default: true
+                            }
+                        ]
+                    }
+                )
+            },
             deleteQuestionnaire() {
                 // TODO: delete via api
-                this.$emit("questionnaire-deleted");
+                this.$emit("questionnaire-deleted", this.questionnaire);
             }
         },
         created() {
