@@ -1,7 +1,6 @@
 <template>
     <modal name="modal-create-dimension"
            height="auto"
-           @before-open="beforeOpen"
     >
         <CreateResource
                 @cancel="cancel"
@@ -33,7 +32,6 @@
     import {mapState} from "vuex";
 
     import {Language, LanguageData} from "../../../model/Language";
-    import {Range} from "../../../model/SurveyBase/Config/Range";
     import {ConcreteDimension} from "../../../model/SurveyBase/Dimension";
 
     import CreateResource from "./CreateResource";
@@ -61,9 +59,6 @@
             ...mapState("session", ["dataClient"])
         },
         methods: {
-            beforeOpen() {
-                this.range = new Range({end: 10});
-            },
             cancel() {
                 this.$modal.hide("modal-create-dimension");
             },

@@ -1,12 +1,18 @@
 <template>
     <div id="app">
         <router-view />
-        <v-dialog />
+        <Dialog />
     </div>
 </template>
 
 <script>
-    export default {};
+    import Dialog from "./Partials/Modal/Dialog";
+
+    export default {
+        components: {
+            Dialog
+        }
+    };
 </script>
 
 <style lang="scss">

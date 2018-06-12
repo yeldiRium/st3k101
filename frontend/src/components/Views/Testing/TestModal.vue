@@ -15,33 +15,40 @@
         <button @click="click4">
             Create Question Dialog.
         </button>
-        <CreateQuestion />
+        <CreateQuestion/>
         <br/><br/>
         <button @click="click5">
             Create Dimension Dialog.
         </button>
-        <CreateDimension />
+        <CreateDimension/>
+        <br/><br/>
+        <button @click="click6">
+            Create generic Dialog.
+        </button>
+        <br/><br/>
+        <button @click="click7">
+            Confirm Dialog
+        </button>
     </div>
 </template>
 
 <script>
-    import {mapState} from "vuex";
-
     import {ConcreteQuestion} from "../../../model/SurveyBase/Question";
     import {Resource} from "../../../model/Resource";
     import {Range} from "../../../model/SurveyBase/Config/Range";
     import {Language, LanguageData} from "../../../model/Language";
 
     import FullQuestion from "../../Partials/SurveyBase/Full/Question";
-    import CreateResource from "../../Partials/Modal/CreateResource";
     import CreateQuestion from "../../Partials/Modal/CreateQuestion";
     import CreateDimension from "../../Partials/Modal/CreateDimension";
+    import Dialog from "../../Partials/Modal/Dialog";
 
     export default {
         name: "TestModal",
         components: {
             CreateQuestion,
-            CreateDimension
+            CreateDimension,
+            Dialog
         },
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
@@ -113,7 +120,6 @@
                 )
             },
             click4() {
-
                 let english = new Language("en", "English");
 
                 this.$modal.show(
@@ -124,7 +130,6 @@
                 );
             },
             click5() {
-
                 let english = new Language("en", "English");
 
                 this.$modal.show(
@@ -133,6 +138,61 @@
                         language: english
                     }
                 );
+            },
+            click6() {
+                this.$modal.show(
+                    "dialog",
+                    {
+                        title: "Title",
+                        text: "Text",
+                        buttons: [
+                            {
+                                text: "Blub",
+                                handler: () => console.log("blub")
+                            },
+                            {
+                                text: "Blab",
+                                handler: () => console.log("Should be default"),
+                                default: true
+                            },
+                            {
+                                text: "Bleb",
+                                default: false
+                            },
+                            {
+                                text: "Invalid Handler",
+                                handler: 5
+                            },
+                            {
+                                text: "Second default",
+                                handler: () => console.log("should not be invoked by default")
+                            },
+                            {
+                                text: "filler"
+                            }
+                        ]
+                    }
+                )
+            },
+            click7() {
+                this.$modal.show(
+                    "dialog",
+                    {
+                        title: "Confirm",
+                        text: "ORLY?",
+                        buttons: [
+                            {
+                                text: "Cancel",
+                                handler: () => this.$modal.hide("dialog")
+                            },
+                            {
+                                text: "Confirm",
+                                handler: () => console.log("confirmed"),
+                                default: true
+                            }
+                        ]
+                    }
+                )
             }
         }
     }

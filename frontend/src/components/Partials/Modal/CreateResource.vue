@@ -1,7 +1,5 @@
 <template>
-    <div class="modal-create-resource"
-         @keyup.enter="enter"
-    >
+    <div class="modal-create-resource">
         <div class="modal-create-resource__header">
             <slot name="header"></slot>
         </div>
