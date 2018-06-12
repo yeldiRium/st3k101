@@ -68,27 +68,28 @@
                         this.questionnaire.dimensions
                     )
                 );
-                return `Contains ${this.questionnaire.dimensions.length} dimensions and .`;
+                return `Contains ${this.questionnaire.dimensions.length} dimensions and ${questionCount} questions.`;
             }
         },
         methods: {
             /**
-             * Switch the Question to the given language.
+             * Switch the Questionnaire to the given language.
              * @param {Language} language
              */
             changeLanguage(language) {
                 this.questionnaire.fetchTranslation(language);
             },
             /**
-             * Add a new translation to the Question.
+             * Add a new translation to the Questionnaire.
              * This means set new field values via API for the given langages
-             * and then fetch the question anew in the now existing language.
+             * and then fetch the Questionnaire anew in the now existing langu-
+             * age.
              * @param language
              */
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
                 // TODO: create new translation
-                // this.question.fetchTranslation(language);
+                // this.questionnaire.fetchTranslation(language);
             },
             updateQuestionnaireName(name) {
                 // TODO: set via API.

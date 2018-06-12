@@ -65,22 +65,22 @@
         },
         methods: {
             /**
-             * Switch the Question to the given language.
+             * Switch the Dimension to the given language.
              * @param {Language} language
              */
             changeLanguage(language) {
                 this.dimension.fetchTranslation(language);
             },
             /**
-             * Add a new translation to the Question.
+             * Add a new translation to the Dimension.
              * This means set new field values via API for the given langages
-             * and then fetch the question anew in the now existing language.
+             * and then fetch the Dimension anew in the now existing language.
              * @param language
              */
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
                 // TODO: create new translation
-                // this.question.fetchTranslation(language);
+                // this.dimension.fetchTranslation(language);
             },
             updateDimensionName(name) {
                 // TODO: set via API.
