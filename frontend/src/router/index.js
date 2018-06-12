@@ -21,6 +21,7 @@ import TestButton from "../components/Views/Testing/TestButton";
 import TestListDimension from "../components/Views/Testing/TestListDimension";
 import TestFullDimension from "../components/Views/Testing/TestFullDimension";
 import TestEditableText from "../components/Views/Testing/TestEditableText";
+import TestListQuestionnaire from "../components/Views/Testing/TestListQuestionnaire";
 
 Vue.use(Router);
 
@@ -112,6 +113,10 @@ export default new Router({
                 {
                     path: "EditableText",
                     component: TestEditableText
+                },
+                {
+                    path: "ListQuestionnaire",
+                    component: TestListQuestionnaire
                 }
             ]
         }

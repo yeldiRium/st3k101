@@ -1,0 +1,109 @@
+<template>
+    <ListItem class="list-questionnaire"
+              v-bind="$attrs"
+              v-on="$listeners"
+              :text="questionnaire.name"
+              :subtext="subtext"
+              :mini="disableSubText"
+              :disabled="!isEditable(questionnaire)"
+              @edit="updateQuestionnaireName"
+    >
+        <slot></slot>
+        <LanguagePicker class="list-item-languagepicker"
+                        :language-data="questionnaire.languageData"
+                        @choose-language="changeLanguage"
+                        @choose-language-unavailable="addNewTranslation"
+        />
+        <IconReorder class="list-item-icon"
+                     v-if="draggable"
+        />
+    </ListItem>
+</template>
+
+<script>
+    import {map, path, sum} from "ramda";
+
+    import QuestionnaireBase from "../QuestionnaireBase";
+    import ListItem from "../../List/Item";
+    import LanguagePicker from "../../LanguagePicker";
+
+    import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
+    import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
+
+    /**
+     * Displays a Questionnaire as a ListElement.
+     *
+     * Does not display all the Questionnaire's state because of space reasons. To
+     * display all Questionnaire state use the FullQuestionnaire component.
+     *
+     * The Questionnaire will be uneditable, if it is a ShadowQuestionnaire or
+     * not owned by the current DataClient.
+     */
+    export default {
+        name: "List-Questionnaire",
+        extends: QuestionnaireBase,
+        components: {
+            ListItem,
+            LanguagePicker,
+            IconEdit,
+            IconReorder
+        },
+        props: {
+            disableSubText: {
+                type: Boolean,
+                default: false
+            }
+        },
+        computed: {
+            /**
+             * Returns a message displaying the number of Dimensions and Ques-
+             * tions in the Questionnaire.
+             *
+             * @returns {string}
+             */
+            subtext() {
+                let questionCount = sum(
+                    map(
+                        path(["questions", "length"]),
+                        this.questionnaire.dimensions
+                    )
+                );
+                return `Contains ${this.questionnaire.dimensions.length} dimensions and .`;
+            }
+        },
+        methods: {
+            /**
+             * Switch the Question to the given language.
+             * @param {Language} language
+             */
+            changeLanguage(language) {
+                this.questionnaire.fetchTranslation(language);
+            },
+            /**
+             * Add a new translation to the Question.
+             * This means set new field values via API for the given langages
+             * and then fetch the question anew in the now existing language.
+             * @param language
+             */
+            addNewTranslation(language) {
+                // TODO: clarify, when this should be available
+                // TODO: create new translation
+                // this.question.fetchTranslation(language);
+            },
+            updateQuestionnaireName(name) {
+                // TODO: set via API.
+                this.questionnaire.name = name;
+            }
+        }
+    }
+</script>
+
+<style lang="scss">
+    .list-item.list-questionnaire {
+        min-height: 3em;
+
+        &.mini {
+            min-height: 2em;
+        }
+    }
+</style>
