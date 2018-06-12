@@ -16,7 +16,7 @@
             /** @type {Dimension} */
             dimension: {
                 type: Dimension
-            },
+            }
         }
     }
 </script>

@@ -16,7 +16,7 @@
             /** @type {Question} */
             question: {
                 type: Question
-            },
+            }
         }
     }
 </script>
