@@ -1,6 +1,6 @@
 <template>
     <div id="private-base">
-        <private-menu-bar/>
+        <MenuBarPrivate/>
 
         <div class="content">
             uiae
@@ -11,10 +11,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent imperdiet feug
 
 <script>
     import LanguagePicker from "../../Partials/LanguagePicker";
-    import PrivateMenuBar from "../../Partials/Menu/PrivateMenuBar"
+    import MenuBarPrivate from "../../Partials/Menu/MenuBarPrivate"
 
     export default {
-        components: {LanguagePicker, PrivateMenuBar},
+        components: {LanguagePicker, MenuBarPrivate},
         name: "App",
         created() {
             if (!this.$store.getters["session/isLoggedIn"]) {
@@ -72,7 +72,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent imperdiet feug
         overflow-y: scroll;
     }
 
-    .privatemenubar {
+    .menu-bar-private {
         grid-area: menubar;
     }
 </style>

@@ -1,7 +1,7 @@
 <template>
-    <div class="editabletext"
+    <div class="editable-text"
     >
-        <div class="editabletext-form"
+        <div class="editable-text__form"
              v-if="editing"
         >
             <input :value="text"
@@ -13,7 +13,7 @@
                 Ok
             </button>
         </div>
-        <div class="editabletext-text"
+        <div class="editable-text__text"
              v-else
              @dblclick.prevent.stop="startEditing"
         >

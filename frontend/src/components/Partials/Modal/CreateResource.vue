@@ -1,24 +1,24 @@
 <template>
-    <div class="popup-createresource"
+    <div class="modal-create-resource"
          @keyup.enter="enter"
     >
-        <div class="popup-createresource-header">
+        <div class="modal-create-resource__header">
             <slot name="header"></slot>
         </div>
-        <div class="popup-createresource-body">
+        <div class="modal-create-resource__body">
             <slot name="body"></slot>
         </div>
-        <div class="popup-createresource-buttons">
+        <div class="modal-create-resource__buttons">
             <slot name="buttons"></slot>
             <template v-if="defaultButtons">
-                <div class="popup-createresource-button">
+                <div class="modal-create-resource__button">
                     <Button :offset="4"
                             @click="cancel"
                     >
                         Cancel
                     </Button>
                 </div>
-                <div class="popup-createresource-button">
+                <div class="modal-create-resource__button">
                     <Button :offset="4"
                             @click="create"
                     >
@@ -36,7 +36,7 @@
     import Button from "../Form/Button";
 
     export default {
-        name: "Popup-CreateResource",
+        name: "ModalCreateResource",
         components: {
             Button
         },
@@ -83,19 +83,19 @@
 <style lang="scss">
     @import "../../scss/_variables";
 
-    .popup-createresource {
+    .modal-create-resource {
         display: grid;
         grid-template-rows: 2em auto 2em;
         grid-row-gap: 10px;
 
-        &-header {
+        &__header {
             background-color: $primary-light;
 
             font-size: 1.4em;
             text-align: center;
         }
 
-        &-body {
+        &__body {
             padding-left: 20px;
             padding-right: 20px;
 
@@ -108,7 +108,7 @@
             }
         }
 
-        &-buttons {
+        &__buttons {
             padding: 0 20px 0 20px;
 
             display: grid;
@@ -118,7 +118,7 @@
             justify-content: center;
         }
 
-        &-button {
+        &__button {
             flex-grow: 1;
         }
     }

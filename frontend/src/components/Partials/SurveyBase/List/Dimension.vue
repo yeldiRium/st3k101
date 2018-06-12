@@ -9,12 +9,12 @@
               @edit="updateDimensionName"
     >
         <slot></slot>
-        <LanguagePicker class="list-item-languagepicker"
+        <LanguagePicker class="list-item__language-picker"
                         :language-data="dimension.languageData"
                         @choose-language="changeLanguage"
                         @choose-language-unavailable="addNewTranslation"
         />
-        <IconReorder class="list-item-icon"
+        <IconReorder class="list-item__icon"
                      v-if="draggable"
         />
     </ListItem>
@@ -38,7 +38,7 @@
      * by the current DataClient.
      */
     export default {
-        name: "List-Dimension",
+        name: "ListDimension",
         extends: DimensionBase,
         components: {
             ListItem,
@@ -91,10 +91,10 @@
 </script>
 
 <style lang="scss">
-    .list-item.list-dimension {
+    .list-dimension.list-item {
         min-height: 3em;
 
-        &.mini {
+        &--mini {
             min-height: 2em;
         }
     }

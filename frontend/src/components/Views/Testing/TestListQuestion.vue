@@ -89,9 +89,10 @@
 
         padding: 0;
         margin: 0;
+
+        .list-question {
+            width: 90vw;
+        }
     }
 
-    .list-question {
-        width: 90vw;
-    }
 </style>

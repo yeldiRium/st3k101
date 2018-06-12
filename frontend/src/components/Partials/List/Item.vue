@@ -1,6 +1,6 @@
 <template>
     <div class="list-item" :class="classes">
-        <div class="list-item-text"
+        <div class="list-item__text"
              :class="textClasses"
              :title="text"
              v-on="$listeners"
@@ -13,7 +13,7 @@
                 {{ text }}
             </template>
         </div>
-        <div class="list-item-subtext"
+        <div class="list-item__sub-text"
              :class="subTextClasses"
              :title="subtext"
              v-on="$listeners"
@@ -21,7 +21,7 @@
             {{ subtext }}
         </div>
 
-        <div class="list-item-icons"
+        <div class="list-item̲_icons"
              v-if="icons"
         >
             <slot></slot>
@@ -33,7 +33,7 @@
     import EditableText from "../Form/EditableText";
 
     export default {
-        name: "List-Item",
+        name: "ListItem",
         components: {
             EditableText
         },
@@ -73,21 +73,21 @@
         computed: {
             classes() {
                 return {
-                    mini: this.mini,
-                    big: !this.mini,
-                    disabled: this.disabled,
-                    icons: this.icons,
-                    "no-icons": !this.icons
+                    "list-item--mini": this.mini,
+                    "list-item--big": !this.mini,
+                    "list-item--disabled": this.disabled,
+                    "list-item--with-icons": this.icons,
+                    "list-item--no-icons": !this.icons
                 };
             },
             textClasses() {
                 return {
-                    ellipse: this.ellipseText
+                    "list-item__text--ellipse": this.ellipseText
                 }
             },
             subTextClasses() {
                 return {
-                    ellipse: this.ellipseSubText
+                    "list-item__sub-text--ellipse": this.ellipseSubText
                 }
             }
         }
@@ -102,87 +102,89 @@
         display: grid;
         grid-template-columns: 2.5% 95% 2.5%;
 
-        background-color: $primary-light;
+        background-color: $primary;
 
-        &.big {
+        &--disabled {
+            background-color: $slightlylight;
+        }
+
+        &--with-icons {
+            grid-template-columns: 2.5% auto fit-content(25%) 2.5%;
+        }
+
+        &--no-icons .list-item̲_icons {
+            display: none;
+        }
+
+        &--big {
             grid-template-areas: ". text ." ". subtext .";
 
-            &.icons {
-                grid-template-columns: 2.5% auto fit-content(25%) 2.5%;
+            &.list-item--with-icons {
                 grid-template-areas: ". text icons ." ". subtext icons .";
             }
         }
 
-        &.mini {
+        &--mini {
             grid-template-rows: 100%;
             grid-template-areas: ". text .";
 
-            &.icons {
-                grid-template-columns: 2.5% auto fit-content(25%) 2.5%;
+            &.list-item--with-icons {
                 grid-template-areas: ". text icons .";
             }
 
-            .list-item-text {
+            .list-item__text {
                 align-self: center;
             }
 
-            .list-item-subtext {
+            .list-item__sub-text {
                 display: none;
             }
         }
 
-        &.no-icons .list-item-icons {
-            display: none;
+        &__text {
+            grid-area: text;
+            align-self: end;
+
+            padding-right: 5px;
+
+            font-size: 1.1em;
+
+            &--ellipse {
+                @include ellipse;
+            }
+
+            .editable-text__form {
+                display: grid;
+                grid-auto-flow: column;
+                grid-template-columns: auto 4em;
+            }
         }
-    }
 
-    .list-item-text {
-        grid-area: text;
-        align-self: end;
+        &__sub-text {
+            grid-area: subtext;
+            align-self: start;
 
-        padding-right: 5px;
+            padding-right: 5px;
 
-        font-size: 1.1em;
+            font-size: 0.9em;
 
-        &.ellipse {
-            @include ellipse;
+            &--ellipse {
+                @include ellipse;
+            }
         }
 
-        .editabletext-form {
-            display: grid;
-            grid-auto-flow: column;
-            grid-template-columns: auto 4em;
+        &̲_icons {
+            grid-area: icons;
+
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
         }
-    }
 
-    .list-item-subtext {
-        grid-area: subtext;
-        align-self: start;
-
-        padding-right: 5px;
-
-        font-size: 0.9em;
-
-        &.ellipse {
-            @include ellipse;
-        }
-    }
-
-    .list-item-icons {
-        grid-area: icons;
-
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-
-        > .list-item-icon {
+        &__icon {
             fill: $verydark;
 
             margin-left: 0.5em;
         }
-    }
-
-    .list-item.disabled {
-        background-color: $lighter;
     }
 </style>

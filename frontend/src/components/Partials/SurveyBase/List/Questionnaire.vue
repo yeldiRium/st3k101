@@ -9,12 +9,12 @@
               @edit="updateQuestionnaireName"
     >
         <slot></slot>
-        <LanguagePicker class="list-item-languagepicker"
+        <LanguagePicker class="list-item__language-picker"
                         :language-data="questionnaire.languageData"
                         @choose-language="changeLanguage"
                         @choose-language-unavailable="addNewTranslation"
         />
-        <IconReorder class="list-item-icon"
+        <IconReorder class="list-item__icon"
                      v-if="draggable"
         />
     </ListItem>
@@ -40,7 +40,7 @@
      * not owned by the current DataClient.
      */
     export default {
-        name: "List-Questionnaire",
+        name: "ListQuestionnaire",
         extends: QuestionnaireBase,
         components: {
             ListItem,
@@ -100,10 +100,10 @@
 </script>
 
 <style lang="scss">
-    .list-item.list-questionnaire {
+    .list-questionnaire.list-item {
         min-height: 3em;
 
-        &.mini {
+        &--mini {
             min-height: 2em;
         }
     }

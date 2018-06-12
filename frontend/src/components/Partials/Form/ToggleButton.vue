@@ -1,57 +1,38 @@
 <template>
-    <svg class="togglebutton"
+    <div class="toggle-button"
          :class="classes"
-         preserveAspectRatio="xMidYMid meet"
-         viewBox="0 0 181 101"
     >
-        <rect x="0" y="0" width="181" height="101"
-              rx="50" ry="50"
-              class="togglebutton-background"
-        />
-
-        <rect :x="buttonX" y="10" width="81" height="81"
-              rx="40" ry="40"
-              class="togglebutton-button"
+        <div class="toggle-button__off-side"
+             :class="toggleButtonOffClasses"
         >
-            <animate attributeName="x"
-                     from="11" to="92" dur=".2"
-                     ref="to-on"
-                     begin="indefinite"
-                     fill="freeze"
-                     values="11; 92"
-                     keyTimes="0; 1"
-                     keySplines=".2 .3 .5 1"
-                     calcMode="spline"
+            <slot name="off" />
+        </div>
+        <div class="toggle-button__button">
+            <ToggleSVG v-model="on"
+                          :disabled="disabled"
+                          @input="passToggle"
             />
-            <animate attributeName="x"
-                     from="92" to="11" dur="0.2"
-                     ref="to-off"
-                     begin="indefinite"
-                     fill="freeze"
-                     values="92; 11"
-                     keyTimes="0; 1"
-                     keySplines=".2 .3 .5 1"
-                     calcMode="spline"
-            />
-        </rect>
-
-        <rect x="0" y="0" width="181" height="101"
-              rx="50" ry="50"
-              class="togglebutton-reactor"
-              @click.prevent="toggle"
-        />
-    </svg>
+        </div>
+        <div class="toggle-button__on-side"
+             :class="toggleButtonOnClasses"
+        >
+            <slot name="on" />
+        </div>
+    </div>
 </template>
 
 <script>
+    import ToggleSVG from "./ToggleSVG";
+
     export default {
         name: "ToggleButton",
+        components: {
+            ToggleSVG
+        },
         props: {
-            /** @type Boolean */
             value: {
-                type: Boolean,
+                type: Boolean
             },
-            /** If set to true, the toggle isn't usable. */
             disabled: {
                 type: Boolean,
                 default: false
@@ -59,46 +40,35 @@
         },
         data() {
             return {
-                on: false
-            };
+                on: true
+            }
         },
         created() {
             this.on = this.value;
         },
         computed: {
-            /**
-             * Class object on the svg element.
-             */
+            /** Classes on the outer div */
             classes() {
                 return {
-                    "togglebutton-on": this.on,
-                    "togglebutton-off": !this.on,
-                    "togglebutton-disabled": this.disabled
+                    "toggle-button--on": this.on,
+                    "toggle-button--off": !this.on,
+                    "toggle-button--disabled": this.disabled
                 };
             },
-            buttonX() {
-                if (this.on) {
-                    return 92;
-                } else {
-                    return 11;
+            toggleButtonOffClasses() {
+                return {
+                    "toggle-button__off-side--active": !this.on
+                }
+            },
+            toggleButtonOnClasses() {
+                return {
+                    "toggle-button__on-side--active": this.on
                 }
             }
         },
         methods: {
-            toggle() {
-                if (this.disabled) {
-                    return;
-                }
-
-                this.on = !this.on;
-                let animation;
-                if (this.on) {
-                    animation = this.$refs["to-on"];
-                } else {
-                    animation = this.$refs["to-off"];
-                }
-                animation.beginElement();
-                this.$emit("input", this.on);
+            passToggle(value) {
+                this.$emit("input", value);
             }
         }
     }
@@ -107,28 +77,57 @@
 <style lang="scss">
     @import "../../scss/_variables";
 
-    .togglebutton {
-        &-background {
-            fill: $slightlydark;
+    .toggle-button {
+        display: grid;
+        grid-template-columns: auto 2em auto;
+        grid-column-gap: 1em;
+        grid-template-areas: "left toggle-button right";
+
+        > div {
+            height: 1em;
+
+            color: $slightlylight;
         }
 
-        &-button {
-            fill: $verylight;
-        }
+        &__off-side {
+            grid-area: left;
 
-        &-reactor {
-            fill: rgba(0, 0, 0, 0);
-        }
+            justify-self: end;
 
-        &-on {
-            .togglebutton-background {
-                fill: $primary;
+            &.toggle-button__off-side--active {
+                color: $verydark;
             }
         }
 
-        &-disabled {
-            .togglebutton-background {
-                fill: $slightlylight;
+        &__button {
+            width: 100%;
+            height: 100%;
+
+            grid-area: toggle-button;
+
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        &__on-side {
+            grid-area: right;
+
+            justify-self: start;
+
+            &.toggle-button__on-side--active {
+                color: $primary;
+            }
+        }
+
+        &--disabled {
+            &-off.toggle-button-off-active {
+                color: $slightlydark;
+            }
+
+            &-on.toggle-button-on-active {
+                color: $primary-light;
             }
         }
     }

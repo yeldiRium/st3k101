@@ -207,15 +207,16 @@
 </script>
 
 <style lang="scss">
-    .TestfullQuestionnaire_container {
+    .TestFullQuestionnaire_container {
         width: 100%;
         height: 100%;
 
         padding: 0;
         margin: 0;
+
+        .full-questionnaire {
+            width: 90vw;
+        }
     }
 
-    .full-questionnaire {
-        width: 90vw;
-    }
 </style>

@@ -1,12 +1,12 @@
 <template>
-    <svg class="rangesvg"
+    <svg class="range-svg"
          :style="svgStyle"
     >
         <line :x1="`${(100-width)/2}%`"
               :y1="`${lineY}%`"
               :x2="`${(100-width)/2 + width}%`"
               :y2="`${lineY}%`"
-              class="rangesvg-middleline"
+              class="range-svg__middle-line"
         />
 
         <g>
@@ -16,15 +16,15 @@
                   :y1="`${lineY1}%`"
                   :x2="`${numberX(number)}%`"
                   :y2="`${lineY2}%`"
-                  class="rangesvg-numberline"
-                  :class="[`rangesvg-numberline-${number}`]"
+                  class="range-svg__number-line"
+                  :class="[`range-svg__number-line-${number}`]"
             />
         </g>
 
         <g v-if="!preview">
             <g v-for="number in range.numbers"
                :key="`reactor${number}`"
-               class="rangesvg-number-reactor"
+               class="range-svg__number-reactor"
             >
                 <rect :x="`${reactorX(number)}%`"
                       :y="`${reactorY}%`"
@@ -36,17 +36,17 @@
                 />
             </g>
 
-            <g class="rangesvg-selector">
+            <g class="range-svg__selector">
                 <line :x1="`${numberX(selector)}%`"
                       :y1="`${selectorLineY1}%`"
                       :x2="`${numberX(selector)}%`"
                       :y2="`${selectorLineY2}%`"
-                      class="rangesvg-selector-line"
+                      class="range-svg__selector-line"
                 />
                 <text :x="`${numberX(selector)}%`"
                       :y="`${selectorNumberY}%`"
                       text-anchor="middle"
-                      class="rangesvg-selector-number"
+                      class="range-svg__selector-number"
                 >
                     {{ selector }}
                 </text>
@@ -60,7 +60,7 @@
                       :x="`${numberX(number)}%`"
                       :y="`${numberY}%`"
                       text-anchor="middle"
-                      class="rangesvg-number"
+                      class="range-svg__number"
                 >
                     {{ number }}
                 </text>
@@ -70,8 +70,8 @@
                       :x="`${numberX(range.start)}%`"
                       :y="`${numberY}%`"
                       text-anchor="middle"
-                      class="rangesvg-number"
-                      :class="[`rangesvg-number-${range.start}`]"
+                      class="range-svg__number"
+                      :class="[`range-svg__number-${range.start}`]"
                 >
                     {{ range.start }}
                 </text>
@@ -79,8 +79,8 @@
                       :x="`${numberX(range.end)}%`"
                       :y="`${numberY}%`"
                       text-anchor="middle"
-                      class="rangesvg-number"
-                      :class="[`rangesvg-number-${range.end}`]"
+                      class="range-svg__number"
+                      :class="[`range-svg__number-${range.end}`]"
                 >
                     {{ range.end }}
                 </text>
@@ -95,7 +95,7 @@
     import Range from "../../../../model/SurveyBase/Config/Range";
 
     export default {
-        name: "Range",
+        name: "RangeSVG",
         props: {
             range: {
                 type: Range
@@ -225,35 +225,35 @@
             },
             startHover(number) {
                 const lines = document.getElementsByClassName(
-                    `rangesvg-numberline-${number}`
+                    `range-svg__number-line-${number}`
                 );
                 const texts = document.getElementsByClassName(
-                    `rangesvg-number-${number}`
+                    `range-svg__number-${number}`
                 );
 
                 map(
-                    elem => elem.classList.add("hover"),
+                    elem => elem.classList.add("range-svg--hover"),
                     lines
                 );
                 map(
-                    elem => elem.classList.add("hover"),
+                    elem => elem.classList.add("range-svg--hover"),
                     texts
                 );
             },
             endHover(number) {
                 const lines = document.getElementsByClassName(
-                    `rangesvg-numberline-${number}`
+                    `range-svg__number-line-${number}`
                 );
                 const texts = document.getElementsByClassName(
-                    `rangesvg-number-${number}`
+                    `range-svg__number-${number}`
                 );
 
                 map(
-                    elem => elem.classList.remove("hover"),
+                    elem => elem.classList.remove("range-svg--hover"),
                     lines
                 );
                 map(
-                    elem => elem.classList.remove("hover"),
+                    elem => elem.classList.remove("range-svg--hover"),
                     texts
                 );
             },
@@ -287,31 +287,31 @@
 <style lang="scss">
     @import "../../../scss/_variables";
 
-    .rangesvg {
+    .range-svg {
         width: 100%;
 
-        &-middleline, &-numberline, &-selector-line {
+        &__middle-line, &__number-line, &__selector-line {
             stroke: $verydark;
             stroke-width: 2px;
         }
 
-        &-numberline.hover {
+        &__number-line.range-svg--hover {
             stroke: $primary;
         }
 
-        &-number, &-selector-number {
+        &__number, &-selector-number {
             fill: $verydark;
         }
 
-        &-number.hover {
+        &__number.range-svg--hover {
             stroke: $primary;
         }
 
-        &-number-reactor {
+        &__number-reactor {
             fill: rgba(0, 0, 0, 0);
         }
 
-        &-selector {
+        &__selector {
             &-line {
                 stroke-width: 3px;
             }

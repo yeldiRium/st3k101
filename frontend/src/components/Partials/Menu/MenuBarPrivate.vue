@@ -1,22 +1,22 @@
 <template>
-    <nav class="privatemenubar elevation-8">
-        <ul class="privatemenubar-navigation">
+    <nav class="menu-bar-private elevation-8">
+        <ul class="menu-bar-private__navigation">
             <li>
                 <router-link to="/private/dashboard"
-                             class="privatemenubar-link">
-                    <dashboard-icon class="privatemenubar-icon"
+                             class="menu-bar-private__link">
+                    <dashboard-icon class="menu-bar-private__icon"
                                     :style="iconStyle"/>
                 </router-link>
             </li>
             <li>
                 <router-link to="/private/questionnaires"
-                             class="privatemenubar-link">
-                    <list-icon class="privatemenubar-icon" :style="iconStyle"/>
+                             class="menu-bar-private__link">
+                    <list-icon class="menu-bar-private__icon" :style="iconStyle"/>
                 </router-link>
             </li>
             <li>
-                <router-link to="/private/account" class="privatemenubar-link">
-                    <identity-icon class="privatemenubar-icon"
+                <router-link to="/private/account" class="menu-bar-private__link">
+                    <identity-icon class="menu-bar-private__icon"
                                    :style="iconStyle"/>
                 </router-link>
             </li>
@@ -32,7 +32,7 @@
     import IdentityIcon from "../../../assets/icons/baseline-perm_identity-24px.svg";
 
     export default {
-        name: "PrivateMenuBar",
+        name: "MenuBarPrivate",
         components: {
             DashboardIcon,
             ListIcon,
@@ -55,10 +55,10 @@
     @import "../../scss/_variables";
     @import "../../scss/_elevation";
 
-    .privatemenubar {
+    .menu-bar-private {
         background-color: $verydark;
 
-        &-navigation {
+        &__navigation {
             width: 100%;
             height: 100%;
             display: flex;
@@ -78,17 +78,17 @@
             }
         }
 
-        &-link {
+        &__link {
             height: 100%;
 
-            .privatemenubar-icon {
+            .menu-bar-private__icon {
                 fill: $primary-dark;
             }
 
             &.router-link-active {
                 fill: $primary-light;
 
-                .privatemenubar-icon {
+                .menu-bar-private__icon {
                     fill: $primary-light;
                 }
             }

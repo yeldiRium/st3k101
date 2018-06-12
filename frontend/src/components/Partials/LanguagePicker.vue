@@ -1,6 +1,6 @@
 <template>
-    <div class="languagepicker-container">
-        <div class="languagepicker-currentlanguage"
+    <div class="language-picker__container">
+        <div class="language-picker__current-language"
              :title="languageData.currentLanguage.longName"
              ref="currentLanguage"
              @click="openLanguageMenu"
@@ -8,44 +8,44 @@
             {{toUpper(languageData.currentLanguage.shortName)}}
         </div>
 
-        <div class="languagepicker-languagemenu elevation-24"
+        <div class="language-picker__language-menu elevation-24"
              :style="menuStyle"
              v-click-outside="closeLanguageMenu"
              v-if="menuOpen"
         >
-            <div class="languagepicker-languagemenu-heading"
+            <div class="language-picker__heading"
                  v-if="languageData.availableLanguages.length > 0"
             >
                 Available languages
             </div>
-            <div class="languagepicker-languagemenu-item"
+            <div class="language-picker__item"
                  v-for="language in languageData.availableLanguages"
                  :key="language.shortName"
                  @click="chooseLanguage(language)"
             >
-                <span class="languagepicker-languagemenu-short">
+                <span class="language-picker__short-name">
                     {{ toUpper(language.shortName) }}
                 </span>
-                <span class="languagepicker-languagemenu-long">
+                <span class="language-picker__long-name">
                     {{ language.longName }}
                 </span>
             </div>
 
-            <div class="languagepicker-languagemenu-heading"
+            <div class="language-picker__heading"
                  v-if="unusedLanguages.length > 0"
             >
                 Unused languages
             </div>
 
-            <div class="languagepicker-languagemenu-item"
+            <div class="language-picker__item"
                  v-for="language in unusedLanguages"
                  :key="language.shortName"
                  @click="chooseLanguage(language, false)"
             >
-                <span class="languagepicker-languagemenu-short">
+                <span class="language-picker__short-name">
                     {{ toUpper(language.shortName) }}
                 </span>
-                <span class="languagepicker-languagemenu-long">
+                <span class="language-picker__long-name">
                     {{ language.longName }}
                 </span>
             </div>
@@ -126,29 +126,31 @@
     @import "../scss/_variables";
     @import "../scss/_elevation";
 
-    .languagepicker-currentlanguage {
-        background-color: $lighter;
-        border: 1px solid $slightlydark;
-        border-radius: 4px;
-        padding: 3px;
-    }
+    .language-picker {
+        &__current-language {
+            background-color: $lighter;
+            border: 1px solid $slightlydark;
+            border-radius: 4px;
+            padding: 3px;
+        }
 
-    .languagepicker-languagemenu {
-        position: absolute;
-        padding-top: 5px;
-        padding-bottom: 5px;
-        max-height: 40vh;
-        overflow-y: scroll;
-        overflow-x: hidden;
+        &__language-menu {
+            position: absolute;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            max-height: 40vh;
+            overflow-y: scroll;
+            overflow-x: hidden;
 
-        background-color: $lighter;
-        border-top: 5px solid $lighter;
-        border-bottom: 5px solid $lighter;
+            background-color: $lighter;
+            border-top: 5px solid $lighter;
+            border-bottom: 5px solid $lighter;
 
-        display: flex;
-        flex-flow: column;
+            display: flex;
+            flex-flow: column;
+        }
 
-        &-item {
+        &__item {
             padding: 5px;
 
             display: grid;
@@ -163,7 +165,7 @@
             }
         }
 
-        &-heading {
+        &__heading {
             padding-left: 5px;
             padding-right: 5px;
 

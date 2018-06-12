@@ -1,5 +1,5 @@
 <template>
-    <div class="referencecounter">
+    <div class="reference-counter">
         {{ referenceLine }}
     </div>
 </template>

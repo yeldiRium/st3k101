@@ -1,6 +1,6 @@
 <template>
-    <div class="rangeeditor">
-        <div class="rangeeditor-config">
+    <div class="range-editor">
+        <div class="range-editor__config">
             <label>
                 start
                 <input type="number"
@@ -8,7 +8,7 @@
                        min="0"
                        step="1"
                        :max="range.end - 1"
-                       class="rangeeditor-config-input"
+                       class="range-editor__input"
                        v-model="range.start"
                 >
             </label>
@@ -18,13 +18,13 @@
                        name="end"
                        :min="range.start + 1"
                        step="1"
-                       class="rangeeditor-config-input"
+                       class="range-editor__input"
                        v-model="range.end"
                 >
             </label>
         </div>
-        <div class="rangeeditor-preview">
-            <RangeComponent :range="range"
+        <div class="range-editor__preview">
+            <RangeSVG :range="range"
                             :preview="true"
             />
         </div>
@@ -33,12 +33,12 @@
 
 <script>
     import Range from "../../../../model/SurveyBase/Config/Range";
-    import RangeComponent from "./Range";
+    import RangeSVG from "./RangeSVG";
 
     export default {
         name: "RangeEditor",
         components: {
-            RangeComponent
+            RangeSVG
         },
         props: {
             /** @type {Range} */
@@ -52,15 +52,15 @@
 <style lang="scss">
     @import "../../../scss/_variables";
 
-    .rangeeditor {
+    .range-editor {
         display: grid;
         justify-items: center;
 
-        &-config-input {
+        &__input {
             width: 3em;
         }
 
-        &-preview {
+        &__preview {
             width: 100%;
         }
     }

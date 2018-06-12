@@ -165,9 +165,9 @@
 
         padding: 0;
         margin: 0;
-    }
 
-    .list-dimension {
-        width: 90vw;
+        .full-dimension {
+            width: 90vw;
+        }
     }
 </style>

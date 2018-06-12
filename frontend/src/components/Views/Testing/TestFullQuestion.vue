@@ -3,10 +3,10 @@
         <FullQuestion :question="questions[0]"/>
         <FullQuestion :question="questions[1]"/>
         <FullQuestion :question="questions[2]"
-                  :mini="true"
+                      :mini="true"
         />
         <FullQuestion :question="questions[3]"
-                  :mini="true"
+                      :mini="true"
         />
     </div>
 </template>
@@ -14,7 +14,10 @@
 <script>
     import FullQuestion from "../../Partials/SurveyBase/Full/Question";
     import Resource from "../../../model/Resource";
-    import {ConcreteQuestion, ShadowQuestion} from "../../../model/SurveyBase/Question";
+    import {
+        ConcreteQuestion,
+        ShadowQuestion
+    } from "../../../model/SurveyBase/Question";
     import DataClient from "../../../model/DataClient";
     import {Language, LanguageData} from "../../../model/Language";
     import Range from "../../../model/SurveyBase/Config/Range";
@@ -93,11 +96,12 @@
 
         padding: 0;
         margin: 0;
+
+        .full-question {
+            width: 90vw;
+
+            margin-bottom: 20px;
+        }
     }
 
-    .full-question {
-        width: 90vw;
-
-        margin-bottom: 20px;
-    }
 </style>

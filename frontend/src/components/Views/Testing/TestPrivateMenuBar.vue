@@ -1,22 +1,22 @@
 <template>
-    <div class="TestRange_container">
-        <PrivateMenuBar />
+    <div class="TestMenuBarPrivate_container">
+        <MenuBarPrivate />
     </div>
 </template>
 
 <script>
-    import PrivateMenuBar from "../../Partials/Menu/PrivateMenuBar";
+    import MenuBarPrivate from "../../Partials/Menu/MenuBarPrivate";
 
     export default {
         name: "TestRange",
         components: {
-            PrivateMenuBar
+            MenuBarPrivate
         }
     }
 </script>
 
 <style lang="scss">
-    .TestRange_container {
+    .TestMenuBarPrivate_container {
         width: 100%;
         height: 100%;
 
@@ -24,7 +24,7 @@
         margin: 0;
     }
 
-    .privatemenubar {
+    .menu-bar-private {
         width: 90vw;
         height: 15vh;
     }

@@ -1,5 +1,5 @@
 <template>
-    <modal name="create-dimension"
+    <modal name="modal-create-question"
            height="auto"
            @before-open="beforeOpen"
     >
@@ -8,22 +8,14 @@
                 @create="create"
         >
             <template slot="header">
-                Create new Dimension
+                Create new Question
             </template>
             <template slot="body">
-                <input class="popup-createdimension-dimensionname"
-                       name="dimensionname"
-                       v-model="name"
+                <input class="modal-create-question__question-text"
+                       name="question-text"
+                       v-model="text"
                 />
-                <Toggle v-model="randomizeQuestions"
-                >
-                    <template slot="off">
-                        in order
-                    </template>
-                    <template slot="on">
-                        randomize
-                    </template>
-                </Toggle>
+                <RangeEditor :range="range"/>
             </template>
         </CreateResource>
     </modal>
@@ -34,16 +26,16 @@
 
     import {Language, LanguageData} from "../../../model/Language";
     import {Range} from "../../../model/SurveyBase/Config/Range";
-    import {ConcreteDimension} from "../../../model/SurveyBase/Dimension";
+    import {ConcreteQuestion} from "../../../model/SurveyBase/Question";
 
     import CreateResource from "./CreateResource";
-    import Toggle from "../Form/Toggle";
+    import RangeEditor from "../SurveyBase/Config/RangeEditor";
 
     export default {
-        name: "Popup-CreateDimension",
+        name: "ModalCreateQuestion",
         components: {
             CreateResource,
-            Toggle
+            RangeEditor
         },
         props: {
             /** @type {Language} */
@@ -53,8 +45,8 @@
         },
         data() {
             return {
-                name: "Dimension name",
-                randomizeQuestions: false
+                text: "Question text",
+                range: null
             }
         },
         computed: {
@@ -65,11 +57,10 @@
                 this.range = new Range({end: 10});
             },
             cancel() {
-                this.$modal.hide("create-dimension");
+                this.$modal.hide("modal-create-question");
             },
             /**
-             * Creates the Dimension and emits it via a "dimension-created" e-
-             * vent.
+             * Creates the question and emits it via a "question-created" event.
              * TODO: send API request with all data, then set href and owner to
              *       the returned values
              *       Also refactor this in general. This is currently as demon-
@@ -83,33 +74,31 @@
                     this.language,
                     [this.language]
                 );
-                const name = this.name;
-                const questions = [];
-                const randomizeQuestions = this.randomizeQuestions;
+                const text = this.text;
+                const range = this.range;
                 const incomingReferenceCount = 0;
                 const ownedIncomingReferences = [];
 
-                const dimension = new ConcreteDimension(
+                const question = new ConcreteQuestion(
                     href,
                     owner,
                     languageData,
-                    name,
-                    questions,
-                    randomizeQuestions,
+                    text,
+                    range,
                     incomingReferenceCount,
                     ownedIncomingReferences
                 );
 
-                this.$emit("dimension-created", dimension);
-                this.$modal.hide("create-dimension");
+                this.$emit("question-created", question);
+                this.$modal.hide("modal-create-question");
             }
         }
     }
 </script>
 
 <style lang="scss">
-    .popup-createdimension {
-        &-text {
+    .modal-create-question {
+        &__question-text {
             width: 80%;
         }
     }

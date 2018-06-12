@@ -1,6 +1,6 @@
 <template>
-    <div class="TestToggle_container">
-        <Toggle v-model="on1"
+    <div class="TestToggleButton_container">
+        <ToggleButton v-model="on1"
         >
             <template slot="off">
                 Off
@@ -8,8 +8,8 @@
             <template slot="on">
                 On
             </template>
-        </Toggle>
-        <Toggle v-model="on2"
+        </ToggleButton>
+        <ToggleButton v-model="on2"
                 :disabled="true"
         >
             <template slot="off">
@@ -18,8 +18,8 @@
             <template slot="on">
                 On
             </template>
-        </Toggle>
-        <Toggle v-model="on3"
+        </ToggleButton>
+        <ToggleButton v-model="on3"
                 :disabled="true"
         >
             <template slot="off">
@@ -28,17 +28,17 @@
             <template slot="on">
                 On
             </template>
-        </Toggle>
+        </ToggleButton>
     </div>
 </template>
 
 <script>
-    import Toggle from "../../Partials/Form/Toggle";
+    import ToggleButton from "../../Partials/Form/ToggleButton";
 
     export default {
         name: "TestToggle",
         components: {
-            Toggle
+            ToggleButton
         },
         data() {
             return {
@@ -51,7 +51,7 @@
 </script>
 
 <style lang="scss">
-    .TestToggle_container {
+    .TestToggleButton_container {
         width: 100%;
         height: 100%;
 
@@ -59,7 +59,7 @@
         margin: 0;
     }
 
-    .toggle {
+    .toggle-button {
         width: 400px;
         margin-bottom: 20px;
     }

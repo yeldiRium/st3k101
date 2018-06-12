@@ -8,12 +8,12 @@
                        :draggable="true"
                        :ellipseText="false"
         >
-            <IconExpandLess class="list-item-icon"
+            <IconExpandLess class="list-item__icon"
                             @click.native="toggleExpanded"
             />
         </ListDimension>
 
-        <div class="full-dimension-body"
+        <div class="full-dimension__body"
              ref="dropdown"
         >
             <ReferenceCounter :object="dimension"
@@ -31,7 +31,7 @@
                 </template>
             </Toggle>
 
-            <div class="full-dimension-questions">
+            <div class="full-dimension__questions">
                 <FullQuestion v-for="question in dimension.questions"
                               :key="question.href"
                               :question="question"
@@ -39,7 +39,7 @@
                               @question-deleted="handleDeletedQuestion"
                 />
 
-                <ListItem class="full-dimension-add-question"
+                <ListItem class="full-dimension__add-question-button"
                           v-if="isEditable(dimension)"
                           text="Add new Question"
                           :disableSubtext="true"
@@ -51,7 +51,7 @@
                 />
             </div>
 
-            <div class="full-dimension-delete"
+            <div class="full-dimension__delete-button"
                  v-if="isDeletable(dimension)"
                  @click="deleteDimension"
             >
@@ -67,7 +67,7 @@
                        :draggable="draggable"
                        :ellipseText="true"
         >
-            <IconExpandMore class="list-item-icon"
+            <IconExpandMore class="list-item__icon"
                             @click.native="toggleExpanded"
             />
         </ListDimension>
@@ -81,16 +81,16 @@
     import ListDimension from "../List/Dimension";
     import FullQuestion from "../Full/Question";
     import ListItem from "../../List/Item";
-    import CreateQuestion from "../../Popup/CreateQuestion";
+    import CreateQuestion from "../../Modal/CreateQuestion";
 
     import ReferenceCounter from "../Config/ReferenceCounter";
-    import Toggle from "../../Form/Toggle";
+    import Toggle from "../../Form/ToggleButton";
 
     import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
 
     export default {
-        name: "Full-Dimension",
+        name: "FullDimension",
         extends: DimensionBase,
         components: {
             ListDimension,
@@ -122,7 +122,7 @@
         computed: {
             classes() {
                 return {
-                    disabled: !this.isEditable(this.dimension)
+                    "full-dimension--disabled": !this.isEditable(this.dimension)
                 }
             }
         },
@@ -132,7 +132,7 @@
             },
             addNewQuestion() {
                 this.$modal.show(
-                    "create-question"
+                    "modal-create-question"
                 )
             },
             handleCreatedQuestion(question) {
@@ -160,57 +160,57 @@
 <style lang="scss">
     @import "../../../scss/_variables";
 
-    .list-item.list-dimension {
-        cursor: pointer;
-
-        background-color: $primary;
-
-        &.disabled {
-            background-color: $slightlylight;
-        }
-    }
-
     .full-dimension {
         display: flex;
         flex-flow: column;
 
         background-color: $primary-light;
 
-        &.disabled {
+        &--disabled {
             background-color: $lighter;
         }
 
-        &-questions {
+        &__questions {
             width: 95%;
 
             display: flex;
             flex-flow: column;
         }
 
-        .full-dimension-add-question {
+        &__add-question-button {
             background-color: $primary;
         }
 
-        .toggle {
+        &__body {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+
+            > * {
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
+        }
+
+        .toggle-button {
             > div {
                 color: $darker;
             }
 
-            &-off.toggle-off-active,
-            &-on.toggle-on-active {
+            &--off-side.toggle-button__off-side--active,
+            &--on-side.toggle-button__on-side--active {
                 color: $verydark;
             }
         }
-    }
 
-    .full-dimension-body {
-        display: flex;
-        flex-flow: column;
-        align-items: center;
+        .list-dimension.list-item {
+            cursor: pointer;
 
-        > * {
-            margin-top: 8px;
-            margin-bottom: 8px;
+            background-color: $primary;
+
+            &--disabled {
+                background-color: $slightlylight;
+            }
         }
     }
 </style>

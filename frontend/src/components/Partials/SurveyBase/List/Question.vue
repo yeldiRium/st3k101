@@ -8,12 +8,12 @@
               @edit="updateQuestionText"
     >
         <slot></slot>
-        <LanguagePicker class="list-item-languagepicker"
+        <LanguagePicker class="list-item__language-picker"
                         :language-data="question.languageData"
                         @choose-language="changeLanguage"
                         @choose-language-unavailable="addNewTranslation"
         />
-        <IconReorder class="list-item-icon"
+        <IconReorder class="list-item__icon"
                      v-if="draggable"
         />
     </ListItem>
@@ -37,7 +37,7 @@
      * dowQuestion or not owned by the current DataClient.
      */
     export default {
-        name: "List-Question",
+        name: "ListQuestion",
         extends: QuestionBase,
         components: {
             ListItem,
@@ -76,10 +76,10 @@
 </script>
 
 <style lang="scss">
-    .list-item.list-question {
+    .list-question.list-item {
         min-height: 3em;
 
-        &.mini {
+        &--mini {
             min-height: 2em;
         }
     }

@@ -4,16 +4,16 @@
          v-if="expanded"
     >
         <ListQuestionnaire :questionnaire="questionnaire"
-                       :disableSubText="true"
-                       :draggable="true"
-                       :ellipseText="false"
+                           :disableSubText="true"
+                           :draggable="true"
+                           :ellipseText="false"
         >
-            <IconExpandLess class="list-item-icon"
+            <IconExpandLess class="list-item__icon"
                             @click.native="toggleExpanded"
             />
         </ListQuestionnaire>
 
-        <div class="full-questionnaire-body"
+        <div class="full-questionnaire__body"
              ref="dropdown"
         >
             <ReferenceCounter :object="questionnaire"
@@ -31,27 +31,28 @@
                 </template>
             </Toggle>
 
-            <div class="full-questionnaire-dimensions">
+            <div class="full-questionnaire__dimensions">
                 <FullDimension v-for="dimension in questionnaire.dimensions"
-                              :key="dimension.href"
-                              :dimension="dimension"
-                              :deletable="questionnaire.isConcrete"
-                              @dimension-deleted="handleDeletedDimension"
+                               :key="dimension.href"
+                               :dimension="dimension"
+                               :deletable="questionnaire.isConcrete"
+                               @dimension-deleted="handleDeletedDimension"
                 />
 
-                <ListItem class="full-questionnaire-add-dimension"
+                <ListItem class="full-questionnaire__add-dimension-button"
                           v-if="isEditable(questionnaire)"
                           text="Add new Dimension"
                           :disableSubtext="true"
+                          :editableText="false"
                           @click="addNewDimension"
                 />
                 <CreateDimension v-if="isEditable(questionnaire)"
-                                :language="questionnaire.languageData.currentLanguage"
-                                @dimension-created="handleCreatedDimension"
+                                 :language="questionnaire.languageData.currentLanguage"
+                                 @dimension-created="handleCreatedDimension"
                 />
             </div>
 
-            <div class="full-questionnaire-delete"
+            <div class="full-questionnaire__delete-button"
                  v-if="isDeletable(questionnaire)"
                  @click="deleteQuestionnaire"
             >
@@ -64,10 +65,10 @@
          v-else
     >
         <ListQuestionnaire :questionnaire="questionnaire"
-                       :draggable="draggable"
-                       :ellipseText="true"
+                           :draggable="draggable"
+                           :ellipseText="true"
         >
-            <IconExpandMore class="list-item-icon"
+            <IconExpandMore class="list-item__icon"
                             @click.native="toggleExpanded"
             />
         </ListQuestionnaire>
@@ -82,10 +83,10 @@
     import FullDimension from "../Full/Dimension";
     import ListItem from "../../List/Item";
 
-    import CreateDimension from "../../Popup/CreateDimension";
+    import CreateDimension from "../../Modal/CreateDimension";
 
     import ReferenceCounter from "../Config/ReferenceCounter";
-    import Toggle from "../../Form/Toggle";
+    import Toggle from "../../Form/ToggleButton";
 
     import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
@@ -123,7 +124,7 @@
         computed: {
             classes() {
                 return {
-                    disabled: !this.isEditable(this.questionnaire)
+                    "full-questionnaire--disabled": !this.isEditable(this.questionnaire)
                 }
             }
         },
@@ -133,7 +134,7 @@
             },
             addNewDimension() {
                 this.$modal.show(
-                    "create-dimension"
+                    "modal-create-dimension"
                 )
             },
             handleCreatedDimension(dimension) {
@@ -161,35 +162,36 @@
 <style lang="scss">
     @import "../../../scss/_variables";
 
-    .list-item.list-questionnaire {
-        cursor: pointer;
-
-        background-color: $primary;
-
-        &.disabled {
-            background-color: $slightlylight;
-        }
-    }
-
     .full-questionnaire {
         display: flex;
         flex-flow: column;
 
         background-color: $primary-light;
 
-        &.disabled {
+        &--disabled {
             background-color: $lighter;
         }
 
-        &-dimensions {
+        &__dimensions {
             width: 95%;
 
             display: flex;
             flex-flow: column;
         }
 
-        .full-questionnaire-add-dimension {
+        &__add-dimension-button {
             background-color: $primary;
+        }
+
+        &__body {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+
+            > * {
+                margin-top: 8px;
+                margin-bottom: 8px;
+            }
         }
 
         .toggle {
@@ -202,16 +204,16 @@
                 color: $verydark;
             }
         }
-    }
 
-    .full-questionnaire-body {
-        display: flex;
-        flex-flow: column;
-        align-items: center;
+        .list-questionnaire.list-item {
+            cursor: pointer;
 
-        > * {
-            margin-top: 8px;
-            margin-bottom: 8px;
+            background-color: $primary;
+
+            &--disabled {
+                background-color: $slightlylight;
+            }
         }
     }
+
 </style>

@@ -151,9 +151,10 @@
 
         padding: 0;
         margin: 0;
+
+        .list-dimension {
+            width: 90vw;
+        }
     }
 
-    .list-dimension {
-        width: 90vw;
-    }
 </style>

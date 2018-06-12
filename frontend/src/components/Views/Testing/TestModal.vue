@@ -16,6 +16,11 @@
             Create Question Dialog.
         </button>
         <CreateQuestion />
+        <br/><br/>
+        <button @click="click5">
+            Create Dimension Dialog.
+        </button>
+        <CreateDimension />
     </div>
 </template>
 
@@ -28,13 +33,15 @@
     import {Language, LanguageData} from "../../../model/Language";
 
     import FullQuestion from "../../Partials/SurveyBase/Full/Question";
-    import CreateResource from "../../Partials/Popup/CreateResource";
-    import CreateQuestion from "../../Partials/Popup/CreateQuestion";
+    import CreateResource from "../../Partials/Modal/CreateResource";
+    import CreateQuestion from "../../Partials/Modal/CreateQuestion";
+    import CreateDimension from "../../Partials/Modal/CreateDimension";
 
     export default {
         name: "TestModal",
         components: {
-            CreateQuestion
+            CreateQuestion,
+            CreateDimension
         },
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
@@ -110,7 +117,18 @@
                 let english = new Language("en", "English");
 
                 this.$modal.show(
-                    "create-question",
+                    "modal-create-question",
+                    {
+                        language: english
+                    }
+                );
+            },
+            click5() {
+
+                let english = new Language("en", "English");
+
+                this.$modal.show(
+                    "modal-create-dimension",
                     {
                         language: english
                     }

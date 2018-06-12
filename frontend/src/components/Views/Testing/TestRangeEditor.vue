@@ -1,18 +1,23 @@
 <template>
-    <div class="TestRange_container">
+    <div class="TestRangeEditor_container">
         <RangeEditor :range="range"
+        />
+        <RangeSVG :range="range"
+                  :preview="false"
         />
     </div>
 </template>
 
 <script>
     import RangeEditor from "../../Partials/SurveyBase/Config/RangeEditor";
+    import RangeSVG from "../../Partials/SurveyBase/Config/RangeSVG";
     import Range from "../../../model/SurveyBase/Config/Range";
 
     export default {
         name: "TestRange",
         components: {
-            RangeEditor
+            RangeEditor,
+            RangeSVG
         },
         data() {
             return {
@@ -23,7 +28,7 @@
 </script>
 
 <style lang="scss">
-    .TestRange_container {
+    .TestRangeEditor_container {
         width: 100%;
         height: 100%;
 
@@ -31,7 +36,7 @@
         margin: 0;
     }
 
-    .rangeeditor {
+    .range-editor {
         width: 400px;
     }
 </style>

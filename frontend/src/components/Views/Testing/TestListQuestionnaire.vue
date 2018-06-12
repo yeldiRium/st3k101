@@ -213,9 +213,10 @@
 
         padding: 0;
         margin: 0;
+
+        .list-questionnaire {
+            width: 90vw;
+        }
     }
 
-    .list-questionnaire {
-        width: 90vw;
-    }
 </style>
