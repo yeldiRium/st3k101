@@ -148,7 +148,7 @@
             },
             deleteDimension() {
                 // TODO: delete via api
-                this.$emit("dimension-deleted");
+                this.$emit("dimension-deleted", this.dimension);
             }
         },
         created() {
