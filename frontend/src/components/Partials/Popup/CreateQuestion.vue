@@ -89,8 +89,6 @@
                     ownedIncomingReferences
                 );
 
-                console.log(question);
-
                 this.$emit("question-created", question);
                 this.$modal.hide("create-question");
             }
