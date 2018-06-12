@@ -185,6 +185,8 @@
             fill: $verydark;
 
             margin-left: 0.5em;
+
+            cursor: pointer;
         }
     }
 </style>

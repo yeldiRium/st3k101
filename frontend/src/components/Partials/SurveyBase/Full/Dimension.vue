@@ -227,8 +227,6 @@
         }
 
         .list-dimension.list-item {
-            cursor: pointer;
-
             background-color: $primary;
 
             &--disabled {

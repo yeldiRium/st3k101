@@ -60,5 +60,9 @@
 </script>
 
 <style lang="scss">
-
+    .editable-text {
+        &__text {
+            cursor: pointer;
+        }
+    }
 </style>

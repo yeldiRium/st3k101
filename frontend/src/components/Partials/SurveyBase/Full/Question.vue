@@ -171,8 +171,6 @@
         }
 
         .list-question.list-item {
-            cursor: pointer;
-
             background-color: $primary;
 
             &--disabled {

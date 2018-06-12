@@ -132,6 +132,8 @@
             border: 1px solid $slightlydark;
             border-radius: 4px;
             padding: 3px;
+
+            cursor: pointer;
         }
 
         &__language-menu {
