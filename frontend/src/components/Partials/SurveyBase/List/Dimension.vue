@@ -29,7 +29,7 @@
     import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
 
     import {
-        addNewTranslation,
+        setName,
         fetchTranslation
     } from "../../../../api2/Dimension";
 
@@ -85,15 +85,16 @@
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
                 // TODO: display dialog which asks for data
-                const data = {
-                    text: "tbd"
-                };
-                addNewTranslation(this.dimension, language, data);
+                const name = "tbd";
+                setName(this.dimension, language, name);
                 this.changeLanguage(language);
             },
             updateDimensionName(name) {
-                // TODO: set via API.
-                this.dimension.name = name;
+                setName(
+                    this.dimension,
+                    this.dimension.languageData.currentLanguage,
+                    name
+                );
             }
         }
     }

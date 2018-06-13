@@ -1,3 +1,25 @@
+import Future from "fluture";
+import {contains, without} from "ramda";
+
+import {ConcreteDimension} from "../model/SurveyBase/Dimension";
+import {ConcreteQuestion, ShadowQuestion} from "../model/SurveyBase/Question";
+import {reloadQuestion} from "./Question";
+import {LanguageData} from "../model/Language";
+
+/**
+ * Reload the Dimension's data in its current language.
+ *
+ * @param {Dimension} dimension
+ * @return {Future}
+ * @resolve to true
+ * @reject with an API error message
+ * @cancel TODO: is this cancellable?
+ */
+function reloadDimension(dimension) {
+    // TODO: reload via API
+    throw new Error("Please implement this.");
+}
+
 /**
  * Fetches the Dimension from the API in the requested language.
  * Updates all translatable information in place and updates the
@@ -9,7 +31,7 @@
  * @param {Dimension} dimension
  * @param {Language} language
  * @return Future
- * @resolve with nothing, since the Dimension is updated in place
+ * @resolve to true
  * @reject with an API error message, if something went wrong
  * @cancel TODO: is this cancellable?
  */
@@ -21,25 +43,143 @@ function fetchTranslation(dimension, language) {
 }
 
 /**
- * Adds a new translation to the given Dimension in the given Language.
+ * Sets the Dimension's name in the given language. Adds a new available langu-
+ * age to the Dimension, if it doesn't exist yet.
  *
- * Does not update the dimension! It has to be fetched in the new Language after-
- * wards, if required.
+ * If it is the currentLanguage, the Dimension is updated with the new text.
  *
- * @param {Dimension} dimension
+ * @param {ConcreteDimension} dimension
  * @param {Language} language
- * @param {String} text
+ * @param {String} name
  * @return {Future}
- * @resolve with true
+ * @resolve to true
  * @reject with an API error message
  * @cancel TODO: is this cancellable?
  */
-function addNewTranslation(dimension, language, {text}) {
-    // TODO: add new translation via api
+function setName(dimension, language, name) {
+    // Overwrite current name, if the language is the currently selected one
+    if (dimension.languageData.currentLanguage.equals(language)) {
+        dimension.name = name;
+    }
+
+    // Error after setting name so that the app can be demonstrated without API.
+    // TODO: set name via api in given language
     throw new Error("Please implement this.");
 }
 
+/**
+ * Sets the "randomizeQuestions" property.
+ *
+ * @param {Dimension} dimension
+ * @param {Boolean} randomizeQuestions
+ * @return {Future}
+ * @resolve to true
+ * @reject with API error message
+ * @cancel TODO: is this cancellable?
+ */
+function setRandomizeQuestions(dimension, randomizeQuestions) {
+    // Set before throwing error so that the app can be used for demos.
+    dimension.randomizeQuestions = randomizeQuestions;
+
+    // TODO: set prop via API
+    throw new Error("Please implement this.");
+}
+
+/**
+ * Add a new ConcreteQuestion to the Dimension.
+ * Uses the Dimension's currentLanguage.
+ *
+ * @param {ConcreteDimension} dimension
+ * @param {DataClient} owner
+ * @param {String} text
+ * @param {Range} range
+ * @return Future
+ * @resolve {ShadowQuestionnaire}
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function addConcreteQuestion(dimension, owner, text, range) {
+    // TODO: create via API
+    // TODO: retrieve correct href
+    const href = "";
+    const language = dimension.languageData.currentLanguage;
+    const languageData = new LanguageData(
+        language,
+        language,
+        [language]
+    );
+
+    dimension.questions.push(new ConcreteQuestion(
+        href,
+        owner,
+        languageData,
+        text,
+        range,
+        0,
+        []
+    ));
+}
+
+/**
+ * Add a new ShadowQuestion based on the given ConcreteQuestion to the Dimen-
+ * sion.
+ *
+ * @param {Dimension} dimension
+ * @param {DataClient} owner
+ * @param {ConcreteQuestion} question
+ * @return Future
+ * @resolve {ShadowQuestionnaire}
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function addShadowQuestion(dimension, owner, question) {
+    // TODO: create via API
+    // TODO: retrieve correct href
+    const href = "";
+    const languageData = new LanguageData(
+        question.languageData.currentLanguage,
+        question.languageData.originalLanguage,
+        [...question.languageData.availableLanguages]
+    );
+
+    // Reload so that the references are respected.
+    reloadQuestion(question);
+
+    dimension.questions.push(new ShadowQuestion(
+        href,
+        owner,
+        languageData,
+        question.text,
+        question.range.clone(),
+        question
+    ));
+}
+
+/**
+ * Removes the question from the dimension by deleting the question.
+ *
+ * @param {ConcreteDimension} dimension
+ * @param {Question} question
+ * @return {Future}
+ * @resolve to true
+ * @reject with API error message
+ * @cancel TODO: is this cancellable?
+ */
+function removeQuestion(dimension, question) {
+    if (contains(question, dimension.questions)) {
+        // TODO: delete via API
+        dimension.questions = without([question], dimension.questions);
+    } else {
+        return Future.reject("Question not contained in Dimension.");
+    }
+}
+
 export {
+    reloadDimension,
     fetchTranslation,
-    addNewTranslation
+    setName,
+    setRandomizeQuestions,
+    addConcreteQuestion,
+    addShadowQuestion,
+    removeQuestion
 };

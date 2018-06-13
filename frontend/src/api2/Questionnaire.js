@@ -1,3 +1,120 @@
+import Future from "fluture";
+import {contains, without} from "ramda";
+
+import {ShadowQuestionnaire} from "../model/SurveyBase/Questionnaire";
+import {
+    ConcreteDimension,
+    ShadowDimension
+} from "../model/SurveyBase/Dimension";
+import {reloadDimension} from "./Dimension";
+import {LanguageData} from "../model/Language";
+
+/**
+ * Create a new ConcreteQuestionnaire.
+ *
+ * @param {DataClient} owner
+ * @param {Language} language
+ * @param {String} name
+ * @param {String} description
+ * @param {Boolean} isPublic
+ * @param {Boolean} allowEmbedded
+ * @param {String} xapiTarget
+ * @return {Future}
+ * @resolve {ConcreteQuestionnaire}
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function createConcreteQuestionnaire(owner,
+                                     language,
+                                     name,
+                                     description,
+                                     isPublic,
+                                     allowEmbedded,
+                                     xapiTarget = "") {
+    // TODO: create via API
+    // TODO: retrieve correct href
+    const href = "";
+    const languageData = new LanguageData(language, language, [language]);
+
+    return new ConcreteQuestionnaire(
+        href,
+        owner,
+        languageData,
+        name,
+        description,
+        isPublic,
+        allowEmbedded,
+        xapiTarget,
+        []
+    );
+}
+
+/**
+ * Creates a new ShadowQuestionnaire based on the given ConcreteQuestionnaire.
+ *
+ * @param {DataClient} owner
+ * @param {ConcreteQuestionnaire} questionnaire
+ * @return {Future}
+ * @resolve {ShadowQuestionnaire}
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function createShadowQuestionnaire(owner, questionnaire) {
+    // TODO: create via API
+    // TODO: retrieve correct href
+    const href = "";
+    const languageData = new LanguageData(
+        questionnaire.languageData.currentLanguage,
+        questionnaire.languageData.originalLanguage,
+        [...questionnaire.languageData.availableLanguages]
+    );
+    // TODO: retrieve correct ShadowDimensions
+    const shadowDimensions = [];
+
+    reloadQuestionnaire(questionnaire);
+
+    return new ShadowQuestionnaire(
+        href,
+        owner,
+        languageData,
+        questionnaire.name,
+        questionnaire.description,
+        questionnaire.isPublic,
+        questionnaire.allowEmbedded,
+        questionnaire.xapiTarget,
+        shadowDimensions,
+        questionnaire
+    )
+}
+
+/**
+ * Delete the Questionnaire and all appended Dimensions.
+ *
+ * @param {Questionnaire} questionnaire
+ * @return {Future}
+ * @resolve {ShadowQuestionnaire}
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function deleteQuestionnaire(questionnaire) {
+    // TODO: delete via API
+    throw new Error("Please implement this.");
+}
+
+/**
+ * Reload the Questionnaire's data in its current language.
+ *
+ * @param {Questionnaire} questionnaire
+ * @return {Future}
+ * @resolve to true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function reloadQuestionnaire(questionnaire) {
+    // TODO: reload from API
+    throw new Error("Please implement this.");
+}
+
 /**
  * Fetches the Questionnaire from the API in the requested language.
  * Updates all translatable information in place and updates the
@@ -8,8 +125,8 @@
  *
  * @param {Questionnaire} questionnaire
  * @param {Language} language
- * @return Future
- * @resolve with nothing, since the Questionnaire is updated in place
+ * @return {Future}
+ * @resolve to true
  * @reject with an API error message, if something went wrong
  * @cancel TODO: is this cancellable?
  */
@@ -20,26 +137,106 @@ function fetchTranslation(questionnaire, language) {
     throw new Error("Please implement this.");
 }
 
+// TODO: add remaining functions for setters
+
 /**
- * Adds a new translation to the given Questionnaire in the given Language.
+ * Adds a new ConcreteDimension to a ConcreteQuestionnaire.
+ * Uses the Questionnaire's currentLanguage.
  *
- * Does not update the questionnaire! It has to be fetched in the new Language after-
- * wards, if required.
- *
- * @param {Questionnaire} questionnaire
- * @param {Language} language
- * @param {String} text
+ * @param {ConcreteQuestionnaire} questionnaire
+ * @param {DataClient} owner
+ * @param {String} name
+ * @param {Boolean} randomizeQuestions
  * @return {Future}
- * @resolve with true
- * @reject with an API error message
+ * @resolve to true
+ * @reject with an API error message, if something went wrong
  * @cancel TODO: is this cancellable?
  */
-function addNewTranslation(questionnaire, language, {text}) {
-    // TODO: add new translation via api
-    throw new Error("Please implement this.");
+function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
+    // TODO: add via API
+    // TODO: retrieve correct href
+    const href = "";
+    const language = questionnaire.languageData.currentLanguage;
+    const languageData = new LanguageData(language, language, [language]);
+
+    questionnaire.dimensions.push(new ConcreteDimension(
+        href,
+        owner,
+        languageData,
+        name,
+        [],
+        randomizeQuestions,
+        0,
+        []
+    ));
+}
+
+/**
+ * Adds a new ShadowDimension to a ConcreteQuestionnaire based on a given Con-
+ * creteDimension.
+ *
+ * @param {ConcreteQuestionnaire} questionnaire
+ * @param {DataClient} owner
+ * @param {ConcreteDimension} dimension
+ * @return {Future}
+ * @resolve true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function addShadowDimension(questionnaire, owner, dimension) {
+    // TODO: add via API
+    // TODO: retrieve correct href
+    const href = "";
+    const languageData = new LanguageData(
+        dimension.languageData.currentLanguage,
+        dimension.languageData.originalLanguage,
+        [...dimension.languageData.availableLanguages]
+    );
+    // TODO: retrieve ShadowQuestions
+    const shadowQuestions = [];
+
+    // Reload so that the new references are respected
+    reloadDimension(dimension);
+
+    questionnaire.dimensions.push(new ShadowDimension(
+        href,
+        owner,
+        languageData,
+        dimension.name,
+        shadowQuestions,
+        dimension.randomizeQuestions,
+        dimension
+    ));
+}
+
+/**
+ * Removes a Dimension from a ConcreteQuestionnaire and deletes it.
+ *
+ * @param {ConcreteQuestionnaire} questionnaire
+ * @param {Dimension} dimension
+ * @return {Future}
+ * @resolve true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function removeDimension(questionnaire, dimension) {
+    if (contains(dimension, questionnaire.dimensions)) {
+        // TODO: delete via API
+        questionnaire.dimensions = without(
+            [dimension],
+            questionnaire.dimensions
+        );
+    } else {
+        return Future.reject("Dimension not contained in Questionnaire.");
+    }
 }
 
 export {
+    createConcreteQuestionnaire,
+    createShadowQuestionnaire,
     fetchTranslation,
-    addNewTranslation
+    // TODO: add remaining setters
+    addConcreteDimension,
+    addShadowDimension,
+    removeDimension
 };

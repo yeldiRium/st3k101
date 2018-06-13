@@ -57,11 +57,8 @@
                 this.$modal.hide("modal-create-question");
             },
             /**
-             * Creates the question and emits it via a "question-created" event.
-             * TODO: send API request with all data, then set href and owner to
-             *       the returned values
-             *       Also refactor this in general. This is currently as demon-
-             *       strative of intent as possible and should be improved upon.
+             * Emits a "question-create" event with all data needed to create a
+             * new Question.
              */
             create() {
                 this.$emit("question-create", {

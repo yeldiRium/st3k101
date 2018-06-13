@@ -20,8 +20,9 @@
                               v-if="dimension.isConcrete"
             />
 
-            <Toggle v-model="dimension.randomizeQuestions"
+            <Toggle :value="dimension.randomizeQuestions"
                     :disabled="!isOwnedByCurrentDataClient(dimension)"
+                    @input="updateRandomizeQuestions"
             >
                 <template slot="off">
                     in order
@@ -37,7 +38,7 @@
                               :key="question.href"
                               :question="question"
                               :deletable="dimension.isConcrete"
-                              @question-deleted="handleDeletedQuestion"
+                              @question-delete="deleteQuestion"
                 />
 
                 <ListItem class="full-dimension__add-question-button"
@@ -54,7 +55,7 @@
 
             <div class="full-dimension__delete-button"
                  v-if="isDeletable(dimension)"
-                 @click="confirmDeleteDimension"
+                 @click="deleteDimension"
             >
                 delete
             </div>
@@ -90,6 +91,11 @@
 
     import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
+    import {
+        addConcreteQuestion,
+        removeQuestion,
+        setRandomizeQuestions
+    } from "../../../../api2/Dimension";
 
     export default {
         name: "FullDimension",
@@ -139,28 +145,22 @@
                 )
             },
             handleCreateQuestion({text, range}) {
-                this.dimension.questions.push(createQuestion(
-                    this.dataClient,
-                    this.dimension.languageData.currentLanguage,
-                    text,
-                    range
-                ));
+                addConcreteQuestion(
+                    this.dimension, this.dataClient, text, range
+                );
             },
             /**
              * Only handles removal from the dimension in reaction to Question
              * being deleted.
              */
-            handleDeletedQuestion(question) {
-                this.dimension.questions = without(
-                    [question],
-                    this.dimension.questions
-                );
+            deleteQuestion(question) {
+                removeQuestion(this.dimension, question);
             },
             /**
              * Asks for confirmation, if the Dimension should be deleted, and
-             * does so if the user confirms.
+             * emits event that commands to do so, if the users confirms.
              */
-            confirmDeleteDimension() {
+            deleteDimension() {
                 this.$modal.show(
                     "dialog",
                     {
@@ -172,16 +172,16 @@
                             },
                             {
                                 text: "Confirm",
-                                handler: () => this.deleteDimension(),
+                                handler: () => this
+                                    .$emit("dimension-delete", this.dimension),
                                 default: true
                             }
                         ]
                     }
                 )
             },
-            deleteDimension() {
-                // TODO: delete via api
-                this.$emit("dimension-deleted", this.dimension);
+            updateRandomizeQuestions(randomizeQuestions) {
+                setRandomizeQuestions(this.dimension, randomizeQuestions);
             }
         },
         created() {

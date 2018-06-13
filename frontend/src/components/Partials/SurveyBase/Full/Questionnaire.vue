@@ -20,24 +20,13 @@
                               v-if="questionnaire.isConcrete"
             />
 
-            <Toggle v-model="questionnaire.randomizeDimensions"
-                    :disabled="!isOwnedByCurrentDataClient(questionnaire)"
-            >
-                <template slot="off">
-                    in order
-                </template>
-                <template slot="on">
-                    randomize
-                </template>
-            </Toggle>
-
             <div class="full-questionnaire__dimensions">
                 <FullDimension class="full-dimension--bordered"
                                v-for="dimension in questionnaire.dimensions"
                                :key="dimension.href"
                                :dimension="dimension"
                                :deletable="questionnaire.isConcrete"
-                               @dimension-deleted="handleDeletedDimension"
+                               @dimension-delete="deleteDimension"
                 />
 
                 <ListItem class="full-questionnaire__add-dimension-button"
@@ -45,17 +34,17 @@
                           text="Add new Dimension"
                           :disableSubtext="true"
                           :editableText="false"
-                          @click="addNewDimension"
+                          @click="openNewDimensionDialog"
                 />
                 <CreateDimension v-if="isEditable(questionnaire)"
                                  :language="questionnaire.languageData.currentLanguage"
-                                 @dimension-created="handleCreatedDimension"
+                                 @dimension-create="createDimension"
                 />
             </div>
 
             <div class="full-questionnaire__delete-button"
                  v-if="isDeletable(questionnaire)"
-                 @click="confirmDeleteQuestionnaire"
+                 @click="deleteQuestionnaire"
             >
                 delete
             </div>
@@ -77,6 +66,7 @@
 </template>
 
 <script>
+    import {mapState} from "vuex";
     import {without} from "ramda";
 
     import QuestionnaireBase from "../QuestionnaireBase";
@@ -91,6 +81,10 @@
 
     import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
+    import {
+        addConcreteDimension,
+        removeDimension
+    } from "../../../../api2/Questionnaire";
 
     export default {
         name: "Full-Questionnaire",
@@ -123,6 +117,7 @@
             }
         },
         computed: {
+            ...mapState("session", ["dataClient"]),
             classes() {
                 return {
                     "full-questionnaire--disabled": !this.isEditable(this.questionnaire)
@@ -133,27 +128,27 @@
             toggleExpanded() {
                 this.expanded = !this.expanded;
             },
-            addNewDimension() {
+            openNewDimensionDialog() {
                 this.$modal.show(
                     "modal-create-dimension"
                 )
             },
-            handleCreatedDimension(dimension) {
-                // TODO: update questionnaire via API.
-                this.questionnaire.dimensions.push(dimension);
-            },
-            handleDeletedDimension(dimension) {
-                // TODO: delete via api
-                this.questionnaire.dimensions = without(
-                    [dimension],
-                    this.questionnaire.dimensions
+            createDimension({name, randomizeQuestions}) {
+                addConcreteDimension(
+                    this.questionnaire,
+                    this.dataClient,
+                    name,
+                    randomizeQuestions
                 );
+            },
+            deleteDimension(dimension) {
+                removeDimension(this.questionnaire, dimension);
             },
             /**
              * Asks for confirmation, if the Questionnaire should be deleted, and
-             * does so if the user confirms.
+             * emits an event commanding to do so, if the user confirms.
              */
-            confirmDeleteQuestionnaire() {
+            deleteQuestionnaire() {
                 this.$modal.show(
                     "dialog",
                     {
@@ -165,16 +160,15 @@
                             },
                             {
                                 text: "Confirm",
-                                handler: () => this.deleteQuestionnaire(),
+                                handler: () => this.$emit(
+                                    "questionnaire-deleted",
+                                    this.questionnaire
+                                ),
                                 default: true
                             }
                         ]
                     }
                 )
-            },
-            deleteQuestionnaire() {
-                // TODO: delete via api
-                this.$emit("questionnaire-deleted", this.questionnaire);
             }
         },
         created() {

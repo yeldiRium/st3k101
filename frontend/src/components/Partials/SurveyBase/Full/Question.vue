@@ -31,7 +31,7 @@
             </template>
             <div class="full-question__delete-button"
                  v-if="isDeletable(question)"
-                 @click="confirmDeleteQuestion"
+                 @click="deleteQuestion"
             >
                 delete
             </div>
@@ -62,7 +62,7 @@
     import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
 
-    import {setRange, deleteQuestion} from "../../../../api2/Question";
+    import {deleteQuestion, setRange} from "../../../../api2/Question";
 
     export default {
         name: "FullQuestion",
@@ -105,9 +105,9 @@
             },
             /**
              * Asks for confirmation, if the Question should be deleted, and
-             * does so if the user confirms.
+             * emits an event which commands to do so, if the users confirms.
              */
-            confirmDeleteQuestion() {
+            deleteQuestion() {
                 this.$modal.show(
                     "dialog",
                     {
@@ -119,18 +119,13 @@
                             },
                             {
                                 text: "Confirm",
-                                handler: () => this.deleteQuestion(),
+                                handler: () => this
+                                    .$emit("question-delete", this.question),
                                 default: true
                             }
                         ]
                     }
                 )
-            },
-            deleteQuestion() {
-                // Emit before api so that app can be demonstrated without API.
-                this.$emit("question-deleted", this.question);
-                // TODO: delete via api
-                deleteQuestion(this.question);
             },
             updateRange(range) {
                 setRange(this.question, range);

@@ -1,82 +1,15 @@
 import Question from "../model/SurveyBase/Question";
-import {LanguageData} from "../model/Language";
 
 /**
- * Creates the Question.
- *
- * @param {DataClient} owner
- * @param {Language} language
- * @param {String} text
- * @param {Range} range
- * @returns {ConcreteQuestion}
- */
-function createQuestion(
-    owner,
-    language,
-    text,
-    range
-) {
-    // TODO: create via API
-    // TODO: retrieve correct href
-    const href = "";
-    const languageData = new LanguageData(
-        language,
-        language,
-        [language]
-    );
-
-    return new ConcreteQuestion(
-        href,
-        owner,
-        languageData,
-        text,
-        range,
-        0,
-        []
-    );
-}
-
-/**
- * Create ShadowQuestion for given ConcreteQuestion.
- *
- * @param {DataClient} owner
- * @param {ConcreteQuestion} question
- * @returns {ShadowQuestion}
- */
-function shadowQuestion(
-    owner,
-    question
-) {
-    // TODO: create via API
-    // TODO: retrieve correct href
-    const href = "";
-    const languageData = new LanguageData(
-        question.languageData.currentLanguage,
-        question.languageData.originalLanguage,
-        [...question.languageData.availableLanguages]
-    );
-
-    return new ShadowQuestion(
-        href,
-        owner,
-        languageData,
-        question.text,
-        question.range.clone(),
-        question.href
-    );
-}
-
-/**
- * Deletes the Question.
- *
+ * Reloads the Question's data in its current language.
  * @param {Question} question
  * @return {Future}
  * @resolve to true
  * @reject with an API error message
  * @cancel TODO: is this cancellable?
  */
-function deleteQuestion(question) {
-    // TODO: delete Question via api
+function reloadQuestion(question) {
+    // TODO: fetch data from API and rewrite question content
     throw new Error("Please implement this.");
 }
 
@@ -103,7 +36,8 @@ function fetchTranslation(question, language) {
 }
 
 /**
- * Sets the Question's text in the given language.
+ * Sets the Question's text in the given language. Creates a new available
+ * language on the Question, if it doesn't exist already.
  *
  * If it is the currentLanguage, the Question is updated with the new text.
  *
@@ -145,8 +79,8 @@ function setRange(question, range) {
 }
 
 export {
+    reloadQuestion,
     fetchTranslation,
     setText,
-    setRange,
-    deleteQuestion
+    setRange
 };

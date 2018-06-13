@@ -96,7 +96,7 @@
                 const data = {
                     text: "tbd"
                 };
-                addNewTranslation(this.questionnaire, language, data);
+                //addNewTranslation(this.questionnaire, language, data);
                 this.changeLanguage(language);
             },
             updateQuestionnaireName(name) {

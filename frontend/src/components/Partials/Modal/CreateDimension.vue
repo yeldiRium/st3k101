@@ -63,39 +63,18 @@
                 this.$modal.hide("modal-create-dimension");
             },
             /**
-             * Creates the Dimension and emits it via a "dimension-created" e-
-             * vent.
-             * TODO: send API request with all data, then set href and owner to
-             *       the returned values
-             *       Also refactor this in general. This is currently as demon-
-             *       strative of intent as possible and should be improved upon.
+             * Emits a "dimension-create" event with all needed data to create
+             * the dimension.
              */
             create() {
-                const href = "someshittyhref" + String(Math.random());
-                const owner = this.dataClient;
-                const languageData = new LanguageData(
-                    this.language,
-                    this.language,
-                    [this.language]
+                this.$emit(
+                    "dimension-create",
+                    {
+                        name: this.name,
+                        question: [],
+                        randomizeQuestions: this.randomizeQuestions
+                    }
                 );
-                const name = this.name;
-                const questions = [];
-                const randomizeQuestions = this.randomizeQuestions;
-                const incomingReferenceCount = 0;
-                const ownedIncomingReferences = [];
-
-                const dimension = new ConcreteDimension(
-                    href,
-                    owner,
-                    languageData,
-                    name,
-                    questions,
-                    randomizeQuestions,
-                    incomingReferenceCount,
-                    ownedIncomingReferences
-                );
-
-                this.$emit("dimension-created", dimension);
                 this.$modal.hide("modal-create-dimension");
             }
         }
