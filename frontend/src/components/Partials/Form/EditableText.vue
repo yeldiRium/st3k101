@@ -3,6 +3,7 @@
     >
         <div class="editable-text__form"
              v-if="editing"
+             v-click-outside="cancelEditing"
         >
             <input :value="text"
                    ref="input"
@@ -11,6 +12,7 @@
             />
             <button @click="finishEditing">
                 Ok
+                   v-click-outside="cancelEditing"
             </button>
         </div>
         <div class="editable-text__text"
