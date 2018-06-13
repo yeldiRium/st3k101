@@ -198,13 +198,6 @@
             }
         }
 
-        &__dimensions {
-            width: 95%;
-
-            display: flex;
-            flex-flow: column;
-        }
-
         &__add-dimension-button {
             background-color: $primary;
         }
@@ -215,9 +208,16 @@
             align-items: center;
 
             > * {
+                width: 95%;
+                text-align: center;
                 margin-top: 8px;
                 margin-bottom: 8px;
             }
+        }
+
+        &__dimensions {
+            display: flex;
+            flex-flow: column;
         }
 
         .toggle {

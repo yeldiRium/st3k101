@@ -211,13 +211,6 @@
             }
         }
 
-        &__questions {
-            width: 95%;
-
-            display: flex;
-            flex-flow: column;
-        }
-
         &__add-question-button {
             background-color: $primary;
         }
@@ -228,9 +221,16 @@
             align-items: center;
 
             > * {
+                width: 95%;
+                text-align: center;
                 margin-top: 8px;
                 margin-bottom: 8px;
             }
+        }
+
+        &__questions {
+            display: flex;
+            flex-flow: column;
         }
 
         .toggle-button {

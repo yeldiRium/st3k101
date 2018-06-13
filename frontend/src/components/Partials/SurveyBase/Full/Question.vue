@@ -167,10 +167,10 @@
             align-items: center;
 
             > * {
-                margin-top: 8px;
-                margin-bottom: 8px;
                 width: 100%;
                 text-align: center;
+                margin-top: 8px;
+                margin-bottom: 8px;
             }
 
             .reference-counter {
