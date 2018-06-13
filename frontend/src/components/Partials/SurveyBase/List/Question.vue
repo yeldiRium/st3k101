@@ -27,7 +27,7 @@
     import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
     import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
 
-    import {fetchTranslation, addNewTranslation} from "../../../../api2/Question";
+    import {fetchTranslation, setText} from "../../../../api2/Question";
 
     /**
      * Displays a Question as a ListElement.
@@ -64,18 +64,19 @@
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
                 // TODO: display dialog which asks for data
-                const data = {
-                    text: "tbd"
-                };
-                addNewTranslation(this.question, language, data);
+                const text = "tbd";
+                setText(this.question, language, text);
                 this.changeLanguage(language);
             },
             updateQuestionText(text) {
                 if (!this.isEditable(this.question)) {
                     return;
                 }
-                // TODO: set via API.
-                this.question.text = text;
+                setText(
+                    this.question,
+                    this.question.languageData.currentLanguage,
+                    text
+                );
             }
         }
     }

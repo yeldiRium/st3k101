@@ -20,7 +20,8 @@
                               v-if="question.isConcrete"
             />
             <template>
-                <RangeEditor v-model="question.range"
+                <RangeEditor :value="question.range"
+                             @input="updateRange"
                              v-if="isOwnedByCurrentDataClient(question) && question.isConcrete"
                 />
                 <Range :range="question.range"
@@ -60,6 +61,8 @@
 
     import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
+
+    import {setRange, deleteQuestion} from "../../../../api2/Question";
 
     export default {
         name: "FullQuestion",
@@ -124,8 +127,13 @@
                 )
             },
             deleteQuestion() {
-                // TODO: delete via api
+                // Emit before api so that app can be demonstrated without API.
                 this.$emit("question-deleted", this.question);
+                // TODO: delete via api
+                deleteQuestion(this.question);
+            },
+            updateRange(range) {
+                setRange(this.question, range);
             }
         },
         created() {

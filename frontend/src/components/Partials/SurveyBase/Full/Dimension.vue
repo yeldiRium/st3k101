@@ -44,11 +44,11 @@
                           v-if="isEditable(dimension)"
                           text="Add new Question"
                           :disableSubtext="true"
-                          @click="addNewQuestion"
+                          @click="openNewQuestionDialog"
                 />
                 <CreateQuestion v-if="isEditable(dimension)"
                                 :language="dimension.languageData.currentLanguage"
-                                @question-created="handleCreatedQuestion"
+                                @question-create="handleCreateQuestion"
                 />
             </div>
 
@@ -76,6 +76,7 @@
 </template>
 
 <script>
+    import {mapState} from "vuex";
     import {without} from "ramda";
 
     import DimensionBase from "../DimensionBase";
@@ -121,6 +122,7 @@
             }
         },
         computed: {
+            ...mapState("session", ["dataClient"]),
             classes() {
                 return {
                     "full-dimension--disabled": !this.isEditable(this.dimension)
@@ -131,17 +133,24 @@
             toggleExpanded() {
                 this.expanded = !this.expanded;
             },
-            addNewQuestion() {
+            openNewQuestionDialog() {
                 this.$modal.show(
                     "modal-create-question"
                 )
             },
-            handleCreatedQuestion(question) {
-                // TODO: update dimension via API.
-                this.dimension.questions.push(question);
+            handleCreateQuestion({text, range}) {
+                this.dimension.questions.push(createQuestion(
+                    this.dataClient,
+                    this.dimension.languageData.currentLanguage,
+                    text,
+                    range
+                ));
             },
+            /**
+             * Only handles removal from the dimension in reaction to Question
+             * being deleted.
+             */
             handleDeletedQuestion(question) {
-                // TODO: delete via api
                 this.dimension.questions = without(
                     [question],
                     this.dimension.questions

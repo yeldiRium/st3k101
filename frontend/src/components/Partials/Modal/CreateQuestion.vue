@@ -49,9 +49,6 @@
                 range: null
             }
         },
-        computed: {
-            ...mapState("session", ["dataClient"])
-        },
         methods: {
             beforeOpen() {
                 this.range = new Range({end: 10});
@@ -67,29 +64,10 @@
              *       strative of intent as possible and should be improved upon.
              */
             create() {
-                const href = "someshittyhref" + String(Math.random());
-                const owner = this.dataClient;
-                const languageData = new LanguageData(
-                    this.language,
-                    this.language,
-                    [this.language]
-                );
-                const text = this.text;
-                const range = this.range;
-                const incomingReferenceCount = 0;
-                const ownedIncomingReferences = [];
-
-                const question = new ConcreteQuestion(
-                    href,
-                    owner,
-                    languageData,
-                    text,
-                    range,
-                    incomingReferenceCount,
-                    ownedIncomingReferences
-                );
-
-                this.$emit("question-created", question);
+                this.$emit("question-create", {
+                    text: this.text,
+                    range: this.range
+                });
                 this.$modal.hide("modal-create-question");
             }
         }
