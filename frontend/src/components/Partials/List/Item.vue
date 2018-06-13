@@ -153,13 +153,6 @@
             &--ellipse {
                 @include ellipse;
             }
-
-            .editable-text__form {
-                width: 100%;
-                display: grid;
-                grid-auto-flow: column;
-                grid-template-columns: auto 4em;
-            }
         }
 
         &__sub-text {

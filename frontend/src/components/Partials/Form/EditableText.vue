@@ -5,7 +5,13 @@
              v-if="editing"
              v-click-outside="cancelEditing"
         >
-            <input :value="text"
+            <textarea v-if="textArea"
+                      :value="text"
+                      ref="input"
+                      @keyup.esc="cancelEditing"
+            />
+            <input v-else
+                   :value="text"
                    ref="input"
                    @keyup.enter="finishEditing"
                    @keyup.esc="cancelEditing"
@@ -32,6 +38,10 @@
                 type: String
             },
             ellipseText: {
+                type: Boolean,
+                default: false
+            },
+            textArea: {
                 type: Boolean,
                 default: false
             }
@@ -75,6 +85,13 @@
             &--ellipse {
                 @include ellipse();
             }
+        }
+
+        &__form {
+            width: 100%;
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-columns: auto 4em;
         }
     }
 </style>
