@@ -21,7 +21,7 @@
             />
             <template>
                 <RangeEditor :range="question.range"
-                             v-if="isOwnedByCurrentDataClient(question)"
+                             v-if="isOwnedByCurrentDataClient(question) && question.isConcrete"
                 />
                 <Range :range="question.range"
                        :preview="true"
