@@ -3,6 +3,15 @@ class Language {
         this.shortName = shortName;
         this.longName = longName;
     }
+
+    /**
+     * @param {Language} language
+     * @return {Boolean}
+     */
+    equals(language) {
+        return this.shortName == language.shortName
+            && this.longName == language.longName;
+    }
 }
 
 class LanguageData {
