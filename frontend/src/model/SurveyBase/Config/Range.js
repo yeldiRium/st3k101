@@ -85,6 +85,16 @@ class Range {
     get span() {
         return this._end - this._start + 1;
     }
+
+    /**
+     * @returns {Range}
+     */
+    clone() {
+        return new Range({
+            start: this.start,
+            end: this.end
+        });
+    }
 }
 
 export default Range;
