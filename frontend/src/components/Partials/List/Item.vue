@@ -8,6 +8,7 @@
             <EditableText :text="text"
                           v-if="editableText && !disabled"
                           @edit="$emit('edit', $event)"
+                          :ellipseText="ellipseText"
             />
             <template v-else>
                 {{ text }}

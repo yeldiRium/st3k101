@@ -14,6 +14,7 @@
             </button>
         </div>
         <div class="editable-text__text"
+             :class="{'editable-text__text--ellipse': ellipseText}"
              v-else
              @dblclick.prevent.stop="startEditing"
         >
@@ -28,6 +29,10 @@
         props: {
             text: {
                 type: String
+            },
+            ellipseText: {
+                type: Boolean,
+                default: false
             }
         },
         data() {
@@ -60,9 +65,15 @@
 </script>
 
 <style lang="scss">
+    @import "../../scss/_mixins";
+
     .editable-text {
         &__text {
             cursor: pointer;
+
+            &--ellipse {
+                @include ellipse();
+            }
         }
     }
 </style>
