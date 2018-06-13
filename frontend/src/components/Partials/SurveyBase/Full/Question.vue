@@ -20,7 +20,7 @@
                               v-if="question.isConcrete"
             />
             <template>
-                <RangeEditor :range="question.range"
+                <RangeEditor v-model="question.range"
                              v-if="isOwnedByCurrentDataClient(question) && question.isConcrete"
                 />
                 <Range :range="question.range"

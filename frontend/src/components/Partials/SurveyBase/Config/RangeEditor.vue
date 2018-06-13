@@ -3,29 +3,31 @@
         <div class="range-editor__config">
             <label>
                 start
-                <input type="number"
+                <input class="range-editor__input"
+                       type="number"
                        name="start"
                        min="0"
+                       :max="value.end - 1"
                        step="1"
-                       :max="range.end - 1"
-                       class="range-editor__input"
-                       v-model="range.start"
+                       :value="value.start"
+                       @input="updateStart"
                 >
             </label>
             <label>
                 end
-                <input type="number"
+                <input class="range-editor__input"
+                       type="number"
                        name="end"
-                       :min="range.start + 1"
+                       :min="value.start + 1"
                        step="1"
-                       class="range-editor__input"
-                       v-model="range.end"
+                       :value="value.end"
+                       @input="updateEnd"
                 >
             </label>
         </div>
         <div class="range-editor__preview">
-            <RangeSVG :range="range"
-                            :preview="true"
+            <RangeSVG :range="value"
+                      :preview="true"
             />
         </div>
     </div>
@@ -42,8 +44,28 @@
         },
         props: {
             /** @type {Range} */
-            range: {
+            value: {
                 type: Range
+            }
+        },
+        methods: {
+            updateStart(event) {
+                this.$emit(
+                    "input",
+                    new Range({
+                        start: Number(event.target.value),
+                        end: this.value.end
+                    })
+                );
+            },
+            updateEnd(event) {
+                this.$emit(
+                    "input",
+                    new Range({
+                        start: this.value.start,
+                        end: Number(event.target.value)
+                    })
+                );
             }
         }
     }

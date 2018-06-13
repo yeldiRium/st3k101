@@ -1,6 +1,6 @@
 <template>
     <div class="TestRangeEditor_container">
-        <RangeEditor :range="range"
+        <RangeEditor v-model="range"
         />
         <RangeSVG :range="range"
                   :preview="false"
