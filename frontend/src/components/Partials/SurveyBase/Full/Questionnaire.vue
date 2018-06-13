@@ -20,6 +20,11 @@
                               v-if="questionnaire.isConcrete"
             />
 
+            <EditableText :text="questionnaire.description"
+                          @edit="updateDescription"
+                          :textArea="true"
+            />
+
             <div class="full-questionnaire__dimensions">
                 <FullDimension class="full-dimension--bordered"
                                v-for="dimension in questionnaire.dimensions"
@@ -73,6 +78,7 @@
     import ListQuestionnaire from "../List/Questionnaire";
     import FullDimension from "../Full/Dimension";
     import ListItem from "../../List/Item";
+    import EditableText from "../../Form/EditableText";
 
     import CreateDimension from "../../Modal/CreateDimension";
 
@@ -83,7 +89,7 @@
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
     import {
         addConcreteDimension,
-        removeDimension
+        removeDimension, setDescription
     } from "../../../../api2/Questionnaire";
 
     export default {
@@ -97,7 +103,8 @@
             ReferenceCounter,
             Toggle,
             IconExpandLess,
-            IconExpandMore
+            IconExpandMore,
+            EditableText
         },
         props: {
             initiallyExpanded: {
@@ -169,6 +176,13 @@
                         ]
                     }
                 )
+            },
+            updateDescription(description) {
+                setDescription(
+                    this.questionnaire,
+                    this.questionnaire.languageData.currentLanguage,
+                    description
+                );
             }
         },
         created() {

@@ -137,6 +137,49 @@ function fetchTranslation(questionnaire, language) {
     throw new Error("Please implement this.");
 }
 
+/**
+ * Sets the ConcreteQuestionnaire's name in the given language.
+ *
+ * @param {ConcreteQuestionnaire} questionnaire
+ * @param {Language} language
+ * @param {String} name
+ * @return {Future}
+ * @resolve to true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function setName(questionnaire, language, name) {
+    if (questionnaire.languageData.currentLanguage.equals(language)) {
+        questionnaire.name = name;
+    }
+
+    // Error after setting name so that the app can be demonstrated without API.
+    // TODO: set name via api in given language
+    throw new Error("Please implement this.");
+}
+
+/**
+ * Sets the ConcreteQuestionnaire's description in the given language.
+ *
+ * @param {ConcreteQuestionnaire} questionnaire
+ * @param {Language} language
+ * @param {String} description
+ * @return {Future}
+ * @resolve to true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function setDescription(questionnaire, language, description) {
+    if (questionnaire.languageData.currentLanguage.equals(language)) {
+        questionnaire.description = description;
+    }
+
+    // Error after setting description so that the app can be demonstrated with-
+    // out API.
+    // TODO: set description via api in given language
+    throw new Error("Please implement this.");
+}
+
 // TODO: add remaining functions for setters
 
 /**
@@ -235,6 +278,8 @@ export {
     createConcreteQuestionnaire,
     createShadowQuestionnaire,
     fetchTranslation,
+    setName,
+    setDescription,
     // TODO: add remaining setters
     addConcreteDimension,
     addShadowDimension,

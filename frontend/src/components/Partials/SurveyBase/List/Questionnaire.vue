@@ -32,7 +32,7 @@
 
     import {
         addNewTranslation,
-        fetchTranslation
+        fetchTranslation, setDescription, setName
     } from "../../../../api2/Questionnaire";
 
     /**
@@ -93,15 +93,18 @@
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
                 // TODO: display dialog which asks for data
-                const data = {
-                    text: "tbd"
-                };
-                //addNewTranslation(this.questionnaire, language, data);
+                const name = "tbd";
+                const description = "tbd";
+                setName(this.questionnaire, language, name);
+                setDescription(this.questionnaire, language, description);
                 this.changeLanguage(language);
             },
             updateQuestionnaireName(name) {
-                // TODO: set via API.
-                this.questionnaire.name = name;
+                setName(
+                    this.questionnaire,
+                    this.questionnaire.languageData.currentLanguage,
+                    name
+                );
             }
         }
     }
