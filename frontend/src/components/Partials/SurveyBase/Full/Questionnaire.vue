@@ -32,7 +32,8 @@
             </Toggle>
 
             <div class="full-questionnaire__dimensions">
-                <FullDimension v-for="dimension in questionnaire.dimensions"
+                <FullDimension class="full-dimension--bordered"
+                               v-for="dimension in questionnaire.dimensions"
                                :key="dimension.href"
                                :dimension="dimension"
                                :deletable="questionnaire.isConcrete"
@@ -195,6 +196,14 @@
             background-color: $lighter;
         }
 
+        &--bordered {
+            border: 1px solid $primary;
+
+            &.full-questionnaire--disabled {
+                border-color: $slightlylight;
+            }
+        }
+
         &__dimensions {
             width: 95%;
 
@@ -225,14 +234,6 @@
             &-off.toggle-off-active,
             &-on.toggle-on-active {
                 color: $verydark;
-            }
-        }
-
-        .list-questionnaire.list-item {
-            background-color: $primary;
-
-            &--disabled {
-                background-color: $slightlylight;
             }
         }
     }

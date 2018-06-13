@@ -32,7 +32,8 @@
             </Toggle>
 
             <div class="full-dimension__questions">
-                <FullQuestion v-for="question in dimension.questions"
+                <FullQuestion class="full-question--bordered"
+                              v-for="question in dimension.questions"
                               :key="question.href"
                               :question="question"
                               :deletable="dimension.isConcrete"
@@ -193,6 +194,14 @@
             background-color: $lighter;
         }
 
+        &--bordered {
+            border: 1px solid $primary;
+
+            &.full-dimension--disabled {
+                border-color: $slightlylight;
+            }
+        }
+
         &__questions {
             width: 95%;
 
@@ -223,14 +232,6 @@
             &--off-side.toggle-button__off-side--active,
             &--on-side.toggle-button__on-side--active {
                 color: $verydark;
-            }
-        }
-
-        .list-dimension.list-item {
-            background-color: $primary;
-
-            &--disabled {
-                background-color: $slightlylight;
             }
         }
     }

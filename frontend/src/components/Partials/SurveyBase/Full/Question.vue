@@ -147,6 +147,14 @@
             background-color: $lighter;
         }
 
+        &--bordered {
+            border: 1px solid $primary;
+
+            &.full-question--disabled {
+                border-color: $slightlylight;
+            }
+        }
+
         &__body {
             width: 80%;
             align-self: center;
@@ -156,6 +164,8 @@
             align-items: center;
 
             > * {
+                margin-top: 8px;
+                margin-bottom: 8px;
                 width: 100%;
                 text-align: center;
             }
@@ -168,14 +178,6 @@
 
         &__delete-button {
             margin-top: 8px;
-        }
-
-        .list-question.list-item {
-            background-color: $primary;
-
-            &--disabled {
-                background-color: $slightlylight;
-            }
         }
     }
 </style>
