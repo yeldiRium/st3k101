@@ -27,6 +27,8 @@
     import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
     import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
 
+    import {fetchTranslation, addNewTranslation} from "../../../../api2/Question";
+
     /**
      * Displays a Question as a ListElement.
      *
@@ -51,18 +53,22 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                this.question.fetchTranslation(language);
+                fetchTranslation(this.question, language);
             },
             /**
              * Add a new translation to the Question.
-             * This means set new field values via API for the given lanugages
+             * This means set new field values via API for the given languages
              * and then fetch the question anew in the now existing language.
              * @param language
              */
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
-                // TODO: create new translation
-                // this.question.fetchTranslation(language);
+                // TODO: display dialog which asks for data
+                const data = {
+                    text: "tbd"
+                };
+                addNewTranslation(this.question, language, data);
+                this.changeLanguage(language);
             },
             updateQuestionText(text) {
                 if (!this.isEditable(this.question)) {

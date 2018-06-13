@@ -28,6 +28,11 @@
     import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
     import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
 
+    import {
+        addNewTranslation,
+        fetchTranslation
+    } from "../../../../api2/Dimension";
+
     /**
      * Displays a Dimension as a ListElement.
      *
@@ -69,18 +74,22 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                this.dimension.fetchTranslation(language);
+                fetchTranslation(this.dimension, language);
             },
             /**
              * Add a new translation to the Dimension.
-             * This means set new field values via API for the given langages
-             * and then fetch the Dimension anew in the now existing language.
+             * This means set new field values via API for the given languages
+             * and then fetch the dimension anew in the now existing language.
              * @param language
              */
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
-                // TODO: create new translation
-                // this.dimension.fetchTranslation(language);
+                // TODO: display dialog which asks for data
+                const data = {
+                    text: "tbd"
+                };
+                addNewTranslation(this.dimension, language, data);
+                this.changeLanguage(language);
             },
             updateDimensionName(name) {
                 // TODO: set via API.

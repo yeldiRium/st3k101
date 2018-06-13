@@ -30,6 +30,11 @@
     import IconEdit from "../../../../assets/icons/baseline-edit-24px.svg";
     import IconReorder from "../../../../assets/icons/baseline-reorder-24px.svg";
 
+    import {
+        addNewTranslation,
+        fetchTranslation
+    } from "../../../../api2/Questionnaire";
+
     /**
      * Displays a Questionnaire as a ListElement.
      *
@@ -77,19 +82,22 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                this.questionnaire.fetchTranslation(language);
+                fetchTranslation(this.questionnaire, language);
             },
             /**
              * Add a new translation to the Questionnaire.
-             * This means set new field values via API for the given langages
-             * and then fetch the Questionnaire anew in the now existing langu-
-             * age.
+             * This means set new field values via API for the given languages
+             * and then fetch the questionnaire anew in the now existing language.
              * @param language
              */
             addNewTranslation(language) {
                 // TODO: clarify, when this should be available
-                // TODO: create new translation
-                // this.questionnaire.fetchTranslation(language);
+                // TODO: display dialog which asks for data
+                const data = {
+                    text: "tbd"
+                };
+                addNewTranslation(this.questionnaire, language, data);
+                this.changeLanguage(language);
             },
             updateQuestionnaireName(name) {
                 // TODO: set via API.
