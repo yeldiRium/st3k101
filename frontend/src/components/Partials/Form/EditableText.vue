@@ -12,7 +12,6 @@
             />
             <button @click="finishEditing">
                 Ok
-                   v-click-outside="cancelEditing"
             </button>
         </div>
         <div class="editable-text__text"
