@@ -15,7 +15,7 @@
                        name="question-text"
                        v-model="text"
                 />
-                <RangeEditor :range="range"/>
+                <RangeEditor v-model="range"/>
             </template>
         </CreateResource>
     </modal>
