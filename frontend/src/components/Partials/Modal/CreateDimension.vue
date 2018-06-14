@@ -71,7 +71,6 @@
                     "dimension-create",
                     {
                         name: this.name,
-                        question: [],
                         randomizeQuestions: this.randomizeQuestions
                     }
                 );
