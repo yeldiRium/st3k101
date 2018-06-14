@@ -1,0 +1,107 @@
+<template>
+    <modal name="modal-create-questionnaire"
+           height="auto"
+    >
+        <CreateResource
+                @cancel="cancel"
+                @create="create"
+        >
+            <template slot="header">
+                Create new Questionnaire
+            </template>
+            <template slot="body">
+                <input class="modal-create-questionnaire__questionnaire-name"
+                       name="questionnaire-name"
+                       v-model="name"
+                />
+
+                <textarea :value="description"/>
+
+                <Toggle v-model="isPublic">
+                    <template slot="off">
+                        locked
+                    </template>
+                    <template slot="on">
+                        published
+                    </template>
+                </Toggle>
+
+                <Toggle v-model="allowEmbedded">
+                    <template slot="off">
+                        only in browser
+                    </template>
+                    <template slot="on">
+                        allow embedding
+                    </template>
+                </Toggle>
+
+                <input v-model="xapiTarget"/>
+            </template>
+        </CreateResource>
+    </modal>
+</template>
+
+<script>
+    import {mapState} from "vuex";
+
+    import {Language} from "../../../model/Language";
+
+    import CreateResource from "./CreateResource";
+    import Toggle from "../Form/ToggleButton";
+
+    export default {
+        name: "ModalCreateQuestionnaire",
+        components: {
+            CreateResource,
+            Toggle
+        },
+        props: {
+            /** @type {Language} */
+            language: {
+                type: Language
+            }
+        },
+        data() {
+            return {
+                name: "Questionnaire name",
+                description: "Questionnaire description",
+                isPublic: false,
+                allowEmbedded: false,
+                xapiTarget: "xapi target"
+            }
+        },
+        computed: {
+            ...mapState("session", ["dataClient"])
+        },
+        methods: {
+            cancel() {
+                this.$modal.hide("modal-create-questionnaire");
+            },
+            /**
+             * Emits a "questionnaire-create" event with all needed data to cre-
+             * ate the questionnaire.
+             */
+            create() {
+                this.$emit(
+                    "questionnaire-create",
+                    {
+                        name: this.name,
+                        description: this.description,
+                        isPublic: this.isPublic,
+                        allowEmbedded: this.allowEmbedded,
+                        xapiTarget: this.xapiTarget
+                    }
+                );
+                this.$modal.hide("modal-create-questionnaire");
+            }
+        }
+    }
+</script>
+
+<style lang="scss">
+    .modal-create-questionnaire {
+        &__questionnaire-name {
+            width: 80%;
+        }
+    }
+</style>
