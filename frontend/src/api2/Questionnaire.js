@@ -180,7 +180,59 @@ function setDescription(questionnaire, language, description) {
     throw new Error("Please implement this.");
 }
 
-// TODO: add remaining functions for setters
+/**
+ * Set the Questionaire's isPublic property.
+ *
+ * @param {Questionnaire} questionnaire
+ * @param {Boolean} isPublic
+ * @return {Future}
+ * @resolve to true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function setIsPublic(questionnaire, isPublic) {
+    questionnaire.isPublic = isPublic;
+
+    // Error after setting so that the app can be demonstrated without API.
+    // TODO: set via API
+    throw new Error("Please implement this.");
+}
+
+/**
+ * Set the Questionaire's allowEmbedded property.
+ *
+ * @param {Questionnaire} questionnaire
+ * @param {Boolean} allowEmbedded
+ * @return {Future}
+ * @resolve to true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function setAllowEmbedded(questionnaire, allowEmbedded) {
+    questionnaire.allowEmbedded = allowEmbedded;
+
+    // Error after setting so that the app can be demonstrated without API.
+    // TODO: set via API
+    throw new Error("Please implement this.");
+}
+
+/**
+ * Set the Questionaire's xapiTarget property.
+ *
+ * @param {Questionnaire} questionnaire
+ * @param {String} xapiTarget
+ * @return {Future}
+ * @resolve to true
+ * @reject with an API error message, if something went wrong
+ * @cancel TODO: is this cancellable?
+ */
+function setXapiTarget(questionnaire, xapiTarget) {
+    questionnaire.xapiTarget = xapiTarget;
+
+    // Error after setting so that the app can be demonstrated without API.
+    // TODO: set via API
+    throw new Error("Please implement this.");
+}
 
 /**
  * Adds a new ConcreteDimension to a ConcreteQuestionnaire.
@@ -280,7 +332,9 @@ export {
     fetchTranslation,
     setName,
     setDescription,
-    // TODO: add remaining setters
+    setIsPublic,
+    setAllowEmbedded,
+    setXapiTarget,
     addConcreteDimension,
     addShadowDimension,
     removeDimension

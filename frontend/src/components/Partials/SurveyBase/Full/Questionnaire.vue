@@ -20,9 +20,43 @@
                               v-if="questionnaire.isConcrete"
             />
 
-            <EditableText :text="questionnaire.description"
-                          @edit="updateDescription"
-                          :textArea="true"
+            <template>
+                <EditableText v-if="questionnaire.isConcrete"
+                              :text="questionnaire.description"
+                              @edit="updateDescription"
+                              :textArea="true"
+                />
+                <div v-else>
+                    {{ questionnaire.description }}
+                </div>
+            </template>
+
+            <Toggle :value="questionnaire.isPublic"
+                    :disabled="!isOwnedByCurrentDataClient(questionnaire)"
+                    @input="updateIsPublic"
+            >
+                <template slot="off">
+                    locked
+                </template>
+                <template slot="on">
+                    published
+                </template>
+            </Toggle>
+
+            <Toggle :value="questionnaire.allowEmbedded"
+                    :disabled="!isOwnedByCurrentDataClient(questionnaire)"
+                    @input="updateAllowEmbedded"
+            >
+                <template slot="off">
+                    only in browser
+                </template>
+                <template slot="on">
+                    allow embedding
+                </template>
+            </Toggle>
+
+            <EditableText :text="questionnaire.xapiTarget"
+                          @edit="updateXapiTarget"
             />
 
             <div class="full-questionnaire__dimensions">
@@ -89,7 +123,11 @@
     import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
     import {
         addConcreteDimension,
-        removeDimension, setDescription
+        removeDimension,
+        setAllowEmbedded,
+        setDescription,
+        setIsPublic,
+        setXapiTarget
     } from "../../../../api2/Questionnaire";
 
     export default {
@@ -183,6 +221,15 @@
                     this.questionnaire.languageData.currentLanguage,
                     description
                 );
+            },
+            updateIsPublic(isPublic) {
+                setIsPublic(this.questionnaire, isPublic);
+            },
+            updateAllowEmbedded(allowEmbedded) {
+                setAllowEmbedded(this.questionnaire, allowEmbedded);
+            },
+            updateXapiTarget(xapiTarget) {
+                setXapiTarget(this.questionnaire, xapiTarget);
             }
         },
         created() {
