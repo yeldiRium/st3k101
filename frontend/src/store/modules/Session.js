@@ -17,6 +17,7 @@ const store = {
             state: "done",
             error: null
         },
+        /** @type {DataClient} */
         dataClient: null,
         sessionToken: null
     },

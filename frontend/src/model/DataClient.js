@@ -1,6 +1,12 @@
 import Party from "./Party";
 
 class DataClient extends Party {
+    /**
+     *
+     * @param {String} href See Resource.
+     * @param {String} email
+     * @param {Language} language
+     */
     constructor(href,
                 email,
                 language) {
@@ -12,14 +18,14 @@ class DataClient extends Party {
     // TODO: refactor email out into own model and/or validate
 
     /**
-     * @param {string} email
+     * @param {String} email
      */
     set email(email) {
         this._email = email;
     }
 
     /**
-     * @returns {string}
+     * @returns {String}
      */
     get email() {
         return this._email;
@@ -28,14 +34,14 @@ class DataClient extends Party {
     // TODO: refactor language out into own model and/or validate
 
     /**
-     * @param {string} language
+     * @param {Language} language
      */
     set language(language) {
         this._language = language;
     }
 
     /**
-     * @returns {string}
+     * @returns {Language}
      */
     get language() {
         return this._language;
