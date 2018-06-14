@@ -1,7 +1,10 @@
 import Future from "fluture";
 import {contains, without} from "ramda";
 
-import {ShadowQuestionnaire} from "../model/SurveyBase/Questionnaire";
+import {
+    ConcreteQuestionnaire,
+    ShadowQuestionnaire
+} from "../model/SurveyBase/Questionnaire";
 import {
     ConcreteDimension,
     ShadowDimension
@@ -36,7 +39,7 @@ function createConcreteQuestionnaire(owner,
     const href = "";
     const languageData = new LanguageData(language, language, [language]);
 
-    return new ConcreteQuestionnaire(
+    return Future.of(new ConcreteQuestionnaire(
         href,
         owner,
         languageData,
@@ -45,8 +48,10 @@ function createConcreteQuestionnaire(owner,
         isPublic,
         allowEmbedded,
         xapiTarget,
+        [],
+        0,
         []
-    );
+    ));
 }
 
 /**
@@ -73,7 +78,7 @@ function createShadowQuestionnaire(owner, questionnaire) {
 
     reloadQuestionnaire(questionnaire);
 
-    return new ShadowQuestionnaire(
+    return Future.of(new ShadowQuestionnaire(
         href,
         owner,
         languageData,
@@ -84,7 +89,7 @@ function createShadowQuestionnaire(owner, questionnaire) {
         questionnaire.xapiTarget,
         shadowDimensions,
         questionnaire
-    )
+    ));
 }
 
 /**
