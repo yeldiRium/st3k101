@@ -12,7 +12,7 @@
         <ListItem class="questionnaire-overview__add-questionnaire-button"
                   :style="itemStyle"
                   text="Add new Questionnaire"
-                  :disableSubtext="true"
+                  :mini="true"
                   :editableText="false"
                   @click="openNewQuestionnaireDialog"
         />

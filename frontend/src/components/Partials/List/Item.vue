@@ -100,6 +100,8 @@
     @import "../../scss/_mixins.scss";
 
     .list-item {
+        min-height: 3em;
+
         display: grid;
         grid-template-columns: 2.5% 95% 2.5%;
 
@@ -126,6 +128,8 @@
         }
 
         &--mini {
+            min-height: 2em;
+
             grid-template-rows: 100%;
             grid-template-areas: ". text .";
 

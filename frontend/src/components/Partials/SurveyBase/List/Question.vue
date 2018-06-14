@@ -83,11 +83,5 @@
 </script>
 
 <style lang="scss">
-    .list-question.list-item {
-        min-height: 3em;
 
-        &--mini {
-            min-height: 2em;
-        }
-    }
 </style>
