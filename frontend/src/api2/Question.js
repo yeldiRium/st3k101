@@ -1,3 +1,5 @@
+import Future from "fluture";
+
 import Question from "../model/SurveyBase/Question";
 
 /**
@@ -10,7 +12,7 @@ import Question from "../model/SurveyBase/Question";
  */
 function reloadQuestion(question) {
     // TODO: fetch data from API and rewrite question content
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -32,7 +34,7 @@ function fetchTranslation(question, language) {
     // TODO: fetch translation from api
     // TODO: set languageData in question
     // TODO: set translated fields in question
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -57,7 +59,7 @@ function setText(question, language, text) {
 
     // Error after setting text so that the app can be demonstrated without API.
     // TODO: set text via api in given language
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -75,7 +77,7 @@ function setRange(question, range) {
 
     // Error after setting range so that the app can be demonstrated without API.
     // TODO: set range via api
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 export {

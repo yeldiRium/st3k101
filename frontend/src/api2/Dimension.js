@@ -17,7 +17,7 @@ import {LanguageData} from "../model/Language";
  */
 function reloadDimension(dimension) {
     // TODO: reload via API
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -39,7 +39,7 @@ function fetchTranslation(dimension, language) {
     // TODO: fetch translation from api
     // TODO: set languageData in dimension
     // TODO: set translated fields in dimension
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -64,7 +64,7 @@ function setName(dimension, language, name) {
 
     // Error after setting name so that the app can be demonstrated without API.
     // TODO: set name via api in given language
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -82,7 +82,7 @@ function setRandomizeQuestions(dimension, randomizeQuestions) {
     dimension.randomizeQuestions = randomizeQuestions;
 
     // TODO: set prop via API
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -118,6 +118,8 @@ function addConcreteQuestion(dimension, owner, text, range) {
         0,
         []
     ));
+
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -143,6 +145,7 @@ function addShadowQuestion(dimension, owner, question) {
     );
 
     // Reload so that the references are respected.
+    // TODO: build chain around this Future
     reloadQuestion(question);
 
     dimension.questions.push(new ShadowQuestion(
@@ -153,6 +156,8 @@ function addShadowQuestion(dimension, owner, question) {
         question.range.clone(),
         question
     ));
+
+    return Future.reject("Please implement this.");
 }
 
 /**

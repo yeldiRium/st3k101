@@ -103,7 +103,7 @@ function createShadowQuestionnaire(owner, questionnaire) {
  */
 function deleteQuestionnaire(questionnaire) {
     // TODO: delete via API
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -117,7 +117,7 @@ function deleteQuestionnaire(questionnaire) {
  */
 function reloadQuestionnaire(questionnaire) {
     // TODO: reload from API
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -139,7 +139,7 @@ function fetchTranslation(questionnaire, language) {
     // TODO: fetch translation from api
     // TODO: set languageData in questionnaire
     // TODO: set translated fields in questionnaire
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -160,7 +160,7 @@ function setName(questionnaire, language, name) {
 
     // Error after setting name so that the app can be demonstrated without API.
     // TODO: set name via api in given language
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -182,7 +182,7 @@ function setDescription(questionnaire, language, description) {
     // Error after setting description so that the app can be demonstrated with-
     // out API.
     // TODO: set description via api in given language
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -200,7 +200,7 @@ function setIsPublic(questionnaire, isPublic) {
 
     // Error after setting so that the app can be demonstrated without API.
     // TODO: set via API
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -218,7 +218,7 @@ function setAllowEmbedded(questionnaire, allowEmbedded) {
 
     // Error after setting so that the app can be demonstrated without API.
     // TODO: set via API
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -236,7 +236,7 @@ function setXapiTarget(questionnaire, xapiTarget) {
 
     // Error after setting so that the app can be demonstrated without API.
     // TODO: set via API
-    throw new Error("Please implement this.");
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -269,6 +269,8 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
         0,
         []
     ));
+
+    return Future.reject("Please implement this.");
 }
 
 /**
@@ -296,6 +298,7 @@ function addShadowDimension(questionnaire, owner, dimension) {
     const shadowQuestions = [];
 
     // Reload so that the new references are respected
+    // TODO: build chain around this Future
     reloadDimension(dimension);
 
     questionnaire.dimensions.push(new ShadowDimension(
@@ -307,6 +310,8 @@ function addShadowDimension(questionnaire, owner, dimension) {
         dimension.randomizeQuestions,
         dimension
     ));
+
+    return Future.reject("Please implement this.");
 }
 
 /**
