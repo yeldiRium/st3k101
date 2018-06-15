@@ -4,6 +4,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import vClickOutside from "v-click-outside";
 import vModal from "vue-js-modal";
+import vLoading from "./Plugins/LoadingSpinnerModal";
 
 import "abortcontroller-polyfill";
 
@@ -15,6 +16,7 @@ import store from "./store";
 Vue.use(Vuex);
 Vue.use(vClickOutside);
 Vue.use(vModal);
+Vue.use(vLoading);
 
 Vue.config.productionTip = false;
 
