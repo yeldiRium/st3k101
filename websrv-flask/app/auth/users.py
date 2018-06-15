@@ -6,7 +6,8 @@ from flask import g
 import auth
 from framework.exceptions import UserExistsException, BadCredentialsException, \
     UserNotLoggedInException
-from model.DataClient import DataClient
+from model.SQLAlchemy import db
+from model.SQLAlchemy.models.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -20,17 +21,16 @@ def register(email: str, password: str) -> DataClient:
     :param password: str The password the DataClient will use to login
     :return: DataClient The resulting DataClient object
     """
-    client = DataClient.one_from_query({'email': email})
-    if client:
+    client = DataClient.query.filter_by(email=email).first()
+    if client is not None:
         raise UserExistsException(
             "User with email address {} already exists.".format(email)
         )
 
-    client = DataClient()
-    client.email = email
+    client = DataClient(email=email)
     client.password_salt = os.urandom(g._config['AUTH_SALT_LENGTH']).hex()
-    client.password_hash = argon2.argon2_hash(password, client.password_salt)
-    client.locale = g._locale
+    client.password_hash = argon2.argon2_hash(password, client.password_salt).hex()
+    db.session.add(client)
 
     return client
 
@@ -45,11 +45,11 @@ def login(email: str, password: str) -> str:
     :param password: The plain text password of the user to log in
     :return: The session token for the newly created session
     """
-    client = DataClient.one_from_query({'email': email})
-    if not client:
+    client = DataClient.query.filter_by(email=email).first()
+    if client is None:
         raise BadCredentialsException("User with email {} doesn't exist.".format(email))
 
-    password_hash = argon2.argon2_hash(password, client.password_salt)
+    password_hash = argon2.argon2_hash(password, client.password_salt).hex()
     if password_hash != client.password_hash:
         raise BadCredentialsException("Tried to login as {}, but password hashes didn't match.".format(email))
 
@@ -57,7 +57,7 @@ def login(email: str, password: str) -> str:
     session_token = ""
     while not success:
         session_token = os.urandom(g._config['AUTH_SESSION_TOKEN_LENGTH']).hex()
-        success = auth.new_session(session_token, client.uuid)
+        success = auth.new_session(session_token, client.id)
 
     return session_token
 
@@ -72,3 +72,7 @@ def logout():
 
     if not auth.invalidate(g._current_session_token):
         raise UserNotLoggedInException()
+
+
+def current_user() -> DataClient:
+    return g._current_user

@@ -11,7 +11,7 @@ __pycache__/
 *.njsproj
 *.sln
 
-# Frontend
+# Websrv-flask Frontend
 node_modules
 .sass-cache
 websrv-flask/app/static/fonts/*
@@ -21,9 +21,7 @@ websrv-flask/app/static/js/bundle.js
 # Compiled translations
 **/*.mo
 
-db-mongo/data
-
-# Frontend
+# Actual Frontend
 frontend/dist
 frondend/npm-debug.log*
 frondend/yarn-debug.log*
@@ -32,3 +30,5 @@ frondend/test/unit/coverage
 frondend/test/e2e/reports
 frondend/selenium-debug.log
 
+# virtualenv
+.venv

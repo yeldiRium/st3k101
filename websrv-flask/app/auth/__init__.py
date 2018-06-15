@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 
 from framework.exceptions import ClientIpChangedException
 from framework.memcached import get_memcache
@@ -10,7 +11,8 @@ _memcached_prefix = "auth."
 
 def _get_session_record_id(session_token: str) -> str:
     """
-    Returns the name of the key used in memcached to identify the session record with the given session_token
+    Returns the name of the key used in memcached to identify the session record
+    with the given session_token
     :param session_token: str A session token
     :return: str
     """
@@ -33,20 +35,18 @@ def _get_session_record(session_token: str) -> dict:
     return mc.get(_get_session_record_id(session_token))
 
 
-def new_session(session_token: str, client_uuid: str, ttl: int=1800) -> bool:
+def new_session(session_token: str, client_uuid, ttl: int=1800) -> bool:
     """
     Inserts a new session record for the given session token.
     Only works if token has no record yet.
-    Also pins the session to the clients IP to help with mitm attacks on session tokens.
+    Also pins the session to the clients IP to help with mitm attacks on session
+    tokens.
     :param session_token: str A session token that hasn't been used yet
     :param client_uuid: str The uuid of the associated DataClient
     :param ttl: int Optional maximum time without activity before logout
     :return: bool Success
     """
     if is_valid(session_token):
-        return False
-
-    if not type(client_uuid) == str:
         return False
 
     if not type(ttl) == int:
@@ -70,14 +70,15 @@ def invalidate(session_token: str) -> bool:
     :return: bool success
     """
     mc = get_memcache()
-    return mc.delete(_get_session_record_id(session_token))
+    return mc.delete(_get_session_record_id(session_token)) != 0
 
 
 def validate_activity(session_token: str) -> bool:
     """
     Refreshes the last_seen timestamp for the given token.
     Also removes old sessions (auto logout)
-    Raises ClientIpChangedException if client's ip address changed since last activity (possible mitm)
+    Raises ClientIpChangedException if client's ip address changed since last 
+    activity (possible mitm)
     :param session_token: str A valid session token
     :return: bool Success
     """
@@ -87,13 +88,14 @@ def validate_activity(session_token: str) -> bool:
     session_record = _get_session_record(session_token)
 
     if session_record['client_ip'] != get_client_ip():
-        raise ClientIpChangedException("IP was {}, but is {} now".format(session_record['client_ip'], get_client_ip()))
+        raise ClientIpChangedException("IP was {}, but is {} now".format(
+            session_record['client_ip'], get_client_ip()))
 
     session_record['last_seen'] = time.time()
 
-
     mc = get_memcache()
-    return mc.replace(_get_session_record_id(session_token), session_record)
+    key = _get_session_record_id(session_token)
+    return mc.replace(key, session_record) != 0
 
 
 def is_valid(session_token: str) -> bool:
@@ -101,12 +103,15 @@ def is_valid(session_token: str) -> bool:
     Returns a bool indicating whether the given session token is valid.
     A session token is valid if:
         1) someone has logged in and the token was handed out to them AND
-        2) the timedelta from the last activity with this token to now doesn't exceed the session ttl AND
+        2) the timedelta from the last activity with this token to now doesn't 
+           exceed the session ttl AND
         3) the token wasn't revoked (by logging out a user)
     Having a valid session token means you're allowed to do stuff
-    However, this method should not be used to manually check if the current client has permissions, as it doesn't do
-    IP pinning. Token validation is done automatically (TODO: implement) before each request is processed and if
-    a client is accessing without permissions, the API automatically redirects.
+    However, this method should not be used to manually check if the current 
+    client has permissions, as it doesn't do IP pinning. 
+    Token validation is done automatically before each request is processed and 
+    if a client is accessing without permissions, the API automatically 
+    redirects.
     :param session_token: A session token
     :return: bool
     """
@@ -125,7 +130,7 @@ def is_valid(session_token: str) -> bool:
     return True
 
 
-def who_is(session_token: str) -> str:
+def who_is(session_token: str) -> Optional[str]:
     """
     Returns the DataClient uuid for the given session_token.
     :param session_token: str A session token

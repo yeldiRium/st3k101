@@ -15,11 +15,11 @@ def lazy_update_statistics() -> None:
     key = "STATS_LAST_UPDATE_TIMESTAMP"
     now = time.time()
     mc = get_memcache()
-    mc.add(key, now)  # ensure timestamp exists in mc
-    last_upate_time = mc.get(key)
+    mc.add(key, now)
+    last_update_time = mc.get(key)
 
     # check if update should happen
-    if now - last_upate_time > g._config["STATISTICS_UPDATE_INTERVAL"]:
+    if now - last_update_time > g._config["STATISTICS_UPDATE_INTERVAL"]:
         update_dirty_statistics()
         mc.set(key, now)
 

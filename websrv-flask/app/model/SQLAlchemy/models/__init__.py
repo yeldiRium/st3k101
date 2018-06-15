@@ -1,0 +1,12 @@
+import model.SQLAlchemy.models.TrackerEntry
+import model.SQLAlchemy.models.OwnershipBase
+import model.SQLAlchemy.models.SurveyBase
+import model.SQLAlchemy.models.QuestionResult
+import model.SQLAlchemy.models.QuestionStatistic
+import model.SQLAlchemy.models.Question
+import model.SQLAlchemy.models.Dimension
+import model.SQLAlchemy.models.Questionnaire
+import model.SQLAlchemy.models.Party
+import model.SQLAlchemy.models.DataClient
+import model.SQLAlchemy.models.DataSubject
+import model.SQLAlchemy.models.QAC

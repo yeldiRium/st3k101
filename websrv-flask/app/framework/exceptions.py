@@ -91,3 +91,7 @@ class QACNotEnabledException(Exception):
 
 class YAMLTemplateInvalidException(Exception):
     pass
+
+
+class BusinessRuleViolation(Exception):
+    pass

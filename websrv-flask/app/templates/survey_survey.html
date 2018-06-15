@@ -14,8 +14,8 @@
 {% block subcontent %}
 <div class="jumbotron text-center">
     <div class="container">
-        <h1>{{ questionnaire.name.get() }}</h1>
-        <p>{{ questionnaire.description.get() }}</p>
+        <h1>{{ questionnaire.name }}</h1>
+        <p>{{ questionnaire.description }}</p>
     </div>
 </div>
 <div class="container">
@@ -24,24 +24,24 @@
             {% for questiongroup in questionnaire.questiongroups %}
             <div class="question-group-container question-group-{{ loop.index }}">
                 <div class="question-group-header question-group-header-{{ loop.index }}">
-                    {{ questiongroup.name.get() }}
+                    {{ questiongroup.name }}
                 </div>
                 <div class="question-group-content">
                     {% for question in questiongroup.questions %}
                     <div class="question">
                         <div class="question-text">
-                            {{ question.text.get() }}
+                            {{ question.text }}
                         </div>
-                        <div class="question-answer-container {% if 'question_'~question.uuid in error %}bg-danger{% endif %}">
+                        <div class="question-answer-container {% if 'question_'~question.id in error %}bg-danger{% endif %}">
                             <div class="question-left-text">
                                 <span class="glyphicon glyphicon-arrow-left hidden-md hidden-lg" aria-hidden="true"></span>
                                 Strongly Disagree
                             </div>
 
-                            {% for i in range(0,11) %}
+                            {% for i in range(0,11) %} <!-- TODO: variable range here -->
                             <div class="question-answer">
                                 <div class="question-answer-label">{{ i }}</div>
-                                <input class="question-answer-radio" type="radio" name="question_{{ question.uuid }}" id="question_someid" value="{{ i }}" title="Value {{ i }}" {% if ('question_'~question.uuid in values) and (values['question_'~question.uuid] == ""~i) %}checked{% endif %}>
+                                <input class="question-answer-radio" type="radio" name="question_{{ question.id }}" id="question_someid" value="{{ i }}" title="Value {{ i }}" {% if ('question_'~question.uuid in values) and (values['question_'~question.uuid] == ""~i) %}checked{% endif %}>
                             </div>
                             {% endfor %}
 

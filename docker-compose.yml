@@ -2,11 +2,21 @@ version: '3.1'
 
 services:
 
-  db-mongo:
-    build: ./db-mongo
+  postgres:
+    build: ./postgres
     restart: always
+    environment:
+      - POSTGRES_PASSWORD=kksrk0vv3zigez6
+      - POSTGRES_USER=flask
+      - POSTGRES_DB=st3k101
     volumes:
-      - ./db-mongo/data:/data/db
+      - ./postgres/data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
   memcached:
     build: ./memcached
@@ -17,9 +27,6 @@ services:
     restart: always
     ports:
       - 1337:80
-    links:
-      - db-mongo
-      - memcached
     volumes:
       - ./websrv-flask/app:/app
 
