@@ -270,9 +270,12 @@
 
             > * {
                 width: 95%;
-                text-align: center;
                 margin-top: 8px;
                 margin-bottom: 8px;
+            }
+
+            > *:not(.full-questionnaire__dimensions) {
+                text-align: center;
             }
         }
 

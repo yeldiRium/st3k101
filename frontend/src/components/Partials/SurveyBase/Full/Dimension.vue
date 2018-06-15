@@ -222,9 +222,12 @@
 
             > * {
                 width: 95%;
-                text-align: center;
                 margin-top: 8px;
                 margin-bottom: 8px;
+            }
+
+            > *:not(.full-dimension__questions) {
+                text-align: center;
             }
         }
 
