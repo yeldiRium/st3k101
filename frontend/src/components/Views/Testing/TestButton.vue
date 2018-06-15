@@ -8,7 +8,7 @@
         >
             Noch mehr Buttontext
         </Button>
-        <Button @click="handler2"
+        <Button @click="handler3"
                 :elevation="12"
         >
             Ein abgehobener Button mit viel content.
@@ -32,7 +32,7 @@
                 alert("Button 2 clicked!");
             },
             handler3() {
-                alert("Button 3 clicked!");
+                console.log("Button 3 clicked!");
             }
         }
     }
