@@ -78,7 +78,7 @@
             />
 
             <div class="questionnaire__dimensions">
-                <Dimension class="full-dimension--bordered"
+                <Dimension class="dimension--bordered"
                            v-for="dimension in questionnaire.dimensions"
                            :key="dimension.href"
                            :dimension="dimension"

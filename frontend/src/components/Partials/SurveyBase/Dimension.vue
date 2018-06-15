@@ -51,7 +51,7 @@
             </Toggle>
 
             <div class="dimension__questions">
-                <Question class="full-question--bordered"
+                <Question class="question--bordered"
                           v-for="question in dimension.questions"
                           :key="question.href"
                           :question="question"
