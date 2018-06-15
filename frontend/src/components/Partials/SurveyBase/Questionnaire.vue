@@ -1,8 +1,8 @@
 <template>
-    <div class="full-questionnaire"
+    <div class="questionnaire"
          :class="classes"
     >
-        <ListItem class="list-questionnaire"
+        <ListItem class="questionnaire__title"
                   :text="questionnaire.name"
                   :subtext="subtext"
                   :mini="expanded"
@@ -30,7 +30,7 @@
             />
         </ListItem>
 
-        <div class="full-questionnaire__body"
+        <div class="questionnaire__body"
              v-if="expanded"
              ref="dropdown"
         >
@@ -77,7 +77,7 @@
                           @edit="updateXapiTarget"
             />
 
-            <div class="full-questionnaire__dimensions">
+            <div class="questionnaire__dimensions">
                 <Dimension class="full-dimension--bordered"
                            v-for="dimension in questionnaire.dimensions"
                            :key="dimension.href"
@@ -85,27 +85,26 @@
                            :deletable="questionnaire.isConcrete"
                            @dimension-delete="deleteDimension"
                 />
-
-                <ListItem class="full-questionnaire__add-dimension-button"
-                          v-if="isEditable(questionnaire)"
-                          text="Add new Dimension"
-                          :disableSubtext="true"
-                          :editableText="false"
-                          @click="openNewDimensionDialog"
-                />
-                <CreateDimension v-if="isEditable(questionnaire)"
-                                 :language="questionnaire.languageData.currentLanguage"
-                                 @dimension-create="createDimension"
-                />
-            </div>
-
-            <div class="full-questionnaire__delete-button"
-                 v-if="isDeletable(questionnaire)"
-                 @click="deleteQuestionnaire"
-            >
-                delete
             </div>
         </div>
+        <div class="questionnaire__buttons"
+             v-if="expanded"
+        >
+            <Button v-if="isEditable(questionnaire)"
+                    @click="openNewDimensionDialog"
+            >
+                Add new Dimension
+            </Button>
+            <Button v-if="isDeletable(questionnaire)"
+                    @click="deleteQuestionnaire"
+            >
+                delete
+            </Button>
+        </div>
+        <CreateDimension v-if="isEditable(questionnaire)"
+                         :language="questionnaire.languageData.currentLanguage"
+                         @dimension-create="createDimension"
+        />
     </div>
 </template>
 
@@ -134,6 +133,7 @@
     import CreateDimension from "../Modal/CreateDimension";
     import ReferenceCounter from "./Config/ReferenceCounter";
     import Toggle from "../Form/ToggleButton";
+    import Button from "../Form/Button";
 
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
@@ -150,6 +150,7 @@
             ReferenceCounter,
             Toggle,
             EditableText,
+            Button,
             IconReorder,
             IconExpandLess,
             IconExpandMore
@@ -179,7 +180,7 @@
             ...mapState("session", ["dataClient"]),
             classes() {
                 return {
-                    "full-questionnaire--disabled": !this.isEditable(this.questionnaire)
+                    "questionnaire--disabled": !this.isEditable(this.questionnaire)
                 }
             },
             /**
@@ -299,7 +300,7 @@
 <style lang="scss">
     @import "../../scss/_variables";
 
-    .full-questionnaire {
+    .questionnaire {
         display: flex;
         flex-flow: column;
 
@@ -312,7 +313,7 @@
         &--bordered {
             border: 1px solid $primary;
 
-            &.full-questionnaire--disabled {
+            &.questionnaire--disabled {
                 border-color: $slightlylight;
             }
         }
@@ -332,7 +333,7 @@
                 margin-bottom: 8px;
             }
 
-            > *:not(.full-questionnaire__dimensions) {
+            > *:not(.questionnaire__dimensions) {
                 text-align: center;
             }
         }
@@ -340,6 +341,17 @@
         &__dimensions {
             display: flex;
             flex-flow: column;
+        }
+
+        &__buttons {
+            display: flex;
+            justify-content: center;
+
+            margin-bottom: 8px;
+
+            .button {
+                margin: 0 8px 0 8px;
+            }
         }
 
         .toggle {

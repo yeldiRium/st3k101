@@ -3,7 +3,7 @@
          :class="classes"
     >
         <ListItem :text="question.text"
-                  class="list-question"
+                  class="question__title"
                   :ellipseText="!expanded"
                   :mini="true"
                   :disabled="!isEditable(question)"
@@ -46,12 +46,15 @@
                        v-else
                 />
             </template>
-            <div class="question__delete-button"
-                 v-if="isDeletable(question)"
-                 @click="deleteQuestion"
+        </div>
+        <div class="question__buttons"
+             v-if="expanded"
+        >
+            <Button v-if="isDeletable(question)"
+                    @click="deleteQuestion"
             >
                 delete
-            </div>
+            </Button>
         </div>
     </div>
 </template>
@@ -67,6 +70,7 @@
     import ReferenceCounter from "./Config/ReferenceCounter";
     import RangeEditor from "./Config/RangeEditor";
     import Range from "./Config/RangeSVG";
+    import Button from "../Form/Button";
 
     import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
@@ -81,6 +85,7 @@
             ReferenceCounter,
             RangeEditor,
             Range,
+            Button,
             IconReorder,
             IconExpandMore,
             IconExpandLess
@@ -223,8 +228,15 @@
 
         }
 
-        &__delete-button {
-            margin-top: 8px;
+        &__buttons {
+            display: flex;
+            justify-content: center;
+
+            margin-bottom: 8px;
+
+            .button {
+                margin: 0 8px 0 8px;
+            }
         }
     }
 </style>

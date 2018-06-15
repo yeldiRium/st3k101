@@ -2,7 +2,7 @@
     <div class="dimension"
          :class="classes"
     >
-        <ListItem class="list-dimension"
+        <ListItem class="dimension__title"
                   :text="dimension.name"
                   :subtext="subtext"
                   :mini="expanded"
@@ -59,25 +59,26 @@
                           @question-delete="deleteQuestion"
                 />
 
-                <ListItem class="dimension__add-question-button"
-                          v-if="isEditable(dimension)"
-                          text="Add new Question"
-                          :disableSubtext="true"
-                          @click="openNewQuestionDialog"
-                />
-                <CreateQuestion v-if="isEditable(dimension)"
-                                :language="dimension.languageData.currentLanguage"
-                                @question-create="createQuestion"
-                />
-            </div>
-
-            <div class="dimension__delete-button"
-                 v-if="isDeletable(dimension)"
-                 @click="deleteDimension"
-            >
-                delete
             </div>
         </div>
+        <div class="dimension__buttons"
+             v-if="expanded"
+        >
+            <Button v-if="isEditable(dimension)"
+                    @click="openNewQuestionDialog"
+            >
+                Add new Question
+            </Button>
+            <Button v-if="isDeletable(dimension)"
+                    @click="deleteDimension"
+            >
+                delete
+            </Button>
+        </div>
+        <CreateQuestion v-if="isEditable(dimension)"
+                        :language="dimension.languageData.currentLanguage"
+                        @question-create="createQuestion"
+        />
     </div>
 </template>
 
@@ -102,6 +103,7 @@
     import LanguagePicker from "../LanguagePicker";
     import ReferenceCounter from "./Config/ReferenceCounter";
     import Toggle from "../Form/ToggleButton";
+    import Button from "../Form/Button";
 
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
@@ -117,6 +119,7 @@
             LanguagePicker,
             ReferenceCounter,
             Toggle,
+            Button,
             IconReorder,
             IconExpandLess,
             IconExpandMore
@@ -285,6 +288,17 @@
         &__questions {
             display: flex;
             flex-flow: column;
+        }
+
+        &__buttons {
+            display: flex;
+            justify-content: center;
+
+            margin-bottom: 8px;
+
+            .button {
+                margin: 0 8px 0 8px;
+            }
         }
 
         .toggle-button {

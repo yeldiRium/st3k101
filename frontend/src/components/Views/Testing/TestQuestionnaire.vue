@@ -214,7 +214,7 @@
         padding: 0;
         margin: 0;
 
-        .full-questionnaire {
+        .questionnaire {
             width: 90vw;
         }
     }
