@@ -16,3 +16,6 @@ websrv-flask/app/static/js/bundle.js
 
 db-mongo/data/
 mariadb/data/
+
+# virtualenv
+.venv
