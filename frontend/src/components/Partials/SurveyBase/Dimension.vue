@@ -1,19 +1,37 @@
 <template>
-    <div class="full-dimension"
+    <div class="dimension"
          :class="classes"
-         v-if="expanded"
     >
-        <ListDimension :dimension="dimension"
-                       :disableSubText="true"
-                       :draggable="true"
-                       :ellipseText="false"
+        <ListItem class="list-dimension"
+                  :text="dimension.name"
+                  :subtext="subtext"
+                  :mini="expanded"
+                  :ellipseText="!expanded"
+                  :disabled="!isEditable(dimension)"
+                  @edit="updateDimensionName"
         >
-            <IconExpandLess class="list-item__icon"
-                            @click.native="toggleExpanded"
+            <template>
+                <IconExpandLess class="list-item__icon"
+                                v-if="expanded"
+                                @click.native="toggleExpanded"
+                />
+                <IconExpandMore class="list-item__icon"
+                                v-else
+                                @click.native="toggleExpanded"
+                />
+            </template>
+            <LanguagePicker class="list-item__language-picker"
+                            :language-data="dimension.languageData"
+                            @choose-language="changeLanguage"
+                            @choose-language-unavailable="addNewTranslation"
             />
-        </ListDimension>
+            <IconReorder class="list-item__icon"
+                         v-if="draggable"
+            />
+        </ListItem>
 
-        <div class="full-dimension__body"
+        <div class="dimension__body"
+             v-if="expanded"
              ref="dropdown"
         >
             <ReferenceCounter :object="dimension"
@@ -32,16 +50,16 @@
                 </template>
             </Toggle>
 
-            <div class="full-dimension__questions">
-                <FullQuestion class="full-question--bordered"
-                              v-for="question in dimension.questions"
-                              :key="question.href"
-                              :question="question"
-                              :deletable="dimension.isConcrete"
-                              @question-delete="deleteQuestion"
+            <div class="dimension__questions">
+                <Question class="full-question--bordered"
+                          v-for="question in dimension.questions"
+                          :key="question.href"
+                          :question="question"
+                          :deletable="dimension.isConcrete"
+                          @question-delete="deleteQuestion"
                 />
 
-                <ListItem class="full-dimension__add-question-button"
+                <ListItem class="dimension__add-question-button"
                           v-if="isEditable(dimension)"
                           text="Add new Question"
                           :disableSubtext="true"
@@ -49,11 +67,11 @@
                 />
                 <CreateQuestion v-if="isEditable(dimension)"
                                 :language="dimension.languageData.currentLanguage"
-                                @question-create="handleCreateQuestion"
+                                @question-create="createQuestion"
                 />
             </div>
 
-            <div class="full-dimension__delete-button"
+            <div class="dimension__delete-button"
                  v-if="isDeletable(dimension)"
                  @click="deleteDimension"
             >
@@ -61,56 +79,53 @@
             </div>
         </div>
     </div>
-    <div class="full-dimension"
-         :class="classes"
-         v-else
-    >
-        <ListDimension :dimension="dimension"
-                       :draggable="draggable"
-                       :ellipseText="true"
-        >
-            <IconExpandMore class="list-item__icon"
-                            @click.native="toggleExpanded"
-            />
-        </ListDimension>
-    </div>
 </template>
 
 <script>
     import {mapState} from "vuex";
     import {without} from "ramda";
 
-    import DimensionBase from "../DimensionBase";
-    import ListDimension from "../List/Dimension";
-    import FullQuestion from "../Full/Question";
-    import ListItem from "../../List/Item";
-    import CreateQuestion from "../../Modal/CreateQuestion";
+    import {Dimension} from "../../../model/SurveyBase/Dimension";
 
-    import ReferenceCounter from "../Config/ReferenceCounter";
-    import Toggle from "../../Form/ToggleButton";
-
-    import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
-    import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
     import {
         addConcreteQuestion,
+        fetchTranslation,
         removeQuestion,
+        setName,
         setRandomizeQuestions
-    } from "../../../../api2/Dimension";
+    } from "../../../api2/Dimension";
+
+    import SurveyBase from "./SurveyBase";
+    import Question from "./Question";
+    import CreateQuestion from "../Modal/CreateQuestion";
+    import ListItem from "../List/Item";
+    import LanguagePicker from "../LanguagePicker";
+    import ReferenceCounter from "./Config/ReferenceCounter";
+    import Toggle from "../Form/ToggleButton";
+
+    import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
+    import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
+    import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
 
     export default {
-        name: "FullDimension",
-        extends: DimensionBase,
+        name: "Dimension",
+        extends: SurveyBase,
         components: {
-            ListDimension,
-            FullQuestion,
-            CreateQuestion,
             ListItem,
+            Question,
+            CreateQuestion,
+            LanguagePicker,
             ReferenceCounter,
             Toggle,
+            IconReorder,
             IconExpandLess,
             IconExpandMore
         },
         props: {
+            /** @type {Dimension} */
+            dimension: {
+                type: Dimension
+            },
             initiallyExpanded: {
                 type: Boolean,
                 default: false
@@ -131,20 +146,59 @@
             ...mapState("session", ["dataClient"]),
             classes() {
                 return {
-                    "full-dimension--disabled": !this.isEditable(this.dimension)
+                    "dimension--disabled": !this.isEditable(this.dimension)
                 }
+            },
+            /**
+             * Returns a message displaying the number of Questions in the Di-
+             * mension.
+             *
+             * @returns {string}
+             */
+            subtext() {
+                return `Contains ${this.dimension.questions.length} questions.`;
             }
         },
         methods: {
             toggleExpanded() {
                 this.expanded = !this.expanded;
             },
+            /**
+             * Switch the Dimension to the given language.
+             * @param {Language} language
+             */
+            changeLanguage(language) {
+                fetchTranslation(this.dimension, language);
+            },
+            /**
+             * Add a new translation to the Dimension.
+             * This means set new field values via API for the given languages
+             * and then fetch the dimension anew in the now existing language.
+             * @param language
+             */
+            addNewTranslation(language) {
+                // TODO: clarify, when this should be available
+                // TODO: display dialog which asks for data
+                const name = "tbd";
+                setName(this.dimension, language, name);
+                this.changeLanguage(language);
+            },
+            updateDimensionName(name) {
+                setName(
+                    this.dimension,
+                    this.dimension.languageData.currentLanguage,
+                    name
+                );
+            },
+            updateRandomizeQuestions(randomizeQuestions) {
+                setRandomizeQuestions(this.dimension, randomizeQuestions);
+            },
             openNewQuestionDialog() {
                 this.$modal.show(
                     "modal-create-question"
                 )
             },
-            handleCreateQuestion({text, range}) {
+            createQuestion({text, range}) {
                 addConcreteQuestion(
                     this.dimension, this.dataClient, text, range
                 );
@@ -179,9 +233,6 @@
                         ]
                     }
                 )
-            },
-            updateRandomizeQuestions(randomizeQuestions) {
-                setRandomizeQuestions(this.dimension, randomizeQuestions);
             }
         },
         created() {
@@ -191,9 +242,9 @@
 </script>
 
 <style lang="scss">
-    @import "../../../scss/_variables";
+    @import "../../scss/_variables";
 
-    .full-dimension {
+    .dimension {
         display: flex;
         flex-flow: column;
 
@@ -206,7 +257,7 @@
         &--bordered {
             border: 1px solid $primary;
 
-            &.full-dimension--disabled {
+            &.dimension--disabled {
                 border-color: $slightlylight;
             }
         }
@@ -226,7 +277,7 @@
                 margin-bottom: 8px;
             }
 
-            > *:not(.full-dimension__questions) {
+            > *:not(.dimension__questions) {
                 text-align: center;
             }
         }

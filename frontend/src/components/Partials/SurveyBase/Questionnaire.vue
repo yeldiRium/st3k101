@@ -1,19 +1,37 @@
 <template>
     <div class="full-questionnaire"
          :class="classes"
-         v-if="expanded"
     >
-        <ListQuestionnaire :questionnaire="questionnaire"
-                           :disableSubText="true"
-                           :draggable="true"
-                           :ellipseText="false"
+        <ListItem class="list-questionnaire"
+                  :text="questionnaire.name"
+                  :subtext="subtext"
+                  :mini="expanded"
+                  :ellipseText="!expanded"
+                  :disabled="!isEditable(questionnaire)"
+                  @edit="updateQuestionnaireName"
         >
-            <IconExpandLess class="list-item__icon"
-                            @click.native="toggleExpanded"
+            <template>
+                <IconExpandLess class="list-item__icon"
+                                v-if="expanded"
+                                @click.native="toggleExpanded"
+                />
+                <IconExpandMore class="list-item__icon"
+                                v-else
+                                @click.native="toggleExpanded"
+                />
+            </template>
+            <LanguagePicker class="list-item__language-picker"
+                            :language-data="questionnaire.languageData"
+                            @choose-language="changeLanguage"
+                            @choose-language-unavailable="addNewTranslation"
             />
-        </ListQuestionnaire>
+            <IconReorder class="list-item__icon"
+                         v-if="draggable"
+            />
+        </ListItem>
 
         <div class="full-questionnaire__body"
+             v-if="expanded"
              ref="dropdown"
         >
             <ReferenceCounter :object="questionnaire"
@@ -60,12 +78,12 @@
             />
 
             <div class="full-questionnaire__dimensions">
-                <FullDimension class="full-dimension--bordered"
-                               v-for="dimension in questionnaire.dimensions"
-                               :key="dimension.href"
-                               :dimension="dimension"
-                               :deletable="questionnaire.isConcrete"
-                               @dimension-delete="deleteDimension"
+                <Dimension class="full-dimension--bordered"
+                           v-for="dimension in questionnaire.dimensions"
+                           :key="dimension.href"
+                           :dimension="dimension"
+                           :deletable="questionnaire.isConcrete"
+                           @dimension-delete="deleteDimension"
                 />
 
                 <ListItem class="full-questionnaire__add-dimension-button"
@@ -89,62 +107,58 @@
             </div>
         </div>
     </div>
-    <div class="full-questionnaire"
-         :class="classes"
-         v-else
-    >
-        <ListQuestionnaire :questionnaire="questionnaire"
-                           :draggable="draggable"
-                           :ellipseText="true"
-        >
-            <IconExpandMore class="list-item__icon"
-                            @click.native="toggleExpanded"
-            />
-        </ListQuestionnaire>
-    </div>
 </template>
 
 <script>
     import {mapState} from "vuex";
-    import {without} from "ramda";
+    import {map, path, sum, without} from "ramda";
 
-    import QuestionnaireBase from "../QuestionnaireBase";
-    import ListQuestionnaire from "../List/Questionnaire";
-    import FullDimension from "../Full/Dimension";
-    import ListItem from "../../List/Item";
-    import EditableText from "../../Form/EditableText";
+    import {Questionnaire} from "../../../model/SurveyBase/Questionnaire";
 
-    import CreateDimension from "../../Modal/CreateDimension";
-
-    import ReferenceCounter from "../Config/ReferenceCounter";
-    import Toggle from "../../Form/ToggleButton";
-
-    import IconExpandLess from "../../../../assets/icons/baseline-expand_less-24px.svg";
-    import IconExpandMore from "../../../../assets/icons/baseline-expand_more-24px.svg";
     import {
         addConcreteDimension,
+        fetchTranslation,
         removeDimension,
         setAllowEmbedded,
         setDescription,
         setIsPublic,
+        setName,
         setXapiTarget
-    } from "../../../../api2/Questionnaire";
+    } from "../../../api2/Questionnaire";
+
+    import SurveyBase from "./SurveyBase";
+    import Dimension from "./Dimension";
+    import ListItem from "../List/Item";
+    import EditableText from "../Form/EditableText";
+    import LanguagePicker from "../LanguagePicker";
+    import CreateDimension from "../Modal/CreateDimension";
+    import ReferenceCounter from "./Config/ReferenceCounter";
+    import Toggle from "../Form/ToggleButton";
+
+    import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
+    import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
+    import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
 
     export default {
-        name: "Full-Questionnaire",
-        extends: QuestionnaireBase,
+        name: "Questionnaire",
+        extends: SurveyBase,
         components: {
-            ListQuestionnaire,
-            FullDimension,
-            CreateDimension,
             ListItem,
+            Dimension,
+            CreateDimension,
+            LanguagePicker,
             ReferenceCounter,
             Toggle,
+            EditableText,
+            IconReorder,
             IconExpandLess,
-            IconExpandMore,
-            EditableText
+            IconExpandMore
         },
         props: {
+            /** @type {Questionnaire} */
+            questionnaire: {
+                type: Questionnaire
+            },
             initiallyExpanded: {
                 type: Boolean,
                 default: false
@@ -167,11 +181,71 @@
                 return {
                     "full-questionnaire--disabled": !this.isEditable(this.questionnaire)
                 }
+            },
+            /**
+             * Returns a message displaying the number of Dimensions and Ques-
+             * tions in the Questionnaire.
+             *
+             * @returns {string}
+             */
+            subtext() {
+                let questionCount = sum(
+                    map(
+                        path(["questions", "length"]),
+                        this.questionnaire.dimensions
+                    )
+                );
+                return `Contains ${this.questionnaire.dimensions.length} dimensions and ${questionCount} questions.`;
             }
         },
         methods: {
             toggleExpanded() {
                 this.expanded = !this.expanded;
+            },
+            /**
+             * Switch the Questionnaire to the given language.
+             * @param {Language} language
+             */
+            changeLanguage(language) {
+                fetchTranslation(this.questionnaire, language);
+            },
+            /**
+             * Add a new translation to the Questionnaire.
+             * This means set new field values via API for the given languages
+             * and then fetch the questionnaire anew in the now existing language.
+             * @param language
+             */
+            addNewTranslation(language) {
+                // TODO: clarify, when this should be available
+                // TODO: display dialog which asks for data
+                const name = "tbd";
+                const description = "tbd";
+                setName(this.questionnaire, language, name);
+                setDescription(this.questionnaire, language, description);
+                this.changeLanguage(language);
+            },
+            updateQuestionnaireName(name) {
+                setName(
+                    this.questionnaire,
+                    this.questionnaire.languageData.currentLanguage,
+                    name
+                );
+            },
+            updateDescription(description) {
+                setDescription(
+                    this.questionnaire,
+                    this.questionnaire.languageData.currentLanguage,
+                    description
+                );
+            },
+            updateIsPublic(isPublic) {
+                setIsPublic(this.questionnaire, isPublic);
+            },
+            updateAllowEmbedded(allowEmbedded) {
+                setAllowEmbedded(this.questionnaire, allowEmbedded);
+            },
+            updateXapiTarget(xapiTarget) {
+                setXapiTarget(this.questionnaire, xapiTarget);
             },
             openNewDimensionDialog() {
                 this.$modal.show(
@@ -214,22 +288,6 @@
                         ]
                     }
                 )
-            },
-            updateDescription(description) {
-                setDescription(
-                    this.questionnaire,
-                    this.questionnaire.languageData.currentLanguage,
-                    description
-                );
-            },
-            updateIsPublic(isPublic) {
-                setIsPublic(this.questionnaire, isPublic);
-            },
-            updateAllowEmbedded(allowEmbedded) {
-                setAllowEmbedded(this.questionnaire, allowEmbedded);
-            },
-            updateXapiTarget(xapiTarget) {
-                setXapiTarget(this.questionnaire, xapiTarget);
             }
         },
         created() {
@@ -239,7 +297,7 @@
 </script>
 
 <style lang="scss">
-    @import "../../../scss/_variables";
+    @import "../../scss/_variables";
 
     .full-questionnaire {
         display: flex;

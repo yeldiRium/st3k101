@@ -1,16 +1,16 @@
 <template>
-    <div class="TestListQuestionnaire_container">
-        <ListQuestionnaire :questionnaire="questionnaires[0]"/>
-        <ListQuestionnaire :questionnaire="questionnaires[1]"/>
-        <ListQuestionnaire :questionnaire="questionnaires[2]"/>
-        <ListQuestionnaire :questionnaire="questionnaires[3]"/>
+    <div class="TestQuestionnaire_container">
+        <Questionnaire :questionnaire="questionnaires[0]"/>
+        <Questionnaire :questionnaire="questionnaires[1]"/>
+        <Questionnaire :questionnaire="questionnaires[2]"/>
+        <Questionnaire :questionnaire="questionnaires[3]"/>
     </div>
 </template>
 
 <script>
     import {drop} from "ramda";
 
-    import ListQuestionnaire from "../../Partials/SurveyBase/List/Questionnaire";
+    import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
 
     import DataClient from "../../../model/DataClient";
     import Resource from "../../../model/Resource";
@@ -32,7 +32,7 @@
     export default {
         name: "TestListQuestionnaire",
         components: {
-            ListQuestionnaire
+            Questionnaire
         },
         data: function () {
             const dataClient = this.$store.getters["session/dataClient"];
@@ -207,14 +207,14 @@
 </script>
 
 <style lang="scss">
-    .TestListQuestionnaire_container {
+    .TestQuestionnaire_container {
         width: 100%;
         height: 100%;
 
         padding: 0;
         margin: 0;
 
-        .list-questionnaire {
+        .full-questionnaire {
             width: 90vw;
         }
     }

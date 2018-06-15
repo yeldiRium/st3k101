@@ -2,10 +2,10 @@
     <div class="questionnaire-overview"
          :style="style"
     >
-        <FullQuestionnaire :style="itemStyle"
-                           v-for="questionnaire in questionnaires"
-                           :key="questionnaire.href"
-                           :questionnaire="questionnaire"
+        <Questionnaire :style="itemStyle"
+                       v-for="questionnaire in questionnaires"
+                       :key="questionnaire.href"
+                       :questionnaire="questionnaire"
 
         />
 
@@ -26,7 +26,7 @@
     import {mapState} from "vuex";
 
     import ListItem from "../../Partials/List/Item";
-    import FullQuestionnaire from "../../Partials/SurveyBase/Full/Questionnaire";
+    import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
     import CreateQuestionnaire from "../../Partials/Modal/CreateQuestionnaire";
 
     import {ConcreteQuestionnaire} from "../../../model/SurveyBase/Questionnaire";
@@ -37,7 +37,7 @@
         name: "QuestionnaireOverview",
         components: {
             ListItem,
-            FullQuestionnaire,
+            Questionnaire,
             CreateQuestionnaire
         },
         data() {

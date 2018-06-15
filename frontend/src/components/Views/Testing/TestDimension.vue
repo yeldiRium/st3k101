@@ -1,16 +1,17 @@
 <template>
-    <div class="TestListDimension_container">
-        <ListDimension :dimension="dimensions[0]"/>
-        <ListDimension :dimension="dimensions[1]"/>
-        <ListDimension :dimension="dimensions[2]"/>
-        <ListDimension :dimension="dimensions[3]"/>
+    <div class="TestDimension_container">
+        <Dimension :dimension="dimensions[0]"/>
+        <Dimension :dimension="dimensions[1]"/>
+        <Dimension :dimension="dimensions[2]"/>
+        <Dimension :dimension="dimensions[3]"/>
+        <Dimension :dimension="dimensions[4]"/>
     </div>
 </template>
 
 <script>
     import {drop} from "ramda";
 
-    import ListDimension from "../../Partials/SurveyBase/List/Dimension";
+    import Dimension from "../../Partials/SurveyBase/Dimension";
 
     import DataClient from "../../../model/DataClient";
     import Resource from "../../../model/Resource";
@@ -26,9 +27,9 @@
     import {Range} from "../../../model/SurveyBase/Config/Range";
 
     export default {
-        name: "TestListDimension",
+        name: "TestDimension",
         components: {
-            ListDimension
+            Dimension
         },
         data: function () {
             const dataClient = this.$store.getters["session/dataClient"];
@@ -137,6 +138,19 @@
                         drop(0, questions),
                         false,
                         new Resource("http://blubblab/api/dimension/someonesotheridtrell")
+                    ),
+                    new ConcreteDimension(
+                        "http://blubblab/api/dimension/1",
+                        dataClient,
+                        languageData,
+                        "Diese ConcreteDimension gehört mir. Sie hat einen extra langen Text zum testen. Ihre Questions sind randomized.",
+                        drop(0, questions),
+                        true,
+                        5,
+                        [
+                            new Resource("http://blubblab/api/dimension/myidlel"),
+                            new Resource("http://blubblab/api/dimension/myid2lul")
+                        ]
                     )
                 ]
             }
@@ -145,16 +159,15 @@
 </script>
 
 <style lang="scss">
-    .TestListDimension_container {
+    .TestDimension_container {
         width: 100%;
         height: 100%;
 
         padding: 0;
         margin: 0;
 
-        .list-dimension {
+        .dimension {
             width: 90vw;
         }
     }
-
 </style>

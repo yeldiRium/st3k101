@@ -1,24 +1,31 @@
 <template>
-    <div class="TestListQuestion_container">
-        <ListQuestion :question="questions[0]"/>
-        <ListQuestion :question="questions[1]"/>
-        <ListQuestion :question="questions[2]"/>
-        <ListQuestion :question="questions[3]"/>
+    <div class="TestQuestion_container">
+        <Question :question="questions[0]"/>
+        <Question :question="questions[1]"/>
+        <Question :question="questions[2]"
+                      :mini="true"
+        />
+        <Question :question="questions[3]"
+                      :mini="true"
+        />
     </div>
 </template>
 
 <script>
-    import ListQuestion from "../../Partials/SurveyBase/List/Question";
+    import Question from "../../Partials/SurveyBase/Question";
     import Resource from "../../../model/Resource";
-    import {ConcreteQuestion, ShadowQuestion} from "../../../model/SurveyBase/Question";
+    import {
+        ConcreteQuestion,
+        ShadowQuestion
+    } from "../../../model/SurveyBase/Question";
     import DataClient from "../../../model/DataClient";
     import {Language, LanguageData} from "../../../model/Language";
     import Range from "../../../model/SurveyBase/Config/Range";
 
     export default {
-        name: "TestListQuestion",
+        name: "TestQuestion",
         components: {
-            ListQuestion
+            Question
         },
         data() {
             const dataClient = this.$store.getters["session/dataClient"];
@@ -37,7 +44,7 @@
                         "http://blubblab/api/question/1",
                         dataClient,
                         languageData,
-                        "Diese ConcreteQuestion gehört mir.Sie hat einen extra langen Text zum testen.",
+                        "Diese ConcreteQuestion gehört mir. Sie hat einen extra langen Text zum testen.",
                         new Range({end: 5}),
                         5,
                         [
@@ -55,12 +62,12 @@
                         new Resource("http://blubblab/api/question/someonesidlel")
                     ),
                     // Not owned ConcreteQuestion with 3 incoming references.
-                    // One of those reference is from an owned ListQuestion.
+                    // One of those reference is from an owned Question.
                     new ConcreteQuestion(
                         "http://blubblab/api/question/3",
                         someoneElse,
                         languageData,
-                        "Diese ConcreteQuestion gehört mir nicht.Sie hat einen extra langen Text zum testen.",
+                        "Diese ConcreteQuestion gehört mir nicht. Sie hat einen extra langen Text zum testen.",
                         new Range({start: 0, end: 7}),
                         3,
                         [
@@ -83,15 +90,17 @@
 </script>
 
 <style lang="scss">
-    .TestListQuestion_container {
+    .TestQuestion_container {
         width: 100%;
         height: 100%;
 
         padding: 0;
         margin: 0;
 
-        .list-question {
+        .question {
             width: 90vw;
+
+            margin-bottom: 20px;
         }
     }
 

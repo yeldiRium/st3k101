@@ -38,7 +38,7 @@
     import {Range} from "../../../model/SurveyBase/Config/Range";
     import {Language, LanguageData} from "../../../model/Language";
 
-    import FullQuestion from "../../Partials/SurveyBase/Full/Question";
+    import Question from "../../Partials/SurveyBase/Question";
     import CreateQuestion from "../../Partials/Modal/CreateQuestion";
     import CreateDimension from "../../Partials/Modal/CreateDimension";
     import Dialog from "../../Partials/Modal/Dialog";
@@ -109,7 +109,7 @@
             },
             click3() {
                 this.$modal.show(
-                    FullQuestion,
+                    Question,
                     {
                         question: this.question
                     },

@@ -11,18 +11,15 @@ import Account from "../components/Views/Private/Account";
 
 import TestingBase from "../components/Views/Testing/Base";
 import TestListItem from "../components/Views/Testing/TestListItem";
-import TestListQuestion from "../components/Views/Testing/TestListQuestion";
-import TestFullQuestion from "../components/Views/Testing/TestFullQuestion";
+import TestQuestion from "../components/Views/Testing/TestQuestion";
 import TestRangeEditor from "../components/Views/Testing/TestRangeEditor";
 import TestPrivateMenuBar from "../components/Views/Testing/TestPrivateMenuBar";
 import TestToggle from "../components/Views/Testing/TestToggle";
 import TestModal from "../components/Views/Testing/TestModal";
 import TestButton from "../components/Views/Testing/TestButton";
-import TestListDimension from "../components/Views/Testing/TestListDimension";
-import TestFullDimension from "../components/Views/Testing/TestFullDimension";
+import TestDimension from "../components/Views/Testing/TestDimension";
 import TestEditableText from "../components/Views/Testing/TestEditableText";
-import TestListQuestionnaire from "../components/Views/Testing/TestListQuestionnaire";
-import TestFullQuestionnaire from "../components/Views/Testing/TestFullQuestionnaire";
+import TestQuestionnaire from "../components/Views/Testing/TestQuestionnaire";
 
 Vue.use(Router);
 
@@ -80,12 +77,8 @@ export default new Router({
                     component: TestListItem
                 },
                 {
-                    path: "ListQuestion",
-                    component: TestListQuestion
-                },
-                {
-                    path: "FullQuestion",
-                    component: TestFullQuestion
+                    path: "Question",
+                    component: TestQuestion
                 },
                 {
                     path: "RangeEditor",
@@ -104,24 +97,16 @@ export default new Router({
                     component: TestButton
                 },
                 {
-                    path: "ListDimension",
-                    component: TestListDimension
-                },
-                {
-                    path: "FullDimension",
-                    component: TestFullDimension
+                    path: "Dimension",
+                    component: TestDimension
                 },
                 {
                     path: "EditableText",
                     component: TestEditableText
                 },
                 {
-                    path: "ListQuestionnaire",
-                    component: TestListQuestionnaire
-                },
-                {
-                    path: "FullQuestionnaire",
-                    component: TestFullQuestionnaire
+                    path: "Questionnaire",
+                    component: TestQuestionnaire
                 }
             ]
         }
