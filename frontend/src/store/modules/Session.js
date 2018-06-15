@@ -29,8 +29,7 @@ const store = {
             };
         },
         isLoggedIn(state) {
-            //return state.sessionToken !== null;
-            return true;
+            return state.sessionToken !== null;
         },
         dataClient(state) {
             return state.dataClient;

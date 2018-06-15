@@ -9,6 +9,8 @@
 </template>
 
 <script>
+    import {mapState} from "vuex";
+
     import LanguagePicker from "../../Partials/LanguagePicker";
     import MenuBarPrivate from "../../Partials/Menu/MenuBarPrivate"
 
@@ -16,31 +18,15 @@
         components: {LanguagePicker, MenuBarPrivate},
         name: "App",
         created() {
-            if (!this.$store.getters["session/isLoggedIn"]) {
+            if (!this.isLoggedIn) {
                 this.$router.replace({
-                    name: "PublicBase"
+                    name: "Authentication"
                 })
             }
         },
-        data: () => ({
-            drawer: true,
-            searchBar: false,
-            navigationItems: [
-                {
-                    action: "Dashboard",
-                    icon: "dashboard",
-                    text: "Dashboard"
-                },
-                {
-                    action: "SurveyForSubmission",
-                    icon: "image",
-                    text: "Survey",
-                    payload: {
-                        id: "blub"
-                    }
-                }
-            ]
-        })
+        computed: {
+            ...mapState("session", ["isLoggedIn"])
+        }
     };
 </script>
 

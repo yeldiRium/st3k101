@@ -3,6 +3,7 @@ import Router from "vue-router";
 
 import PublicBase from "../components/Views/Public/Base";
 import SurveyForSubmission from "../components/Views/Public/SurveyForSubmission";
+import Authentication from "../components/Views/Public/Authentication";
 
 import PrivateBase from "../components/Views/Private/Base";
 import Dashboard from "../components/Views/Private/Dashboard";
@@ -36,6 +37,11 @@ export default new Router({
                     path: "survey/:id",
                     name: "SurveyForSubmission",
                     component: SurveyForSubmission
+                },
+                {
+                    path: "authentication",
+                    name: "Authentication",
+                    component: Authentication
                 }
             ]
         },
