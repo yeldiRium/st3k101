@@ -28,7 +28,7 @@ class DataClient(Party):
         super(DataClient, self).__init__(**kwargs)
         if 'language' not in kwargs:
             self.language = g._language
-        self._roles = [Role['user'].value]
+        self._roles = [Role.User.value]
 
     @property
     def roles(self):

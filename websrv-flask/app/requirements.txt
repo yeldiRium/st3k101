@@ -1,5 +1,4 @@
 python-memcached
-pymongo
 argon2
 Flask-Babel
 pyyaml
@@ -8,3 +7,5 @@ sqlalchemy_utils
 psycopg2
 deprecated
 blinker
+flask_restful
+marshmallow
