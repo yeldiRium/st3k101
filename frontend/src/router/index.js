@@ -20,6 +20,7 @@ import TestButton from "../components/Views/Testing/TestButton";
 import TestDimension from "../components/Views/Testing/TestDimension";
 import TestEditableText from "../components/Views/Testing/TestEditableText";
 import TestQuestionnaire from "../components/Views/Testing/TestQuestionnaire";
+import TestLoadingSpinner from "../components/Views/Testing/TestLoadingSpinner";
 
 Vue.use(Router);
 
@@ -107,6 +108,10 @@ export default new Router({
                 {
                     path: "Questionnaire",
                     component: TestQuestionnaire
+                },
+                {
+                    path: "LoadingSpinner",
+                    component: TestLoadingSpinner
                 }
             ]
         }
