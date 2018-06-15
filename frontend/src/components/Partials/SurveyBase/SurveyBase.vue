@@ -48,7 +48,7 @@
              */
             isEditable(ownedResource) {
                 return this.isOwnedByCurrentDataClient(ownedResource)
-                    && !ownedResource.isShadow;
+                    && ownedResource.isConcrete;
             },
             /**
              * Whether the SurveyBase is deletable.

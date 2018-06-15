@@ -50,15 +50,13 @@
                 </span>
             </div>
         </div>
-        <!-- dropdown select box of all languages -->
-        <!-- preview with language.long, language.short as value -->
     </div>
 </template>
 
 <script>
     import {contains, toUpper, without} from "ramda";
-
     import {mapState} from "vuex";
+
     import {LanguageData} from "../../model/Language";
 
     export default {
