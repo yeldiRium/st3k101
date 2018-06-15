@@ -9,19 +9,19 @@
 
         />
 
-        <ListItem class="questionnaire-overview__add-questionnaire-button"
-                  :style="itemStyle"
-                  text="Add new Questionnaire"
-                  :mini="true"
-                  :editableText="false"
-                  @click="openNewQuestionnaireDialog"
-        />
+        <Button class="questionnaire-overview__add-questionnaire-button"
+                @click="openNewQuestionnaireDialog"
+        >
+            Add new Questionnaire
+        </Button>
     </div>
 </template>
 
 <script>
+    import Future from "fluture";
     import {mapState} from "vuex";
 
+    import Button from "../../Partials/Form/Button";
     import ListItem from "../../Partials/List/Item";
     import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
 
@@ -32,6 +32,7 @@
     export default {
         name: "QuestionnaireOverview",
         components: {
+            Button,
             ListItem,
             Questionnaire
         },
@@ -76,34 +77,45 @@
                 let en = new Language("en", "English");
                 let languageData = new LanguageData(en, en, [en]);
 
-                this.questionnaires = [
-                    new ConcreteQuestionnaire(
-                        "http://blubblab/api/questionnaire/1",
-                        this.dataClient,
-                        languageData,
-                        "Dieser ConcreteQuestionnaire gehört mir.",
-                        "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
-                        true,
-                        true,
-                        "i don't even know, what this is",
-                        [],
-                        0,
-                        []
-                    ),
-                    new ConcreteQuestionnaire(
-                        "http://blubblab/api/questionnaire/2",
-                        this.dataClient,
-                        languageData,
-                        "Dieser ShadowQuestionnaire gehört mir.",
-                        "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
-                        false,
-                        true,
-                        "i don't even know, what this is",
-                        [],
-                        0,
-                        []
-                    )
-                ];
+                this.$load(
+                    Future((reject, resolve) => {
+                        window.setTimeout(resolve, 1500);
+                    }).chain(() => Future.of(
+                        [
+                            new ConcreteQuestionnaire(
+                                "http://blubblab/api/questionnaire/1",
+                                this.dataClient,
+                                languageData,
+                                "Dieser ConcreteQuestionnaire gehört mir.",
+                                "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
+                                true,
+                                true,
+                                "i don't even know, what this is",
+                                [],
+                                0,
+                                []
+                            ),
+                            new ConcreteQuestionnaire(
+                                "http://blubblab/api/questionnaire/2",
+                                this.dataClient,
+                                languageData,
+                                "Dieser ShadowQuestionnaire gehört mir.",
+                                "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
+                                false,
+                                true,
+                                "i don't even know, what this is",
+                                [],
+                                0,
+                                []
+                            )
+                        ]
+                    ))
+                ).fork(
+                    console.error,
+                    questionnaires => {
+                        this.questionnaires = questionnaires;
+                    }
+                )
             },
             openNewQuestionnaireDialog() {
                 this.$modal.show(
