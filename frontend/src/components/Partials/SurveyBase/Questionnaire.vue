@@ -101,10 +101,6 @@
                 delete
             </Button>
         </div>
-        <CreateDimension v-if="isEditable(questionnaire)"
-                         :language="questionnaire.languageData.currentLanguage"
-                         @dimension-create="createDimension"
-        />
     </div>
 </template>
 
@@ -130,7 +126,6 @@
     import ListItem from "../List/Item";
     import EditableText from "../Form/EditableText";
     import LanguagePicker from "../LanguagePicker";
-    import CreateDimension from "../Modal/CreateDimension";
     import ReferenceCounter from "./Config/ReferenceCounter";
     import Toggle from "../Form/ToggleButton";
     import Button from "../Form/Button";
@@ -145,7 +140,6 @@
         components: {
             ListItem,
             Dimension,
-            CreateDimension,
             LanguagePicker,
             ReferenceCounter,
             Toggle,
@@ -250,7 +244,11 @@
             },
             openNewDimensionDialog() {
                 this.$modal.show(
-                    "modal-create-dimension"
+                    "modal-create-dimension",
+                    {
+                        language: this.questionnaire.languageData.currentLanguage,
+                        handler: this.createDimension
+                    }
                 )
             },
             createDimension({name, randomizeQuestions}) {

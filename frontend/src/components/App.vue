@@ -5,6 +5,9 @@
         <LoadingSpinnerModal
                 :size="width"
         />
+        <CreateQuestion/>
+        <CreateDimension/>
+        <CreateQuestionnaire/>
     </div>
 </template>
 
@@ -12,10 +15,16 @@
     import {mapState} from "vuex";
 
     import Dialog from "./Partials/Modal/Dialog";
+    import CreateQuestion from "./Partials/Modal/CreateQuestion";
+    import CreateDimension from "./Partials/Modal/CreateDimension";
+    import CreateQuestionnaire from "./Partials/Modal/CreateQuestionnaire";
 
     export default {
         components: {
-            Dialog
+            Dialog,
+            CreateQuestion,
+            CreateDimension,
+            CreateQuestionnaire
         },
         computed: {
             ...mapState("global", ["window"]),

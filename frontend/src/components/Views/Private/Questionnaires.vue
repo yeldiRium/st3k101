@@ -16,9 +16,6 @@
                   :editableText="false"
                   @click="openNewQuestionnaireDialog"
         />
-        <CreateQuestionnaire :language="dataClient.language"
-                             @questionnaire-create="createQuestionnaire"
-        />
     </div>
 </template>
 
@@ -27,7 +24,6 @@
 
     import ListItem from "../../Partials/List/Item";
     import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
-    import CreateQuestionnaire from "../../Partials/Modal/CreateQuestionnaire";
 
     import {ConcreteQuestionnaire} from "../../../model/SurveyBase/Questionnaire";
     import {Language, LanguageData} from "../../../model/Language";
@@ -37,8 +33,7 @@
         name: "QuestionnaireOverview",
         components: {
             ListItem,
-            Questionnaire,
-            CreateQuestionnaire
+            Questionnaire
         },
         data() {
             return {
@@ -111,7 +106,13 @@
                 ];
             },
             openNewQuestionnaireDialog() {
-                this.$modal.show("modal-create-questionnaire");
+                this.$modal.show(
+                    "modal-create-questionnaire",
+                    {
+                        language: this.dataClient.language,
+                        handler: this.createQuestionnaire
+                    }
+                );
             },
             createQuestionnaire({
                                     name, description, isPublic, allowEmbedded,

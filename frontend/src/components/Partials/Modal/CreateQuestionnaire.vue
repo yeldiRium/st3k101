@@ -1,6 +1,7 @@
 <template>
     <modal name="modal-create-questionnaire"
            height="auto"
+           @before-open="beforeOpen"
     >
         <CreateResource
                 @cancel="cancel"
@@ -42,9 +43,8 @@
 </template>
 
 <script>
+    import {isNil} from "ramda";
     import {mapState} from "vuex";
-
-    import {Language} from "../../../model/Language";
 
     import CreateResource from "./CreateResource";
     import Toggle from "../Form/ToggleButton";
@@ -55,14 +55,10 @@
             CreateResource,
             Toggle
         },
-        props: {
-            /** @type {Language} */
-            language: {
-                type: Language
-            }
-        },
         data() {
             return {
+                language: null,
+                handler: null,
                 name: "Questionnaire name",
                 description: "Questionnaire description",
                 isPublic: false,
@@ -74,6 +70,16 @@
             ...mapState("session", ["dataClient"])
         },
         methods: {
+            beforeOpen({params: {language, handler}}) {
+                if (isNil(language)) {
+                    throw new Error("Parameter language required!");
+                }
+                if (isNil(handler)) {
+                    throw new Error("Parameter handler required!");
+                }
+                this.language = language;
+                this.handler = handler;
+            },
             cancel() {
                 this.$modal.hide("modal-create-questionnaire");
             },
@@ -82,16 +88,13 @@
              * ate the questionnaire.
              */
             create() {
-                this.$emit(
-                    "questionnaire-create",
-                    {
-                        name: this.name,
-                        description: this.description,
-                        isPublic: this.isPublic,
-                        allowEmbedded: this.allowEmbedded,
-                        xapiTarget: this.xapiTarget
-                    }
-                );
+                this.handler({
+                    name: this.name,
+                    description: this.description,
+                    isPublic: this.isPublic,
+                    allowEmbedded: this.allowEmbedded,
+                    xapiTarget: this.xapiTarget
+                });
                 this.$modal.hide("modal-create-questionnaire");
             }
         }

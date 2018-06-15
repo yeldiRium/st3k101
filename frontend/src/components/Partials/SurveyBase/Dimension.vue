@@ -75,10 +75,6 @@
                 delete
             </Button>
         </div>
-        <CreateQuestion v-if="isEditable(dimension)"
-                        :language="dimension.languageData.currentLanguage"
-                        @question-create="createQuestion"
-        />
     </div>
 </template>
 
@@ -98,7 +94,6 @@
 
     import SurveyBase from "./SurveyBase";
     import Question from "./Question";
-    import CreateQuestion from "../Modal/CreateQuestion";
     import ListItem from "../List/Item";
     import LanguagePicker from "../LanguagePicker";
     import ReferenceCounter from "./Config/ReferenceCounter";
@@ -115,7 +110,6 @@
         components: {
             ListItem,
             Question,
-            CreateQuestion,
             LanguagePicker,
             ReferenceCounter,
             Toggle,
@@ -198,7 +192,11 @@
             },
             openNewQuestionDialog() {
                 this.$modal.show(
-                    "modal-create-question"
+                    "modal-create-question",
+                    {
+                        language: this.dimension.languageData.currentLanguage,
+                        handler: this.createQuestion
+                    }
                 )
             },
             createQuestion({text, range}) {
