@@ -216,7 +216,9 @@
              * @param language
              */
             addNewTranslation(language) {
-                // TODO: clarify, when this should be available
+                if (!this.isEditable(this.questionnaire)) {
+                    return;
+                }
                 // TODO: display dialog which asks for data
                 const name = "tbd";
                 const description = "tbd";
@@ -233,6 +235,9 @@
                 );
             },
             updateQuestionnaireName(name) {
+                if (!this.isEditable(this.questionnaire)) {
+                    return;
+                }
                 this.$load(
                     setName(
                         this.questionnaire,
@@ -245,6 +250,9 @@
                 );
             },
             updateDescription(description) {
+                if (!this.isEditable(this.questionnaire)) {
+                    return;
+                }
                 this.$load(
                     setDescription(
                         this.questionnaire,
@@ -281,6 +289,9 @@
                 );
             },
             openNewDimensionDialog() {
+                if (!this.isEditable(this.questionnaire)) {
+                    return;
+                }
                 this.$modal.show(
                     "modal-create-dimension",
                     {
@@ -290,6 +301,9 @@
                 )
             },
             createDimension({name, randomizeQuestions}) {
+                if (!this.isEditable(this.questionnaire)) {
+                    return;
+                }
                 this.$load(
                     addConcreteDimension(
                         this.questionnaire,
@@ -303,6 +317,9 @@
                 );
             },
             deleteDimension(dimension) {
+                if (!this.isEditable(this.questionnaire)) {
+                    return;
+                }
                 this.$load(
                     removeDimension(this.questionnaire, dimension)
                 ).fork(

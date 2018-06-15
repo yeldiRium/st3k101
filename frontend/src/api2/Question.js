@@ -43,7 +43,7 @@ function fetchTranslation(question, language) {
  *
  * If it is the currentLanguage, the Question is updated with the new text.
  *
- * @param {Question} question
+ * @param {ConcreteQuestion} question
  * @param {Language} language
  * @param {String} text
  * @return {Future}
@@ -65,7 +65,7 @@ function setText(question, language, text) {
 /**
  * Sets the Range on the given question.
  *
- * @param {Question} question
+ * @param {ConcreteQuestion} question
  * @param {Range} range
  * @return {Future}
  * @resolve to true

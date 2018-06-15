@@ -179,7 +179,9 @@
              * @param language
              */
             addNewTranslation(language) {
-                // TODO: clarify, when this should be available
+                if (!this.isEditable(this.dimension)) {
+                    return;
+                }
                 // TODO: display dialog which asks for data
                 const name = "tbd";
 
@@ -192,6 +194,9 @@
                 );
             },
             updateDimensionName(name) {
+                if (!this.isEditable(this.dimension)) {
+                    return;
+                }
                 this.$load(
                     setName(
                         this.dimension,
@@ -212,6 +217,9 @@
                 );
             },
             openNewQuestionDialog() {
+                if (!this.isEditable(this.dimension)) {
+                    return;
+                }
                 this.$modal.show(
                     "modal-create-question",
                     {
@@ -221,6 +229,9 @@
                 )
             },
             createQuestion({text, range}) {
+                if (!this.isEditable(this.dimension)) {
+                    return;
+                }
                 this.$load(
                     addConcreteQuestion(
                         this.dimension, this.dataClient, text, range
@@ -235,6 +246,9 @@
              * being deleted.
              */
             deleteQuestion(question) {
+                if (!this.isEditable(this.dimension)) {
+                    return;
+                }
                 this.$load(
                     removeQuestion(this.dimension, question)
                 ).fork(

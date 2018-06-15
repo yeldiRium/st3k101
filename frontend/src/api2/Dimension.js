@@ -126,7 +126,7 @@ function addConcreteQuestion(dimension, owner, text, range) {
  * Add a new ShadowQuestion based on the given ConcreteQuestion to the Dimen-
  * sion.
  *
- * @param {Dimension} dimension
+ * @param {ConcreteDimension} dimension
  * @param {DataClient} owner
  * @param {ConcreteQuestion} question
  * @return Future

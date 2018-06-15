@@ -172,6 +172,9 @@
                 );
             },
             updateRange(range) {
+                if (!this.isEditable(this.question)) {
+                    return;
+                }
                 this.$load(
                     setRange(this.question, range)
                 ).fork(
