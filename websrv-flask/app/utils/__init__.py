@@ -57,3 +57,9 @@ def check_color(color: str) -> None:
     if regex.match(color) is None:
         raise ValueError("'{}' is not a well formatted color value. It must be "
                          "a hex-string beginning with #.".format(color))
+
+
+def ellipse(s, length):
+    start = length // 2
+    end = len(s) - start + 3
+    return "{}...{}".format(s[:start], s[end:])

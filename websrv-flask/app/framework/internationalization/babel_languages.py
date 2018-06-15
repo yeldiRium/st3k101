@@ -209,3 +209,7 @@ babel_languages = {
 }
 
 BabelLanguage = Enum(value='BabelLanguage', names=babel_languages)
+
+
+def is_language(lang):
+    return any((lang == i.name for i in BabelLanguage))

@@ -1,8 +1,10 @@
 from abc import abstractmethod
 from typing import Dict, List, Union
 
-
+from auth.roles import fulfills_role, Role
 from auth.users import current_user
+from framework.exceptions import BusinessRuleViolation
+from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingArg, TrackingType, translation_hybrid_updated, primitive_property_updated
 from model.SQLAlchemy import db
 from model.SQLAlchemy.models.OwnershipBase import OwnershipBase
@@ -19,13 +21,27 @@ class SurveyBase(OwnershipBase):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     reference_id = db.Column(db.String(128))
+    _public = db.Column(db.Boolean, default=False)
+
+    @property
+    def public(self):
+        return self._public
+
+    @public.setter
+    def public(self, value):
+        if not fulfills_role(current_user(), Role.Contributor):
+            raise BusinessRuleViolation('Only contributory may make items'
+                                        'publicly available.')
+        self._public = value
+
+    @property
+    @abstractmethod
+    def original_language(self) -> BabelLanguage:
+        raise NotImplementedError
 
     @property
     @abstractmethod
     def tracker_args(self) -> Dict[str, List[Union[TrackingType, TrackingArg]]]:
-        """
-        :return:
-        """
         raise NotImplementedError
 
     def __setattr__(self, key, value):
@@ -61,3 +77,9 @@ class SurveyBase(OwnershipBase):
                 person=current_user(),
                 tracker_args=tracker_args
             )
+
+    def __init__(self, **kwargs):
+        super(SurveyBase, self).__init__(**kwargs)
+        self.owners.append(current_user())
+
+    # TODO: add original_language

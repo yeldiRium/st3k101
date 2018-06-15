@@ -3,17 +3,21 @@ from abc import abstractmethod
 from typing import Dict, Optional, Any
 
 import yaml
+from deprecated import deprecated
 from flask import g
 
-from framework.exceptions import QACAlreadyEnabledException, YAMLTemplateInvalidException
-from framework.internationalization import _
+from auth.users import current_user
+from framework.exceptions import QACAlreadyEnabledException, YAMLTemplateInvalidException, BusinessRuleViolation
+from framework.internationalization import _, __
 from framework.internationalization.babel_languages import BabelLanguage
+from framework.tracker import TrackingType, TrackingArg, relationship_updated, item_deleted
+from model.SQLAlchemy.models.TrackerEntry import RelationshipAction
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
-from model.SQLAlchemy.models.Dimension import Dimension
+from model.SQLAlchemy.models.Dimension import Dimension, ConcreteDimension, ShadowDimension
 from model.SQLAlchemy.models.QAC.QACModule import QACModule
 from model.SQLAlchemy.models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
 from model.SQLAlchemy.models.QAC.QACModules.TOSQAC import TOSQAC
-from model.SQLAlchemy.models.Question import Question
+from model.SQLAlchemy.models.Question import Question, ShadowQuestion, ConcreteQuestion
 from model.SQLAlchemy.models.QuestionResult import QuestionResult
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
 
@@ -25,6 +29,10 @@ class Questionnaire(SurveyBase):
 
     __tablename__ = 'questionnaire'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
+
+    published = db.Column(db.Boolean, nullable=False, default=False)
+    allow_embedded = db.Column(db.Boolean, nullable=False, default=False)
+    xapi_target = db.Column(db.String(512))
 
     # relationships
     dimensions = db.relationship(
@@ -40,9 +48,23 @@ class Questionnaire(SurveyBase):
         foreign_keys=[QACModule.questionnaire_id]
     )
 
-    def __init__(self, name: str, description: str, **kwargs):
-        super(Questionnaire, self).__init__(name=name, description=description,
-                                            **kwargs)
+    tracker_args = {
+        __('name'): [
+            TrackingType.TranslationHybrid,
+            TrackingArg.Accumulate
+        ],
+        __('description'): [
+            TrackingType.TranslationHybrid,
+            TrackingArg.Accumulate
+        ],
+        __('randomize_question_order'): [
+            TrackingType.Primitive,
+            TrackingArg.Accumulate
+        ]
+    }
+
+    def __init__(self, **kwargs):
+        super(Questionnaire, self).__init__(**kwargs)
         self.qac_modules = [TOSQAC(), EMailVerificationQAC()]
 
     @property
@@ -71,26 +93,6 @@ class Questionnaire(SurveyBase):
         raise NotImplementedError
 
     @property
-    @abstractmethod
-    def published(self) -> bool:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def randomize_question_order(self) -> bool:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def allow_embedded(self) -> bool:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def xapi_target(self) -> str:
-        raise NotImplementedError
-
-    @property
     def question_count(self) -> int:
         """
         :return: The number of questions associated with the Questionnaire.
@@ -116,6 +118,84 @@ class Questionnaire(SurveyBase):
             n_questions = 1
         return count // n_questions
 
+    def new_dimension(self, name: str) -> ConcreteDimension:
+        if not isinstance(self, ConcreteQuestionnaire):
+            raise BusinessRuleViolation("Can't modify shadow instances!")
+
+        dimension = ConcreteDimension(name)
+        self.dimensions.append(dimension)
+
+        for copy in self.copies:
+            s_dimension = ShadowDimension(dimension)
+            s_dimension.owners = copy.owners
+            copy.dimensions.append(s_dimension)
+
+        relationship_updated.send(
+            self,
+            relationship_name=__('Dimension'),
+            action=RelationshipAction.Add,
+            related_object=dimension,
+            person=current_user()
+        )
+
+        return dimension
+
+    def add_shadow_dimension(self, concrete_dimension: ConcreteDimension)\
+            -> ShadowDimension:
+        if not isinstance(self, ConcreteQuestionnaire):
+            raise BusinessRuleViolation("Can't modify shadow instances!")
+
+        dimension = ShadowDimension(concrete_dimension)
+        self.dimensions.append(dimension)
+
+        for copy in self.copies:
+            s_dimension = ShadowDimension(concrete_dimension)
+            s_dimension.owners = copy.owners
+            copy.dimensions.append(s_dimension)
+
+        relationship_updated.send(
+            self,
+            relationship_name=__('Dimension'),
+            action=RelationshipAction.Add,
+            related_object=dimension,
+            person=current_user()
+        )
+
+        return dimension
+
+    def remove_dimension(self, dimension):
+        if not isinstance(self, ConcreteQuestionnaire):
+            raise BusinessRuleViolation("Can't modify shadow instances!")
+
+        if dimension not in self.dimensions:
+            raise KeyError("Question not in Dimension.")
+        for copy in [*self.copies, self]:
+            for s_dimension in copy.dimensions:
+                if not isinstance(s_dimension, ShadowDimension):
+                    continue
+                if s_dimension.concrete_id == dimension.id:
+                    db.session.delete(s_dimension)
+
+        relationship_updated.send(
+            self,
+            relationship_name=__('Dimension'),
+            action=RelationshipAction.Remove,
+            related_object=dimension.name,
+            person=current_user()
+        )
+
+        self.dimensions.remove(dimension)
+
+    def delete(self):
+        item_deleted.send(self, current_user())
+
+        for copy in self.copies:
+            q = ConcreteQuestionnaire.from_shadow(copy)
+            db.session.add(q)
+        for copy in self.copies:
+            db.session.delete(copy)
+        db.session.delete(self)
+
     def add_qac_module(self, qac_module: QACModule):
         if qac_module.qac_id in (qm.qac_id for qm in self.qac_modules):
             raise QACAlreadyEnabledException
@@ -136,6 +216,7 @@ class Questionnaire(SurveyBase):
         return qac_module
 
     @staticmethod
+    @deprecated(version='2.0', reason='YAML templates will be removed in version 2.0')
     def parse_yaml(path_to_yaml: str) -> Dict[str, Any]:
         """
         Parses a YAMl template file for Questionnaire and raises Exceptions if
@@ -170,6 +251,7 @@ class Questionnaire(SurveyBase):
         return contents
 
     @staticmethod
+    @deprecated(version='2.0', reason='YAML templates will be removed in version 2.0')
     def get_available_templates() -> Dict[str, str]:
         """
         :return: dict A list of available template files a a dictionary of
@@ -188,6 +270,7 @@ class Questionnaire(SurveyBase):
         return template_files
 
     @staticmethod
+    @deprecated(version='2.0', reason='YAML templates will be removed in version 2.0')
     def from_yaml(path_to_yaml: str) -> "Questionnaire":
         """
         Factory method for creating a Questionnaire from a YAML file.
@@ -218,15 +301,29 @@ class ConcreteQuestionnaire(Questionnaire):
     description_translations = db.Column(MUTABLE_HSTORE)
     description = translation_hybrid(description_translations)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
-    published = db.Column(db.Boolean, nullable=False, default=False)
-    randomize_question_order = db.Column(db.Boolean, nullable=False,
-                                         default=False)
-    allow_embedded = db.Column(db.Boolean, nullable=False, default=False)
-    xapi_target = db.Column(db.String(512))
 
-    def __init__(self, *args, **kwargs):
-        super(ConcreteQuestionnaire, self).__init__(*args, **kwargs)
+    def __init__(self, name, description, **kwargs):
         self.original_language = g._language
+        super(ConcreteQuestionnaire, self).__init__(name=name,
+                                                    description=description,
+                                                    **kwargs)
+
+    @staticmethod
+    def from_shadow(shadow):
+        q = ConcreteQuestionnaire("", "")
+        q.name_translations = shadow.name_translations
+        q.description_translations = shadow.description_translations
+        q.original_language = shadow.original_language
+        q.published = shadow.published
+        q.allow_embedded = shadow.allow_embedded
+        q.xapi_target = shadow.xapi_target
+        q.owners = shadow.owners
+
+        for s_dimension in shadow.dimensions:
+            c_dimension = ConcreteDimension.from_shadow(s_dimension)
+            q.dimensions.append(c_dimension)
+
+        return q
 
 
 class ShadowQuestionnaire(Questionnaire):
@@ -241,9 +338,32 @@ class ShadowQuestionnaire(Questionnaire):
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
 
-    def __init__(self, questionnaire, *args, **kwargs):
-        super(ShadowQuestionnaire, self).__init__(*args, **kwargs)
+    def __init__(self, questionnaire, **kwargs):
+        super(ShadowQuestionnaire, self).__init__(**kwargs)
         self._referenced_object = questionnaire
+
+        for dimension in questionnaire.dimensions:
+            if not isinstance(dimension, ConcreteDimension):
+                dimension = dimension.concrete
+            s_dimension = ShadowDimension(dimension)
+            self.dimensions.append(s_dimension)
+            for question in dimension.questions:
+                if not isinstance(question, ConcreteQuestion):
+                    question = question.concrete
+                s_question = ShadowQuestion(question)
+                s_dimension.questions.append(s_question)
+
+    @property
+    def concrete_id(self):
+        if self._referenced_object is None:
+            return None
+        return self._referenced_object.id
+
+    @property
+    def concrete(self):
+        if self._referenced_object is None:
+            return None
+        return self._referenced_object
 
     @property
     def name(self) -> str:
@@ -264,19 +384,3 @@ class ShadowQuestionnaire(Questionnaire):
     @property
     def original_language(self) -> BabelLanguage:
         return self._referenced_object.original_language
-
-    @property
-    def published(self) -> bool:
-        return self._referenced_object.published
-
-    @property
-    def randomize_question_order(self) -> bool:
-        return self._referenced_object.randomize_question_order
-
-    @property
-    def allow_embedded(self) -> bool:
-        return self._referenced_object.allow_embedded
-
-    @property
-    def xapi_target(self) -> str:
-        return self._referenced_object.xapi_target

@@ -1,8 +1,13 @@
 from abc import abstractmethod
 from typing import Dict
 
+from auth.users import current_user
+from framework.exceptions import BusinessRuleViolation
+from framework.internationalization import __
+from framework.tracker import TrackingType, TrackingArg, relationship_updated
+from model.SQLAlchemy.models.TrackerEntry import RelationshipAction
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
-from model.SQLAlchemy.models.Question import Question
+from model.SQLAlchemy.models.Question import Question, ConcreteQuestion, ShadowQuestion
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
 from utils import check_color
 
@@ -15,6 +20,10 @@ class Dimension(SurveyBase):
     __tablename__ = 'dimension'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
+    # columns
+    randomize_question_order = db.Column(db.Boolean, nullable=False,
+                                         default=False)
+
     # foreign keys
     questionnaire_id = db.Column(db.Integer, db.ForeignKey('questionnaire.id'))
 
@@ -25,6 +34,13 @@ class Dimension(SurveyBase):
         cascade='all, delete-orphan',
         foreign_keys=[Question.dimension_id]
     )
+
+    tracker_args = {
+        __('name'): [
+            TrackingType.TranslationHybrid,
+            TrackingArg.Accumulate
+        ]
+    }
 
     @property
     @abstractmethod
@@ -49,6 +65,57 @@ class Dimension(SurveyBase):
     @property
     def original_language(self) -> str:
         return self.questionnaire.original_language
+
+    def new_question(self, text: str, **kwargs) -> ConcreteQuestion:
+        if not isinstance(self, ConcreteDimension):
+            raise BusinessRuleViolation("Can't modify shadow instances!")
+
+        question = ConcreteQuestion(text, **kwargs)
+        self.questions.append(question)
+
+        relationship_updated.send(
+            self,
+            relationship_name=__('Question'),
+            action=RelationshipAction.Add,
+            related_object=question,
+            person=current_user()
+        )
+
+        return question
+
+    def add_shadow_question(self, concrete_question: ConcreteQuestion)\
+            -> ShadowQuestion:
+        if not isinstance(self, ConcreteDimension):
+            raise BusinessRuleViolation("Can't modify shadow instances!")
+
+        question = ShadowQuestion(concrete_question)
+        self.questions.append(question)
+
+        relationship_updated.send(
+            self,
+            relationship_name=__('Question'),
+            action=RelationshipAction.Add,
+            related_object=question,
+            person=current_user()
+        )
+
+        return question
+
+    def remove_question(self, question):
+        if not isinstance(self, ConcreteDimension):
+            raise BusinessRuleViolation("Can't modify shadow instances!")
+
+        if question not in self.questions:
+            raise KeyError("Question not in Dimension.")
+        self.questions.remove(question)
+
+        relationship_updated.send(
+            self,
+            relationship_name=__('Question'),
+            action=RelationshipAction.Remove,
+            related_object=question.name,
+            person=current_user()
+        )
 
 
 class ConcreteDimension(Dimension):
@@ -79,6 +146,24 @@ class ConcreteDimension(Dimension):
         check_color(color)
         self.text_color = color
 
+    def __init__(self, name: str, **kwargs):
+        super(ConcreteDimension, self).__init__(name=name, **kwargs)
+
+    @staticmethod
+    def from_shadow(shadow):
+        d = ConcreteDimension("")
+        d.name_translations = shadow.name_translations
+        d.color = shadow.color
+        d.text_color = shadow.text_color
+        d.randomize_question_order = shadow.randomize_question_order
+        d.owners = shadow.owners
+
+        for s_question in shadow.questions:
+            c_question = ConcreteQuestion.from_shadow(s_question)
+            d.questions.append(c_question)
+
+        return d
+
 
 class ShadowDimension(Dimension):
     id = db.Column(db.Integer, db.ForeignKey(Dimension.id), primary_key=True)
@@ -92,9 +177,27 @@ class ShadowDimension(Dimension):
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
 
-    def __init__(self, dimension, *args, **kwargs):
-        super(ShadowDimension, self).__init__(*args, **kwargs)
+    def __init__(self, dimension, **kwargs):
+        super(ShadowDimension, self).__init__(**kwargs)
         self._referenced_object = dimension
+
+        for question in dimension.questions:
+            if not isinstance(question, ConcreteQuestion):
+                question = question.concrete
+            s_question = ShadowQuestion(question)
+            self.questions.append(s_question)
+
+    @property
+    def concrete_id(self):
+        if self._referenced_object is None:
+            return None
+        return self._referenced_object.id
+
+    @property
+    def concrete(self):
+        if self._referenced_object is None:
+            return None
+        return self._referenced_object
 
     @property
     def name(self) -> str:

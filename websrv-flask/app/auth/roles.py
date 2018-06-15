@@ -2,22 +2,22 @@ from enum import IntEnum
 from functools import wraps
 from typing import List, Union, Tuple
 
-from auth.users import current_user
+from flask import g
+
 from framework import make_error
 from framework.internationalization import _
-from model.SQLAlchemy.models.DataClient import DataClient
 
 __author__ = "Noah Hummel"
 
 
 class Role(IntEnum):
-    root = 0
-    admin = 10
-    contributor = 20
-    user = 30
+    Root = 0
+    Admin = 10
+    Contributor = 20
+    User = 30
 
 
-def fulfills_role(data_client: DataClient, *roles: List[Union[Role, Tuple[Role]]]):
+def fulfills_role(data_client, *roles: List[Union[Role, Tuple[Role]]]):
     access_allowed = True
     if not data_client:
         return False
@@ -38,7 +38,7 @@ def needs_role(*roles: List[Union[Role, Tuple[Role]]]):
 
         @wraps(route)
         def wrapped(*args, **kwargs):
-            user = current_user()
+            user = g._current_user
             if fulfills_role(user, *roles):
                 return route(*args, **kwargs)
             else:

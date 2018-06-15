@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Dict
 
+from framework.internationalization import __
 from framework.tracker import TrackingType, TrackingArg
 from model.SQLAlchemy.models.DataSubject import DataSubject
 from model.SQLAlchemy.models.QuestionResult import QuestionResult
@@ -41,17 +42,17 @@ class Question(SurveyBase):
     )
 
     tracker_args = {
-        'text': [
+        __('text'): [
             TrackingType.TranslationHybrid,
             TrackingArg.Accumulate
         ],
-        'range': [
+        __('range'): [
             TrackingType.Primitive
         ],
     }
 
-    def __init__(self, *args, **kwargs):
-        super(Question, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(Question, self).__init__(**kwargs)
         self.statistic = QuestionStatistic()
 
     @property
@@ -146,6 +147,21 @@ class ConcreteQuestion(Question):
     def __init__(self, text: str, **kwargs):
         super(ConcreteQuestion, self).__init__(text=text, **kwargs)
 
+    @staticmethod
+    def from_shadow(shadow):
+        q = ConcreteQuestion("")
+        q.dirty = shadow.dirty
+
+        stat = shadow.statistic
+        shadow.statistic = None
+        q.statistic = stat
+
+        q.results = shadow.results
+        q.text_translations = shadow.text_translations
+        q.owners = shadow.owners
+
+        return q
+
 
 class ShadowQuestion(Question):
     id = db.Column(db.Integer, db.ForeignKey(Question.id), primary_key=True)
@@ -159,9 +175,17 @@ class ShadowQuestion(Question):
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
 
-    def __init__(self, question, *args, **kwargs):
-        super(ShadowQuestion, self).__init__(*args, **kwargs)
+    def __init__(self, question, **kwargs):
+        super(ShadowQuestion, self).__init__(**kwargs)
         self._referenced_object = question
+
+    @property
+    def concrete_id(self):
+        return self._referenced_object.id
+
+    @property
+    def concrete(self):
+        return self._referenced_object
 
     @property
     def text(self) -> str:
