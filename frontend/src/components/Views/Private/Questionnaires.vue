@@ -6,7 +6,7 @@
                        v-for="questionnaire in questionnaires"
                        :key="questionnaire.href"
                        :questionnaire="questionnaire"
-
+                       @questionnaire-delete="deleteQuestionnaire(questionnaire)"
         />
 
         <Button class="questionnaire-overview__add-questionnaire-button"
@@ -20,6 +20,7 @@
 <script>
     import Future from "fluture";
     import {mapState} from "vuex";
+    import {without} from "ramda";
 
     import Button from "../../Partials/Form/Button";
     import ListItem from "../../Partials/List/Item";
@@ -27,7 +28,10 @@
 
     import {ConcreteQuestionnaire} from "../../../model/SurveyBase/Questionnaire";
     import {Language, LanguageData} from "../../../model/Language";
-    import {createConcreteQuestionnaire} from "../../../api2/Questionnaire";
+    import {
+        createConcreteQuestionnaire,
+        deleteQuestionnaire
+    } from "../../../api2/Questionnaire";
 
     export default {
         name: "QuestionnaireOverview",
@@ -146,6 +150,22 @@
                         this.questionnaires.push(questionnaire);
                     }
                 );
+            },
+            deleteQuestionnaire(questionnaire) {
+                this.$load(
+                    deleteQuestionnaire(questionnaire)
+                ).fork(
+                    console.error,
+                    () => this.questionnaires = without(
+                        [questionnaire], this.questionnaires
+                    )
+                );
+                // Currently api function rejects since it's not implemented yet
+                // Thus this has to be done again for demonstration and testing
+                // TODO: remove this
+                this.questionnaires = without(
+                    [questionnaire], this.questionnaires
+                )
             }
         }
     }

@@ -39,7 +39,9 @@ function createConcreteQuestionnaire(owner,
     const href = "";
     const languageData = new LanguageData(language, language, [language]);
 
-    return Future.of(new ConcreteQuestionnaire(
+    return Future((reject, resolve) => {
+        window.setTimeout(resolve, 1500)
+    }).chain(() => Future.of(new ConcreteQuestionnaire(
         href,
         owner,
         languageData,
@@ -51,7 +53,7 @@ function createConcreteQuestionnaire(owner,
         [],
         0,
         []
-    ));
+    )));
 }
 
 /**
@@ -339,6 +341,7 @@ function removeDimension(questionnaire, dimension) {
 export {
     createConcreteQuestionnaire,
     createShadowQuestionnaire,
+    deleteQuestionnaire,
     fetchTranslation,
     setName,
     setDescription,

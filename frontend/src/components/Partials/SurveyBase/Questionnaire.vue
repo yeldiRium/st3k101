@@ -344,7 +344,7 @@
                             {
                                 text: "Confirm",
                                 handler: () => this.$emit(
-                                    "questionnaire-deleted",
+                                    "questionnaire-delete",
                                     this.questionnaire
                                 ),
                                 default: true
