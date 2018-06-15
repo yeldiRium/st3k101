@@ -130,7 +130,12 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                fetchTranslation(this.question, language);
+                this.$load(
+                    fetchTranslation(this.question, language)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             /**
              * Add a new translation to the Question.
@@ -142,21 +147,37 @@
                 // TODO: clarify, when this should be available
                 // TODO: display dialog which asks for data
                 const text = "tbd";
-                setText(this.question, language, text);
-                this.changeLanguage(language);
+
+                this.$load(
+                    setText(this.question, language, text)
+                        .chain(() => this.changeLanguage(language))
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             updateQuestionText(text) {
                 if (!this.isEditable(this.question)) {
                     return;
                 }
-                setText(
-                    this.question,
-                    this.question.languageData.currentLanguage,
-                    text
+                this.$load(
+                    setText(
+                        this.question,
+                        this.question.languageData.currentLanguage,
+                        text
+                    )
+                ).fork(
+                    console.error,
+                    console.log
                 );
             },
             updateRange(range) {
-                setRange(this.question, range);
+                this.$load(
+                    setRange(this.question, range)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             /**
              * Asks for confirmation, if the Question should be deleted, and

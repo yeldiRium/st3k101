@@ -130,14 +130,16 @@
                                     name, description, isPublic, allowEmbedded,
                                     xapiTarget
                                 }) {
-                createConcreteQuestionnaire(
-                    this.dataClient,
-                    this.dataClient.language,
-                    name,
-                    description,
-                    isPublic,
-                    allowEmbedded,
-                    xapiTarget
+                this.$load(
+                    createConcreteQuestionnaire(
+                        this.dataClient,
+                        this.dataClient.language,
+                        name,
+                        description,
+                        isPublic,
+                        allowEmbedded,
+                        xapiTarget
+                    )
                 ).fork(
                     console.error,
                     questionnaire => {

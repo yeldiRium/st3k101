@@ -202,7 +202,12 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                fetchTranslation(this.questionnaire, language);
+                this.$load(
+                    fetchTranslation(this.questionnaire, language)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             /**
              * Add a new translation to the Questionnaire.
@@ -215,32 +220,65 @@
                 // TODO: display dialog which asks for data
                 const name = "tbd";
                 const description = "tbd";
-                setName(this.questionnaire, language, name);
-                setDescription(this.questionnaire, language, description);
-                this.changeLanguage(language);
+
+                this.$load(
+                    setName(this.questionnaire, language, name)
+                        .chain(() => setDescription(
+                            this.questionnaire, language, description
+                        ))
+                        .chain(() => this.changeLanguage(language))
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             updateQuestionnaireName(name) {
-                setName(
-                    this.questionnaire,
-                    this.questionnaire.languageData.currentLanguage,
-                    name
+                this.$load(
+                    setName(
+                        this.questionnaire,
+                        this.questionnaire.languageData.currentLanguage,
+                        name
+                    )
+                ).fork(
+                    console.error,
+                    console.log
                 );
             },
             updateDescription(description) {
-                setDescription(
-                    this.questionnaire,
-                    this.questionnaire.languageData.currentLanguage,
-                    description
+                this.$load(
+                    setDescription(
+                        this.questionnaire,
+                        this.questionnaire.languageData.currentLanguage,
+                        description
+                    )
+                ).fork(
+                    console.error,
+                    console.log
                 );
             },
             updateIsPublic(isPublic) {
-                setIsPublic(this.questionnaire, isPublic);
+                this.$load(
+                    setIsPublic(this.questionnaire, isPublic)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             updateAllowEmbedded(allowEmbedded) {
-                setAllowEmbedded(this.questionnaire, allowEmbedded);
+                this.$load(
+                    setAllowEmbedded(this.questionnaire, allowEmbedded)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             updateXapiTarget(xapiTarget) {
-                setXapiTarget(this.questionnaire, xapiTarget);
+                this.$load(
+                    setXapiTarget(this.questionnaire, xapiTarget)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             openNewDimensionDialog() {
                 this.$modal.show(
@@ -252,15 +290,25 @@
                 )
             },
             createDimension({name, randomizeQuestions}) {
-                addConcreteDimension(
-                    this.questionnaire,
-                    this.dataClient,
-                    name,
-                    randomizeQuestions
+                this.$load(
+                    addConcreteDimension(
+                        this.questionnaire,
+                        this.dataClient,
+                        name,
+                        randomizeQuestions
+                    )
+                ).fork(
+                    console.error,
+                    console.log
                 );
             },
             deleteDimension(dimension) {
-                removeDimension(this.questionnaire, dimension);
+                this.$load(
+                    removeDimension(this.questionnaire, dimension)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             /**
              * Asks for confirmation, if the Questionnaire should be deleted, and

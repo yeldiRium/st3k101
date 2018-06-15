@@ -165,7 +165,12 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                fetchTranslation(this.dimension, language);
+                this.$load(
+                    fetchTranslation(this.dimension, language)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             /**
              * Add a new translation to the Dimension.
@@ -177,18 +182,34 @@
                 // TODO: clarify, when this should be available
                 // TODO: display dialog which asks for data
                 const name = "tbd";
-                setName(this.dimension, language, name);
-                this.changeLanguage(language);
+
+                this.$load(
+                    setName(this.dimension, language, name)
+                        .chain(() => this.changeLanguage(language))
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             updateDimensionName(name) {
-                setName(
-                    this.dimension,
-                    this.dimension.languageData.currentLanguage,
-                    name
+                this.$load(
+                    setName(
+                        this.dimension,
+                        this.dimension.languageData.currentLanguage,
+                        name
+                    )
+                ).fork(
+                    console.error,
+                    console.log
                 );
             },
             updateRandomizeQuestions(randomizeQuestions) {
-                setRandomizeQuestions(this.dimension, randomizeQuestions);
+                this.$load(
+                    setRandomizeQuestions(this.dimension, randomizeQuestions)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             openNewQuestionDialog() {
                 this.$modal.show(
@@ -200,8 +221,13 @@
                 )
             },
             createQuestion({text, range}) {
-                addConcreteQuestion(
-                    this.dimension, this.dataClient, text, range
+                this.$load(
+                    addConcreteQuestion(
+                        this.dimension, this.dataClient, text, range
+                    )
+                ).fork(
+                    console.error,
+                    console.log
                 );
             },
             /**
@@ -209,7 +235,12 @@
              * being deleted.
              */
             deleteQuestion(question) {
-                removeQuestion(this.dimension, question);
+                this.$load(
+                    removeQuestion(this.dimension, question)
+                ).fork(
+                    console.error,
+                    console.log
+                );
             },
             /**
              * Asks for confirmation, if the Dimension should be deleted, and
