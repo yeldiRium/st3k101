@@ -27,6 +27,9 @@ services:
     restart: always
     ports:
       - 1337:80
+    links:
+      - memcached
+      - postgres
     volumes:
       - ./websrv-flask/app:/app
 
