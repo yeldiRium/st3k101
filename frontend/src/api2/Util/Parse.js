@@ -1,4 +1,5 @@
 import Language from "../../model/Language";
+import DataClient from "../../model/DataClient";
 
 /**
  * Parses the common API representation of a language into a Language instance.
