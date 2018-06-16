@@ -26,14 +26,9 @@
     $blue: #0057e7;
     $red: #d62d20;
     $yellow: #ffa700;
-    $white: #eee;
 
     // scaling... any units
     $width: 100px;
-
-    body {
-        background-color: $white;
-    }
 
     .loading-spinner {
         position: relative;
