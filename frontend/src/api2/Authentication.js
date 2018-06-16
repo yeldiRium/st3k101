@@ -1,7 +1,8 @@
 import Future from "fluture";
+import {__} from "ramda";
 
 import {buildApiUrl} from "./Util/Path";
-import {checkStatus, extractJson} from "./Util/Response";
+import {checkStatus, extractJson, extractJsonAndReject} from "./Util/Response";
 import {parseDataClient} from "./Util/Parse";
 
 /**
@@ -20,11 +21,13 @@ function register(email, password) {
         const signal = controller.signal;
         fetch(buildApiUrl("/api/dataclient"), {
             method: "POST",
-            mode: "cors",
-            data: JSON.stringify({
+            body: JSON.stringify({
                 email,
                 password
             }),
+            headers: {
+                "Content-Type": "application/json"
+            },
             signal
         })
             .then(resolve)
@@ -32,8 +35,8 @@ function register(email, password) {
 
         return controller.abort;
     })
-        .chain(checkStatus)
-        .chainRej(extractJson)
+        .chain(checkStatus(200))
+        .chainRej(extractJsonAndReject)
         .chain(extractJson)
         .map(parseDataClient);
 }
@@ -64,3 +67,9 @@ function requestSession(email, password) {
 function endSession(sessionToken) {
     return Future.reject("Please implement this.");
 }
+
+export {
+    register,
+    requestSession,
+    endSession
+};
