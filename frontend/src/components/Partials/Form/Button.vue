@@ -164,5 +164,12 @@
             }
         }
 
+        &--grey {
+            background-color: $slightlylight;
+
+            .button__ripple-circle {
+                fill: $slightlydark;
+            }
+        }
     }
 </style>
