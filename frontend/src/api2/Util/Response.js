@@ -30,7 +30,22 @@ const checkStatus = curry(function (happyCode, response) {
  * @reject see response.json()
  */
 const extractJson = function (response) {
+    console.log(response);
     return Future.tryP(() => response.json());
+};
+
+/**
+ * Extracts the JSON content from a response and forces the Future to reject.
+ *
+ * @param {Response} response
+ * @returns a Future.
+ * @resolves never
+ * @reject with the Response's JSON content
+ */
+const extractJsonAndReject = function (response) {
+    console.log(response);
+    return Future.tryP(() => response.json())
+        .chain(Future.reject);
 };
 
 /**
@@ -52,5 +67,6 @@ const extractJsonPlusLanguage = function (response) {
 export {
     checkStatus,
     extractJson,
+    extractJsonAndReject,
     extractJsonPlusLanguage
 };
