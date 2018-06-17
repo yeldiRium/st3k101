@@ -4,7 +4,7 @@ import Future from "fluture";
 
 import {store as global, initialize as initializeGlobalStore} from "./modules/Global";
 import {store as language, initialize as initializeLanguageStore} from "./modules/Language";
-import {store as session} from "./modules/Session";
+import {store as session, initialize as initializeSessionStore} from "./modules/Session";
 
 Vue.use(Vuex);
 
@@ -48,7 +48,8 @@ export default store;
 const initialize = function () {
     return Future.parallel(Infinity, [
         initializeLanguageStore(store, "language"),
-        initializeGlobalStore(store, "global")
+        initializeGlobalStore(store, "global"),
+        initializeSessionStore(store, "session")
     ]);
 };
 
