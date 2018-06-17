@@ -1,6 +1,9 @@
 <template>
     <div id="app">
         <router-view />
+        <notifications
+                position="top right"
+        />
         <Dialog />
         <LoadingSpinnerModal
                 :size="width"

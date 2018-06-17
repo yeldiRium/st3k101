@@ -26,6 +26,12 @@ const Plugin = {
                 case "AuthenticationError":
                     store.commit("session/endSession");
                     router.push({name: "Authentication"});
+                    console.log(this);
+                    Vue.prototype.$notify({
+                        type: "error",
+                        title: "Session expired",
+                        text: "Your session has expired. Please log in again."
+                    });
                     break;
                 default:
                     return;

@@ -3,6 +3,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import vClickOutside from "v-click-outside";
+import vNotification from "vue-notification";
 import vModal from "vue-js-modal";
 import vLoading from "./Plugins/LoadingSpinnerModal";
 import vApiError from "./Plugins/HandleApiError";
@@ -16,6 +17,7 @@ import store from "./store";
 
 Vue.use(Vuex);
 Vue.use(vClickOutside);
+Vue.use(vNotification);
 Vue.use(vModal);
 Vue.use(vLoading);
 Vue.use(vApiError);
