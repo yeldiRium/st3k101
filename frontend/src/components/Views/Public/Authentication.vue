@@ -210,6 +210,11 @@
                 ).fork(
                     () => {
                         this.errors.login.push("User or password is incorrect. Please try again.");
+                        this.$notify({
+                            type: "error",
+                            title: "Login error",
+                            text: "An error occured while logging in. Please check your information and try again."
+                        })
                     },
                     sessionToken => {
                         this.$store.dispatch("session/startSession", {sessionToken})
@@ -241,6 +246,11 @@
                             this.errors.password = propOr(
                                 [], "password", error.payload
                             );
+                            this.$notify({
+                                type: "error",
+                                title: "Login error",
+                                text: "An error occured while registering. Please check your information and try again."
+                            })
                         } else {
                             this.$handleApiError(error);
                         }
