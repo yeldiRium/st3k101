@@ -11,7 +11,7 @@ import {fetchApi} from "./Util/Request";
  * @param {String} password
  * @return {Future}
  * @resolve {DataClient}
- * @reject with API error message
+ * @reject {Object} with API error message
  * @cancel see fetchApi
  */
 function register(email, password) {
@@ -35,8 +35,8 @@ function register(email, password) {
  * @param {String} password
  * @return {Future}
  * @resolve {String} to session token.
- * @reject with API error message
- * @cancel TODO: is this cancellable?
+ * @reject {Object} with API error message
+ * @cancel see fetchApi
  */
 function requestSession(email, password) {
     return fetchApi("/api/session", {
@@ -57,12 +57,18 @@ function requestSession(email, password) {
  *
  * @param {String} sessionToken
  * @return {Future}
- * @resolve to true
- * @reject with API error message
- * @cancel TODO: is this cancellable?
+ * @resolve {Boolean} to true
+ * @reject {Object} with API error object
+ * @cancel see fetchApi
  */
 function endSession(sessionToken) {
-    return Future.reject("Please implement this.");
+    return fetchApi("/api/session", {
+        method: "DELETE",
+        authenticate: true
+    })
+        .chain(checkStatus(200))
+        .chainRej(extractJsonAndReject)
+        .map(() => true);
 }
 
 export {
