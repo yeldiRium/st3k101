@@ -1,9 +1,8 @@
 import Future from "fluture";
 import {prop} from "ramda";
-
-import {buildApiUrl} from "./Util/Path";
 import {checkStatus, extractJson, extractJsonAndReject} from "./Util/Response";
 import {parseDataClient} from "./Util/Parse";
+import {fetchApi} from "./Util/Request";
 
 /**
  * Register a new DataClient.
@@ -13,27 +12,15 @@ import {parseDataClient} from "./Util/Parse";
  * @return {Future}
  * @resolve {DataClient}
  * @reject with API error message
- * @cancel TODO: is this cancellable?
+ * @cancel see fetchApi
  */
 function register(email, password) {
-    return Future((reject, resolve) => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-        fetch(buildApiUrl("/api/dataclient"), {
-            method: "POST",
-            body: JSON.stringify({
-                email,
-                password
-            }),
-            headers: {
-                "Content-Type": "application/json"
-            },
-            signal
+    return fetchApi("/api/dataclient", {
+        method: "POST",
+        body: JSON.stringify({
+            email,
+            password
         })
-            .then(resolve)
-            .catch(reject);
-
-        return controller.abort;
     })
         .chain(checkStatus(200))
         .chainRej(extractJsonAndReject)
@@ -52,24 +39,12 @@ function register(email, password) {
  * @cancel TODO: is this cancellable?
  */
 function requestSession(email, password) {
-    return Future((reject, resolve) => {
-        const controller = new AbortController();
-        const signal = controller.signal;
-        fetch(buildApiUrl("/api/session"), {
-            method: "POST",
-            body: JSON.stringify({
-                email,
-                password
-            }),
-            headers: {
-                "Content-Type": "application/json"
-            },
-            signal
+    return fetchApi("/api/session", {
+        method: "POST",
+        body: JSON.stringify({
+            email,
+            password
         })
-            .then(resolve)
-            .catch(reject);
-
-        return controller.abort;
     })
         .chain(checkStatus(200))
         .chainRej(extractJsonAndReject)
