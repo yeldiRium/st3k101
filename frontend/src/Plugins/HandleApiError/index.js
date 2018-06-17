@@ -23,6 +23,20 @@ const Plugin = {
          */
         Vue.prototype.$handleApiError = function (error) {
             switch (error.name) {
+                case "TypeError":
+                    Vue.prototype.$notify({
+                        type: "warn",
+                        title: "Network error",
+                        text: "You seem to be offline. Please check your connection and try again."
+                    });
+                    break;
+                case "UnknownError":
+                    Vue.prototype.$notify({
+                        type: "warn",
+                        title: "Unknown error",
+                        text: "An unknown error has occured. Please try again. If this problem persists, start crying."
+                    });
+                    break;
                 case "AuthenticationError":
                     store.commit("session/endSession");
                     router.push({name: "Authentication"});
