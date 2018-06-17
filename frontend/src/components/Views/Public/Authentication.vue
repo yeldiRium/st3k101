@@ -209,7 +209,11 @@
                     )
                 ).fork(
                     error => {
-                        if (propEq("name", "NotFoundError", error)) {
+                        if (either(
+                                propEq("name", "NotFoundError"),
+                                propEq("name", "BadRequestError")
+                            )(error)
+                        ) {
                             this.errors.login.push("User or password is incorrect. Please try again.");
                             this.$notify({
                                 type: "error",
@@ -238,8 +242,7 @@
                     register(this.inputData.email, this.inputData.password)
                 ).fork(
                     error => {
-                        if (
-                            either(
+                        if (either(
                                 propEq("name", "ConflictError"),
                                 propEq("name", "BadRequestError")
                             )(error)
