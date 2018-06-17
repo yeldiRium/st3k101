@@ -141,14 +141,15 @@
 </template>
 
 <script>
-    import {mapState, mapGetters} from "vuex";
-    import {propOr} from "ramda";
+    import {mapState} from "vuex";
+    import {either, propEq, propOr} from "ramda";
 
     import {register, requestSession} from "../../../api2/Authentication";
 
     import Button from "../../Partials/Form/Button";
 
     import ErrorIcon from "../../../assets/icons/baseline-error-24px.svg";
+    import {BadRequestError, ConflictError} from "../../../api2/Errors";
 
     export default {
         name: "Authentication",
@@ -228,8 +229,19 @@
                     register(this.inputData.email, this.inputData.password)
                 ).fork(
                     error => {
-                        this.errors.email = propOr([], "email", error);
-                        this.errors.password = propOr([], "password", error);
+                        if (
+                            either(
+                                propEq("name", "ConflictError"),
+                                propEq("name", "BadRequestError")
+                            )(error)
+                        ) {
+                            this.errors.email = propOr(
+                                [], "email", error.payload
+                            );
+                            this.errors.password = propOr(
+                                [], "password", error.payload
+                            );
+                        }
                     },
                     result => {
                         this.registeredDataClient = result;

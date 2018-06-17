@@ -1,25 +1,51 @@
 import {curry} from "ramda";
 import Future from "fluture";
+import {
+    AuthenticationError,
+    BadRequestError,
+    ConflictError,
+    NotFoundError,
+    UnknownError
+} from "../Errors";
 
 /**
- * Checks if the given HTTP Response has the happyCode status code.
- * Resolves with the Response, if the status code matched, rejects with it
- * otherwise.
+ * Returns the full initial response, if the status code is ok
+ * (200 <= status < 300).
  *
- * @param {int} happyCode The status code the client wants to receive.
+ * Otherwise returns an Error object based on the status code.
+ *
  * @param {Response} response
- * @return Future
- * @resolves with the Response.
- * @rejects with the Response.
+ * @return {Future} categorized response
+ * @resolve {Response} with the original response, if it was ok
+ * @reject {Error} with an error object, depending on the status code
  */
-const checkStatus = curry(function (happyCode, response) {
-    if (response.status != happyCode) {
-        // Reject with the JSON content.
-        return Future.reject(response);
+function categorizeResponse(response) {
+    if (response.status >= 200 && response.status < 300) {
+        return Future.of(response);
     }
 
-    return Future.of(response);
-});
+    switch (response.status) {
+        case 400:
+            return Future.tryP(() => response.json())
+                .chain(data =>
+                    Future.reject(new BadRequestError("Bad request.", data))
+                );
+        case 403:
+            return Future.reject(new AuthenticationError("Not authorized."));
+        case 404:
+            return Future.reject(new NotFoundError("Resource not found."));
+        case 409:
+            return Future.tryP(() => response.json())
+                .chain(data =>
+                    Future.reject(new ConflictError("Conflicting data.", data))
+                );
+        default:
+            return Future.tryP(() => response.json())
+                .chain(data =>
+                    Future.reject(new UnknownError("Conflicting data.", data))
+                );
+    }
+}
 
 /**
  * Extracts the JSON content from a response.
@@ -31,19 +57,6 @@ const checkStatus = curry(function (happyCode, response) {
  */
 const extractJson = function (response) {
     return Future.tryP(() => response.json());
-};
-
-/**
- * Extracts the JSON content from a response and forces the Future to reject.
- *
- * @param {Response} response
- * @returns a Future.
- * @resolves never
- * @reject with the Response's JSON content
- */
-const extractJsonAndReject = function (response) {
-    return Future.tryP(() => response.json())
-        .chain(Future.reject);
 };
 
 /**
@@ -63,6 +76,7 @@ const extractJsonPlusLanguage = function (response) {
 };
 
 export {
+    categorizeResponse,
     checkStatus,
     extractJson,
     extractJsonAndReject,

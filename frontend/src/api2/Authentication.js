@@ -1,6 +1,6 @@
 import Future from "fluture";
 import {prop} from "ramda";
-import {checkStatus, extractJson, extractJsonAndReject} from "./Util/Response";
+import {checkStatus, extractJson} from "./Util/Response";
 import {parseDataClient} from "./Util/Parse";
 import {fetchApi} from "./Util/Request";
 
@@ -22,8 +22,6 @@ function register(email, password) {
             password
         })
     })
-        .chain(checkStatus(200))
-        .chainRej(extractJsonAndReject)
         .chain(extractJson)
         .map(parseDataClient);
 }
@@ -46,8 +44,6 @@ function requestSession(email, password) {
             password
         })
     })
-        .chain(checkStatus(200))
-        .chainRej(extractJsonAndReject)
         .chain(extractJson)
         .map(prop("session_token"));
 }
@@ -66,8 +62,6 @@ function endSession(sessionToken) {
         method: "DELETE",
         authenticate: true
     })
-        .chain(checkStatus(200))
-        .chainRej(extractJsonAndReject)
         .map(() => true);
 }
 

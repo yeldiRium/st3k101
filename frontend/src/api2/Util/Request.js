@@ -2,14 +2,10 @@ import {always, assoc, identity, ifElse, isNil} from "ramda";
 import Future from "fluture";
 
 import {buildApiUrl} from "./Path";
+import {categorizeResponse} from "./Response";
+import {AuthenticationError} from "../Errors";
 
 import store from "../../store";
-
-class AuthenticationError extends Error {
-    constructor(s) {
-        super(s);
-    }
-}
 
 /**
  * Read the current sessionToken from the vuex store and build authentication
@@ -30,14 +26,6 @@ function getAuthenticationHeaders(authenticate = true) {
     }
 }
 
-function refreshSessionCookieOnSuccessfulRequest(response) {
-    if (response.status === 200) {
-        return Future.tryP(() => store.dispatch("session/updateSessionCookie"))
-            .map(() => response);
-    }
-    return Future.of(response);
-}
-
 const defaultHeaders = {
     "Content-Type": "application/json"
 };
@@ -50,6 +38,8 @@ const defaultHeaders = {
  * It also updates the SessionTokenCookie, if an authenticated request was
  * successful.
  *
+ * Also pre-parses the result and categorizes errors.
+ *
  * @param {String} path
  * @param {String} method
  * @param {String} body
@@ -58,8 +48,8 @@ const defaultHeaders = {
  *
  * @return {Future}
  * @resolve {Response}
- * @reject {TypeError|AuthenticationError} TypeError on network error,
- *      AuthenticationError on - who would have guessed - authentication error.
+ * @reject {TypeError|...} TypeError on network error, for the rest see
+ *      categorizeResponse.
  * @cancel cancels the http request
  */
 function fetchApi(path,
@@ -71,7 +61,7 @@ function fetchApi(path,
                   }) {
     if (authenticate && !store.getters["session/isLoggedIn"]) {
         return Future.reject(
-            new AuthenticationError("Authentication failed.")
+            new AuthenticationError("User not logged in.")
         );
     }
 
@@ -95,10 +85,15 @@ function fetchApi(path,
             .catch(reject);
 
         return controller.abort;
-    });
+    })
+        .chain(categorizeResponse);
 
     if (authenticate) {
-        return result.chain(refreshSessionCookieOnSuccessfulRequest);
+        return result.chain(
+            response => Future
+                .tryP(() => store.dispatch("session/updateSessionCookie"))
+                .map(() => response)
+        );
     } else {
         return result;
     }
