@@ -27,7 +27,7 @@
                     endSession(this.sessionToken)
                 ).fork(
                     this.$handleApiError,
-                    () => this.$route.push({name: "Authentication"})
+                    () => this.$router.push({name: "Authentication"})
                 )
             }
         }
