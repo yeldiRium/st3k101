@@ -1,5 +1,5 @@
 import Future from "fluture";
-import {__} from "ramda";
+import {prop} from "ramda";
 
 import {buildApiUrl} from "./Util/Path";
 import {checkStatus, extractJson, extractJsonAndReject} from "./Util/Response";
@@ -42,17 +42,39 @@ function register(email, password) {
 }
 
 /**
- * Requests a Session Token for a DataClient. *
+ * Requests a Session Token for a DataClient.
  *
  * @param {String} email
  * @param {String} password
  * @return {Future}
- * @resolve to true
+ * @resolve {String} to session token.
  * @reject with API error message
  * @cancel TODO: is this cancellable?
  */
 function requestSession(email, password) {
-    return Future.reject("Please implement this.");
+    return Future((reject, resolve) => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+        fetch(buildApiUrl("/api/session"), {
+            method: "POST",
+            body: JSON.stringify({
+                email,
+                password
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            signal
+        })
+            .then(resolve)
+            .catch(reject);
+
+        return controller.abort;
+    })
+        .chain(checkStatus(200))
+        .chainRej(extractJsonAndReject)
+        .chain(extractJson)
+        .map(prop("session_token"));
 }
 
 /**
