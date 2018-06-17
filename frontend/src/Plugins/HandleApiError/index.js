@@ -1,5 +1,8 @@
 import {is} from "ramda";
 
+import store from "../../store";
+import router from "../../router";
+
 const Plugin = {
     install(Vue, options = {}) {
         /**
@@ -15,10 +18,17 @@ const Plugin = {
          *
          * This is tightly coupled to the rest of the application and is only
          * in a Plugin, because it needs to modify the Vue prototype.
+         *
+         * @param {ApiError} error
          */
         Vue.prototype.$handleApiError = function (error) {
-            if (is("AuthenticationError", error)) {
-
+            switch (error.name) {
+                case "AuthenticationError":
+                    store.commit("session/endSession");
+                    router.push({name: "Authentication"});
+                    break;
+                default:
+                    return;
             }
         }
     }

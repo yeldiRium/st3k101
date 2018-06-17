@@ -241,6 +241,8 @@
                             this.errors.password = propOr(
                                 [], "password", error.payload
                             );
+                        } else {
+                            this.$handleApiError(error);
                         }
                     },
                     result => {
