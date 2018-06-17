@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapGetters} from "vuex";
 
     import LanguagePicker from "../../Partials/LanguagePicker";
     import MenuBarPrivate from "../../Partials/Menu/MenuBarPrivate"
@@ -25,7 +25,7 @@
             }
         },
         computed: {
-            ...mapState("session", ["isLoggedIn"])
+            ...mapGetters("session", ["isLoggedIn"])
         }
     };
 </script>
