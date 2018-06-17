@@ -19,7 +19,7 @@ function getAuthenticationHeaders(authenticate = true) {
 
     if (authenticate) {
         return {
-            Authentication: `Bearer ${sessionToken}`
+            Authorization: `Bearer ${sessionToken}`
         };
     } else {
         return {};
