@@ -30,7 +30,6 @@ const checkStatus = curry(function (happyCode, response) {
  * @reject see response.json()
  */
 const extractJson = function (response) {
-    console.log(response);
     return Future.tryP(() => response.json());
 };
 
@@ -43,7 +42,6 @@ const extractJson = function (response) {
  * @reject with the Response's JSON content
  */
 const extractJsonAndReject = function (response) {
-    console.log(response);
     return Future.tryP(() => response.json())
         .chain(Future.reject);
 };
