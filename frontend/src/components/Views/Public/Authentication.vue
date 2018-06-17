@@ -141,7 +141,7 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapState, mapGetters} from "vuex";
     import {propOr} from "ramda";
 
     import {register, requestSession} from "../../../api2/Authentication";
@@ -207,9 +207,13 @@
                         this.inputData.password
                     )
                 ).fork(
-                    // TODO: handle response
-                    console.error,
-                    console.log
+                    () => {
+                        this.errors.login.push("User or password is incorrect. Please try again.");
+                    },
+                    sessionToken => {
+                        this.$store.dispatch("session/startSession", {sessionToken})
+                            .then(() => this.$router.push({name: "Dashboard"}));
+                    }
                 )
             },
             register() {
