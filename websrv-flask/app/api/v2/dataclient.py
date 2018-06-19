@@ -4,7 +4,7 @@ from flask_restful import abort, Resource
 from api.v2 import api
 from api.v2.schema.dataclient import DataClientSchema
 from auth import users
-from auth.roles import Role, needs_minimum_role, current_has_role, current_has_minimum_role
+from auth.roles import Role, needs_minimum_role, current_has_minimum_role
 from auth.users import current_user
 from framework.exceptions import UserExistsException
 from model.SQLAlchemy import db
@@ -14,9 +14,10 @@ __author__ = "Noah Hummel"
 
 
 class DataClientResource(Resource):
+
     @needs_minimum_role(Role.User)
     def get(self, item_id=None):
-        schema = DataClientSchema()
+        schema = DataClientSchema(DataClientResource)
 
         if item_id is not None and item_id != current_user().id:
             if not current_has_minimum_role(Role.Admin):
@@ -34,7 +35,7 @@ class DataClientResource(Resource):
         if item_id is not None:
             abort(400, message='Can\'t specify item id on creation.')
 
-        schema = DataClientSchema()
+        schema = DataClientSchema(DataClientResource)
         data, errors = schema.load(request.json)
         if errors:
             return errors, 400
@@ -61,7 +62,8 @@ class DataClientResource(Resource):
             dataclient = DataClient.query.get(item_id)
             if dataclient is None:
                 abort(404)
-            dataclient_data = DataClientSchema().dump(dataclient).data
+            schema = DataClientSchema(DataClientResource)
+            dataclient_data = schema.dump(dataclient).data
             db.session.delete(dataclient)
             db.session.commit()
             return {
@@ -90,7 +92,7 @@ class DataClientResource(Resource):
         else:
             dataclient = current_user()
 
-        schema = DataClientSchema(partial=True)
+        schema = DataClientSchema(DataClientResource, partial=True)
         data, errors = schema.load(request.json)
         for err in errors:
             if err in data:
