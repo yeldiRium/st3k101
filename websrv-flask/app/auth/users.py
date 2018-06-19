@@ -1,4 +1,5 @@
 import os
+from typing import Tuple
 
 import argon2
 from flask import g
@@ -28,8 +29,7 @@ def register(email: str, password: str) -> DataClient:
         )
 
     client = DataClient(email=email)
-    client.password_salt = os.urandom(g._config['AUTH_SALT_LENGTH']).hex()
-    client.password_hash = argon2.argon2_hash(password, client.password_salt).hex()
+    client.password = password
     db.session.add(client)
 
     return client
