@@ -32,6 +32,20 @@ def fulfills_role(data_client, *roles: List[Union[Role, Tuple[Role]]]):
     return access_allowed
 
 
+def current_has_role(*roles: Role):
+    if not g._current_user:
+        return False
+    return any((role in g._current_user.roles for role in roles))
+
+
+def current_has_minimum_role(role: Role):
+    user = g._current_user
+    if not user:
+        return False
+    highest_role = sorted(user.roles)[0]
+    return highest_role <= role
+
+
 def needs_role(*roles: List[Union[Role, Tuple[Role]]]):
 
     def wrapper(route):
@@ -40,6 +54,27 @@ def needs_role(*roles: List[Union[Role, Tuple[Role]]]):
         def wrapped(*args, **kwargs):
             user = g._current_user
             if fulfills_role(user, *roles):
+                return route(*args, **kwargs)
+            else:
+                return make_error(_("Forbidden"), 403)
+
+        return wrapped
+
+    return wrapper
+
+
+def needs_minimum_role(role: Role):
+
+    def wrapper(route):
+
+        @wraps(route)
+        def wrapped(*args, **kwargs):
+            user = g._current_user
+            if not user:
+                return make_error(_("Forbidden"), 403)
+            highest_role = sorted(user.roles)[0]
+
+            if highest_role <= role:
                 return route(*args, **kwargs)
             else:
                 return make_error(_("Forbidden"), 403)
