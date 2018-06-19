@@ -11,5 +11,5 @@ class DataClientSchema(Schema):
     id = fields.Integer(dump_only=True)
     email = fields.Email(required=True)
     language = enum_field(BabelLanguage)
-    roles = enum_field(Role)
+    roles = fields.List(enum_field(Role))
     password = fields.String(load_only=True, required=True)
