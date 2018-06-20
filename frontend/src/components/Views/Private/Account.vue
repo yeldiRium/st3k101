@@ -25,10 +25,12 @@
             logout() {
                 this.$load(
                     endSession(this.sessionToken)
-                ).fork(
-                    this.$handleApiError,
-                    () => this.$router.push({name: "Authentication"})
                 )
+                    .chain(() => this.$store.dispatch("session/endSession"))
+                    .fork(
+                        this.$handleApiError,
+                        () => this.$router.push({name: "Authentication"})
+                    );
             }
         }
     }
