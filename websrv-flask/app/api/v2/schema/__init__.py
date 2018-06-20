@@ -15,9 +15,3 @@ def item_href(item, context):
 class RESTFulSchema(Schema):
     id = fields.Int(dump_only=True)
     href = fields.Function(item_href, dump_only=True)
-
-    def __init__(self, resource: Type[Resource], *args, **kwargs):
-        if 'context' not in kwargs:
-            kwargs['context'] = dict()
-        kwargs['context'] = {**kwargs['context'], **{'resource': resource}}
-        super(RESTFulSchema, self).__init__(*args, **kwargs)
