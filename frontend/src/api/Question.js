@@ -3,6 +3,20 @@ import Future from "fluture";
 import Question from "../model/SurveyBase/Question";
 
 /**
+ * Retrieves a Question based on href or id.
+ *
+ * @param href
+ * @param id
+ * @return {Question}
+ */
+function getQuestion({href, id}) {
+    // TODO: fetch Question from API
+    console.log("getQuestion");
+    // TODO: return test data
+    return Future.reject(false);
+}
+
+/**
  * Reloads the Question's data in its current language.
  * @param {Question} question
  * @return {Future}
