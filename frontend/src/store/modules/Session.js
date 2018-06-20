@@ -1,7 +1,6 @@
 import {isNil, path} from "ramda";
-import Future from "fluture";
 
-import {setItem, getItem} from "../Utility/cookies";
+import {getItem, removeItem, setItem} from "../Utility/cookies";
 
 import DataClient from "../../model/DataClient";
 
@@ -25,7 +24,7 @@ const store = {
     },
     actions: {
         getSessionFromCookie(context) {
-            const sessionToken = getItem("session-token");
+            const sessionToken = getItem("sessionToken");
             if (!isNil(sessionToken)) {
                 context.dispatch("startSession", {sessionToken});
             }
@@ -39,6 +38,8 @@ const store = {
         },
         endSession(context) {
             context.commit("endSession");
+
+            removeItem("sessionToken");
         },
         /**
          * Set session token cookie.
@@ -49,7 +50,7 @@ const store = {
                 // TODO: set cookie to secure mode, once efla supports https
                 const expires = new Date();
                 expires.setDate(expires.getMinutes() + 20);
-                setItem("session-token", sessionToken, expires);
+                setItem("sessionToken", sessionToken, expires);
             }
         }
     },
