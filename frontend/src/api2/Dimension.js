@@ -102,6 +102,8 @@ function addConcreteQuestion(dimension, owner, text, range) {
     // TODO: create via API
     // TODO: retrieve correct href
     const href = "";
+    // TODO: retrieve correct id
+    const id = "";
     const language = dimension.languageData.currentLanguage;
     const languageData = new LanguageData(
         language,
@@ -109,15 +111,7 @@ function addConcreteQuestion(dimension, owner, text, range) {
         [language]
     );
 
-    dimension.questions.push(new ConcreteQuestion(
-        href,
-        owner,
-        languageData,
-        text,
-        range,
-        0,
-        []
-    ));
+    dimension.questions.push(new ConcreteQuestion(href, id, owner, languageData, text, range, 0, []));
 
     return Future.reject("Please implement this.");
 }
@@ -138,6 +132,8 @@ function addShadowQuestion(dimension, owner, question) {
     // TODO: create via API
     // TODO: retrieve correct href
     const href = "";
+    // TODO: retrieve correct id
+    const id = "";
     const languageData = new LanguageData(
         question.languageData.currentLanguage,
         question.languageData.originalLanguage,
@@ -148,14 +144,7 @@ function addShadowQuestion(dimension, owner, question) {
     // TODO: build chain around this Future
     reloadQuestion(question);
 
-    dimension.questions.push(new ShadowQuestion(
-        href,
-        owner,
-        languageData,
-        question.text,
-        question.range.clone(),
-        question
-    ));
+    dimension.questions.push(new ShadowQuestion(href, id, owner, languageData, question.text, question.range.clone(), question));
 
     return Future.reject("Please implement this.");
 }

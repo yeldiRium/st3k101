@@ -20,15 +20,12 @@ function parseLanguage({name, value}) {
  *
  * @param {String} email
  * @param {Number} id
+ * @param {String} href
  * @param {Object} language
  * @return {DataClient}
  */
-function parseDataClient({email, id, language}) {
-    return new DataClient(
-        "href" + id,
-        email,
-        parseLanguage(language)
-    );
+function parseDataClient({email, id, href, language}) {
+    return new DataClient(href, 0, id, email);
 }
 
 export {

@@ -8,11 +8,13 @@ class OwnedResource extends Resource {
     /**
      *
      * @param {string} href See Resource.
+     * @param {String} id See Resource.
      * @param {Party} owner
      */
     constructor(href,
+                id,
                 owner) {
-        super(href);
+        super(href, id);
         this._owner = owner;
     }
 

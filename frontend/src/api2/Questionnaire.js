@@ -37,12 +37,15 @@ function createConcreteQuestionnaire(owner,
     // TODO: create via API
     // TODO: retrieve correct href
     const href = "";
+    // TODO: retrieve correct id
+    const id = "";
     const languageData = new LanguageData(language, language, [language]);
 
     return Future((reject, resolve) => {
         window.setTimeout(resolve, 1500)
     }).chain(() => Future.of(new ConcreteQuestionnaire(
         href,
+        id,
         owner,
         languageData,
         name,
@@ -70,6 +73,8 @@ function createShadowQuestionnaire(owner, questionnaire) {
     // TODO: create via API
     // TODO: retrieve correct href
     const href = "";
+    // TODO: retrieve correct id
+    const id = "";
     const languageData = new LanguageData(
         questionnaire.languageData.currentLanguage,
         questionnaire.languageData.originalLanguage,
@@ -82,6 +87,7 @@ function createShadowQuestionnaire(owner, questionnaire) {
 
     return Future.of(new ShadowQuestionnaire(
         href,
+        id,
         owner,
         languageData,
         questionnaire.name,
@@ -258,11 +264,14 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
     // TODO: add via API
     // TODO: retrieve correct href
     const href = "";
+    // TODO: retrieve correct id
+    const id = "";
     const language = questionnaire.languageData.currentLanguage;
     const languageData = new LanguageData(language, language, [language]);
 
     questionnaire.dimensions.push(new ConcreteDimension(
         href,
+        id,
         owner,
         languageData,
         name,
@@ -291,6 +300,8 @@ function addShadowDimension(questionnaire, owner, dimension) {
     // TODO: add via API
     // TODO: retrieve correct href
     const href = "";
+    // TODO: retrieve correct id
+    const id = "";
     const languageData = new LanguageData(
         dimension.languageData.currentLanguage,
         dimension.languageData.originalLanguage,
@@ -305,6 +316,7 @@ function addShadowDimension(questionnaire, owner, dimension) {
 
     questionnaire.dimensions.push(new ShadowDimension(
         href,
+        id,
         owner,
         languageData,
         dimension.name,

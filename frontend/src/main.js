@@ -38,7 +38,7 @@ initializeStore().fork(
 import DataClient from "./model/DataClient";
 import Language from "./model/Language";
 store.commit("session/startSession", {sessionToken: "randomSessionToken"});
-store.commit("session/setDataClient", {dataClient: new DataClient("randomHref", "a@b.c", new Language("en", "English"))});
+store.commit("session/setDataClient", {dataClient: new DataClient("randomHref", "randomId", "a@b.c", new Language("en", "English"))});
 
 new Vue({
     el: "#container",

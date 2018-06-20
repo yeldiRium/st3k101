@@ -12,17 +12,18 @@ import Range from "./Config/Range";
 class Question extends SurveyBase {
     /**
      * @param {string}  href See Resource.
+     * @param {String} id See Resource.
      * @param {Party}   owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text The Question text.
      * @param {Range}   range The range for the Question's answer.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
-                text,
-                range) {
-        super(href, owner, languageData);
+                text, range) {
+        super(href, id, owner, languageData);
 
         this.text = text;
         this.range = range;
@@ -56,6 +57,7 @@ class Question extends SurveyBase {
 class ConcreteQuestion extends Question {
     /**
      * @param {String}  href See Resource.
+     * @param {String} id See Resource.
      * @param {Party}   owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
@@ -69,17 +71,17 @@ class ConcreteQuestion extends Question {
      *  Question, which the current user owns.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 text,
                 range,
-                incomingReferenceCount,
-                ownedIncomingReferences) {
+                incomingReferenceCount, ownedIncomingReferences) {
         if (incomingReferenceCount < ownedIncomingReferences.length) {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
 
-        super(href, owner, languageData, text, range);
+        super(href, id, owner, languageData, text, range);
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
     }
@@ -110,6 +112,7 @@ class ConcreteQuestion extends Question {
 class ShadowQuestion extends Question {
     /**
      * @param {String}  href See Resource.
+     * @param {String} id See Resource.
      * @param {Party}   owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string}  text See Question.
@@ -118,12 +121,12 @@ class ShadowQuestion extends Question {
      *  referenced Question.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 text,
-                range,
-                referenceTo) {
-        super(href, owner, languageData, text, range);
+                range, referenceTo) {
+        super(href, id, owner, languageData, text, range);
         this.referenceTo = referenceTo;
     }
 

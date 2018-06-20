@@ -7,6 +7,7 @@ import SurveyBase from "./SurveyBase";
 class Dimension extends SurveyBase {
     /**
      * @param {string} href See Resource.
+     * @param {String} id See Resource.
      * @param {Party}  owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name The Dimension's name.
@@ -15,12 +16,12 @@ class Dimension extends SurveyBase {
      *  played in a random order to DataSubjects.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 name,
-                questions,
-                randomizeQuestions) {
-        super(href, owner, languageData);
+                questions, randomizeQuestions) {
+        super(href, id, owner, languageData);
         this.name = name;
         this.questions = questions;
         this.randomizeQuestions = randomizeQuestions;
@@ -51,6 +52,7 @@ class ConcreteDimension extends Dimension {
     /**
      *
      * @param {string} href See Resource.
+     * @param {String} id See Resource.
      * @param {Party}  owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Dimension.
@@ -65,14 +67,14 @@ class ConcreteDimension extends Dimension {
      *  Dimension, which the current user owns.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 name,
                 questions,
                 randomizeQuestions,
-                incomingReferenceCount,
-                ownedIncomingReferences) {
-        super(href, owner, languageData, name, questions, randomizeQuestions);
+                incomingReferenceCount, ownedIncomingReferences) {
+        super(href, id, owner, languageData, name, questions, randomizeQuestions);
 
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
@@ -101,6 +103,7 @@ class ShadowDimension extends Dimension {
     /**
      *
      * @param {string} href See Resource.
+     * @param {String} id See Resource.
      * @param {Party}  owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Dimension.
@@ -110,13 +113,13 @@ class ShadowDimension extends Dimension {
      *  referenced Dimension.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 name,
                 questions,
-                randomizeQuestions,
-                referenceTo) {
-        super(href, owner, languageData, name, questions, randomizeQuestions);
+                randomizeQuestions, referenceTo) {
+        super(href, id, owner, languageData, name, questions, randomizeQuestions);
         this.referenceTo = referenceTo;
     }
 

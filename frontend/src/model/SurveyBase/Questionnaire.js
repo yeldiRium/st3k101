@@ -5,6 +5,7 @@ import SurveyBase from "./SurveyBase";
 class Questionnaire extends SurveyBase {
     /**
      * @param {string} href See Resource.
+     * @param {String} id See Resource.
      * @param {Party} owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name The Questionnaire's name.
@@ -18,15 +19,15 @@ class Questionnaire extends SurveyBase {
      *  sions.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 name,
                 description,
                 isPublic,
                 allowEmbedded,
-                xapiTarget,
-                dimensions) {
-        super(href, owner, languageData);
+                xapiTarget, dimensions) {
+        super(href, id, owner, languageData);
 
         this.name = name;
         this.description = description;
@@ -60,6 +61,7 @@ class Questionnaire extends SurveyBase {
 class ConcreteQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
+     * @param {String} id See Resource.
      * @param {Party} owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
@@ -77,6 +79,7 @@ class ConcreteQuestionnaire extends Questionnaire {
      *  ces) to this Questionnaire, which the current user owns.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 name,
@@ -85,17 +88,8 @@ class ConcreteQuestionnaire extends Questionnaire {
                 allowEmbedded,
                 xapiTarget,
                 dimensions,
-                incomingReferenceCount,
-                ownedIncomingReferences) {
-        super(href,
-            owner,
-            languageData,
-            name,
-            description,
-            isPublic,
-            allowEmbedded,
-            xapiTarget,
-            dimensions);
+                incomingReferenceCount, ownedIncomingReferences) {
+        super(href, id, owner, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
 
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
@@ -123,6 +117,7 @@ class ConcreteQuestionnaire extends Questionnaire {
 class ShadowQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
+     * @param {String} id See Resource.
      * @param {Party} owner See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
@@ -135,6 +130,7 @@ class ShadowQuestionnaire extends Questionnaire {
      *  ferenced Questionnaire.
      */
     constructor(href,
+                id,
                 owner,
                 languageData,
                 name,
@@ -142,17 +138,8 @@ class ShadowQuestionnaire extends Questionnaire {
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
-                dimensions,
-                referenceTo) {
-        super(href,
-            owner,
-            languageData,
-            name,
-            description,
-            isPublic,
-            allowEmbedded,
-            xapiTarget,
-            dimensions);
+                dimensions, referenceTo) {
+        super(href, id, owner, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
 
         this.referenceTo = referenceTo;
     }
