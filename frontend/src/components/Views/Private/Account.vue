@@ -9,7 +9,7 @@
 <script>
     import {mapGetters} from "vuex-fluture";
 
-    import {endSession} from "../../../api2/Authentication";
+    import {endSession} from "../../../api/Authentication";
 
     import Button from "../../Partials/Form/Button";
 

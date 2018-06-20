@@ -31,7 +31,7 @@
     import {
         createConcreteQuestionnaire,
         deleteQuestionnaire
-    } from "../../../api2/Questionnaire";
+    } from "../../../api/Questionnaire";
 
     export default {
         name: "MyQuestionnaires",

@@ -90,7 +90,7 @@
         removeQuestion,
         setName,
         setRandomizeQuestions
-    } from "../../../api2/Dimension";
+    } from "../../../api/Dimension";
 
     import SurveyBase from "./SurveyBase";
     import Question from "./Question";

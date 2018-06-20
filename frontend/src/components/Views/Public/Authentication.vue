@@ -144,12 +144,12 @@
     import {mapGetters, mapState} from "vuex-fluture";
     import {either, propEq, propOr} from "ramda";
 
-    import {register, requestSession} from "../../../api2/Authentication";
+    import {register, requestSession} from "../../../api/Authentication";
 
     import Button from "../../Partials/Form/Button";
 
     import ErrorIcon from "../../../assets/icons/baseline-error-24px.svg";
-    import {BadRequestError, ConflictError} from "../../../api2/Errors";
+    import {BadRequestError, ConflictError} from "../../../api/Errors";
 
     export default {
         name: "Authentication",

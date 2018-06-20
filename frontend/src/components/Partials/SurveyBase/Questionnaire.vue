@@ -119,7 +119,7 @@
         setIsPublic,
         setName,
         setXapiTarget
-    } from "../../../api2/Questionnaire";
+    } from "../../../api/Questionnaire";
 
     import SurveyBase from "./SurveyBase";
     import Dimension from "./Dimension";

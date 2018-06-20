@@ -62,7 +62,7 @@
 <script>
     import {Question} from "../../../model/SurveyBase/Question";
 
-    import {fetchTranslation, setRange, setText} from "../../../api2/Question";
+    import {fetchTranslation, setRange, setText} from "../../../api/Question";
 
     import SurveyBase from "./SurveyBase";
     import ListItem from "../List/Item";
