@@ -174,6 +174,7 @@ function removeQuestion(dimension, question) {
     if (contains(question, dimension.questions)) {
         // TODO: delete via API
         dimension.questions = without([question], dimension.questions);
+        return Future.of(true);
     } else {
         return Future.reject("Question not contained in Dimension.");
     }

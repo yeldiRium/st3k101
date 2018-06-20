@@ -333,6 +333,7 @@ function removeDimension(questionnaire, dimension) {
             [dimension],
             questionnaire.dimensions
         );
+        return Future.of(true);
     } else {
         return Future.reject("Dimension not contained in Questionnaire.");
     }
