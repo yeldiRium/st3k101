@@ -95,6 +95,7 @@
             question: {
                 type: Question
             },
+            /** @type {Boolean} */
             initiallyExpanded: {
                 type: Boolean,
                 default: false
@@ -102,19 +103,17 @@
         },
         data() {
             return {
-                expanded: false,
-                header: {
-                    height: 0
-                },
-                dropdown: {
-                    height: 0
-                }
+                /** @type {Boolean} */
+                expanded: false
             }
         },
         created() {
             this.expanded = this.initiallyExpanded;
         },
         computed: {
+            /**
+             * CSS Classes for Question container div.
+             */
             classes() {
                 return {
                     "question--disabled": !this.isEditable(this.question)
@@ -122,6 +121,9 @@
             }
         },
         methods: {
+            /**
+             * Toggle whether the Question is collapsed or expanded.
+             */
             toggleExpanded() {
                 this.expanded = !this.expanded;
             },
@@ -130,7 +132,7 @@
              * @param {Language} language
              */
             changeLanguage(language) {
-                this.$load(
+                const cancel = this.$load(
                     fetchTranslation(this.question, language)
                 ).fork(
                     this.$handleApiError,
@@ -148,7 +150,7 @@
                 // TODO: display dialog which asks for data
                 const text = "tbd";
 
-                this.$load(
+                const cancel = this.$load(
                     setText(this.question, language, text)
                         .chain(() => this.changeLanguage(language))
                 ).fork(
@@ -156,11 +158,19 @@
                     console.log
                 );
             },
+            /**
+             * Update the question's text.
+             *
+             * This is asynchronous, since the API is informed and then the
+             * update is executed.
+             *
+             * @param {String} text
+             */
             updateQuestionText(text) {
                 if (!this.isEditable(this.question)) {
                     return;
                 }
-                this.$load(
+                const cancel = this.$load(
                     setText(
                         this.question,
                         this.question.languageData.currentLanguage,
@@ -171,11 +181,20 @@
                     console.log
                 );
             },
+            /**
+             * Update the question's range.
+             *
+             * This is asynchronous, since the API is informed and then the
+             * update is executed.
+             *
+             * @param {Range} range
+             */
+
             updateRange(range) {
                 if (!this.isEditable(this.question)) {
                     return;
                 }
-                this.$load(
+                const cancel = this.$load(
                     setRange(this.question, range)
                 ).fork(
                     this.$handleApiError,
