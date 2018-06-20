@@ -31,8 +31,7 @@ def make_error(message: Any, status_code: int=400) -> Response:
     Format of response:
     
         {
-            "result": "error",
-            "error": message
+            "message": message
         }
     
     :param message: Any An error message
@@ -40,6 +39,5 @@ def make_error(message: Any, status_code: int=400) -> Response:
     :return: Response The error response
     """
     return make_response(jsonify({
-        "result": "error",
-        "error": message
+        "message": message
     }), status_code)

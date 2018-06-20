@@ -1,3 +1,8 @@
+import os
+from typing import Tuple, List
+
+import argon2
+
 from auth.roles import Role
 
 __author__ = "Noah Hummel"
@@ -35,7 +40,28 @@ class DataClient(Party):
         return [Role(r) for r in self._roles]
 
     def add_role(self, role: Role):
-        self._roles.append(role.value)
+        if role not in self._roles:
+            self._roles.append(role.value)
 
     def revoke_role(self, role: Role):
-        self._roles.remove(role.value)
+        if role in self._roles:
+            self._roles.remove(role.value)
+
+    def update_roles(self, roles: List[Role]):
+        self._roles = [role.value for role in roles]
+
+    @staticmethod
+    def hash_password(password: str) -> Tuple[str, str]:
+        password_salt = os.urandom(g._config['AUTH_SALT_LENGTH']).hex()
+        password_hash = argon2.argon2_hash(password, password_salt).hex()
+        return password_salt, password_hash
+
+    @property
+    def password(self):
+        return self.password_salt, self.password_hash
+
+    @password.setter
+    def password(self, password):
+        pw_salt, pw_hash = self.hash_password(password)
+        self.password_salt = pw_salt
+        self.password_hash = pw_hash
