@@ -7,7 +7,7 @@ import Question from "../model/SurveyBase/Question";
  *
  * @param href
  * @param id
- * @return {Question}
+ * @return {ConcreteQuestion|ShadowQuestion}
  */
 function getQuestion({href, id}) {
     // TODO: fetch Question from API
@@ -95,6 +95,7 @@ function setRange(question, range) {
 }
 
 export {
+    getQuestion,
     reloadQuestion,
     fetchTranslation,
     setText,

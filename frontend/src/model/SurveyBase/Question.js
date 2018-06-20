@@ -3,6 +3,7 @@ import Future from "fluture";
 import SurveyBase from "./SurveyBase";
 
 import Range from "./Config/Range";
+import {getQuestion} from "../../api/Question";
 
 /**
  * BaseClass for ShadowQuestion and ConcreteQuestion.
@@ -145,34 +146,35 @@ class ShadowQuestion extends Question {
  *
  * Accesses the API to load the Questions.
  *
- * TODO: implement. currently this replaces all Resource-type references with
- *       empty objects.
+ * If this rejects, then some questions might be populated and some might still
+ * be Resources. The exact state will have to be tested.
  *
  * @param {ConcreteQuestion} concreteQuestion
  * @return {Future}
  * @resolve with nothing, since the change is made in place.
  * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @cancel
  */
 function populateOwnedIncomingReferences(concreteQuestion) {
     const resolvedShadowQuestionFutures = [];
 
     // Use basic for loop to easily replace values.
     for (let i = 0; i < concreteQuestion.ownedIncomingReferences.length; i++) {
+        /** @type {Resource|ShadowQuestion} */
         let reference = concreteQuestion.ownedIncomingReferences[i];
 
         if (instanceOf(reference, Resource)) {
-            // TODO: fetch ShadowQuestion and replace
-            const shadowQuestionFuture = Future.of({}) // <- replace with actual API call
-                .map(shadowQuestion => {
+            const shadowQuestionFuture = getQuestion({href: reference.href})
+                .chain(shadowQuestion => {
                     concreteQuestion.ownedIncomingReferences[i] =
                         shadowQuestion;
-                    return true;
+                    return Future.of(shadowQuestion);
                 });
 
             resolvedShadowQuestionFutures.push(shadowQuestionFuture);
         }
     }
+    // MAYBE: is Infinity appropriate?
     return Future.parallel(Infinity, resolvedShadowQuestionFutures);
 }
 
@@ -182,7 +184,8 @@ function populateOwnedIncomingReferences(concreteQuestion) {
  *
  * Accesses the API to load the Question.
  *
- * If it is invalid or does not resolve to anything, an error is thrown.
+ * If this rejects, the referenceTo property was not replaced. It might still be
+ * a Resource.
  *
  * TODO: implement this. currently it replaces the reference with an empty
  *       object.
@@ -191,17 +194,18 @@ function populateOwnedIncomingReferences(concreteQuestion) {
  * @return {Future}
  * @resolve with nothing, since the change is made in place.
  * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @cancel
  */
 function populateReferenceTo(shadowQuestion) {
     if (instanceOf(shadowQuestion.referenceTo, Resource)) {
-        // TODO: fetch ConcreteQuestion and replace
-        return Future.of({}) // <- replace with actual API call
-            .map(concreteQuestion => {
+        const shadowQuestionFuture = getQuestion({
+            href: shadowQuestion.referenceTo.href
+        })
+            .chain(shadowQuestion => {
                 shadowQuestion.referenceTo = concreteQuestion;
+                return Future.of(shadowQuestion);
             });
     }
-    return Future.of(true);
 }
 
 /**
@@ -212,9 +216,10 @@ function populateReferenceTo(shadowQuestion) {
  * @return {Future}
  * @resolve with nothing, since the change is made in place.
  * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @cancel
  */
 function populateQuestion(question) {
+    // Type warnings can be ignored, since they are tested.
     if (instanceOf(question, ShadowQuestion)) {
         return populateReferenceTo(question);
     }
