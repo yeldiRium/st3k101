@@ -1,10 +1,12 @@
 <template>
+    <div class="a-question">
 
+    </div>
 </template>
 
 <script>
     export default {
-        name: "AQuestion.vue"
+        name: "AQuestion"
     }
 </script>
 

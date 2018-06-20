@@ -1,5 +1,5 @@
 <template>
-    <div class="questionnaire-overview"
+    <div class="my-questionnaires"
          :style="style"
     >
         <Questionnaire :style="itemStyle"
@@ -9,7 +9,7 @@
                        @questionnaire-delete="deleteQuestionnaire(questionnaire)"
         />
 
-        <Button class="questionnaire-overview__add-questionnaire-button"
+        <Button class="my-questionnaires__add-questionnaire-button"
                 @click="openNewQuestionnaireDialog"
         >
             Add new Questionnaire
@@ -34,7 +34,7 @@
     } from "../../../api2/Questionnaire";
 
     export default {
-        name: "QuestionnaireOverview",
+        name: "MyQuestionnaires",
         components: {
             Button,
             ListItem,
@@ -84,32 +84,8 @@
                         window.setTimeout(resolve, 1500);
                     }).chain(() => Future.of(
                         [
-                            new ConcreteQuestionnaire(
-                                "http://blubblab/api/questionnaire/1",
-                                this.dataClient,
-                                languageData,
-                                "Dieser ConcreteQuestionnaire gehört mir.",
-                                "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
-                                true,
-                                true,
-                                "i don't even know, what this is",
-                                [],
-                                0,
-                                []
-                            ),
-                            new ConcreteQuestionnaire(
-                                "http://blubblab/api/questionnaire/2",
-                                this.dataClient,
-                                languageData,
-                                "Dieser ShadowQuestionnaire gehört mir.",
-                                "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
-                                false,
-                                true,
-                                "i don't even know, what this is",
-                                [],
-                                0,
-                                []
-                            )
+                            new ConcreteQuestionnaire("http://blubblab/api/questionnaire/1", 0, this.dataClient, languageData, "Dieser ConcreteQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", true, true, "i don't even know, what this is", [], 0, []),
+                            new ConcreteQuestionnaire("http://blubblab/api/questionnaire/2", 0, this.dataClient, languageData, "Dieser ShadowQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", false, true, "i don't even know, what this is", [], 0, [])
                         ]
                     ))
                 ).fork(
@@ -170,7 +146,7 @@
 </script>
 
 <style lang="scss">
-    .questionnaire-overview {
+    .my-questionnaires {
         display: grid;
         grid-template-columns: 100%;
         grid-auto-flow: row;

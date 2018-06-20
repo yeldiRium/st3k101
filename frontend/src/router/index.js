@@ -7,8 +7,11 @@ import Authentication from "../components/Views/Public/Authentication";
 
 import PrivateBase from "../components/Views/Private/Base";
 import Dashboard from "../components/Views/Private/Dashboard";
-import Questionnaires from "../components/Views/Private/Questionnaires";
+import MyQuestionnaires from "../components/Views/Private/MyQuestionnaires";
 import Account from "../components/Views/Private/Account";
+import AQuestion from "../components/Views/Private/AQuestion";
+import ADimension from "../components/Views/Private/ADimension";
+import AQuestionnaire from "../components/Views/Private/AQuestionnaire";
 
 import TestingBase from "../components/Views/Testing/Base";
 import TestListItem from "../components/Views/Testing/TestListItem";
@@ -53,9 +56,14 @@ export default new Router({
 
             children: [
                 {
+                    path: "dashboard",
+                    name: "Dashboard",
+                    component: Dashboard
+                },
+                {
                     path: "questionnaires",
-                    name: "Questionnaires",
-                    component: Questionnaires
+                    name: "MyQuestionnaires",
+                    component: MyQuestionnaires
                 },
                 {
                     path: "account",
@@ -63,9 +71,19 @@ export default new Router({
                     component: Account
                 },
                 {
-                    path: "dashboard",
-                    name: "Dashboard",
-                    component: Dashboard
+                    path: "question/:id",
+                    name: "AQuestion",
+                    component: AQuestion
+                },
+                {
+                    path: "dimension/:id",
+                    name: "ADimension",
+                    component: ADimension
+                },
+                {
+                    path: "questionnaire/:id",
+                    name: "AQuestionnaire",
+                    component: AQuestionnaire
                 }
             ]
         },

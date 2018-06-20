@@ -1,10 +1,12 @@
 <template>
+    <div class="a-dimension">
 
+    </div>
 </template>
 
 <script>
     export default {
-        name: "ADimension.vue"
+        name: "ADimension"
     }
 </script>
 
