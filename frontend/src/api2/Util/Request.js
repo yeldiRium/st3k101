@@ -90,8 +90,7 @@ function fetchApi(path,
 
     if (authenticate) {
         return result.chain(
-            response => Future
-                .tryP(() => store.dispatch("session/updateSessionCookie"))
+            response => store.dispatch("session/updateSessionCookie")
                 .map(() => response)
         );
     } else {

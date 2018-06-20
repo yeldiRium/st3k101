@@ -85,9 +85,7 @@ const store = {
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return Future.tryP(
-        () => rootStore.dispatch(`${namespace}/getSessionFromCookie`)
-    );
+    return rootStore.dispatch(`${namespace}/getSessionFromCookie`);
 };
 
 export default store;

@@ -51,12 +51,8 @@ export default store;
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return Future
-        .tryP(() => rootStore.dispatch(`${namespace}/fetchAll`))
-        .chain(() => Future.tryP(() => {
-                return rootStore.dispatch(`${namespace}/registerEventHandlers`);
-            }
-        ));
+    return rootStore.dispatch(`${namespace}/fetchAll`)
+        .chain(() => rootStore.dispatch(`${namespace}/registerEventHandlers`));
 };
 
 export {

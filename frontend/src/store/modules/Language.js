@@ -75,9 +75,7 @@ export default store;
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return Future.tryP(
-        () => rootStore.dispatch(`${namespace}/fetchLanguages`)
-    );
+    return rootStore.dispatch(`${namespace}/fetchLanguages`);
 };
 
 export {
