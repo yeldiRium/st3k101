@@ -66,7 +66,7 @@ function setItem(sKey, sValue, vEnd, sPath, sDomain, bSecure) {
 }
 
 function removeItem(sKey, sPath, sDomain) {
-    if (!this.hasItem(sKey)) {
+    if (!hasItem(sKey)) {
         return false;
     }
     document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
