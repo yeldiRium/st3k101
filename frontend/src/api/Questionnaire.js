@@ -25,7 +25,7 @@ import {LanguageData} from "../model/Language";
  * @return {Future}
  * @resolve {ConcreteQuestionnaire}
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function createConcreteQuestionnaire(owner,
                                      language,
@@ -41,6 +41,7 @@ function createConcreteQuestionnaire(owner,
     const id = "";
     const languageData = new LanguageData(language, language, [language]);
 
+    // TODO: remove timeout. this is for testing purposes
     return Future((reject, resolve) => {
         window.setTimeout(resolve, 1500)
     }).chain(() => Future.of(new ConcreteQuestionnaire(
@@ -67,7 +68,7 @@ function createConcreteQuestionnaire(owner,
  * @return {Future}
  * @resolve {ShadowQuestionnaire}
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function createShadowQuestionnaire(owner, questionnaire) {
     // TODO: create via API
@@ -107,7 +108,7 @@ function createShadowQuestionnaire(owner, questionnaire) {
  * @return {Future}
  * @resolve {ShadowQuestionnaire}
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function deleteQuestionnaire(questionnaire) {
     // TODO: delete via API
@@ -121,7 +122,7 @@ function deleteQuestionnaire(questionnaire) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function reloadQuestionnaire(questionnaire) {
     // TODO: reload from API
@@ -141,7 +142,7 @@ function reloadQuestionnaire(questionnaire) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function fetchTranslation(questionnaire, language) {
     // TODO: fetch translation from api
@@ -159,7 +160,7 @@ function fetchTranslation(questionnaire, language) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setName(questionnaire, language, name) {
     if (questionnaire.languageData.currentLanguage.equals(language)) {
@@ -180,7 +181,7 @@ function setName(questionnaire, language, name) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setDescription(questionnaire, language, description) {
     if (questionnaire.languageData.currentLanguage.equals(language)) {
@@ -201,7 +202,7 @@ function setDescription(questionnaire, language, description) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setIsPublic(questionnaire, isPublic) {
     questionnaire.isPublic = isPublic;
@@ -219,7 +220,7 @@ function setIsPublic(questionnaire, isPublic) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setAllowEmbedded(questionnaire, allowEmbedded) {
     questionnaire.allowEmbedded = allowEmbedded;
@@ -237,7 +238,7 @@ function setAllowEmbedded(questionnaire, allowEmbedded) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setXapiTarget(questionnaire, xapiTarget) {
     questionnaire.xapiTarget = xapiTarget;
@@ -258,7 +259,7 @@ function setXapiTarget(questionnaire, xapiTarget) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
     // TODO: add via API
@@ -294,7 +295,7 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
  * @return {Future}
  * @resolve true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function addShadowDimension(questionnaire, owner, dimension) {
     // TODO: add via API
@@ -336,7 +337,7 @@ function addShadowDimension(questionnaire, owner, dimension) {
  * @return {Future}
  * @resolve true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function removeDimension(questionnaire, dimension) {
     if (contains(dimension, questionnaire.dimensions)) {

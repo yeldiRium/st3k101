@@ -8,7 +8,7 @@ import Question from "../model/SurveyBase/Question";
  * @return {Future}
  * @resolve to true
  * @reject with an API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function reloadQuestion(question) {
     // TODO: fetch data from API and rewrite question content
@@ -28,7 +28,7 @@ function reloadQuestion(question) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function fetchTranslation(question, language) {
     // TODO: fetch translation from api
@@ -49,7 +49,7 @@ function fetchTranslation(question, language) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setText(question, language, text) {
     // Overwrite current text, if the language is the currently selected one
@@ -70,7 +70,7 @@ function setText(question, language, text) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setRange(question, range) {
     question.range = range;

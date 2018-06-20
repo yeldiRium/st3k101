@@ -13,7 +13,7 @@ import {LanguageData} from "../model/Language";
  * @return {Future}
  * @resolve to true
  * @reject with an API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function reloadDimension(dimension) {
     // TODO: reload via API
@@ -33,7 +33,7 @@ function reloadDimension(dimension) {
  * @return Future
  * @resolve to true
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function fetchTranslation(dimension, language) {
     // TODO: fetch translation from api
@@ -54,7 +54,7 @@ function fetchTranslation(dimension, language) {
  * @return {Future}
  * @resolve to true
  * @reject with an API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setName(dimension, language, name) {
     // Overwrite current name, if the language is the currently selected one
@@ -75,7 +75,7 @@ function setName(dimension, language, name) {
  * @return {Future}
  * @resolve to true
  * @reject with API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function setRandomizeQuestions(dimension, randomizeQuestions) {
     // Set before throwing error so that the app can be used for demos.
@@ -96,7 +96,7 @@ function setRandomizeQuestions(dimension, randomizeQuestions) {
  * @return Future
  * @resolve {ShadowQuestionnaire}
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function addConcreteQuestion(dimension, owner, text, range) {
     // TODO: create via API
@@ -126,7 +126,7 @@ function addConcreteQuestion(dimension, owner, text, range) {
  * @return Future
  * @resolve {ShadowQuestionnaire}
  * @reject with an API error message, if something went wrong
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function addShadowQuestion(dimension, owner, question) {
     // TODO: create via API
@@ -157,7 +157,7 @@ function addShadowQuestion(dimension, owner, question) {
  * @return {Future}
  * @resolve to true
  * @reject with API error message
- * @cancel TODO: is this cancellable?
+ * @cancel
  */
 function removeQuestion(dimension, question) {
     if (contains(question, dimension.questions)) {
