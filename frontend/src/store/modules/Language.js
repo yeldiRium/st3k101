@@ -1,7 +1,6 @@
 import {__, allPass, has, map} from "ramda";
 import Future from "fluture";
 
-import LanguageAPI from "../../api/Model/Language";
 import Language from "../../model/Language";
 
 const store = {
@@ -38,40 +37,12 @@ const store = {
     },
     actions: {
         /**
+         * TODO:
          * Fetch the available Languages from the API and parse them to be
          * usable by the dropdown menu.
          */
         fetchLanguages({commit}) {
-            return LanguageAPI.all()
-                .mapRej(error => {
-                    commit(
-                        "setLoadingState", {
-                            loadingState: "error",
-                            error: error
-                        }
-                    );
-                    return error;
-                })
-                .map(
-                    data => {
-                        data = map(
-                            languageTuple => ({
-                                short: languageTuple[0],
-                                long: languageTuple[1]
-                            }),
-                            data
-                        );
-                        commit(
-                            "setLoadingState", {
-                                loadingState: "done"
-                            }
-                        );
-                        commit("setLanguageOptions", data);
-
-                        return data;
-                    }
-                )
-                .promise();
+            return [];
         }
     },
     mutations: {
