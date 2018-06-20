@@ -74,9 +74,7 @@
              */
             loadQuestionnaires() {
                 // TODO: remove hardcoded sample data
-                // TODO: open loading... modal
                 // TODO: load questionnaires from API
-                // TODO: close loading... modal
 
                 let en = new Language("en", "English");
                 let languageData = new LanguageData(en, en, [en]);
@@ -115,7 +113,7 @@
                         ]
                     ))
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     questionnaires => {
                         this.questionnaires = questionnaires;
                     }
@@ -145,7 +143,7 @@
                         xapiTarget
                     )
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     questionnaire => {
                         this.questionnaires.push(questionnaire);
                     }
@@ -155,7 +153,7 @@
                 this.$load(
                     deleteQuestionnaire(questionnaire)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     () => this.questionnaires = without(
                         [questionnaire], this.questionnaires
                     )

@@ -133,7 +133,7 @@
                 this.$load(
                     fetchTranslation(this.question, language)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -152,7 +152,7 @@
                     setText(this.question, language, text)
                         .chain(() => this.changeLanguage(language))
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -167,7 +167,7 @@
                         text
                     )
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -178,7 +178,7 @@
                 this.$load(
                     setRange(this.question, range)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },

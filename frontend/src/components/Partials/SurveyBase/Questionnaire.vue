@@ -205,7 +205,7 @@
                 this.$load(
                     fetchTranslation(this.questionnaire, language)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -230,7 +230,7 @@
                         ))
                         .chain(() => this.changeLanguage(language))
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -245,7 +245,7 @@
                         name
                     )
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -260,7 +260,7 @@
                         description
                     )
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -268,7 +268,7 @@
                 this.$load(
                     setIsPublic(this.questionnaire, isPublic)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -276,7 +276,7 @@
                 this.$load(
                     setAllowEmbedded(this.questionnaire, allowEmbedded)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -284,7 +284,7 @@
                 this.$load(
                     setXapiTarget(this.questionnaire, xapiTarget)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -312,7 +312,7 @@
                         randomizeQuestions
                     )
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -323,7 +323,7 @@
                 this.$load(
                     removeDimension(this.questionnaire, dimension)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },

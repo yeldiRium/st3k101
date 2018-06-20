@@ -168,7 +168,7 @@
                 this.$load(
                     fetchTranslation(this.dimension, language)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -189,7 +189,7 @@
                     setName(this.dimension, language, name)
                         .chain(() => this.changeLanguage(language))
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -204,7 +204,7 @@
                         name
                     )
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -212,7 +212,7 @@
                 this.$load(
                     setRandomizeQuestions(this.dimension, randomizeQuestions)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -237,7 +237,7 @@
                         this.dimension, this.dataClient, text, range
                     )
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
@@ -252,7 +252,7 @@
                 this.$load(
                     removeQuestion(this.dimension, question)
                 ).fork(
-                    console.error,
+                    this.$handleApiError,
                     console.log
                 );
             },
