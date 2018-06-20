@@ -141,7 +141,7 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapGetters, mapState} from "vuex";
     import {either, propEq, propOr} from "ramda";
 
     import {register, requestSession} from "../../../api2/Authentication";
@@ -176,11 +176,9 @@
                 }
             }
         },
-        created() {
-
-        },
         computed: {
             ...mapState("global", ["window"]),
+            ...mapGetters("session", ["isLoggedIn"]),
             width() {
                 if (this.window.width * .8 > 400) {
                     return `400px`;
@@ -191,6 +189,18 @@
                 return {
                     "grid-template-columns": `auto ${this.width} auto`
                 };
+            }
+        },
+        watch: {
+            // Re-routes to the private area, if a user is already logged in
+            // or after a successful login.
+            isLoggedIn: {
+                immediate: true,
+                handler(newVal, oldVal) {
+                    if (newVal === true) {
+                        this.$router.push({name: "Dashboard"});
+                    }
+                }
             }
         },
         methods: {
@@ -225,8 +235,8 @@
                         }
                     },
                     sessionToken => {
-                        this.$store.dispatch("session/startSession", {sessionToken})
-                            .then(() => this.$router.push({name: "Dashboard"}));
+                        this.$store
+                            .dispatch("session/startSession", {sessionToken});
                     }
                 )
             },
