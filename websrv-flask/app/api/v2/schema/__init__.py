@@ -1,3 +1,6 @@
+from typing import Type
+
+from flask_restful import Resource
 from marshmallow import ValidationError, Schema, fields
 
 from api.v2 import api
