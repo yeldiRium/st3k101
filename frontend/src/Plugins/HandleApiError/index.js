@@ -48,7 +48,11 @@ const Plugin = {
                     });
                     break;
                 default:
-                    return;
+                    Vue.prototype.$notify({
+                        type: "warning",
+                        title: "Maybe something went wrong",
+                        text: "We're not soure though. If you experience any issues, go fuck yourself."
+                    });
             }
         }
     }
