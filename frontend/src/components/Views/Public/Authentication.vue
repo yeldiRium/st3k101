@@ -141,7 +141,7 @@
 </template>
 
 <script>
-    import {mapGetters, mapState} from "vuex";
+    import {mapGetters, mapState} from "vuex-fluture";
     import {either, propEq, propOr} from "ramda";
 
     import {register, requestSession} from "../../../api2/Authentication";

@@ -79,7 +79,7 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapState} from "vuex-fluture";
     import {without} from "ramda";
 
     import {Dimension} from "../../../model/SurveyBase/Dimension";

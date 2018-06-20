@@ -55,7 +55,7 @@
 
 <script>
     import {contains, toUpper, without} from "ramda";
-    import {mapState} from "vuex";
+    import {mapState} from "vuex-fluture";
 
     import {LanguageData} from "../../model/Language";
 

@@ -15,7 +15,7 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapState} from "vuex-fluture";
 
     import Dialog from "./Partials/Modal/Dialog";
     import CreateQuestion from "./Partials/Modal/CreateQuestion";

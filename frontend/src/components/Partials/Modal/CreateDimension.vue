@@ -31,7 +31,7 @@
 
 <script>
     import {isNil} from "ramda";
-    import {mapState} from "vuex";
+    import {mapState} from "vuex-fluture";
 
     import CreateResource from "./CreateResource";
     import Toggle from "../Form/ToggleButton";

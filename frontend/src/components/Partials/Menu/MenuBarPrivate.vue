@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapState} from "vuex-fluture";
 
     import DashboardIcon from "../../../assets/icons/baseline-dashboard-24px.svg";
     import ListIcon from "../../../assets/icons/baseline-list-24px.svg";

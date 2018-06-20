@@ -105,7 +105,7 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapState} from "vuex-fluture";
     import {map, path, sum, without} from "ramda";
 
     import {Questionnaire} from "../../../model/SurveyBase/Questionnaire";

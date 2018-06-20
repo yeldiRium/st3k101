@@ -19,7 +19,7 @@
 
 <script>
     import Future from "fluture";
-    import {mapState} from "vuex";
+    import {mapState} from "vuex-fluture";
     import {without} from "ramda";
 
     import Button from "../../Partials/Form/Button";

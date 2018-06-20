@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex from "vuex-fluture";
 import Future from "fluture";
 
 import {store as global, initialize as initializeGlobalStore} from "./modules/Global";

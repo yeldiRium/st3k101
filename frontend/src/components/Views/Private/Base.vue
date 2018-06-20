@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex";
+    import {mapGetters} from "vuex-fluture";
 
     import LanguagePicker from "../../Partials/LanguagePicker";
     import MenuBarPrivate from "../../Partials/Menu/MenuBarPrivate"

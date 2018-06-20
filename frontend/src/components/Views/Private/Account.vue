@@ -7,7 +7,7 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex";
+    import {mapGetters} from "vuex-fluture";
 
     import {endSession} from "../../../api2/Authentication";
 
