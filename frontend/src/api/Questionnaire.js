@@ -71,6 +71,9 @@ function createConcreteQuestionnaire(owner,
 /**
  * Creates a new ShadowQuestionnaire based on the given ConcreteQuestionnaire.
  *
+ * Since this creates a new reference to the given Questionnaire, it should be
+ * updated or reloaded afterwards.
+ *
  * @param {DataClient} owner
  * @param {ConcreteQuestionnaire} questionnaire
  * @return {Future}
@@ -91,8 +94,6 @@ function createShadowQuestionnaire(owner, questionnaire) {
     );
     // TODO: retrieve correct ShadowDimensions
     const shadowDimensions = [];
-
-    reloadQuestionnaire(questionnaire);
 
     return Future.of(new ShadowQuestionnaire(
         href,
@@ -122,20 +123,6 @@ function createShadowQuestionnaire(owner, questionnaire) {
  */
 function fetchQuestionnaire(href, language) {
     // TODO: fetch Questionnaire from API
-    return Future.reject("Please implement this.");
-}
-
-/**
- * Reload the Questionnaire's data in its current language.
- *
- * @param {Questionnaire} questionnaire
- * @return {Future}
- * @resolve to true
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function reloadQuestionnaire(questionnaire) {
-    // TODO: reload from API
     return Future.reject("Please implement this.");
 }
 
