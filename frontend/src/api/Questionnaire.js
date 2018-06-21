@@ -24,7 +24,7 @@ import {LanguageData} from "../model/Language";
  * @param {String} xapiTarget
  * @return {Future}
  * @resolve {ConcreteQuestionnaire}
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function createConcreteQuestionnaire(owner,
@@ -67,7 +67,7 @@ function createConcreteQuestionnaire(owner,
  * @param {ConcreteQuestionnaire} questionnaire
  * @return {Future}
  * @resolve {ShadowQuestionnaire}
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function createShadowQuestionnaire(owner, questionnaire) {
@@ -121,7 +121,7 @@ function deleteQuestionnaire(questionnaire) {
  * @param {Questionnaire} questionnaire
  * @return {Future}
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function reloadQuestionnaire(questionnaire) {
@@ -130,18 +130,27 @@ function reloadQuestionnaire(questionnaire) {
 }
 
 /**
- * Fetches the Questionnaire from the API in the requested language.
- * Updates all translatable information in place and updates the
- * `languageData` object.
+ * Delete the Questionnaire and all appended Dimensions.
  *
- * Should also check, if the list of availableLanguages has changed and
- * overwrite the old one.
+ * @param {Questionnaire} questionnaire
+ * @return {Future}
+ * @resolve {Boolean} with true
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function deleteQuestionnaire(questionnaire) {
+    // TODO: delete via API
+    return Future.reject("Please implement this.");
+}
+
+/**
+ * Fetches the Questionnaire from the API in the requested language.
  *
  * @param {Questionnaire} questionnaire
  * @param {Language} language
  * @return {Future}
- * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @resolve {Questionnaire}
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function fetchTranslation(questionnaire, language) {
@@ -159,7 +168,7 @@ function fetchTranslation(questionnaire, language) {
  * @param {String} name
  * @return {Future}
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setName(questionnaire, language, name) {
@@ -180,7 +189,7 @@ function setName(questionnaire, language, name) {
  * @param {String} description
  * @return {Future}
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setDescription(questionnaire, language, description) {
@@ -201,7 +210,7 @@ function setDescription(questionnaire, language, description) {
  * @param {Boolean} isPublic
  * @return {Future}
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setIsPublic(questionnaire, isPublic) {
@@ -219,7 +228,7 @@ function setIsPublic(questionnaire, isPublic) {
  * @param {Boolean} allowEmbedded
  * @return {Future}
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setAllowEmbedded(questionnaire, allowEmbedded) {
@@ -237,7 +246,7 @@ function setAllowEmbedded(questionnaire, allowEmbedded) {
  * @param {String} xapiTarget
  * @return {Future}
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setXapiTarget(questionnaire, xapiTarget) {
@@ -258,7 +267,7 @@ function setXapiTarget(questionnaire, xapiTarget) {
  * @param {Boolean} randomizeQuestions
  * @return {Future}
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
@@ -294,7 +303,7 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
  * @param {ConcreteDimension} dimension
  * @return {Future}
  * @resolve true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function addShadowDimension(questionnaire, owner, dimension) {
@@ -336,7 +345,7 @@ function addShadowDimension(questionnaire, owner, dimension) {
  * @param {Dimension} dimension
  * @return {Future}
  * @resolve true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function removeDimension(questionnaire, dimension) {

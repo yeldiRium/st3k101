@@ -7,7 +7,10 @@ import Question from "../model/SurveyBase/Question";
  *
  * @param href
  * @param id
- * @return {ConcreteQuestion|ShadowQuestion}
+ * @return {Future}
+ * @resolve {Question}
+ * @reject {TypeError|ApiError}
+ * @cancel
  */
 function getQuestion({href, id}) {
     // TODO: fetch Question from API
@@ -20,8 +23,8 @@ function getQuestion({href, id}) {
  * Reloads the Question's data in its current language.
  * @param {Question} question
  * @return {Future}
- * @resolve to true
- * @reject with an API error message
+ * @resolve {Boolean} to true
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function reloadQuestion(question) {
@@ -40,8 +43,8 @@ function reloadQuestion(question) {
  * @param {Question} question
  * @param {Language} language
  * @return {Future}
- * @resolve to true
- * @reject with an API error message
+ * @resolve {Boolean} to true
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function fetchTranslation(question, language) {
@@ -61,8 +64,8 @@ function fetchTranslation(question, language) {
  * @param {Language} language
  * @param {String} text
  * @return {Future}
- * @resolve to true
- * @reject with an API error message
+ * @resolve {Boolean} to true
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setText(question, language, text) {
@@ -82,8 +85,8 @@ function setText(question, language, text) {
  * @param {ConcreteQuestion} question
  * @param {Range} range
  * @return {Future}
- * @resolve to true
- * @reject with an API error message
+ * @resolve {Boolean} to true
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setRange(question, range) {

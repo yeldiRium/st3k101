@@ -11,7 +11,7 @@ import {fetchApi} from "./Util/Request";
  * @param {String} password
  * @return {Future}
  * @resolve {DataClient}
- * @reject {Object} with API error message
+ * @reject {TypeError|ApiError}
  * @cancel see fetchApi
  */
 function register(email, password) {
@@ -33,7 +33,7 @@ function register(email, password) {
  * @param {String} password
  * @return {Future}
  * @resolve {String} to session token.
- * @reject {Object} with API error message
+ * @reject {TypeError|ApiError}
  * @cancel see fetchApi
  */
 function requestSession(email, password) {
@@ -54,7 +54,7 @@ function requestSession(email, password) {
  * @param {String} sessionToken
  * @return {Future}
  * @resolve {Boolean} to true
- * @reject {Object} with API error object
+ * @reject {TypeError|ApiError}
  * @cancel see fetchApi
  */
 function endSession(sessionToken) {

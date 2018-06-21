@@ -12,7 +12,7 @@ import {LanguageData} from "../model/Language";
  * @param {Dimension} dimension
  * @return {Future}
  * @resolve to true
- * @reject with an API error message
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function reloadDimension(dimension) {
@@ -32,7 +32,7 @@ function reloadDimension(dimension) {
  * @param {Language} language
  * @return Future
  * @resolve to true
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function fetchTranslation(dimension, language) {
@@ -53,7 +53,7 @@ function fetchTranslation(dimension, language) {
  * @param {String} name
  * @return {Future}
  * @resolve to true
- * @reject with an API error message
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function setName(dimension, language, name) {
@@ -95,7 +95,7 @@ function setRandomizeQuestions(dimension, randomizeQuestions) {
  * @param {Range} range
  * @return Future
  * @resolve {ShadowQuestionnaire}
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function addConcreteQuestion(dimension, owner, text, range) {
@@ -125,7 +125,7 @@ function addConcreteQuestion(dimension, owner, text, range) {
  * @param {ConcreteQuestion} question
  * @return Future
  * @resolve {ShadowQuestionnaire}
- * @reject with an API error message, if something went wrong
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function addShadowQuestion(dimension, owner, question) {
@@ -156,7 +156,7 @@ function addShadowQuestion(dimension, owner, question) {
  * @param {Question} question
  * @return {Future}
  * @resolve to true
- * @reject with API error message
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function removeQuestion(dimension, question) {
