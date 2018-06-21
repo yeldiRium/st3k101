@@ -106,7 +106,7 @@ function createShadowQuestionnaire(owner, questionnaire) {
  *
  * @param {Questionnaire} questionnaire
  * @return {Future}
- * @resolve {ShadowQuestionnaire}
+ * @resolve {Boolean} with true
  * @reject with an API error message, if something went wrong
  * @cancel
  */

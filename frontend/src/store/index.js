@@ -2,9 +2,19 @@ import Vue from "vue";
 import Vuex from "vuex-fluture";
 import Future from "fluture";
 
-import {store as global, initialize as initializeGlobalStore} from "./modules/Global";
-import {store as language, initialize as initializeLanguageStore} from "./modules/Language";
-import {store as session, initialize as initializeSessionStore} from "./modules/Session";
+import {
+    initialize as initializeGlobalStore,
+    store as global
+} from "./modules/Global";
+import {
+    initialize as initializeLanguageStore,
+    store as language
+} from "./modules/Language";
+import {
+    initialize as initializeSessionStore,
+    store as session
+} from "./modules/Session";
+import {store as questionnaires} from "./modules/Questionnaires";
 
 Vue.use(Vuex);
 
@@ -29,7 +39,8 @@ const store = new Vuex.Store({
     modules: {
         global,
         language,
-        session
+        session,
+        questionnaires
     }
 });
 

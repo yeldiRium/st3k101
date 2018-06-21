@@ -3,7 +3,7 @@
          :style="style"
     >
         <Questionnaire :style="itemStyle"
-                       v-for="questionnaire in questionnaires"
+                       v-for="questionnaire in myQuestionnaires"
                        :key="questionnaire.href"
                        :questionnaire="questionnaire"
                        @questionnaire-delete="deleteQuestionnaire(questionnaire)"
@@ -18,20 +18,12 @@
 </template>
 
 <script>
-    import Future from "fluture";
-    import {mapState} from "vuex-fluture";
+    import {mapGetters, mapState} from "vuex-fluture";
     import {without} from "ramda";
 
     import Button from "../../Partials/Form/Button";
     import ListItem from "../../Partials/List/Item";
     import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
-
-    import {ConcreteQuestionnaire} from "../../../model/SurveyBase/Questionnaire";
-    import {Language, LanguageData} from "../../../model/Language";
-    import {
-        createConcreteQuestionnaire,
-        deleteQuestionnaire
-    } from "../../../api/Questionnaire";
 
     export default {
         name: "MyQuestionnaires",
@@ -40,17 +32,13 @@
             ListItem,
             Questionnaire
         },
-        data() {
-            return {
-                questionnaires: []
-            }
-        },
         created() {
             this.loadQuestionnaires();
         },
         computed: {
             ...mapState("global", ["window"]),
             ...mapState("session", ["dataClient"]),
+            ...mapGetters("questionnaires", ["myQuestionnaires"]),
             style() {
                 return {};
             },
@@ -73,25 +61,11 @@
              * Close the loading... modal
              */
             loadQuestionnaires() {
-                // TODO: remove hardcoded sample data
-                // TODO: load questionnaires from API
-
-                let en = new Language("en", "English");
-                let languageData = new LanguageData(en, en, [en]);
-
                 this.$load(
-                    Future((reject, resolve) => {
-                        window.setTimeout(resolve, 1500);
-                    }).chain(() => Future.of(
-                        [
-                            new ConcreteQuestionnaire("http://blubblab/api/questionnaire/1", 0, this.dataClient, languageData, "Dieser ConcreteQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", true, true, "i don't even know, what this is", [], 0, []),
-                            new ConcreteQuestionnaire("http://blubblab/api/questionnaire/2", 0, this.dataClient, languageData, "Dieser ShadowQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", false, true, "i don't even know, what this is", [], 0, [])
-                        ]
-                    ))
+                    this.$store.dispatch("questionnaires/loadMyQuestionnaires")
                 ).fork(
                     this.$handleApiError,
-                    questionnaires => {
-                        this.questionnaires = questionnaires;
+                    () => {
                     }
                 )
             },
@@ -109,37 +83,35 @@
                                     xapiTarget
                                 }) {
                 this.$load(
-                    createConcreteQuestionnaire(
-                        this.dataClient,
-                        this.dataClient.language,
-                        name,
-                        description,
-                        isPublic,
-                        allowEmbedded,
-                        xapiTarget
+                    this.$store.dispatch(
+                        "questionnaires/createConcreteQuestionnaire",
+                        {
+                            dataClient: this.dataClient,
+                            language: this.dataClient.language,
+                            name,
+                            description,
+                            isPublic,
+                            allowEmbedded,
+                            xapiTarget
+                        }
                     )
                 ).fork(
                     this.$handleApiError,
-                    questionnaire => {
-                        this.questionnaires.push(questionnaire);
+                    () => {
                     }
                 );
             },
             deleteQuestionnaire(questionnaire) {
                 this.$load(
-                    deleteQuestionnaire(questionnaire)
+                    this.$store.dispatch(
+                        "questionnaires/deleteQuestionnaire",
+                        {questionnaire}
+                    )
                 ).fork(
                     this.$handleApiError,
-                    () => this.questionnaires = without(
-                        [questionnaire], this.questionnaires
-                    )
+                    () => {
+                    }
                 );
-                // Currently api function rejects since it's not implemented yet
-                // Thus this has to be done again for demonstration and testing
-                // TODO: remove this
-                this.questionnaires = without(
-                    [questionnaire], this.questionnaires
-                )
             }
         }
     }
