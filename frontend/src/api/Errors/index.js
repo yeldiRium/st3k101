@@ -5,6 +5,18 @@ class ApiError extends Error {
 }
 
 /**
+ * Client side validation error. Does not correlate with a status code, since it
+ * is used before interaction with the Api ensues.
+ */
+class ValidationError extends ApiError {
+    constructor(s, payload) {
+        super(s);
+        this.name = "ValidationError";
+        this.payload = payload;
+    }
+}
+
+/**
  * 400
  */
 class BadRequestError extends ApiError {

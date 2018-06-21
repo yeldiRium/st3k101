@@ -49,9 +49,16 @@ const Plugin = {
                     break;
                 case "BadRequestError":
                     Vue.prototype.$notify({
-                        type: "warning",
+                        type: "error",
                         title: "Bad request",
-                        text: "Some request data was bad. Check your logs. This might be a 400 or a client-side validation issue."
+                        text: "Some request data was bad. Check your logs."
+                    });
+                    break;
+                case "ValidationError":
+                    Vue.prototype.$notify({
+                        type: "error",
+                        title: "Validation error",
+                        text: error.message
                     });
                     break;
                 default:
