@@ -146,23 +146,6 @@ function deleteQuestionnaire(questionnaire) {
 }
 
 /**
- * Fetches the Questionnaire from the API in the requested language.
- *
- * @param {Questionnaire} questionnaire
- * @param {Language} language
- * @return {Future}
- * @resolve {Questionnaire}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function fetchTranslation(questionnaire, language) {
-    // TODO: fetch translation from api
-    // TODO: set languageData in questionnaire
-    // TODO: set translated fields in questionnaire
-    return Future.reject("Please implement this.");
-}
-
-/**
  * Sets the ConcreteQuestionnaire's name in the given language.
  *
  * @param {ConcreteQuestionnaire} questionnaire
@@ -368,7 +351,6 @@ export {
     createShadowQuestionnaire,
     fetchQuestionnaire,
     deleteQuestionnaire,
-    fetchTranslation,
     setName,
     setDescription,
     setIsPublic,
