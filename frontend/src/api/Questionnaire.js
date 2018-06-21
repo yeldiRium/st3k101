@@ -102,16 +102,18 @@ function createShadowQuestionnaire(owner, questionnaire) {
 }
 
 /**
- * Delete the Questionnaire and all appended Dimensions.
+ * Fetches a Questionnaire by a given href in the given language.
  *
- * @param {Questionnaire} questionnaire
+ * @param {String} href
+ * @param {Language} language
+ *
  * @return {Future}
- * @resolve {Boolean} with true
- * @reject with an API error message, if something went wrong
+ * @resolve {Questionnaire}
+ * @reject {TypeError|ApiError}
  * @cancel
  */
-function deleteQuestionnaire(questionnaire) {
-    // TODO: delete via API
+function fetchQuestionnaire(href, language) {
+    // TODO: fetch Questionnaire from API
     return Future.reject("Please implement this.");
 }
 
@@ -364,6 +366,7 @@ function removeDimension(questionnaire, dimension) {
 export {
     createConcreteQuestionnaire,
     createShadowQuestionnaire,
+    fetchQuestionnaire,
     deleteQuestionnaire,
     fetchTranslation,
     setName,
