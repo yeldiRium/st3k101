@@ -226,7 +226,7 @@
                         "questionnaires/updateQuestionnaire",
                         {
                             questionnaire: this.questionnaire,
-                            language: language,
+                            language,
                             params: {
                                 name,
                                 description
@@ -238,7 +238,7 @@
                                 "questionnaires/fetchQuestionnaire",
                                 {
                                     href: questionnaire.href,
-                                    language: language
+                                    language
                                 }
                             )
                         )
