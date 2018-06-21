@@ -203,7 +203,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             /**
@@ -243,7 +244,8 @@
                         )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             updateQuestionnaireName(name) {
@@ -260,7 +262,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             updateDescription(description) {
@@ -277,7 +280,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             updateIsPublic(isPublic) {
@@ -291,7 +295,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             updateAllowEmbedded(allowEmbedded) {
@@ -305,7 +310,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             updateXapiTarget(xapiTarget) {
@@ -319,7 +325,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             openNewDimensionDialog() {
@@ -339,16 +346,20 @@
                     return;
                 }
                 this.$load(
-                    // TODO: move into store
-                    addConcreteDimension(
-                        this.questionnaire,
-                        this.dataClient,
-                        name,
-                        randomizeQuestions
+                    this.$store.dispatch(
+                        "questionnaires/addConcreteDimension",
+                        {
+                            questionnaire: this.questionnaire,
+                            params: {
+                                name,
+                                randomizeQuestions
+                            }
+                        }
                     )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             deleteDimension(dimension) {
@@ -356,11 +367,17 @@
                     return;
                 }
                 this.$load(
-                    // TODO: move into store
-                    removeDimension(this.questionnaire, dimension)
+                    this.$store.dispatch(
+                        "questionnaires/removeDimension",
+                        {
+                            questionnaire: this.questionnaire,
+                            dimension
+                        }
+                    )
                 ).fork(
                     this.$handleApiError,
-                    () => {}
+                    () => {
+                    }
                 );
             },
             /**

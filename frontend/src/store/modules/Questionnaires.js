@@ -3,7 +3,8 @@ import {
     any,
     bind,
     contains,
-    filter, find,
+    filter,
+    find,
     isNil,
     keys,
     map,
@@ -15,6 +16,7 @@ import Future from "fluture";
 import {ConcreteQuestionnaire} from "../../model/SurveyBase/Questionnaire";
 import {Language, LanguageData} from "../../model/Language";
 import {
+    addConcreteDimension,
     createConcreteQuestionnaire,
     deleteQuestionnaire,
     fetchQuestionnaire,
@@ -139,6 +141,7 @@ const store = {
                 }
             )
         },
+        // TODO: createShadowQuestionnaire
         /**
          * Fetches the Questionnaire in a certain Language via the API.
          * If the Questionnaire is already in the store, it will be
@@ -158,6 +161,7 @@ const store = {
             return fetchQuestionnaire(href, language)
                 .chain(questionnaire => {
                     commit("patchQuestionnaire", {questionnaire});
+                    // TODO: add the Questionnaire's dimensions to Dimension store
                     return Future.of(questionnaire);
                 })
         },
@@ -219,6 +223,7 @@ const store = {
             return deleteQuestionnaire(questionnaire)
                 .chain(() => {
                     commit("removeQuestionnaire", {questionnaire});
+                    // TODO: remove the Questionnaire's dimensions from Dimension store
                     return Future.of(true);
                 })
                 // TODO: remove this
@@ -228,6 +233,134 @@ const store = {
                     commit("removeQuestionnaire", {questionnaire});
                     return Future.reject(error);
                 });
+        },
+        /**
+         * Add a new ConcreteDimension to the ConcreteQuestionnaire.
+         *
+         * @param commit
+         * @param rootGetters
+         * @param {ConcreteQuestionnaire} questionnaire
+         * @param {String} name
+         * @param {Boolean} randomizeQuestions
+         *
+         * @return {Future}
+         * @resolve {ConcreteDimension}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        addConcreteDimension({commit, rootGetters},
+                             {
+                                 questionnaire,
+                                 params: {name, randomizeQuestions}
+                             }) {
+            if (questionnaire.isShadow) {
+                return Future.reject(
+                    new ValidationError(
+                        "AddConcreteDimension may not be called on ShadowQuestionnaire.",
+                        {}
+                    )
+                );
+            }
+
+            return addConcreteDimension(
+                questionnaire,
+                rootGetters["session/dataClient"],
+                name,
+                randomizeQuestions
+            ).chain(concreteDimension => {
+                commit("addDimensionToQuestionnaire", {
+                    questionnaire,
+                    dimension: concreteDimension
+                });
+                // TODO: add concreteDimension to Dimension store
+                return Future.of(concreteDimension);
+            })
+        },
+        /**
+         * Add a new ShadowDimension to the ConcreteQuestionnaire referencing
+         * the given ConcreteDimension.
+         *
+         * @param commit
+         * @param rootGetters
+         * @param {ConcreteQuestionnaire} questionnaire
+         * @param {ConcreteDimension} dimension
+         *
+         * @return {Future}
+         * @resolve {ShadowDimension}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        addShadowDimension({commit, rootGetters},
+                           {
+                               questionnaire,
+                               dimension
+                           }) {
+            if (questionnaire.isShadow) {
+                return Future.reject(
+                    new ValidationError(
+                        "AddShadowDimension may not be called on ShadowQuestionnaire.",
+                        {}
+                    )
+                );
+            }
+            if (dimension.isShadow) {
+                return Future.reject(
+                    new ValidationError(
+                        "AddShadowDimension may not be called for ShadowDimension.",
+                        {}
+                    )
+                );
+            }
+
+            return addShadowDimension(
+                questionnaire,
+                rootGetters["session/dataClient"],
+                dimension
+            ).chain(shadowDimension => {
+                commit("addDimensionToQuestionnaire", {
+                    questionnaire,
+                    dimension: shadowDimension
+                });
+                // TODO: reload concreteDimension in Dimension store
+                // TODO: add shadowDimension to Dimension store
+                return Future.of(shadowDimension);
+            })
+        },
+        /**
+         * Removes a Dimension from a ConcreteQuestionnaire.
+         *
+         * @param commit
+         * @param {ConcreteQuestionnaire} questionnaire
+         * @param {Dimension} dimension
+         *
+         * @return {Future}
+         * @resolve {ConcreteQuestionnaire}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        removeDimension({commit}, {questionnaire, dimension}) {
+            if (questionnaire.isShadow) {
+                return Future.reject(
+                    new ValidationError(
+                        "RemoveDimension may not be called on ShadowQuestionnaire.",
+                        {}
+                    )
+                );
+            }
+
+            return removeDimension(questionnaire, dimension)
+                .chain(() => {
+                    commit(
+                        "removeDimensionFromQuestionnaire",
+                        {
+                            questionnaire,
+                            dimension
+                        }
+                    );
+                    // TODO: remove dimension from Dimension store
+                    // TODO: propagate into Question store? Probably done in Dimension store.
+                    return Future.of(questionnaire);
+                })
         }
     },
     mutations: {
@@ -271,6 +404,50 @@ const store = {
                 bind(questionnaire.identifiesWith, questionnaire),
                 state.questionnaires
             );
+        },
+        /**
+         * Adds a Dimension to a ConcreteQuestionnaire.
+         * Overwrites an existing Dimension, if one with the same id exists.
+         *
+         * @param state
+         * @param {ConcreteQuestionnaire} questionnaire
+         * @param {Dimension} dimension
+         */
+        addDimensionToQuestionnaire(state, {questionnaire, dimension}) {
+            if (!isNil(questionnaire)) {
+                let existingDimensionWasReplaced = false;
+                questionnaire.dimensions = map(
+                    iDimension => {
+                        if (dimension.identifiesWith(iDimension)) {
+                            existingDimensionWasReplaced = true;
+                            return dimension;
+                        }
+                        return iDimension;
+                    },
+                    questionnaire.dimensions
+                );
+                if (existingDimensionWasReplaced) {
+                    return;
+                }
+
+                questionnaire.dimensions.push(dimension);
+            }
+        },
+        /**
+         * Removes a Dimension from a ConcreteQuestionnaire.
+         * Does nothing, if the Dimension isn't found.
+         *
+         * @param state
+         * @param {ConcreteQuestionnaire} questionnaire
+         * @param {Dimension} dimension
+         */
+        removeDimensionFromQuestionnaire(state, {questionnaire, dimension}) {
+            if (!isNil(questionnaire)) {
+                questionnaire.dimensions = reject(
+                    iDimension => iDimension.id === dimension.id,
+                    questionnaire.dimensions
+                );
+            }
         }
     }
 };

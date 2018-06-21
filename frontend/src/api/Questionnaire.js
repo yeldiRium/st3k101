@@ -179,12 +179,17 @@ function deleteQuestionnaire(questionnaire) {
  * Adds a new ConcreteDimension to a ConcreteQuestionnaire.
  * Uses the Questionnaire's currentLanguage.
  *
+ * The Questionnaire has to be updated or reloaded afterwards, so that the Di-
+ * mension appears.
+ *
  * @param {ConcreteQuestionnaire} questionnaire
+ * // TODO: check if owner parameter is necessary
  * @param {DataClient} owner
  * @param {String} name
  * @param {Boolean} randomizeQuestions
+ *
  * @return {Future}
- * @resolve to true
+ * @resolve {ConcreteDimension}
  * @reject {TypeError|ApiError}
  * @cancel
  */
@@ -197,7 +202,7 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
     const language = questionnaire.languageData.currentLanguage;
     const languageData = new LanguageData(language, language, [language]);
 
-    questionnaire.dimensions.push(new ConcreteDimension(
+    return Future.of(new ConcreteDimension(
         href,
         id,
         owner,
@@ -208,19 +213,23 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
         0,
         []
     ));
-
-    return Future.reject("Please implement this.");
 }
 
 /**
  * Adds a new ShadowDimension to a ConcreteQuestionnaire based on a given Con-
  * creteDimension.
  *
+ * The ConcreteQuestionnaire has to be updated or reloaded afterwards, so that
+ * the Dimension appears.
+ * The ConcreteDimension also has to be uptadet or reloaded, so that its new
+ * reference appears.
+ *
  * @param {ConcreteQuestionnaire} questionnaire
  * @param {DataClient} owner
  * @param {ConcreteDimension} dimension
+ *
  * @return {Future}
- * @resolve true
+ * @resolve {ShadowDimension}
  * @reject {TypeError|ApiError}
  * @cancel
  */
@@ -238,11 +247,7 @@ function addShadowDimension(questionnaire, owner, dimension) {
     // TODO: retrieve ShadowQuestions
     const shadowQuestions = [];
 
-    // Reload so that the new references are respected
-    // TODO: build chain around this Future
-    reloadDimension(dimension);
-
-    questionnaire.dimensions.push(new ShadowDimension(
+    return Future.of(new ShadowDimension(
         href,
         id,
         owner,
@@ -252,27 +257,27 @@ function addShadowDimension(questionnaire, owner, dimension) {
         dimension.randomizeQuestions,
         dimension
     ));
-
-    return Future.reject("Please implement this.");
 }
 
 /**
  * Removes a Dimension from a ConcreteQuestionnaire and deletes it.
  *
+ * The ConcreteQuestionnaire has to be replaced afterwards to reflect
+ * the changes.
+ *
  * @param {ConcreteQuestionnaire} questionnaire
  * @param {Dimension} dimension
+ *
  * @return {Future}
- * @resolve true
+ * @resolve {Boolean} to true
  * @reject {TypeError|ApiError}
  * @cancel
+ *
+ * TODO: is the resolve value sensible? Should this maybe resolve with the updated ConcreteQuestionnaire? Define API behavior.
  */
 function removeDimension(questionnaire, dimension) {
     if (contains(dimension, questionnaire.dimensions)) {
         // TODO: delete via API
-        questionnaire.dimensions = without(
-            [dimension],
-            questionnaire.dimensions
-        );
         return Future.of(true);
     } else {
         return Future.reject("Dimension not contained in Questionnaire.");
