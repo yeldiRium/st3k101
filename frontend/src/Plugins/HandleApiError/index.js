@@ -47,6 +47,13 @@ const Plugin = {
                         text: "Your session has expired. Please log in again."
                     });
                     break;
+                case "BadRequestError":
+                    Vue.prototype.$notify({
+                        type: "warning",
+                        title: "Bad request",
+                        text: "Some request data was bad. Check your logs. This might be a 400 or a client-side validation issue."
+                    });
+                    break;
                 default:
                     Vue.prototype.$notify({
                         type: "warning",
