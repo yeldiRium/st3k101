@@ -3,7 +3,7 @@ import {
     any,
     bind,
     contains,
-    filter,
+    filter, find,
     isNil,
     keys,
     map,
@@ -47,6 +47,22 @@ const store = {
                 );
             }
             return [];
+        },
+        questionnaireById(state) {
+            return id => {
+                find(
+                    questionnaire => questionnaire.id === id,
+                    state.questionnaires
+                )
+            }
+        },
+        questionnaireByHref(state) {
+            return href => {
+                find(
+                    questionnaire => questionnaire.href === href,
+                    state.questionnaires
+                )
+            }
         }
     },
     actions: {
