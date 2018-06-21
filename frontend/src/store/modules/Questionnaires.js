@@ -104,6 +104,7 @@ const store = {
          * store.
          *
          * @param commit
+         * // TODO: is owner parameter necessary?
          * @param {DataClient} dataClient
          * @param {Language} language
          * @param {String} name

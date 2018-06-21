@@ -9,7 +9,6 @@ import {
     ConcreteDimension,
     ShadowDimension
 } from "../model/SurveyBase/Dimension";
-import {reloadDimension} from "./Dimension";
 import {LanguageData} from "../model/Language";
 
 const properties = [
@@ -23,6 +22,7 @@ const concreteProperties = [
 /**
  * Create a new ConcreteQuestionnaire.
  *
+ * TODO: is owner parameter necessary?
  * @param {DataClient} owner
  * @param {Language} language
  * @param {String} name
@@ -74,6 +74,7 @@ function createConcreteQuestionnaire(owner,
  * Since this creates a new reference to the given Questionnaire, it should be
  * updated or reloaded afterwards.
  *
+ * TODO: is owner parameter necessary?
  * @param {DataClient} owner
  * @param {ConcreteQuestionnaire} questionnaire
  * @return {Future}
@@ -183,7 +184,7 @@ function deleteQuestionnaire(questionnaire) {
  * mension appears.
  *
  * @param {ConcreteQuestionnaire} questionnaire
- * // TODO: check if owner parameter is necessary
+ * TODO: is owner parameter necessary?
  * @param {DataClient} owner
  * @param {String} name
  * @param {Boolean} randomizeQuestions
@@ -225,6 +226,7 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
  * reference appears.
  *
  * @param {ConcreteQuestionnaire} questionnaire
+ * TODO: is owner parameter necessary?
  * @param {DataClient} owner
  * @param {ConcreteDimension} dimension
  *
