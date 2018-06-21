@@ -1,4 +1,15 @@
-import {any, bind, filter, isNil, map, reject} from "ramda";
+import {
+    __,
+    any,
+    bind,
+    contains,
+    filter,
+    isNil,
+    keys,
+    map,
+    prop,
+    reject
+} from "ramda";
 import Future from "fluture";
 
 import {ConcreteQuestionnaire} from "../../model/SurveyBase/Questionnaire";
@@ -6,7 +17,8 @@ import {Language, LanguageData} from "../../model/Language";
 import {
     createConcreteQuestionnaire,
     deleteQuestionnaire,
-    fetchQuestionnaire
+    fetchQuestionnaire,
+    updateQuestionnaire
 } from "../../api/Questionnaire";
 
 const store = {
@@ -63,7 +75,7 @@ const store = {
                 ];
 
                 for (const questionnaire of testQuestionnaires) {
-                    commit("addQuestionnaire", {questionnaire});
+                    commit("patchQuestionnaire", {questionnaire});
                 }
 
                 resolve();
@@ -106,14 +118,14 @@ const store = {
                 xapiTarget
             ).chain(
                 questionnaire => {
-                    commit("addQuestionnaire", {questionnaire});
+                    commit("patchQuestionnaire", {questionnaire});
                     return Future.of(questionnaire);
                 }
             )
         },
         /**
          * Fetches the Questionnaire in a certain Language via the API.
-         * If the Questionnaire is already in the store, it's fields will be
+         * If the Questionnaire is already in the store, it will be
          * overwritten with the API result. Otherwise the Questionnaire is
          * added.
          *
@@ -122,16 +134,58 @@ const store = {
          * @param {Language} language
          *
          * @return {Future}
-         * @resolve {Boolean} to true
+         * @resolve {Questionnaire} to true
          * @reject with an API error message
          * @cancel
          */
         fetchQuestionnaire({commit}, {href, language}) {
             return fetchQuestionnaire(href, language)
                 .chain(questionnaire => {
-                    commit("patchQuestionnaire", questionnaire);
-                    return Future.of(true);
+                    commit("patchQuestionnaire", {questionnaire});
+                    return Future.of(questionnaire);
                 })
+        },
+        /**
+         * Updates the given params on the Questionnaire and updates the
+         * Questionnaire in the store. Translatable fields are set in the given
+         * language or the Questionnaires current language.
+         *
+         * @param commit
+         * @param {Questionnaire} questionnaire
+         * @param {Language} language
+         * @param {Object} params
+         *
+         * @return {Future}
+         * @resolve {Questionnaire}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        updateQuestionnaire({commit}, {questionnaire, language = null, params}) {
+            const correctLanguage = isNil(language)
+                ? questionnaire.languageData.currentLanguage
+                : language;
+
+            return updateQuestionnaire(questionnaire, correctLanguage, params)
+                .chain(result => {
+                    commit("patchQuestionnaire", {questionnaire: result});
+                    return Future.of(result);
+                })
+                // TODO: remove this
+                // Patches the questionnaire manually and incredibly stupidly
+                // just so that the app seems to work without the api.
+                .chainRej(error => {
+                    for (const key in params) {
+                        if (!isNil(questionnaire[key])) {
+                            questionnaire[key] = params[key];
+                        }
+                    }
+                    // This commit isn't technically necessary, since the object
+                    // is mutated directly above, but it let's us use the
+                    // devtools while playing around without api.
+                    commit("patchQuestionnaire", {questionnaire});
+                    // This prevents us from seeing any errors.
+                    return Future.of(questionnaire);
+                });
         },
         /**
          * Deletes the given Questionnaire via the API and removes it from the
@@ -170,7 +224,7 @@ const store = {
          * @param state
          * @param {Questionnaire} questionnaire
          */
-        addQuestionnaire(state, {questionnaire}) {
+        patchQuestionnaire(state, {questionnaire}) {
             let existingQuestionnaireWasReplaced = false;
             state.questionnaires = map(
                 iQuestionnaire => {
@@ -201,15 +255,6 @@ const store = {
                 bind(questionnaire.identifiesWith, questionnaire),
                 state.questionnaires
             );
-        },
-        /**
-         *
-         * @param state
-         * @param questionnaire
-         */
-        patchQuestionnaire(state, {questionnaire}) {
-            console.log("patching questionnaire");
-            console.log(questionnaire);
         }
     }
 };

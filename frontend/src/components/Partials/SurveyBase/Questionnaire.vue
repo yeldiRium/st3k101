@@ -112,12 +112,7 @@
 
     import {
         addConcreteDimension,
-        removeDimension,
-        setAllowEmbedded,
-        setDescription,
-        setIsPublic,
-        setName,
-        setXapiTarget
+        removeDimension
     } from "../../../api/Questionnaire";
 
     import SurveyBase from "./SurveyBase";
@@ -208,7 +203,7 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             /**
@@ -226,14 +221,29 @@
                 const description = "tbd";
 
                 this.$load(
-                    setName(this.questionnaire, language, name)
-                        .chain(() => setDescription(
-                            this.questionnaire, language, description
-                        ))
-                        .chain(() => this.changeLanguage(language))
+                    this.$store.dispatch(
+                        "questionnaires/updateQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            language: language,
+                            params: {
+                                name,
+                                description
+                            }
+                        }
+                    )
+                        .chain(
+                            questionnaire => this.$store.dispatch(
+                                "questionnaires/fetchQuestionnaire",
+                                {
+                                    href: questionnaire.href,
+                                    language: language
+                                }
+                            )
+                        )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             updateQuestionnaireName(name) {
@@ -241,14 +251,16 @@
                     return;
                 }
                 this.$load(
-                    setName(
-                        this.questionnaire,
-                        this.questionnaire.languageData.currentLanguage,
-                        name
+                    this.$store.dispatch(
+                        "questionnaires/updateQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            params: {name}
+                        }
                     )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             updateDescription(description) {
@@ -256,38 +268,58 @@
                     return;
                 }
                 this.$load(
-                    setDescription(
-                        this.questionnaire,
-                        this.questionnaire.languageData.currentLanguage,
-                        description
+                    this.$store.dispatch(
+                        "questionnaires/updateQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            params: {description}
+                        }
                     )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             updateIsPublic(isPublic) {
                 this.$load(
-                    setIsPublic(this.questionnaire, isPublic)
+                    this.$store.dispatch(
+                        "questionnaires/updateQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            params: {isPublic}
+                        }
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             updateAllowEmbedded(allowEmbedded) {
                 this.$load(
-                    setAllowEmbedded(this.questionnaire, allowEmbedded)
+                    this.$store.dispatch(
+                        "questionnaires/updateQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            params: {allowEmbedded}
+                        }
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             updateXapiTarget(xapiTarget) {
                 this.$load(
-                    setXapiTarget(this.questionnaire, xapiTarget)
+                    this.$store.dispatch(
+                        "questionnaires/updateQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            params: {xapiTarget}
+                        }
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             openNewDimensionDialog() {
@@ -307,6 +339,7 @@
                     return;
                 }
                 this.$load(
+                    // TODO: move into store
                     addConcreteDimension(
                         this.questionnaire,
                         this.dataClient,
@@ -315,7 +348,7 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             deleteDimension(dimension) {
@@ -323,10 +356,11 @@
                     return;
                 }
                 this.$load(
+                    // TODO: move into store
                     removeDimension(this.questionnaire, dimension)
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {}
                 );
             },
             /**

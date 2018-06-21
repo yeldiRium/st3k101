@@ -12,6 +12,14 @@ import {
 import {reloadDimension} from "./Dimension";
 import {LanguageData} from "../model/Language";
 
+const properties = [
+    "name", "description", "isPublic", "allowEmbedded", "xapiTarget"
+];
+
+const concreteProperties = [
+    "name", "description"
+];
+
 /**
  * Create a new ConcreteQuestionnaire.
  *
@@ -132,6 +140,41 @@ function reloadQuestionnaire(questionnaire) {
 }
 
 /**
+ * Updates the Questionnaire's fields. If a field is translatable, it is set
+ * in the given language.
+ *
+ * Only allowed parameters are passed.
+ * I.e. name and description can only be updated on ConcreteQuestionnaires.
+ *
+ * @param {Questionnaire} questionnaire
+ * @param {Language} language
+ * @param {Object} params
+ *
+ * @return {Future}
+ * @resolve {Questionnaire}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function updateQuestionnaire(questionnaire, language, params) {
+    const filteredParams = {};
+    for (const key in params) {
+        // If it is a concrete property, it can only be set on a Concrete-
+        // Questionnaire
+        if (contains(key, concreteProperties)) {
+            if (questionnaire.isConcrete) {
+                filteredParams[key] = params[key];
+            }
+        } else if (contains(key, properties)) {
+            filteredParams[key] = params[key];
+        }
+    }
+
+    // TODO: set props via api and return new Questionnaire
+
+    return Future.reject("Please implement this.");
+}
+
+/**
  * Delete the Questionnaire and all appended Dimensions.
  *
  * @param {Questionnaire} questionnaire
@@ -142,103 +185,6 @@ function reloadQuestionnaire(questionnaire) {
  */
 function deleteQuestionnaire(questionnaire) {
     // TODO: delete via API
-    return Future.reject("Please implement this.");
-}
-
-/**
- * Sets the ConcreteQuestionnaire's name in the given language.
- *
- * @param {ConcreteQuestionnaire} questionnaire
- * @param {Language} language
- * @param {String} name
- * @return {Future}
- * @resolve to true
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function setName(questionnaire, language, name) {
-    if (questionnaire.languageData.currentLanguage.equals(language)) {
-        questionnaire.name = name;
-    }
-
-    // Error after setting name so that the app can be demonstrated without API.
-    // TODO: set name via api in given language
-    return Future.reject("Please implement this.");
-}
-
-/**
- * Sets the ConcreteQuestionnaire's description in the given language.
- *
- * @param {ConcreteQuestionnaire} questionnaire
- * @param {Language} language
- * @param {String} description
- * @return {Future}
- * @resolve to true
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function setDescription(questionnaire, language, description) {
-    if (questionnaire.languageData.currentLanguage.equals(language)) {
-        questionnaire.description = description;
-    }
-
-    // Error after setting description so that the app can be demonstrated with-
-    // out API.
-    // TODO: set description via api in given language
-    return Future.reject("Please implement this.");
-}
-
-/**
- * Set the Questionaire's isPublic property.
- *
- * @param {Questionnaire} questionnaire
- * @param {Boolean} isPublic
- * @return {Future}
- * @resolve to true
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function setIsPublic(questionnaire, isPublic) {
-    questionnaire.isPublic = isPublic;
-
-    // Error after setting so that the app can be demonstrated without API.
-    // TODO: set via API
-    return Future.reject("Please implement this.");
-}
-
-/**
- * Set the Questionaire's allowEmbedded property.
- *
- * @param {Questionnaire} questionnaire
- * @param {Boolean} allowEmbedded
- * @return {Future}
- * @resolve to true
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function setAllowEmbedded(questionnaire, allowEmbedded) {
-    questionnaire.allowEmbedded = allowEmbedded;
-
-    // Error after setting so that the app can be demonstrated without API.
-    // TODO: set via API
-    return Future.reject("Please implement this.");
-}
-
-/**
- * Set the Questionaire's xapiTarget property.
- *
- * @param {Questionnaire} questionnaire
- * @param {String} xapiTarget
- * @return {Future}
- * @resolve to true
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function setXapiTarget(questionnaire, xapiTarget) {
-    questionnaire.xapiTarget = xapiTarget;
-
-    // Error after setting so that the app can be demonstrated without API.
-    // TODO: set via API
     return Future.reject("Please implement this.");
 }
 
@@ -350,12 +296,8 @@ export {
     createConcreteQuestionnaire,
     createShadowQuestionnaire,
     fetchQuestionnaire,
+    updateQuestionnaire,
     deleteQuestionnaire,
-    setName,
-    setDescription,
-    setIsPublic,
-    setAllowEmbedded,
-    setXapiTarget,
     addConcreteDimension,
     addShadowDimension,
     removeDimension
