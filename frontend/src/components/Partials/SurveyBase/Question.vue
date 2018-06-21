@@ -62,7 +62,7 @@
 <script>
     import {Question} from "../../../model/SurveyBase/Question";
 
-    import {fetchTranslation, setRange, setText} from "../../../api/Question";
+    import {setRange, setText} from "../../../api/Question";
 
     import SurveyBase from "./SurveyBase";
     import ListItem from "../List/Item";
@@ -133,10 +133,14 @@
              */
             changeLanguage(language) {
                 const cancel = this.$load(
-                    fetchTranslation(this.question, language)
+                    this.$store.dispatch(
+                        "questions/fetchQuestion",
+                        {href: this.question.href, language}
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             /**
@@ -151,18 +155,31 @@
                 const text = "tbd";
 
                 const cancel = this.$load(
-                    setText(this.question, language, text)
-                        .chain(() => this.changeLanguage(language))
+                    this.$store.dispatch(
+                        "questions/updateQuestion",
+                        {
+                            question: this.question,
+                            language,
+                            params: {
+                                text
+                            }
+                        }
+                    )
+                        .chain(question => this.$store.dispatch(
+                            "questions/fetchQuestion",
+                            {
+                                href: question.href,
+                                language
+                            }
+                        ))
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             /**
              * Update the question's text.
-             *
-             * This is asynchronous, since the API is informed and then the
-             * update is executed.
              *
              * @param {String} text
              */
@@ -171,14 +188,19 @@
                     return;
                 }
                 const cancel = this.$load(
-                    setText(
-                        this.question,
-                        this.question.languageData.currentLanguage,
-                        text
+                    this.$store.dispatch(
+                        "questions/updateQuestion",
+                        {
+                            question: this.question,
+                            params: {
+                                text
+                            }
+                        }
                     )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             /**
@@ -189,16 +211,24 @@
              *
              * @param {Range} range
              */
-
             updateRange(range) {
                 if (!this.isEditable(this.question)) {
                     return;
                 }
                 const cancel = this.$load(
-                    setRange(this.question, range)
+                    this.$store.dispatch(
+                        "questions/updateQuestion",
+                        {
+                            question: this.question,
+                            params: {
+                                range
+                            }
+                        }
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             /**

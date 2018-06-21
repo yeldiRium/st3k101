@@ -3,7 +3,6 @@ import {contains, without} from "ramda";
 
 import {ConcreteDimension} from "../model/SurveyBase/Dimension";
 import {ConcreteQuestion, ShadowQuestion} from "../model/SurveyBase/Question";
-import {reloadQuestion} from "./Question";
 import {LanguageData} from "../model/Language";
 
 /**
@@ -120,6 +119,9 @@ function addConcreteQuestion(dimension, owner, text, range) {
  * Add a new ShadowQuestion based on the given ConcreteQuestion to the Dimen-
  * sion.
  *
+ * The ConcreteQuestion must be updated or reloaded afterwards to reflect the
+ * increase in references
+ *
  * @param {ConcreteDimension} dimension
  * @param {DataClient} owner
  * @param {ConcreteQuestion} question
@@ -139,10 +141,6 @@ function addShadowQuestion(dimension, owner, question) {
         question.languageData.originalLanguage,
         [...question.languageData.availableLanguages]
     );
-
-    // Reload so that the references are respected.
-    // TODO: build chain around this Future
-    reloadQuestion(question);
 
     dimension.questions.push(new ShadowQuestion(href, id, owner, languageData, question.text, question.range.clone(), question));
 

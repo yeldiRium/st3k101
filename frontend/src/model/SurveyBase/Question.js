@@ -3,7 +3,7 @@ import Future from "fluture";
 import SurveyBase from "./SurveyBase";
 
 import Range from "./Config/Range";
-import {getQuestion} from "../../api/Question";
+import {fetchQuestion} from "../../api/Question";
 
 /**
  * BaseClass for ShadowQuestion and ConcreteQuestion.
@@ -164,7 +164,7 @@ function populateOwnedIncomingReferences(concreteQuestion) {
         let reference = concreteQuestion.ownedIncomingReferences[i];
 
         if (instanceOf(reference, Resource)) {
-            const shadowQuestionFuture = getQuestion({href: reference.href})
+            const shadowQuestionFuture = fetchQuestion({href: reference.href})
                 .chain(shadowQuestion => {
                     concreteQuestion.ownedIncomingReferences[i] =
                         shadowQuestion;
@@ -198,7 +198,7 @@ function populateOwnedIncomingReferences(concreteQuestion) {
  */
 function populateReferenceTo(shadowQuestion) {
     if (instanceOf(shadowQuestion.referenceTo, Resource)) {
-        const shadowQuestionFuture = getQuestion({
+        const shadowQuestionFuture = fetchQuestion({
             href: shadowQuestion.referenceTo.href
         })
             .chain(shadowQuestion => {
