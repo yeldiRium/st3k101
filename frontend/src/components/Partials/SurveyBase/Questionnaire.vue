@@ -112,7 +112,6 @@
 
     import {
         addConcreteDimension,
-        fetchTranslation,
         removeDimension,
         setAllowEmbedded,
         setDescription,
@@ -203,7 +202,10 @@
              */
             changeLanguage(language) {
                 this.$load(
-                    fetchTranslation(this.questionnaire, language)
+                    this.$store.dispatch(
+                        "questionnaires/fetchQuestionnaire",
+                        {href: this.questionnaire.href, language}
+                    )
                 ).fork(
                     this.$handleApiError,
                     console.log

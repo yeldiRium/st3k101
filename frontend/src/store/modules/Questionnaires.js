@@ -5,7 +5,8 @@ import {ConcreteQuestionnaire} from "../../model/SurveyBase/Questionnaire";
 import {Language, LanguageData} from "../../model/Language";
 import {
     createConcreteQuestionnaire,
-    deleteQuestionnaire
+    deleteQuestionnaire,
+    fetchQuestionnaire
 } from "../../api/Questionnaire";
 
 const store = {
@@ -111,6 +112,28 @@ const store = {
             )
         },
         /**
+         * Fetches the Questionnaire in a certain Language via the API.
+         * If the Questionnaire is already in the store, it's fields will be
+         * overwritten with the API result. Otherwise the Questionnaire is
+         * added.
+         *
+         * @param commit
+         * @param {String} href
+         * @param {Language} language
+         *
+         * @return {Future}
+         * @resolve {Boolean} to true
+         * @reject with an API error message
+         * @cancel
+         */
+        fetchQuestionnaire({commit}, {href, language}) {
+            return fetchQuestionnaire(href, language)
+                .chain(questionnaire => {
+                    commit("patchQuestionnaire", questionnaire);
+                    return Future.of(true);
+                })
+        },
+        /**
          * Deletes the given Questionnaire via the API and removes it from the
          * store.
          *
@@ -178,6 +201,15 @@ const store = {
                 bind(questionnaire.identifiesWith, questionnaire),
                 state.questionnaires
             );
+        },
+        /**
+         *
+         * @param state
+         * @param questionnaire
+         */
+        patchQuestionnaire(state, {questionnaire}) {
+            console.log("patching questionnaire");
+            console.log(questionnaire);
         }
     }
 };
