@@ -48,7 +48,7 @@ const defaultHeaders = {
  *
  * @return {Future}
  * @resolve {Response}
- * @reject {TypeError|...} TypeError on network error, for the rest see
+ * @reject {TypeError|ApiError} TypeError on network error, for the rest see
  *      categorizeResponse.
  * @cancel cancels the http request
  */
