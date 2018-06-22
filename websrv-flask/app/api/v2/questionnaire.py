@@ -166,7 +166,12 @@ class ShadowQuestionnaireResource(Resource):
         shadow_questionnaire = ShadowQuestionnaire(concrete_questionnaire)
         db.session.add(shadow_questionnaire)
         db.session.commit()
-        return QuestionnaireResource.dump(QuestionnaireSchema(), shadow_questionnaire), 201
+
+        data = QuestionnaireResource.dump(QuestionnaireSchema(), shadow_questionnaire)
+        return {
+            'message': 'Questionnaire created.',
+            'dimension': data
+        }, 201
 
 
 api.add_resource(
