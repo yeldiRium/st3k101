@@ -15,6 +15,7 @@ import {
     store as session
 } from "./modules/Session";
 import {store as questionnaires} from "./modules/Questionnaires";
+import {store as dimensions} from "./modules/Dimensions";
 import {store as questions} from "./modules/Questions";
 
 Vue.use(Vuex);
@@ -42,6 +43,7 @@ const store = new Vuex.Store({
         language,
         session,
         questionnaires,
+        dimensions,
         questions
     }
 });

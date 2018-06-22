@@ -5,82 +5,58 @@ import {ConcreteDimension} from "../model/SurveyBase/Dimension";
 import {ConcreteQuestion, ShadowQuestion} from "../model/SurveyBase/Question";
 import {LanguageData} from "../model/Language";
 
+const properties = ["name", "randomizeQuestions"];
+
+const concreteProperties = ["name"];
+
 /**
- * Reload the Dimension's data in its current language.
+ * Fetches a Dimension by a given href in the given language.
  *
- * @param {Dimension} dimension
+ * @param {String} href
+ * @param {Language} language
+ *
  * @return {Future}
- * @resolve to true
+ * @resolve {Dimension}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function reloadDimension(dimension) {
-    // TODO: reload via API
+function fetchDimension(href, language) {
+    // TODO: fetch Dimension from API
     return Future.reject("Please implement this.");
 }
 
 /**
- * Fetches the Dimension from the API in the requested language.
- * Updates all translatable information in place and updates the
- * `languageData` object.
+ * Updates the Dimension's fields. If a field is translatable, it is set
+ * in the given language.
  *
- * Should also check, if the list of availableLanguages has changed and
- * overwrite the old one.
+ * Only allowed parameters are passed.
+ * I.e. name and description can only be updated on ConcreteDimensions.
  *
  * @param {Dimension} dimension
  * @param {Language} language
- * @return Future
- * @resolve to true
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function fetchTranslation(dimension, language) {
-    // TODO: fetch translation from api
-    // TODO: set languageData in dimension
-    // TODO: set translated fields in dimension
-    return Future.reject("Please implement this.");
-}
-
-/**
- * Sets the Dimension's name in the given language. Adds a new available langu-
- * age to the Dimension, if it doesn't exist yet.
+ * @param {Object} params
  *
- * If it is the currentLanguage, the Dimension is updated with the new text.
- *
- * @param {ConcreteDimension} dimension
- * @param {Language} language
- * @param {String} name
  * @return {Future}
- * @resolve to true
+ * @resolve {Dimension}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function setName(dimension, language, name) {
-    // Overwrite current name, if the language is the currently selected one
-    if (dimension.languageData.currentLanguage.equals(language)) {
-        dimension.name = name;
+function updateDimension(dimension, language, params) {
+    const filteredParams = {};
+    for (const key in params) {
+        // If it is a concrete property, it can only be set on a Concrete-
+        // Dimension
+        if (contains(key, concreteProperties)) {
+            if (dimension.isConcrete) {
+                filteredParams[key] = params[key];
+            }
+        } else if (contains(key, properties)) {
+            filteredParams[key] = params[key];
+        }
     }
 
-    // Error after setting name so that the app can be demonstrated without API.
-    // TODO: set name via api in given language
-    return Future.reject("Please implement this.");
-}
+    // TODO: set props via api and return new Dimension
 
-/**
- * Sets the "randomizeQuestions" property.
- *
- * @param {Dimension} dimension
- * @param {Boolean} randomizeQuestions
- * @return {Future}
- * @resolve to true
- * @reject with API error message
- * @cancel
- */
-function setRandomizeQuestions(dimension, randomizeQuestions) {
-    // Set before throwing error so that the app can be used for demos.
-    dimension.randomizeQuestions = randomizeQuestions;
-
-    // TODO: set prop via API
     return Future.reject("Please implement this.");
 }
 
@@ -88,7 +64,11 @@ function setRandomizeQuestions(dimension, randomizeQuestions) {
  * Add a new ConcreteQuestion to the Dimension.
  * Uses the Dimension's currentLanguage.
  *
+ * The Dimension has to be updated or reloaded afterwards, so that the
+ * new Question appears.
+ *
  * @param {ConcreteDimension} dimension
+ * TODO: is owner parameter necessary?
  * @param {DataClient} owner
  * @param {String} text
  * @param {Range} range
@@ -100,29 +80,36 @@ function setRandomizeQuestions(dimension, randomizeQuestions) {
 function addConcreteQuestion(dimension, owner, text, range) {
     // TODO: create via API
     // TODO: retrieve correct href
-    const href = "";
+    const href = (Math.random() + 1).toString(36);
     // TODO: retrieve correct id
-    const id = "";
+    const id = href;
     const language = dimension.languageData.currentLanguage;
-    const languageData = new LanguageData(
-        language,
-        language,
-        [language]
-    );
+    const languageData = new LanguageData(language, language, [language]);
 
-    dimension.questions.push(new ConcreteQuestion(href, id, owner, languageData, text, range, 0, []));
-
-    return Future.reject("Please implement this.");
+    return Future.of(new ConcreteQuestion(
+        href,
+        id,
+        owner,
+        languageData,
+        text,
+        range,
+        0,
+        []
+    ));
 }
 
 /**
  * Add a new ShadowQuestion based on the given ConcreteQuestion to the Dimen-
  * sion.
  *
+ *
+ * The ConcreteDimension has to be updated or reloaded afterwards, so that
+ * the Question appears.
  * The ConcreteQuestion must be updated or reloaded afterwards to reflect the
  * increase in references
  *
  * @param {ConcreteDimension} dimension
+ * TODO: is owner parameter necessary?
  * @param {DataClient} owner
  * @param {ConcreteQuestion} question
  * @return Future
@@ -133,22 +120,31 @@ function addConcreteQuestion(dimension, owner, text, range) {
 function addShadowQuestion(dimension, owner, question) {
     // TODO: create via API
     // TODO: retrieve correct href
-    const href = "";
+    const href = (Math.random() + 1).toString(36);
     // TODO: retrieve correct id
-    const id = "";
+    const id = href;
     const languageData = new LanguageData(
         question.languageData.currentLanguage,
         question.languageData.originalLanguage,
         [...question.languageData.availableLanguages]
     );
 
-    dimension.questions.push(new ShadowQuestion(href, id, owner, languageData, question.text, question.range.clone(), question));
-
-    return Future.reject("Please implement this.");
+    return Future.of(new ShadowQuestion(
+        href,
+        id,
+        owner,
+        languageData,
+        question.text,
+        question.range.clone(),
+        question
+    ));
 }
 
 /**
  * Removes the question from the dimension by deleting the question.
+ *
+ * The ConcreteDimension has to be updated or reloaded afterwards to reflect
+ * the changes.
  *
  * @param {ConcreteDimension} dimension
  * @param {Question} question
@@ -156,11 +152,12 @@ function addShadowQuestion(dimension, owner, question) {
  * @resolve to true
  * @reject {TypeError|ApiError}
  * @cancel
+ *
+ * TODO: is the resolve value sensible? Should this maybe resolve with the updated ConcreteDimension? Define API behavior.
  */
 function removeQuestion(dimension, question) {
     if (contains(question, dimension.questions)) {
         // TODO: delete via API
-        dimension.questions = without([question], dimension.questions);
         return Future.of(true);
     } else {
         return Future.reject("Question not contained in Dimension.");
@@ -168,10 +165,8 @@ function removeQuestion(dimension, question) {
 }
 
 export {
-    reloadDimension,
-    fetchTranslation,
-    setName,
-    setRandomizeQuestions,
+    fetchDimension,
+    updateDimension,
     addConcreteQuestion,
     addShadowQuestion,
     removeQuestion

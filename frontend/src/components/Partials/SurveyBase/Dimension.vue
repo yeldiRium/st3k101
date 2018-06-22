@@ -84,14 +84,6 @@
 
     import {Dimension} from "../../../model/SurveyBase/Dimension";
 
-    import {
-        addConcreteQuestion,
-        fetchTranslation,
-        removeQuestion,
-        setName,
-        setRandomizeQuestions
-    } from "../../../api/Dimension";
-
     import SurveyBase from "./SurveyBase";
     import Question from "./Question";
     import ListItem from "../List/Item";
@@ -166,16 +158,20 @@
              */
             changeLanguage(language) {
                 this.$load(
-                    fetchTranslation(this.dimension, language)
+                    this.$store.dispatch(
+                        "dimensions/fetchDimension",
+                        {href: this.dimension.href, language}
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             /**
              * Add a new translation to the Dimension.
              * This means set new field values via API for the given languages
-             * and then fetch the dimension anew in the now existing language.
+             * and then fetch the Dimension anew in the now existing language.
              * @param language
              */
             addNewTranslation(language) {
@@ -186,11 +182,24 @@
                 const name = "tbd";
 
                 this.$load(
-                    setName(this.dimension, language, name)
-                        .chain(() => this.changeLanguage(language))
+                    this.$store.dispatch(
+                        "dimensions/updateDimension",
+                        {
+                            dimension: this.dimension,
+                            language: language,
+                            params: {
+                                name
+                            }
+                        }
+                    )
+                        .chain(dimension => this.$store.dispatch(
+                            "dimensions/fetchDimension",
+                            {href: dimension.href, language}
+                        ))
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             updateDimensionName(name) {
@@ -198,22 +207,36 @@
                     return;
                 }
                 this.$load(
-                    setName(
-                        this.dimension,
-                        this.dimension.languageData.currentLanguage,
-                        name
+                    this.$store.dispatch(
+                        "dimensions/updateDimension",
+                        {
+                            dimension: this.dimension,
+                            params: {
+                                name
+                            }
+                        }
                     )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             updateRandomizeQuestions(randomizeQuestions) {
                 this.$load(
-                    setRandomizeQuestions(this.dimension, randomizeQuestions)
+                    this.$store.dispatch(
+                        "dimensions/updateDimension",
+                        {
+                            dimension: this.dimension,
+                            params: {
+                                randomizeQuestions
+                            }
+                        }
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             openNewQuestionDialog() {
@@ -233,12 +256,19 @@
                     return;
                 }
                 this.$load(
-                    addConcreteQuestion(
-                        this.dimension, this.dataClient, text, range
+                    this.$store.dispatch(
+                        "dimensions/addConcreteQuestion",
+                        {
+                            dimension: this.dimension,
+                            params: {
+                                text, range
+                            }
+                        }
                     )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             /**
@@ -250,10 +280,17 @@
                     return;
                 }
                 this.$load(
-                    removeQuestion(this.dimension, question)
+                    this.$store.dispatch(
+                        "dimensions/removeQuestion",
+                        {
+                            dimension: this.dimension,
+                            question
+                        }
+                    )
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    () => {
+                    }
                 );
             },
             /**

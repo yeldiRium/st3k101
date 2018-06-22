@@ -236,10 +236,7 @@
                         .chain(
                             questionnaire => this.$store.dispatch(
                                 "questionnaires/fetchQuestionnaire",
-                                {
-                                    href: questionnaire.href,
-                                    language
-                                }
+                                {href: questionnaire.href, language}
                             )
                         )
                 ).fork(

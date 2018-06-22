@@ -17,9 +17,11 @@ import {ConcreteQuestionnaire} from "../../model/SurveyBase/Questionnaire";
 import {Language, LanguageData} from "../../model/Language";
 import {
     addConcreteDimension,
+    addShadowDimension,
     createConcreteQuestionnaire,
     deleteQuestionnaire,
     fetchQuestionnaire,
+    removeDimension,
     updateQuestionnaire
 } from "../../api/Questionnaire";
 
@@ -162,7 +164,24 @@ const store = {
             return fetchQuestionnaire(href, language)
                 .chain(questionnaire => {
                     commit("patchQuestionnaire", {questionnaire});
-                    // TODO: add the Questionnaire's dimensions to Dimension store
+
+                    // MAYBE: refactor this, so that only dimensions have
+                    // to be added. could do this in a separate action and have
+                    // an action on Dimension store, which adds the Questions.
+                    for (const dimension of questionnaire.dimensions) {
+                        commit(
+                            "dimensions/patchDimension",
+                            {dimension},
+                            {root: true}
+                        );
+                        for (const question of dimension.questions) {
+                            commit(
+                                "questions/patchQuestion",
+                                {question},
+                                {root: true}
+                            );
+                        }
+                    }
                     return Future.of(questionnaire);
                 })
         },
@@ -224,7 +243,21 @@ const store = {
             return deleteQuestionnaire(questionnaire)
                 .chain(() => {
                     commit("removeQuestionnaire", {questionnaire});
-                    // TODO: remove the Questionnaire's dimensions from Dimension store
+
+                    for (const dimension of questionnaire.dimensions) {
+                        for (const question of dimension.questions) {
+                            commit(
+                                "questions/removeQuestion",
+                                {question},
+                                {root: true}
+                            );
+                        }
+                        commit(
+                            "dimensions/removeDimension",
+                            {dimension},
+                            {root: true}
+                        );
+                    }
                     return Future.of(true);
                 })
                 // TODO: remove this
@@ -232,6 +265,21 @@ const store = {
                 // This is used for testing while the API is not ready yet.
                 .chainRej(error => {
                     commit("removeQuestionnaire", {questionnaire});
+
+                    for (const dimension of questionnaire.dimensions) {
+                        for (const question of dimension.questions) {
+                            commit(
+                                "questions/removeQuestion",
+                                {question},
+                                {root: true}
+                            );
+                        }
+                        commit(
+                            "dimensions/removeDimension",
+                            {dimension},
+                            {root: true}
+                        );
+                    }
                     return Future.reject(error);
                 });
         },
@@ -273,7 +321,11 @@ const store = {
                     questionnaire,
                     dimension: concreteDimension
                 });
-                // TODO: add concreteDimension to Dimension store
+                commit(
+                    "dimensions/patchDimension",
+                    {dimension: concreteDimension},
+                    {root: true}
+                );
                 return Future.of(concreteDimension);
             })
         },
@@ -282,19 +334,20 @@ const store = {
          * the given ConcreteDimension.
          *
          * @param commit
+         * @param dispatch
          * @param rootGetters
          * @param {ConcreteQuestionnaire} questionnaire
-         * @param {ConcreteDimension} dimension
+         * @param {ConcreteDimension} concreteDimension
          *
          * @return {Future}
          * @resolve {ShadowDimension}
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        addShadowDimension({commit, rootGetters},
+        addShadowDimension({commit, dispatch, rootGetters},
                            {
                                questionnaire,
-                               dimension
+                               concreteDimension
                            }) {
             if (questionnaire.isShadow) {
                 return Future.reject(
@@ -304,7 +357,7 @@ const store = {
                     )
                 );
             }
-            if (dimension.isShadow) {
+            if (concreteDimension.isShadow) {
                 return Future.reject(
                     new ValidationError(
                         "AddShadowDimension may not be called for ShadowDimension.",
@@ -316,15 +369,36 @@ const store = {
             return addShadowDimension(
                 questionnaire,
                 rootGetters["session/dataClient"],
-                dimension
+                concreteDimension
             ).chain(shadowDimension => {
                 commit("addDimensionToQuestionnaire", {
                     questionnaire,
                     dimension: shadowDimension
                 });
-                // TODO: reload concreteDimension in Dimension store
-                // TODO: add shadowDimension to Dimension store
-                return Future.of(shadowDimension);
+                // Add new ShadowDimension to Dimension store
+                commit(
+                    "dimensions/patchDimension",
+                    {dimension: shadowDimension},
+                    {root: true}
+                );
+                // Add ShadowQuestions created on the server to Question store
+                for (const shadowQuestion of shadowDimension.questions) {
+                    commit(
+                        "questions/patchQuestion",
+                        {question: shadowQuestion},
+                        {root: true}
+                    );
+                }
+                // Reload original ConcreteDimension to have an accurate
+                // reference count
+                return dispatch(
+                    "dimensions/fetchDimension",
+                    {
+                        href: concreteDimension.href,
+                        language: concreteDimension.languageData.currentLanguage
+                    }
+                    // still resolve to the new ShadowDimension
+                ).map(() => shadowDimension);
             })
         },
         /**
@@ -358,8 +432,19 @@ const store = {
                             dimension
                         }
                     );
-                    // TODO: remove dimension from Dimension store
-                    // TODO: propagate into Question store? Probably done in Dimension store.
+
+                    for (const question of dimension.questions) {
+                        commit(
+                            "questions/removeQuestion",
+                            {question},
+                            {root: true}
+                        );
+                    }
+                    commit(
+                        "dimensions/removeDimension",
+                        {dimension},
+                        {root: true}
+                    );
                     return Future.of(questionnaire);
                 })
         }

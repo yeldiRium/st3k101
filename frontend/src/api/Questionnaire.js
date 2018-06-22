@@ -44,9 +44,9 @@ function createConcreteQuestionnaire(owner,
                                      xapiTarget = "") {
     // TODO: create via API
     // TODO: retrieve correct href
-    const href = "";
+    const href = (Math.random() + 1).toString(36);
     // TODO: retrieve correct id
-    const id = "";
+    const id = href;
     const languageData = new LanguageData(language, language, [language]);
 
     // TODO: remove timeout. this is for testing purposes
@@ -85,9 +85,9 @@ function createConcreteQuestionnaire(owner,
 function createShadowQuestionnaire(owner, questionnaire) {
     // TODO: create via API
     // TODO: retrieve correct href
-    const href = "";
+    const href = (Math.random() + 1).toString(36);
     // TODO: retrieve correct id
-    const id = "";
+    const id = href;
     const languageData = new LanguageData(
         questionnaire.languageData.currentLanguage,
         questionnaire.languageData.originalLanguage,
@@ -197,9 +197,9 @@ function deleteQuestionnaire(questionnaire) {
 function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
     // TODO: add via API
     // TODO: retrieve correct href
-    const href = "";
+    const href = (Math.random() + 1).toString(36);
     // TODO: retrieve correct id
-    const id = "";
+    const id = href;
     const language = questionnaire.languageData.currentLanguage;
     const languageData = new LanguageData(language, language, [language]);
 
@@ -238,9 +238,9 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
 function addShadowDimension(questionnaire, owner, dimension) {
     // TODO: add via API
     // TODO: retrieve correct href
-    const href = "";
+    const href = (Math.random() + 1).toString(36);
     // TODO: retrieve correct id
-    const id = "";
+    const id = href;
     const languageData = new LanguageData(
         dimension.languageData.currentLanguage,
         dimension.languageData.originalLanguage,
@@ -264,7 +264,7 @@ function addShadowDimension(questionnaire, owner, dimension) {
 /**
  * Removes a Dimension from a ConcreteQuestionnaire and deletes it.
  *
- * The ConcreteQuestionnaire has to be replaced afterwards to reflect
+ * The ConcreteQuestionnaire has to be updated or reloaded afterwards to reflect
  * the changes.
  *
  * @param {ConcreteQuestionnaire} questionnaire
