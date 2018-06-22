@@ -90,7 +90,7 @@
 </template>
 
 <script>
-    import {concat, contains, map} from "ramda";
+    import {concat, contains, forEach} from "ramda";
 
     import Range from "../../../../model/SurveyBase/Config/Range";
 
@@ -224,35 +224,35 @@
                 return this.numberX(number) - this.gap / 2;
             },
             startHover(number) {
-                const lines = document.getElementsByClassName(
+                const lines = this.$el.getElementsByClassName(
                     `range-svg__number-line-${number}`
                 );
-                const texts = document.getElementsByClassName(
+                const texts = this.$el.getElementsByClassName(
                     `range-svg__number-${number}`
                 );
 
-                map(
+                forEach(
                     elem => elem.classList.add("range-svg--hover"),
                     lines
                 );
-                map(
+                forEach(
                     elem => elem.classList.add("range-svg--hover"),
                     texts
                 );
             },
             endHover(number) {
-                const lines = document.getElementsByClassName(
+                const lines = this.$el.getElementsByClassName(
                     `range-svg__number-line-${number}`
                 );
-                const texts = document.getElementsByClassName(
+                const texts = this.$el.getElementsByClassName(
                     `range-svg__number-${number}`
                 );
 
-                map(
+                forEach(
                     elem => elem.classList.remove("range-svg--hover"),
                     lines
                 );
-                map(
+                forEach(
                     elem => elem.classList.remove("range-svg--hover"),
                     texts
                 );
