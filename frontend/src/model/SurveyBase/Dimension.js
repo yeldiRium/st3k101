@@ -166,6 +166,7 @@ function populateOwnedIncomingReferences(concreteDimension) {
             resolvedShadowDimensionFutures.push(shadowDimensionFuture);
         }
     }
+    // MAYBE: is Infinity appropriate?
     return Future.parallel(Infinity, resolvedShadowDimensionFutures);
 }
 

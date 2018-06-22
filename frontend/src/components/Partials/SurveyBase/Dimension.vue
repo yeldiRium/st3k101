@@ -10,6 +10,11 @@
                   :disabled="!isEditable(dimension)"
                   @edit="updateDimensionName"
         >
+            <router-link :to="{name: 'ADimension', params: {id: dimension.id}}">
+                <IconLink class="list-item__icon"
+                          v-if="showLink"
+                />
+            </router-link>
             <template>
                 <IconExpandLess class="list-item__icon"
                                 v-if="expanded"
@@ -92,6 +97,7 @@
     import Toggle from "../Form/ToggleButton";
     import Button from "../Form/Button";
 
+    import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
     import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
@@ -106,6 +112,7 @@
             ReferenceCounter,
             Toggle,
             Button,
+            IconLink,
             IconReorder,
             IconExpandLess,
             IconExpandMore
@@ -118,6 +125,10 @@
             initiallyExpanded: {
                 type: Boolean,
                 default: false
+            },
+            showLink: {
+                type: Boolean,
+                default: true
             }
         },
         data() {

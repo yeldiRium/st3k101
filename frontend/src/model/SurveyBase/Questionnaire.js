@@ -190,6 +190,7 @@ function populateOwnedIncomingReferences(concreteQuestionnaire) {
             resolvedShadowQuestionnaireFutures.push(shadowQuestionFuture);
         }
     }
+    // MAYBE: is Infinity appropriate?
     return Future.parallel(Infinity, resolvedShadowQuestionnaireFutures);
 }
 

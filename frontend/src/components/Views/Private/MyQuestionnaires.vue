@@ -1,7 +1,5 @@
 <template>
-    <div class="my-questionnaires"
-         :style="style"
-    >
+    <div class="my-questionnaires">
         <Questionnaire :style="itemStyle"
                        v-for="questionnaire in myQuestionnaires"
                        :key="questionnaire.href"
@@ -36,12 +34,9 @@
             this.loadQuestionnaires();
         },
         computed: {
-            ...mapState("global", ["window"]),
             ...mapState("session", ["dataClient"]),
             ...mapGetters("questionnaires", ["myQuestionnaires"]),
-            style() {
-                return {};
-            },
+            ...mapState("global", ["window"]),
             itemStyle() {
                 let width = "1200px";
                 if (this.window.width * .8 < 1200) {
