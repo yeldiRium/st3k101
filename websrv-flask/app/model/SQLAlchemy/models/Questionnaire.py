@@ -118,6 +118,10 @@ class Questionnaire(SurveyBase):
             n_questions = 1
         return count // n_questions
 
+    @property
+    def available_languages(self):
+        return [BabelLanguage[k] for k in self.name_translations.keys()]
+
     def new_dimension(self, name: str) -> ConcreteDimension:
         if not isinstance(self, ConcreteQuestionnaire):
             raise BusinessRuleViolation("Can't modify shadow instances!")
