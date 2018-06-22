@@ -15,20 +15,16 @@ const store = {
     },
     getters: {
         questionById(state) {
-            return id => {
-                find(
-                    question => question.id === id,
-                    state.questions
-                )
-            }
+            return id => find(
+                question => question.id === id,
+                state.questions
+            )
         },
         questionByHref(state) {
-            return href => {
-                find(
-                    question => question.href === href,
-                    state.questions
-                )
-            }
+            return href => find(
+                question => question.href === href,
+                state.questions
+            )
         }
     },
     actions: {

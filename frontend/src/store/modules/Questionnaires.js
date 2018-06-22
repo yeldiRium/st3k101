@@ -53,20 +53,16 @@ const store = {
             return [];
         },
         questionnaireById(state) {
-            return id => {
-                find(
-                    questionnaire => questionnaire.id === id,
-                    state.questionnaires
-                )
-            }
+            return id => find(
+                questionnaire => questionnaire.id === id,
+                state.questionnaires
+            )
         },
         questionnaireByHref(state) {
-            return href => {
-                find(
-                    questionnaire => questionnaire.href === href,
-                    state.questionnaires
-                )
-            }
+            return href => find(
+                questionnaire => questionnaire.href === href,
+                state.questionnaires
+            )
         }
     },
     actions: {

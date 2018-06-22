@@ -21,20 +21,16 @@ const store = {
     },
     getters: {
         dimensionById(state) {
-            return id => {
-                find(
-                    dimension => dimension.id === id,
-                    state.dimensions
-                )
-            }
+            return id => find(
+                dimension => dimension.id === id,
+                state.dimensions
+            )
         },
         dimensionByHref(state) {
-            return href => {
-                find(
-                    dimension => dimension.href === href,
-                    state.dimensions
-                )
-            }
+            return href => find(
+                dimension => dimension.href === href,
+                state.dimensions
+            )
         }
     },
     actions: {
