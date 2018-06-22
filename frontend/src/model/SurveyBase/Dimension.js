@@ -3,6 +3,7 @@ import Future from "fluture";
 import Party from "../Party";
 import Question from "./Question";
 import SurveyBase from "./SurveyBase";
+import {fetchDimension} from "../../api/Dimension";
 
 class Dimension extends SurveyBase {
     /**
@@ -138,14 +139,14 @@ class ShadowDimension extends Dimension {
  *
  * Accesses the API to load the Dimensions.
  *
- * TODO: implement. currently this replaces all Resource-type references with
- *       empty objects.
+ * If this rejects, then some dimensions might be populated and some might still
+ * be Resources. The exact state will have to be tested.
  *
  * @param {ConcreteDimension} concreteDimension
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @resolve {Array<ShadowDimension>}
+ * @reject {TypeError|ApiError}
+ * @cancel
  */
 function populateOwnedIncomingReferences(concreteDimension) {
     const resolvedShadowDimensionFutures = [];
@@ -155,12 +156,14 @@ function populateOwnedIncomingReferences(concreteDimension) {
         let reference = concreteDimension.ownedIncomingReferences[i];
 
         if (instanceOf(reference, Resource)) {
-            // TODO: fetch ShadowDimension and replace
-            const shadowDimensionFuture = Future.of({}) // <- replace with actual API call
-                .map(shadowDimension => {
+            const shadowDimensionFuture = fetchDimension(
+                reference.href,
+                concreteDimension.languageData.currentLanguage
+            )
+                .chain(shadowDimension => {
                     concreteDimension.ownedIncomingReferences[i] =
                         shadowDimension;
-                    return true;
+                    return Future.of(shadowDimension);
                 });
 
             resolvedShadowDimensionFutures.push(shadowDimensionFuture);
@@ -176,26 +179,24 @@ function populateOwnedIncomingReferences(concreteDimension) {
  *
  * Accesses the API to load the Dimension.
  *
- * If it is invalid or does not resolve to anything, an error is thrown.
- *
- * TODO: implement this. currently it replaces the reference with an empty
- *       object.
- *
  * @param {ShadowDimension} shadowDimension
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @resolve {ConcreteDimension}
+ * @reject {TypeError|ApiError}
+ * @cancel
  */
 function populateReferenceTo(shadowDimension) {
     if (instanceOf(shadowDimension.referenceTo, Resource)) {
-        // TODO: fetch ConcreteDimension and replace
-        return Future.of({}) // <- replace with actual API call
-            .map(concreteDimension => {
+        return fetchDimension(
+            shadowDimension.referenceTo.href,
+            shadowDimension.languageData.currentLanguage
+        )
+            .chain(concreteDimension => {
                 shadowDimension.referenceTo = concreteDimension;
+                return Future.of(concreteDimension);
             });
     }
-    return Future.of(true);
+    return Future.of(shadowDimension.referenceTo);
 }
 
 /**
@@ -204,9 +205,9 @@ function populateReferenceTo(shadowDimension) {
  *
  * @param {Dimension} dimension
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @resolve {Array<ShadowDimension>|ConcreteDimension}
+ * @reject {TypeError|ApiError}
+ * @cancel
  */
 function populateDimension(dimension) {
     if (instanceOf(dimension, ShadowDimension)) {

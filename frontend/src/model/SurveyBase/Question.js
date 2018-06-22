@@ -151,8 +151,8 @@ class ShadowQuestion extends Question {
  *
  * @param {ConcreteQuestion} concreteQuestion
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
+ * @resolve {Array<ShadowQuestion>}
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function populateOwnedIncomingReferences(concreteQuestion) {
@@ -164,7 +164,10 @@ function populateOwnedIncomingReferences(concreteQuestion) {
         let reference = concreteQuestion.ownedIncomingReferences[i];
 
         if (instanceOf(reference, Resource)) {
-            const shadowQuestionFuture = fetchQuestion({href: reference.href})
+            const shadowQuestionFuture = fetchQuestion(
+                reference.href,
+                concreteQuestion.languageData.currentLanguage
+            )
                 .chain(shadowQuestion => {
                     concreteQuestion.ownedIncomingReferences[i] =
                         shadowQuestion;
@@ -187,25 +190,24 @@ function populateOwnedIncomingReferences(concreteQuestion) {
  * If this rejects, the referenceTo property was not replaced. It might still be
  * a Resource.
  *
- * TODO: implement this. currently it replaces the reference with an empty
- *       object.
- *
  * @param {ShadowQuestion} shadowQuestion
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
+ * @resolve {ConcreteQuestion}
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function populateReferenceTo(shadowQuestion) {
     if (instanceOf(shadowQuestion.referenceTo, Resource)) {
-        const shadowQuestionFuture = fetchQuestion({
-            href: shadowQuestion.referenceTo.href
-        })
-            .chain(shadowQuestion => {
+        const shadowQuestionFuture = fetchQuestion(
+            shadowQuestion.referenceTo.href,
+            shadowQuestion.languageData.currentLanguage
+        )
+            .chain(concreteQuestion => {
                 shadowQuestion.referenceTo = concreteQuestion;
-                return Future.of(shadowQuestion);
+                return Future.of(concreteQuestion);
             });
     }
+    return Future.of(shadowQuestion.referenceTo);
 }
 
 /**
@@ -214,8 +216,8 @@ function populateReferenceTo(shadowQuestion) {
  *
  * @param {Question} question
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
+ * @resolve {Array<ShadowQuestion>|ConcreteQuestion}
+ * @reject {TypeError|ApiError}
  * @cancel
  */
 function populateQuestion(question) {

@@ -1,6 +1,7 @@
 import Future from "fluture";
 
 import SurveyBase from "./SurveyBase";
+import {fetchQuestionnaire} from "../../api/Questionnaire";
 
 class Questionnaire extends SurveyBase {
     /**
@@ -160,14 +161,14 @@ class ShadowQuestionnaire extends Questionnaire {
  *
  * Accesses the API to load the Questionnaires.
  *
- * TODO: implement. currently this replaces all Resource-type references with
- *       empty objects.
+ * If this rejects, then some questionnaires might be populated and some might
+ * still be Resources. The exact state will have to be tested.
  *
  * @param {ConcreteQuestionnaire} concreteQuestionnaire
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @resolve {Array<ShadowQuestionnaire>}
+ * @reject {TypeError|ApiError}
+ * @cancel
  */
 function populateOwnedIncomingReferences(concreteQuestionnaire) {
     const resolvedShadowQuestionnaireFutures = [];
@@ -179,15 +180,17 @@ function populateOwnedIncomingReferences(concreteQuestionnaire) {
         let reference = concreteQuestionnaire.ownedIncomingReferences[i];
 
         if (instanceOf(reference, Resource)) {
-            // TODO: fetch ShadowQuestionnaire and replace
-            const shadowQuestionFuture = Future.of({}) // <- replace with actual API call
-                .map(shadowQuestionnaire => {
+            const shadowQuestionnaireFuture = fetchQuestionnaire(
+                reference.href,
+                concreteQuestionnaire.languageData.currentLanguage
+            )
+                .chain(shadowQuestionnaire => {
                     concreteQuestionnaire.ownedIncomingReferences[i] =
                         shadowQuestionnaire;
-                    return true;
+                    return Future.of(shadowQuestionnaire);
                 });
 
-            resolvedShadowQuestionnaireFutures.push(shadowQuestionFuture);
+            resolvedShadowQuestionnaireFutures.push(shadowQuestionnaireFuture);
         }
     }
     // MAYBE: is Infinity appropriate?
@@ -200,26 +203,25 @@ function populateOwnedIncomingReferences(concreteQuestionnaire) {
  *
  * Accesses the API to load the Questionnaire.
  *
- * If it is invalid or does not resolve to anything, an error is thrown.
- *
- * TODO: implement this. currently it replaces the reference with an empty
- *       object.
- *
  * @param {ShadowQuestionnaire} shadowQuestionnaire
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @resolve {ConcreteQuestionnaire}
+ * @reject {TypeError|ApiError}
+ * @cancel
  */
 function populateReferenceTo(shadowQuestionnaire) {
     if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
         // TODO: fetch ConcreteQuestionnaire and replace
-        return Future.of({}) // <- replace with actual API call
-            .map(concreteQuestionnaire => {
+        return fetchQuestionnaire(
+            shadowQuestionnaire.referenceTo.href,
+            shadowQuestionnaire.languageData.currentLanguage
+        )
+            .chain(concreteQuestionnaire => {
                 shadowQuestionnaire.referenceTo = concreteQuestionnaire;
+                return Future.of(concreteQuestionnaire);
             });
     }
-    return Future.of(true);
+    return Future.of(shadowQuestionnaire.referenceTo);
 }
 
 /**
@@ -228,9 +230,9 @@ function populateReferenceTo(shadowQuestionnaire) {
  *
  * @param {Questionnaire} questionnaire
  * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
+ * @resolve {Array<ShadowQuestionnaire>|ConcreteQuestionnaire}
+ * @reject {TypeError|ApiError}
+ * @cancel
  */
 function populateQuestionnaire(questionnaire) {
     if (instanceOf(questionnaire, ShadowQuestionnaire)) {
