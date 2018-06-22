@@ -14,10 +14,16 @@ __author__ = "Noah Hummel"
 
 
 class DataClientResource(Resource):
+    @staticmethod
+    def dump(schema, dataclient):
+        return {
+            **schema.dump(dataclient).data,
+            'href': api.url_for(DataClientResource) + '/{}'.format(dataclient.id)
+        }
 
     @needs_minimum_role(Role.User)
     def get(self, item_id=None):
-        schema = DataClientSchema(DataClientResource)
+        schema = DataClientSchema()
 
         if item_id is not None and item_id != current_user().id:
             if not current_has_minimum_role(Role.Admin):
@@ -51,7 +57,7 @@ class DataClientResource(Resource):
 
         db.session.add(dataclient)
         db.session.commit()
-        return schema.dump(dataclient).data
+        return self.dump(schema, dataclient), 201
 
     @needs_minimum_role(Role.User)
     def delete(self, item_id=None):
@@ -62,8 +68,8 @@ class DataClientResource(Resource):
             dataclient = DataClient.query.get(item_id)
             if dataclient is None:
                 abort(404)
-            schema = DataClientSchema(DataClientResource)
-            dataclient_data = schema.dump(dataclient).data
+            schema = DataClientSchema()
+            dataclient_data = self.dump(schema, dataclient)
             db.session.delete(dataclient)
             db.session.commit()
             return {
