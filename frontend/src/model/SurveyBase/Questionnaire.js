@@ -1,7 +1,4 @@
-import Future from "fluture";
-
 import SurveyBase from "./SurveyBase";
-import {fetchQuestionnaire} from "../../api/Questionnaire";
 
 class Questionnaire extends SurveyBase {
     /**
@@ -154,102 +151,10 @@ class ShadowQuestionnaire extends Questionnaire {
     }
 }
 
-/**
- * Takes in a Questionnaire and populates its incoming references field by re-
- * placing all resolvable References with their corresponding ShadowQuestion-
- * naire instances.
- *
- * Accesses the API to load the Questionnaires.
- *
- * If this rejects, then some questionnaires might be populated and some might
- * still be Resources. The exact state will have to be tested.
- *
- * @param {ConcreteQuestionnaire} concreteQuestionnaire
- * @return {Future}
- * @resolve {Array<ShadowQuestionnaire>}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateOwnedIncomingReferences(concreteQuestionnaire) {
-    const resolvedShadowQuestionnaireFutures = [];
-
-    // Use basic for loop to easily replace values.
-    for (let i = 0;
-         i < concreteQuestionnaire.ownedIncomingReferences.length;
-         i++) {
-        let reference = concreteQuestionnaire.ownedIncomingReferences[i];
-
-        if (instanceOf(reference, Resource)) {
-            const shadowQuestionnaireFuture = fetchQuestionnaire(
-                reference.href,
-                concreteQuestionnaire.languageData.currentLanguage
-            )
-                .chain(shadowQuestionnaire => {
-                    concreteQuestionnaire.ownedIncomingReferences[i] =
-                        shadowQuestionnaire;
-                    return Future.of(shadowQuestionnaire);
-                });
-
-            resolvedShadowQuestionnaireFutures.push(shadowQuestionnaireFuture);
-        }
-    }
-    // MAYBE: is Infinity appropriate?
-    return Future.parallel(Infinity, resolvedShadowQuestionnaireFutures);
-}
-
-/**
- * If the referenceTo field contains a Resource, it is resolved to a
- * ConcreteQuestionnaire instance. Otherwise it is left as is.
- *
- * Accesses the API to load the Questionnaire.
- *
- * @param {ShadowQuestionnaire} shadowQuestionnaire
- * @return {Future}
- * @resolve {ConcreteQuestionnaire}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateReferenceTo(shadowQuestionnaire) {
-    if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
-        // TODO: fetch ConcreteQuestionnaire and replace
-        return fetchQuestionnaire(
-            shadowQuestionnaire.referenceTo.href,
-            shadowQuestionnaire.languageData.currentLanguage
-        )
-            .chain(concreteQuestionnaire => {
-                shadowQuestionnaire.referenceTo = concreteQuestionnaire;
-                return Future.of(concreteQuestionnaire);
-            });
-    }
-    return Future.of(shadowQuestionnaire.referenceTo);
-}
-
-/**
- * Based on the type of the given Questionnaire this either populates its inco-
- * ming references or its referenceTo field.
- *
- * @param {Questionnaire} questionnaire
- * @return {Future}
- * @resolve {Array<ShadowQuestionnaire>|ConcreteQuestionnaire}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateQuestionnaire(questionnaire) {
-    if (instanceOf(questionnaire, ShadowQuestionnaire)) {
-        return populateReferenceTo(questionnaire);
-    }
-    if (instanceOf(questionnaire, ConcreteQuestionnaire)) {
-        return populateOwnedIncomingReferences(questionnaire);
-    }
-}
-
 export default Questionnaire;
 
 export {
     Questionnaire,
     ConcreteQuestionnaire,
-    ShadowQuestionnaire,
-    populateOwnedIncomingReferences,
-    populateReferenceTo,
-    populateQuestionnaire
+    ShadowQuestionnaire
 }

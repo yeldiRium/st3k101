@@ -1,9 +1,4 @@
-import Future from "fluture";
-
-import Party from "../Party";
-import Question from "./Question";
 import SurveyBase from "./SurveyBase";
-import {fetchDimension} from "../../api/Dimension";
 
 class Dimension extends SurveyBase {
     /**
@@ -133,98 +128,10 @@ class ShadowDimension extends Dimension {
     }
 }
 
-/**
- * Takes in a Dimension and populates its incoming references field by replacing
- * all resolvable References with their corresponding ShadowDimension instances.
- *
- * Accesses the API to load the Dimensions.
- *
- * If this rejects, then some dimensions might be populated and some might still
- * be Resources. The exact state will have to be tested.
- *
- * @param {ConcreteDimension} concreteDimension
- * @return {Future}
- * @resolve {Array<ShadowDimension>}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateOwnedIncomingReferences(concreteDimension) {
-    const resolvedShadowDimensionFutures = [];
-
-    // Use basic for loop to easily replace values.
-    for (let i = 0; i < concreteDimension.ownedIncomingReferences.length; i++) {
-        let reference = concreteDimension.ownedIncomingReferences[i];
-
-        if (instanceOf(reference, Resource)) {
-            const shadowDimensionFuture = fetchDimension(
-                reference.href,
-                concreteDimension.languageData.currentLanguage
-            )
-                .chain(shadowDimension => {
-                    concreteDimension.ownedIncomingReferences[i] =
-                        shadowDimension;
-                    return Future.of(shadowDimension);
-                });
-
-            resolvedShadowDimensionFutures.push(shadowDimensionFuture);
-        }
-    }
-    // MAYBE: is Infinity appropriate?
-    return Future.parallel(Infinity, resolvedShadowDimensionFutures);
-}
-
-/**
- * If the referenceTo field contains a Resource, it is resolved to a
- * ConcreteDimension instance. Otherwise it is left as is.
- *
- * Accesses the API to load the Dimension.
- *
- * @param {ShadowDimension} shadowDimension
- * @return {Future}
- * @resolve {ConcreteDimension}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateReferenceTo(shadowDimension) {
-    if (instanceOf(shadowDimension.referenceTo, Resource)) {
-        return fetchDimension(
-            shadowDimension.referenceTo.href,
-            shadowDimension.languageData.currentLanguage
-        )
-            .chain(concreteDimension => {
-                shadowDimension.referenceTo = concreteDimension;
-                return Future.of(concreteDimension);
-            });
-    }
-    return Future.of(shadowDimension.referenceTo);
-}
-
-/**
- * Based on the type of the given Dimension this either populates its incoming
- * references or its referenceTo field.
- *
- * @param {Dimension} dimension
- * @return {Future}
- * @resolve {Array<ShadowDimension>|ConcreteDimension}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateDimension(dimension) {
-    if (instanceOf(dimension, ShadowDimension)) {
-        return populateReferenceTo(dimension);
-    }
-    if (instanceOf(dimension, ConcreteDimension)) {
-        return populateOwnedIncomingReferences(dimension);
-    }
-}
-
 export default Dimension;
 
 export {
     Dimension,
     ConcreteDimension,
-    ShadowDimension,
-    populateOwnedIncomingReferences,
-    populateReferenceTo,
-    populateDimension
+    ShadowDimension
 }
