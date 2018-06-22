@@ -20,7 +20,6 @@ class SurveyBase(OwnershipBase):
     __tablename__ = 'survey_base'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
-    reference_id = db.Column(db.String(128))
     _template = db.Column(db.Boolean, default=False)
 
     @property
@@ -30,6 +29,11 @@ class SurveyBase(OwnershipBase):
     @template.setter
     def template(self, value):
         self._template = value
+
+    @property
+    @abstractmethod
+    def reference_id(self) -> str:
+        raise NotImplementedError
 
     @property
     @abstractmethod

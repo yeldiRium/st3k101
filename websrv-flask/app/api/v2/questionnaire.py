@@ -16,13 +16,19 @@ __author__ = "Noah Hummel"
 class QuestionnaireResource(Resource):
     @staticmethod
     def dump(schema, questionnaire):
-        return {
+        data = {
             **schema.dump(questionnaire).data,
             'href': api.url_for(
                 QuestionnaireResource,
                 questionnaire_id=questionnaire.id
             )
         }
+        if data['shadow']:
+            data['shadow_href'] = api.url_for(
+                QuestionnaireResource,
+                questionnaire_id=questionnaire.concrete_id
+            )
+        return data
 
     def get(self, questionnaire_id=None):
         schema = QuestionnaireSchema()
@@ -48,17 +54,19 @@ class QuestionnaireResource(Resource):
                 'errors': errors
             }, 400
 
-        concrete_attributes = ['name', 'description']
+        shadow_attributes = ['published', 'allow_embedded', 'xapi_target']
         for k, v in data.items():
-            if k == 'template' and not current_has_minimum_role(Role.Contributor):
-                errors[k] = ['You need to be a contributor to publish templates.']
-                continue
-            if isinstance(questionnaire, ShadowQuestionnaire) and k in concrete_attributes:
-                errors[k] = ['Can\'t update {} of a ShadowQuestionnaire. The '
-                             'contributor owning the template is responsible '
-                             'for the Questionnaire\'s content.'.format(k)]
+            if isinstance(questionnaire, ShadowQuestionnaire):
+                if k not in shadow_attributes:
+                    errors[k] = ['Can\'t update {} of a ShadowQuestionnaire. The '
+                                 'contributor owning the template is responsible '
+                                 'for the Questionnaire\'s content.'.format(k)]
+                    continue
             else:
-                setattr(questionnaire, k, v)
+                if k == 'template' and not current_has_minimum_role(Role.Contributor):
+                    errors[k] = ['You need to be a contributor to publish templates.']
+                    continue
+            setattr(questionnaire, k, v)
         db.session.commit()
 
         response = {
@@ -76,7 +84,7 @@ class QuestionnaireResource(Resource):
         if not questionnaire.modifiable_by(current_user()):
             abort(404)
         data = self.dump(QuestionnaireSchema(), questionnaire)
-        db.session.delete(questionnaire)
+        questionnaire.delete()
         db.session.commit()
         return {
             'message': 'Questionnaire removed.',
