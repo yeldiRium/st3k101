@@ -9,6 +9,11 @@
                   :disabled="!isEditable(question)"
                   @edit="updateQuestionText"
         >
+            <router-link :to="{name: 'AQuestion', params: {id: question.id}}">
+                <IconLink class="list-item__icon"
+                          v-if="showLink"
+                />
+            </router-link>
             <template>
                 <IconExpandLess class="list-item__icon"
                                 v-if="expanded"
@@ -72,6 +77,7 @@
     import Range from "./Config/RangeSVG";
     import Button from "../Form/Button";
 
+    import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
@@ -86,6 +92,7 @@
             RangeEditor,
             Range,
             Button,
+            IconLink,
             IconReorder,
             IconExpandMore,
             IconExpandLess
@@ -99,6 +106,10 @@
             initiallyExpanded: {
                 type: Boolean,
                 default: false
+            },
+            showLink: {
+                type: Boolean,
+                default: true
             }
         },
         data() {

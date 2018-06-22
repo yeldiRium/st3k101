@@ -1,12 +1,28 @@
 <template>
     <div class="a-question">
-
+        <Question :key="question.href"
+                  :question="question"
+                  :deletable="false"
+        />
     </div>
 </template>
 
 <script>
+    import {mapGetters} from "vuex-fluture";
+
+    import Question from "../../Partials/SurveyBase/Question";
+
     export default {
-        name: "AQuestion"
+        name: "AQuestion",
+        components: {
+            Question
+        },
+        computed: {
+            ...mapGetters("questions", ["questionById"]),
+            question() {
+                return this.questionById(this.$route.params.id);
+            }
+        }
     }
 </script>
 
