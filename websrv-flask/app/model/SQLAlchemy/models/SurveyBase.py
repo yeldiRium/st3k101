@@ -82,4 +82,10 @@ class SurveyBase(OwnershipBase):
         super(SurveyBase, self).__init__(**kwargs)
         self.owners.append(current_user())
 
+    def accessible_by(self, party):
+        return super(SurveyBase, self).accessible_by(party) or self.template
+
+    def modifiable_by(self, party):
+        return super(SurveyBase, self).accessible_by(party)
+
     # TODO: add original_language

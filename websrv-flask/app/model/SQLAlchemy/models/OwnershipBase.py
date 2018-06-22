@@ -1,3 +1,5 @@
+from auth.roles import Role
+
 __author__ = "Noah Hummel"
 
 
@@ -8,6 +10,14 @@ ownership_table = db.Table('ownership_assoc', db.Model.metadata,
     db.Column('person_id', db.Integer, db.ForeignKey('person.id')),
     db.Column('ownership_base_id', db.Integer, db.ForeignKey('ownership_base.id'))
 )
+
+
+def query_owned(person_type: db.Model, person_id: int, owned_type: db.Model):
+    query = owned_type.query.join(ownership_table).join(person_type).\
+            filter((ownership_table.c.person_id == person_type.id) &
+                   (ownership_table.c.ownership_base_id == owned_type.id)).\
+            filter(person_type.id == person_id)
+    return query
 
 
 class OwnershipBase(db.Model):
@@ -23,3 +33,12 @@ class OwnershipBase(db.Model):
 
     owners = db.relationship('Party', back_populates='owned_objects',
                              secondary=ownership_table)
+
+    def accessible_by(self, party):
+        if party is None:
+            return False
+        if Role.Root in party.roles:
+            return True
+        if Role.Admin in party.roles:
+            return True
+        return party in self.owners
