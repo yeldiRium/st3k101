@@ -75,17 +75,20 @@
             ...mapState("language", ["languages"]),
             ...mapState("global", ["window"]),
             menuStyle() {
+                const boundingRect = this.$refs.currentLanguage
+                    .getBoundingClientRect();
+
                 const width = Math.min(
                     200,
                     Math.round(this.window.width * 0.8)
                 );
                 const x = Math.max(
                     0,
-                    this.$refs.currentLanguage.offsetLeft - width
+                    boundingRect.left - width
                 );
                 const y = Math.max(
                     0,
-                    this.$refs.currentLanguage.offsetTop
+                    boundingRect.top
                 );
                 return {
                     width: `${width}px`,
