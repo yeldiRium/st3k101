@@ -50,9 +50,7 @@ function createConcreteQuestionnaire(owner,
     const languageData = new LanguageData(language, language, [language]);
 
     // TODO: remove timeout. this is for testing purposes
-    return Future((reject, resolve) => {
-        window.setTimeout(resolve, 1500)
-    }).chain(() => Future.of(new ConcreteQuestionnaire(
+    return Future.of(new ConcreteQuestionnaire(
         href,
         id,
         owner,
@@ -65,7 +63,7 @@ function createConcreteQuestionnaire(owner,
         [],
         0,
         []
-    )));
+    ));
 }
 
 /**
