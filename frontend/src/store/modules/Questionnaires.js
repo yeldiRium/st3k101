@@ -14,7 +14,7 @@ import {
 import Future from "fluture";
 
 import {ConcreteQuestionnaire} from "../../model/SurveyBase/Questionnaire";
-import {Language, LanguageData} from "../../model/Language";
+import {Language} from "../../model/Language";
 import {
     addConcreteDimension,
     addShadowDimension,
@@ -78,24 +78,38 @@ const store = {
          *
          * TODO: implement this and remove test data.
          */
-        loadMyQuestionnaires({commit, rootGetters}) {
-            return Future((reject, resolve) => {
-                const dataClient = rootGetters["session/dataClient"];
+        loadMyQuestionnaires({dispatch, getters, rootGetters}) {
+            const dataClient = rootGetters["session/dataClient"];
 
-                const en = new Language("en", "English");
-                const languageData = new LanguageData(en, en, [en]);
+            const en = new Language("en", "English");
 
-                const testQuestionnaires = [
-                    new ConcreteQuestionnaire("http://blubblab/api/questionnaire/1", "1", dataClient, languageData, "Dieser ConcreteQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", true, true, "i don't even know, what this is", [], 0, []),
-                    new ConcreteQuestionnaire("http://blubblab/api/questionnaire/2", "2", dataClient, languageData, "Dieser ShadowQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", false, true, "i don't even know, what this is", [], 0, [])
-                ];
+            if (getters["myQuestionnaires"].length !== 0) {
+                return Future.of(true);
+            }
 
-                for (const questionnaire of testQuestionnaires) {
-                    commit("patchQuestionnaire", {questionnaire});
+            return dispatch(
+                "createConcreteQuestionnaire",
+                {
+                    dataClient,
+                    language: en,
+                    name: "Dieser ConcreteQuestionnaire gehört mir.",
+                    description: "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
+                    isPublic: true,
+                    allowEmbedded: true,
+                    xapiTarget: "i don't even know, what this is"
                 }
-
-                resolve();
-            });
+            ).chain(() => dispatch(
+                "createConcreteQuestionnaire",
+                {
+                    dataClient,
+                    language: en,
+                    name: "Dieser ShadowQuestionnaire gehört mir.",
+                    description: "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
+                    isPublic: false,
+                    allowEmbedded: true,
+                    xapiTarget: "i don't even know, what this is"
+                }
+            ));
         },
         /**
          * Create a new ConcreteQuestionnaire via the API and add it to the
