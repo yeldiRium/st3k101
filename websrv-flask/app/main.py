@@ -24,18 +24,20 @@ def before_request():
     """
     g._config = app.config  # g is always reachable, app might not be
 
+    # parse bearer token auth
     g._current_user = None
+    g._current_session_token = None
     auth_string = request.headers.get('authorization')
     if auth_string and auth_string.startswith('Bearer'):
         try:
             session_token = auth_string.split()[1]
             if auth.validate_activity(session_token):
-                g._current_user = DataClient.query.get_or_404(auth.who_is(session_token))
-                g._current_session_token = session_token
+                g._current_user = DataClient.query.get(auth.who_is(session_token))
+                if g._current_user:
+                    g._current_session_token = session_token
                 import sys
                 print("Logged in as {}".format(g._current_user), file=sys.stderr)
-        except Exception:
-            abort(400, 'Invalid authentication headers')
+        except: pass
 
     # Setting the locale for the current request
     g._language = BabelLanguage[g._config[
