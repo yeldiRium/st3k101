@@ -20,23 +20,29 @@ class SurveyBase(OwnershipBase):
     __tablename__ = 'survey_base'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
-    reference_id = db.Column(db.String(128))
-    _public = db.Column(db.Boolean, default=False)
+    _template = db.Column(db.Boolean, default=False)
 
     @property
-    def public(self):
-        return self._public
+    def template(self):
+        return self._template
 
-    @public.setter
-    def public(self, value):
-        if not fulfills_role(current_user(), Role.Contributor):
-            raise BusinessRuleViolation('Only contributory may make items'
-                                        'publicly available.')
-        self._public = value
+    @template.setter
+    def template(self, value):
+        self._template = value
+
+    @property
+    @abstractmethod
+    def reference_id(self) -> str:
+        raise NotImplementedError
 
     @property
     @abstractmethod
     def original_language(self) -> BabelLanguage:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def available_languages(self) -> List[BabelLanguage]:
         raise NotImplementedError
 
     @property
@@ -81,5 +87,11 @@ class SurveyBase(OwnershipBase):
     def __init__(self, **kwargs):
         super(SurveyBase, self).__init__(**kwargs)
         self.owners.append(current_user())
+
+    def accessible_by(self, party):
+        return super(SurveyBase, self).accessible_by(party) or self.template
+
+    def modifiable_by(self, party):
+        return super(SurveyBase, self).accessible_by(party)
 
     # TODO: add original_language

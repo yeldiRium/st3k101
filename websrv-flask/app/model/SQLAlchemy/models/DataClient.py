@@ -27,6 +27,7 @@ class DataClient(Party):
     password_hash = db.Column(db.String(256), nullable=False)
     language = db.Column(db.Enum(BabelLanguage), nullable=False)
     verified = db.Column(db.Boolean, default=False, nullable=False)
+    verification_token = db.Column(db.String(128))
     _roles = db.Column(db.ARRAY(db.Integer))
 
     def __init__(self, **kwargs):
@@ -34,6 +35,8 @@ class DataClient(Party):
         if 'language' not in kwargs:
             self.language = g._language
         self._roles = [Role.User.value]
+        self.verified = False
+        self.verification_token = os.urandom(64).hex()
 
     @property
     def roles(self):
