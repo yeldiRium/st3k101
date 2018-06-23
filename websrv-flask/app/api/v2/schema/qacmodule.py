@@ -1,7 +1,7 @@
-from api.v2.schema import RESTFulSchema
+from api.v2.schema import Schema
 
 __author__ = "Noah Hummel"
 
 
-class QACModuleSchema(RESTFulSchema):
+class QACModuleSchema(Schema):
     pass

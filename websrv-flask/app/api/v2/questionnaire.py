@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource, abort
 
 from api.v2 import api
+from api.v2.dependency_injection import ResourceBroker
 from api.v2.schema.questionnaire import QuestionnaireSchema, ShadowQuestionnaireSchema
 from auth.roles import needs_minimum_role, Role, current_has_minimum_role
 from auth.users import current_user
@@ -200,3 +201,5 @@ api.add_resource(
     TemplateQuestionnaireListResource,
     '/api/questionnaire/template'
 )
+
+ResourceBroker.add_resource_for(QuestionnaireResource, Questionnaire, 'questionnaire_id')

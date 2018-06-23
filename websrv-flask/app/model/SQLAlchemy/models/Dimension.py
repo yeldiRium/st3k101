@@ -4,6 +4,7 @@ from typing import Dict
 from auth.users import current_user
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
+from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType, TrackingArg, relationship_updated
 from model.SQLAlchemy.models.TrackerEntry import RelationshipAction
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
@@ -44,6 +45,11 @@ class Dimension(SurveyBase):
 
     @property
     @abstractmethod
+    def reference_id(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
     def name(self) -> str:
         raise NotImplementedError
 
@@ -65,6 +71,10 @@ class Dimension(SurveyBase):
     @property
     def original_language(self) -> str:
         return self.questionnaire.original_language
+
+    @property
+    def available_languages(self):
+        return [BabelLanguage[k] for k in self.name_translations.keys()]
 
     def new_question(self, text: str, **kwargs) -> ConcreteQuestion:
         if not isinstance(self, ConcreteDimension):
@@ -125,10 +135,13 @@ class ConcreteDimension(Dimension):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # columns
+    reference_id = db.Column(db.String(128))
     color = db.Column(db.String(7), nullable=False, default='#aeaeae')
     text_color = db.Column(db.String(7), nullable=False, default='#000000')
     name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
+
+    shadow = False
 
     def set_color(self, color: str):
         """
@@ -157,6 +170,7 @@ class ConcreteDimension(Dimension):
         d.text_color = shadow.text_color
         d.randomize_question_order = shadow.randomize_question_order
         d.owners = shadow.owners
+        d.reference_id = shadow.reference_id
 
         for s_question in shadow.questions:
             c_question = ConcreteQuestion.from_shadow(s_question)
@@ -176,6 +190,8 @@ class ShadowDimension(Dimension):
     _referenced_object = db.relationship(ConcreteDimension,
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
+
+    shadow = True
 
     def __init__(self, dimension, **kwargs):
         super(ShadowDimension, self).__init__(**kwargs)
@@ -198,6 +214,10 @@ class ShadowDimension(Dimension):
         if self._referenced_object is None:
             return None
         return self._referenced_object
+
+    @property
+    def reference_id(self):
+        return self._referenced_object.reference_id
 
     @property
     def name(self) -> str:

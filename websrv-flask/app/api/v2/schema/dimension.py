@@ -1,4 +1,4 @@
-from marshmallow import fields
+from marshmallow import fields, Schema
 
 from api.v2.schema.fields import HexColor
 from api.v2.schema.question import QuestionSchema
@@ -18,3 +18,7 @@ class DimensionSchema(SurveyBaseSchema):
 
     def is_shadow(self, obj):
         return isinstance(obj, ShadowDimension)
+
+
+class ShadowDimensionSchema(Schema):
+    id = fields.Integer()
