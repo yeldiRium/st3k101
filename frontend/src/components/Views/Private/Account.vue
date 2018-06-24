@@ -24,8 +24,7 @@
         methods: {
             logout() {
                 this.$load(
-                    endSession(this.sessionToken)
-                        .chain(() => this.$store.dispatch("session/endSession"))
+                    this.$store.dispatch("session/endSession")
                 )
                     .fork(
                         this.$handleApiError,

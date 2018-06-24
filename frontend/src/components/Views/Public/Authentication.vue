@@ -213,9 +213,12 @@
                 this.clearErrors();
 
                 this.$load(
-                    requestSession(
-                        this.inputData.email,
-                        this.inputData.password
+                    this.$store.dispatch(
+                        "session/requestSession",
+                        {
+                            email: this.inputData.email,
+                            password: this.inputData.password
+                        }
                     )
                 ).fork(
                     error => {
@@ -234,10 +237,7 @@
                             this.$handleApiError(error);
                         }
                     },
-                    sessionToken => {
-                        this.$store
-                            .dispatch("session/startSession", {sessionToken});
-                    }
+                    () => {}
                 )
             },
             register() {
@@ -249,7 +249,13 @@
                 }
 
                 this.$load(
-                    register(this.inputData.email, this.inputData.password)
+                    this.$store.dispatch(
+                        "session/register",
+                        {
+                            email: this.inputData.email,
+                            password: this.inputData.password
+                        }
+                    )
                 ).fork(
                     error => {
                         if (either(

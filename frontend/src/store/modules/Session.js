@@ -1,8 +1,15 @@
 import {isNil, path} from "ramda";
+import Future from "fluture";
 
 import {getItem, removeItem, setItem} from "../Utility/cookies";
 
 import DataClient from "../../model/DataClient";
+import {
+    endSession,
+    getCurrentDataClient,
+    register,
+    requestSession
+} from "../../api/Authentication";
 
 const store = {
     namespaced: true,
@@ -23,35 +30,128 @@ const store = {
         }
     },
     actions: {
-        getSessionFromCookie(context) {
-            const sessionToken = getItem("sessionToken");
-            if (!isNil(sessionToken)) {
-                context.dispatch("startSession", {sessionToken});
-            }
+        /**
+         * Registers a new DataClient without setting any state.
+         *
+         * @param context
+         * @param email
+         * @param password
+         * @returns {Future}
+         * @resolve {DataClient}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        register(context, {email, password}) {
+            return register(email, password);
         },
-        startSession(context, {sessionToken, dataClient}) {
-            context.commit("startSession", {sessionToken});
-
-            context.dispatch("updateSessionCookie");
-
-            // TODO: fetch DataClient here
+        /**
+         * Requests a Session from the API and stores it, if the credentials are
+         * correct.
+         *
+         * @param context
+         * @param email
+         * @param password
+         * @returns {Future}
+         * @resolve {String} to the session token
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        requestSession(context, {email, password}) {
+            return requestSession(email, password)
+                .chain(sessionToken =>
+                    context.dispatch("startSession", {sessionToken})
+                        .map(() => sessionToken)
+                );
         },
+        /**
+         * Resumes a session stored in a cookie, if one exists.
+         * Otherwise rejects.
+         *
+         * The dispatch to startSession will reject, if the sessionToken found
+         * was invalid.
+         *
+         * @param context
+         * @returns {Future}
+         * @resolve {DataClient}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        resumeSessionFromCookie(context) {
+            return Future((reject, resolve) => {
+                const sessionToken = getItem("sessionToken");
+                if (!isNil(sessionToken)) {
+                    resolve(sessionToken);
+                    return;
+                }
+                reject()
+            })
+                .chain(() => context.dispatch("startSession", {sessionToken}));
+        },
+        /**
+         * Starts the Session, sets the cookie and retrieves the DataClient.
+         *
+         * @param context
+         * @param sessionToken
+         * @returns {Future}
+         * @resolve {DataClient}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        startSession(context, {sessionToken}) {
+            return Future((reject, resolve) => {
+                context.commit("startSession", {sessionToken});
+                resolve();
+            })
+            // Set the session cookie after starting the session
+                .chain(() => context.dispatch("updateSessionCookie"))
+                // retrieve the now logged in DataClient
+                .chain(() => context.dispatch("fetchCurrentDataClient"));
+        },
+        /**
+         * Ends the Session on the server and on the client.
+         *
+         * @param context
+         * @returns {Future}
+         * @resolve {Boolean} to true
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
         endSession(context) {
-            context.commit("endSession");
-
-            removeItem("sessionToken");
+            return endSession()
+                .chain(() => {
+                    context.commit("endSession");
+                    removeItem("sessionToken");
+                    return Future.of(true);
+                });
+        },
+        fetchCurrentDataClient(context) {
+            return getCurrentDataClient()
+                .chain(dataClient => {
+                    context.commit("setDataClient", {dataClient});
+                    return Future.of(dataClient);
+                });
         },
         /**
          * Set session token cookie.
+         *
+         * @returns {Future}
+         * @resolve {null}
+         * @reject {null}
+         * @cancel
          */
         updateSessionCookie(context) {
-            if (context.getters["isLoggedIn"]) {
-                const sessionToken = context.getters["sessionToken"];
-                // TODO: set cookie to secure mode, once efla supports https
-                const expires = new Date();
-                expires.setDate(expires.getMinutes() + 20);
-                setItem("sessionToken", sessionToken, expires);
-            }
+            return Future((reject, resolve) => {
+                if (context.getters["isLoggedIn"]) {
+                    const sessionToken = context.getters["sessionToken"];
+                    // TODO: set cookie to secure mode, once efla supports https
+                    const expires = new Date();
+                    expires.setDate(expires.getMinutes() + 20);
+                    setItem("sessionToken", sessionToken, expires);
+                    resolve();
+                    return;
+                }
+                reject();
+            });
         }
     },
     mutations: {
@@ -86,7 +186,7 @@ const store = {
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return rootStore.dispatch(`${namespace}/getSessionFromCookie`);
+    return rootStore.dispatch(`${namespace}/resumeSessionFromCookie`);
 };
 
 export default store;

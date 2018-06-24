@@ -51,13 +51,12 @@ function requestSession(email, password) {
 /**
  * Ends a Session.
  *
- * @param {String} sessionToken
  * @return {Future}
  * @resolve {Boolean} to true
  * @reject {TypeError|ApiError}
  * @cancel see fetchApi
  */
-function endSession(sessionToken) {
+function endSession() {
     return fetchApi("/api/session", {
         method: "DELETE",
         authenticate: true
@@ -65,8 +64,26 @@ function endSession(sessionToken) {
         .map(() => true);
 }
 
+/**
+ * Retrieves the currently logged in DataClient.
+ * Obviously only works when authenticated.
+ *
+ * @return {Future}
+ * @resolve {DataClient}
+ * @reject {TypeError|ApiError}
+ * @cancel see fetchApi
+ */
+function getCurrentDataClient() {
+    return fetchApi("/api/dataclient", {
+        authenticate: true
+    })
+        .chain(extractJson)
+        .map(parseDataClient);
+}
+
 export {
     register,
     requestSession,
-    endSession
+    endSession,
+    getCurrentDataClient
 };
