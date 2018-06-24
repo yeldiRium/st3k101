@@ -187,7 +187,10 @@ const store = {
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return rootStore.dispatch(`${namespace}/resumeSessionFromCookie`);
+    return rootStore.dispatch(`${namespace}/resumeSessionFromCookie`)
+    // Chain rejection to resolving future, so that the initialization process
+    // succeeds either way.
+        .chainRej(() => Future.of("No session resumed."));
 };
 
 export default store;
