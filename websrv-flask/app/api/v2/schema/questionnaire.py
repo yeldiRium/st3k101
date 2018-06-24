@@ -1,5 +1,6 @@
 from marshmallow import fields, Schema
 
+from api.v2.schema.dataclient import DataClientSchema
 from api.v2.schema.dimension import DimensionSchema
 from api.v2.schema.qacmodule import QACModuleSchema
 from api.v2.schema.survey_base import SurveyBaseSchema
@@ -17,6 +18,7 @@ class QuestionnaireSchema(SurveyBaseSchema):
     dimensions = fields.Nested(DimensionSchema, many=True, dump_only=True)
     qac_modules = fields.Nested(QACModuleSchema, many=True, dump_only=True)
     shadow = fields.Method('get_is_shadow', dump_only=True)
+    owners = fields.Nested(DataClientSchema(only=("id","href")), many=True, dump_only=True)
 
     def get_is_shadow(self, obj):
         return isinstance(obj, ShadowQuestionnaire)
