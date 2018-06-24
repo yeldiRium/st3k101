@@ -3,7 +3,7 @@
         <MenuBarPrivate/>
 
         <div class="content">
-            <router-view :key="$route.fullPath" />
+            <router-view :key="$route.fullPath"/>
         </div>
     </div>
 </template>
@@ -17,11 +17,16 @@
     export default {
         components: {LanguagePicker, MenuBarPrivate},
         name: "App",
-        created() {
-            if (!this.isLoggedIn) {
-                this.$router.replace({
-                    name: "Authentication"
-                })
+        watch: {
+            isLoggedIn: {
+                immediate: true,
+                handler(isLoggedIn) {
+                    if (!isLoggedIn) {
+                        this.$router.replace({
+                            name: "Authentication"
+                        })
+                    }
+                }
             }
         },
         computed: {
@@ -45,9 +50,7 @@
         width: 100%;
 
         display: grid;
-        grid-template-areas:
-            "content"
-            "menubar";
+        grid-template-areas: "content" "menubar";
         grid-template-rows: auto 15%;
     }
 
