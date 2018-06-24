@@ -341,7 +341,6 @@ function populateOwnedIncomingReferences(concreteQuestionnaire) {
  */
 function populateReferenceTo(shadowQuestionnaire) {
     if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
-        // TODO: fetch ConcreteQuestionnaire and replace
         return fetchQuestionnaire(
             shadowQuestionnaire.referenceTo.href,
             shadowQuestionnaire.languageData.currentLanguage
