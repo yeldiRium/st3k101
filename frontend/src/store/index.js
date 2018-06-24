@@ -25,8 +25,7 @@ const store = new Vuex.Store({
         initialLoading: "loading"
     },
     getters: {
-        loading: (state, getters, rootState, rootGetters) => {
-            // TODO: respect submodules' loading states
+        loading: (state) => {
             return state.initialLoading;
         }
     },
@@ -62,8 +61,8 @@ export default store;
  */
 const initialize = function () {
     return Future.parallel(Infinity, [
-        initializeLanguageStore(store, "language"),
         initializeGlobalStore(store, "global"),
+        initializeLanguageStore(store, "language"),
         initializeSessionStore(store, "session")
     ]);
 };

@@ -1,5 +1,3 @@
-import Future from "fluture";
-
 const store = {
     namespaced: true,
     state: {
@@ -11,7 +9,7 @@ const store = {
     getters: {},
     actions: {
         fetchAll({dispatch}) {
-            dispatch("fetchWindowSize");
+            return dispatch("fetchWindowSize");
         },
         registerEventHandlers({dispatch}) {
             function fetchWindowSize() {

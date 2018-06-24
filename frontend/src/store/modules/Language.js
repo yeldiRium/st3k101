@@ -1,5 +1,4 @@
 import {__, allPass, has, map} from "ramda";
-import Future from "fluture";
 
 import Language from "../../model/Language";
 
