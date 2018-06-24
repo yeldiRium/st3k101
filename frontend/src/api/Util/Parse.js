@@ -25,7 +25,7 @@ function parseLanguage({name, value}) {
  * @return {DataClient}
  */
 function parseDataClient({email, id, href, language}) {
-    return new DataClient(href, 0, id, email);
+    return new DataClient(href, id, email, language);
 }
 
 export {
