@@ -12,8 +12,7 @@ import "abortcontroller-polyfill";
 
 import App from "./components/App";
 import router from "./router";
-import { initialize as initializeStore } from "./store";
-import store from "./store";
+import store, {initialize as initializeStore} from "./store";
 
 Vue.use(Vuex);
 Vue.use(vClickOutside);
@@ -30,13 +29,14 @@ initializeStore().fork(
     },
     data => {
         store.commit("initialLoadingDone", data);
+
+        // Start the application only, if the initial loading was successful
+        new Vue({
+            el: "#container",
+            router,
+            store,
+            components: {App},
+            template: "<App/>"
+        });
     }
 );
-
-new Vue({
-    el: "#container",
-    router,
-    store,
-    components: {App},
-    template: "<App/>"
-});
