@@ -24,7 +24,9 @@ class Questionnaire extends SurveyBase {
                 description,
                 isPublic,
                 allowEmbedded,
-                xapiTarget, dimensions) {
+                xapiTarget,
+                dimensions
+    ) {
         super(href, id, owner, languageData);
 
         this.name = name;
@@ -86,7 +88,9 @@ class ConcreteQuestionnaire extends Questionnaire {
                 allowEmbedded,
                 xapiTarget,
                 dimensions,
-                incomingReferenceCount, ownedIncomingReferences) {
+                incomingReferenceCount,
+                ownedIncomingReferences
+    ) {
         super(href, id, owner, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
 
         this.incomingReferenceCount = incomingReferenceCount;
@@ -136,7 +140,9 @@ class ShadowQuestionnaire extends Questionnaire {
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
-                dimensions, referenceTo) {
+                dimensions,
+                referenceTo
+    ) {
         super(href, id, owner, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
 
         this.referenceTo = referenceTo;
