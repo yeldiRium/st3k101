@@ -47,6 +47,11 @@ class SurveyBase(OwnershipBase):
 
     @property
     @abstractmethod
+    def shadow(self):
+        raise NotImplementedError  # TODO: implement in child classes
+
+    @property
+    @abstractmethod
     def tracker_args(self) -> Dict[str, List[Union[TrackingType, TrackingArg]]]:
         raise NotImplementedError
 
@@ -93,5 +98,3 @@ class SurveyBase(OwnershipBase):
 
     def modifiable_by(self, party):
         return super(SurveyBase, self).accessible_by(party)
-
-    # TODO: add original_language

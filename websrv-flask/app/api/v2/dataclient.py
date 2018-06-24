@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import abort, Resource
 
 from api.v2 import api
+from api.v2.dependency_injection import ResourceBroker
 from api.v2.schema.dataclient import DataClientSchema
 from auth import users
 from auth.roles import Role, needs_minimum_role, current_has_minimum_role
@@ -160,3 +161,5 @@ api.add_resource(DataClientResource,
                  '/api/dataclient')
 api.add_resource(DataClientVerificationResource,
                  '/api/dataclient/verify/<token>')
+
+ResourceBroker.add_resource_for(DataClientResource, DataClient)

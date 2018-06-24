@@ -307,6 +307,8 @@ class ConcreteQuestionnaire(Questionnaire):
     description = translation_hybrid(description_translations)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
 
+    shadow = False
+
     def __init__(self, name, description, **kwargs):
         self.original_language = g._language
         super(ConcreteQuestionnaire, self).__init__(name=name,
@@ -343,6 +345,8 @@ class ShadowQuestionnaire(Questionnaire):
     _referenced_object = db.relationship(ConcreteQuestionnaire,
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
+
+    shadow = True
 
     def __init__(self, questionnaire, **kwargs):
         super(ShadowQuestionnaire, self).__init__(**kwargs)
