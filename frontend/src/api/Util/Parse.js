@@ -6,7 +6,6 @@ import {
     ConcreteQuestionnaire,
     ShadowQuestionnaire
 } from "../../model/SurveyBase/Questionnaire";
-import Resource from "../../model/Resource";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -60,6 +59,22 @@ function parseDataClient({email, id, href, language}) {
 }
 
 /**
+ * Parses the anonymized API representation of a DataClient.
+ *
+ * @param id
+ * @param href
+ * @return {DataClient}
+ */
+function parseSmallDataClient({id, href}) {
+    return new DataClient(
+        href,
+        id,
+        "",
+        null
+    );
+}
+
+/**
  * Parses the common API representation of a Questionnaire and recognizes, whe-
  * ther it is a ShadowQuestionnaire or a ConcreteQuestionnaire.
  *
@@ -78,6 +93,7 @@ function parseQuestionnaire(data) {
  *
  * @param {String} href
  * @param {String} id
+ * @param {Array} owners
  * @param {String} name
  * @param {String} description
  * @param {Array} dimensions
@@ -95,6 +111,7 @@ function parseQuestionnaire(data) {
 function parseShadowQuestionnaire({
                                       href,
                                       id,
+                                      owners,
                                       name,
                                       description,
                                       dimensions,
@@ -110,7 +127,7 @@ function parseShadowQuestionnaire({
     return new ShadowQuestionnaire(
         href,
         id,
-        [new Resource("", "")], // TODO: set once API is adjusted to output Owner
+        map(parseSmallDataClient, owners),
         parseLanguageData({
             current_language,
             original_language,
@@ -131,6 +148,7 @@ function parseShadowQuestionnaire({
  *
  * @param {String} href
  * @param {String} id
+ * @param {Array} owners
  * @param {String} name
  * @param {String} description
  * @param {Array} dimensions
@@ -148,6 +166,7 @@ function parseShadowQuestionnaire({
 function parseConcreteQuestionnaire({
                                         href,
                                         id,
+                                        owners,
                                         name,
                                         description,
                                         dimensions,
@@ -163,7 +182,7 @@ function parseConcreteQuestionnaire({
     return new ConcreteQuestionnaire(
         href,
         id,
-        [new Resource("", "")], // TODO: set once API is adjusted to output Owner
+        map(parseSmallDataClient, owners),
         parseLanguageData({
             current_language,
             original_language,
