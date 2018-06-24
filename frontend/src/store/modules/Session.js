@@ -85,7 +85,8 @@ const store = {
                 }
                 reject()
             })
-                .chain(() => context.dispatch("startSession", {sessionToken}));
+                .chain(sessionToken =>
+                    context.dispatch("startSession", {sessionToken}));
         },
         /**
          * Starts the Session, sets the cookie and retrieves the DataClient.
