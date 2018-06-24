@@ -110,7 +110,7 @@ function parseShadowQuestionnaire({
     return new ShadowQuestionnaire(
         href,
         id,
-        new Resource("", ""), // TODO: set once API is adjusted to output Owner
+        [new Resource("", "")], // TODO: set once API is adjusted to output Owner
         parseLanguageData({
             current_language,
             original_language,
@@ -163,7 +163,7 @@ function parseConcreteQuestionnaire({
     return new ConcreteQuestionnaire(
         href,
         id,
-        new Resource("", ""), // TODO: set once API is adjusted to output Owner
+        [new Resource("", "")], // TODO: set once API is adjusted to output Owner
         parseLanguageData({
             current_language,
             original_language,

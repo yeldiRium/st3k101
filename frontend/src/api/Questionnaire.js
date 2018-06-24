@@ -57,7 +57,7 @@ function createConcreteQuestionnaire(owner,
     return Future.of(new ConcreteQuestionnaire(
         href,
         id,
-        owner,
+        [owner],
         languageData,
         name,
         description,
@@ -101,7 +101,7 @@ function createShadowQuestionnaire(owner, questionnaire) {
     return Future.of(new ShadowQuestionnaire(
         href,
         id,
-        owner,
+        [owner],
         languageData,
         questionnaire.name,
         questionnaire.description,
@@ -224,7 +224,7 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
     return Future.of(new ConcreteDimension(
         href,
         id,
-        owner,
+        [owner],
         languageData,
         name,
         [],
@@ -270,7 +270,7 @@ function addShadowDimension(questionnaire, owner, dimension) {
     return Future.of(new ShadowDimension(
         href,
         id,
-        owner,
+        [owner],
         languageData,
         dimension.name,
         shadowQuestions,

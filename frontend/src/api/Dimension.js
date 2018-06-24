@@ -92,7 +92,7 @@ function addConcreteQuestion(dimension, owner, text, range) {
     return Future.of(new ConcreteQuestion(
         href,
         id,
-        owner,
+        [owner],
         languageData,
         text,
         range,
@@ -135,7 +135,7 @@ function addShadowQuestion(dimension, owner, question) {
     return Future.of(new ShadowQuestion(
         href,
         id,
-        owner,
+        [owner],
         languageData,
         question.text,
         question.range.clone(),

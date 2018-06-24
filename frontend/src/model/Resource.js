@@ -6,6 +6,7 @@ class Resource {
     /**
      *
      * @param {string} href
+     * @param {String} id
      */
     constructor(href, id) {
         this._href = href;
