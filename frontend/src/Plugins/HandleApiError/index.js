@@ -22,6 +22,7 @@ const Plugin = {
          * @param {ApiError} error
          */
         Vue.prototype.$handleApiError = function (error) {
+            console.error(error);
             switch (error.name) {
                 case "TypeError":
                     Vue.prototype.$notify({
