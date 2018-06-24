@@ -19,7 +19,7 @@ import {
     addConcreteDimension,
     addShadowDimension,
     createConcreteQuestionnaire,
-    deleteQuestionnaire,
+    deleteQuestionnaire, fetchMyQuestionnaires,
     fetchQuestionnaire,
     removeDimension,
     updateQuestionnaire
@@ -75,41 +75,17 @@ const store = {
          * @resolves with nothing
          * @rejects with API error message
          * @cancel
-         *
-         * TODO: implement this and remove test data.
          */
-        loadMyQuestionnaires({dispatch, getters, rootGetters}) {
+        loadMyQuestionnaires({commit, dispatch, getters, rootGetters}) {
             const dataClient = rootGetters["session/dataClient"];
 
-            const en = new Language("en", "English");
-
-            if (getters["myQuestionnaires"].length !== 0) {
-                return Future.of(true);
-            }
-
-            return dispatch(
-                "createConcreteQuestionnaire",
-                {
-                    dataClient,
-                    language: en,
-                    name: "Dieser ConcreteQuestionnaire gehört mir.",
-                    description: "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
-                    isPublic: true,
-                    allowEmbedded: true,
-                    xapiTarget: "i don't even know, what this is"
-                }
-            ).chain(() => dispatch(
-                "createConcreteQuestionnaire",
-                {
-                    dataClient,
-                    language: en,
-                    name: "Dieser ShadowQuestionnaire gehört mir.",
-                    description: "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.",
-                    isPublic: false,
-                    allowEmbedded: true,
-                    xapiTarget: "i don't even know, what this is"
-                }
-            ));
+            return fetchMyQuestionnaires(dataClient.language)
+                .chain(questionnaires => {
+                    for (const questionnaire of questionnaires) {
+                        commit("patchQuestionnaire", {questionnaire});
+                    }
+                    return Future.of(true);
+                });
         },
         /**
          * Create a new ConcreteQuestionnaire via the API and add it to the

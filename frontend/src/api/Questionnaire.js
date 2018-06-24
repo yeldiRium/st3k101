@@ -1,5 +1,9 @@
 import Future from "fluture";
-import {contains, without} from "ramda";
+import {contains, map, without} from "ramda";
+
+import {extractJson} from "./Util/Response";
+import {fetchApi} from "./Util/Request";
+import {parseQuestionnaire} from "./Util/Parse";
 
 import {
     ConcreteQuestionnaire,
@@ -107,6 +111,22 @@ function createShadowQuestionnaire(owner, questionnaire) {
         shadowDimensions,
         questionnaire
     ));
+}
+
+/**
+ * Fetches the Questionnaires belonging to the authorized DataClient in the gi-
+ * ven language.
+ *
+ * @param {Language} language
+ * @returns {Future}
+ * @resolve {Array<Questionnaire>}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function fetchMyQuestionnaires(language) {
+    return fetchApi("/api/dataclient/questionnaire", {authenticate: true})
+        .chain(extractJson)
+        .map(map(parseQuestionnaire));
 }
 
 /**
@@ -375,6 +395,7 @@ function populateQuestionnaire(questionnaire) {
 export {
     createConcreteQuestionnaire,
     createShadowQuestionnaire,
+    fetchMyQuestionnaires,
     fetchQuestionnaire,
     updateQuestionnaire,
     deleteQuestionnaire,
