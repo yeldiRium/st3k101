@@ -83,7 +83,7 @@ const store = {
                     resolve(sessionToken);
                     return;
                 }
-                reject()
+                reject("No session cookie found.");
             })
                 .chain(sessionToken =>
                     context.dispatch("startSession", {sessionToken}));
@@ -148,10 +148,10 @@ const store = {
                     const expires = new Date();
                     expires.setDate(expires.getMinutes() + 20);
                     setItem("sessionToken", sessionToken, expires);
-                    resolve();
+                    resolve("Session cookie updated.");
                     return;
                 }
-                reject();
+                reject("Not logged in; Can't update session cookie.");
             });
         }
     },
