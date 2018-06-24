@@ -75,12 +75,17 @@ function fetchApi(path,
             ...getAuthenticationHeaders(authenticate)
         };
 
-        fetch(buildApiUrl(path), {
+        const fetchParams = {
             method,
-            body,
             headers: useHeaders,
             signal
-        })
+        };
+
+        if (method !== "GET" && method !== "HEAD") {
+            fetchParams["body"] = body;
+        }
+
+        fetch(buildApiUrl(path), fetchParams)
             .then(resolve)
             .catch(reject);
 
