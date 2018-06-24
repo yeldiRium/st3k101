@@ -17,32 +17,14 @@ __author__ = "Noah Hummel"
 
 
 class DimensionResource(Resource):
-    @staticmethod
-    def dump(schema, dimension):
-        data = {
-            **schema.dump(dimension).data,
-            'href': api.url_for(
-                DimensionResource,
-                dimension_id=dimension.id
-            )
-        }
-        if data['shadow']:
-            data['shadow_href'] = api.url_for(
-                DimensionResource,
-                dimension_id=dimension.concrete_id
-            )
-        return data
-
     def get(self, questionnaire_id=None, dimension_id=None):
-        print("DEBUG:", DimensionResource.endpoint)
-
         dimension = Dimension.query.get_or_404(dimension_id)
         if questionnaire_id is not None:
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
         if not dimension.accessible_by(current_user()):
             abort(404)
-        return self.dump(DimensionSchema(), dimension)
+        return DimensionSchema().dump(dimension)
 
     @needs_minimum_role(Role.User)
     def patch(self, questionnaire_id=None, dimension_id=None):
@@ -50,8 +32,10 @@ class DimensionResource(Resource):
         if questionnaire_id is not None:
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
-        if not dimension.modifiable_by(current_user()):
+        if not dimension.accessible_by(current_user()):
             abort(404)
+        if not dimension.modifiable_by(current_user()):
+            abort(403)
 
         schema = DimensionSchema(partial=True)
         data, errors = schema.load(request.json)
@@ -81,7 +65,7 @@ class DimensionResource(Resource):
 
         response = {
             'message': 'Dimension updated.',
-            'dimension': self.dump(schema, dimension)
+            'dimension': schema.dump(dimension)
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -95,9 +79,11 @@ class DimensionResource(Resource):
             questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         else:
             questionnaire = dimension.questionnaire
-        if not dimension.modifiable_by(current_user()):
+        if not dimension.accessible_by(current_user()):
             abort(404)
-        data = self.dump(DimensionSchema(), dimension)
+        if not dimension.modifiable_by(current_user()):
+            abort(403)
+        data = DimensionSchema().dump(dimension)
         questionnaire.remove_dimension(dimension)
         db.session.commit()
         return {
@@ -121,8 +107,10 @@ class ConcreteDimensionResource(Resource):
             }, 400
 
         questionnaire = ConcreteQuestionnaire.query.get_or_404(questionnaire_id)
-        if not questionnaire.modifiable_by(current_user()):
+        if not questionnaire.accessible_by(current_user()):
             abort(404)
+        if not questionnaire.modifiable_by(current_user()):
+            abort(403)
         questionnaire.new_dimension(data['name'])
         for k, v in data.items():
             if k == 'template' and not current_has_minimum_role(Role.Contributor):
@@ -130,7 +118,7 @@ class ConcreteDimensionResource(Resource):
                 continue
         db.session.commit()
 
-        data = QuestionnaireResource.dump(QuestionnaireSchema(), questionnaire)
+        data = QuestionnaireSchema().dump(questionnaire)
         response = {
             'message': 'Dimension created.',
             'questionnaire': data
@@ -157,12 +145,14 @@ class ShadowDimensionResource(Resource):
 
         questionnaire = ConcreteQuestionnaire.query.get_or_404(questionnaire_id)
         concrete_dimension = ConcreteDimension.query.get_or_404(data['id'])
-        if not questionnaire.modifiable_by(current_user()):
+        if not questionnaire.accessible_by(current_user()):
             abort(404)
+        if not questionnaire.modifiable_by(current_user()):
+            abort(403)
         questionnaire.add_shadow_dimension(concrete_dimension)
         db.session.commit()
 
-        data = QuestionnaireResource.dump(QuestionnaireSchema(), questionnaire)
+        data = QuestionnaireSchema().dump(questionnaire)
         return {
             'message': 'Dimension created.',
             'questionnaire': data
@@ -175,15 +165,15 @@ class DimensionListResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
             abort(404)
-        schema = DimensionSchema()
-        return [DimensionResource.dump(schema, d) for d in questionnaire.dimensions]
+        schema = DimensionSchema(many=True)
+        return schema.dump(questionnaire.dimensions)
 
 
 class TemplateDimensionListResource(Resource):
     def get(self):
         templates = Dimension.query.filter_by(_template=True).all()
-        schema = DimensionSchema()
-        return [DimensionResource.dump(schema, t) for t in templates]
+        schema = DimensionSchema(many=True)
+        return schema.dump(templates)
 
 
 api.add_resource(

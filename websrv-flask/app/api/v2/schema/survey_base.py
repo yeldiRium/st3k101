@@ -2,6 +2,7 @@ from flask import g
 from marshmallow import fields, missing
 
 from api.v2.schema import RESTFulSchema
+from api.v2.schema.dataclient import DataClientSchema
 from api.v2.schema.fields import enum_field
 from framework.internationalization.babel_languages import BabelLanguage
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
@@ -18,6 +19,8 @@ class SurveyBaseSchema(RESTFulSchema):
     available_languages = fields.List(enum_field(BabelLanguage), dump_only=True)
     shadow = fields.Boolean(dump_only=True)
     shadow_href = fields.Method('build_shadow_href', dump_only=True)
+    owners = fields.Nested(DataClientSchema(only=("id", "href")), many=True,
+                           dump_only=True)
 
     def get_current_language(self, obj):
         current_language = g._language
