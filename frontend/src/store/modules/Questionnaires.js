@@ -19,8 +19,11 @@ import {
     addConcreteDimension,
     addShadowDimension,
     createConcreteQuestionnaire,
-    deleteQuestionnaire, fetchMyQuestionnaires,
-    fetchQuestionnaire, fetchQuestionnaireById,
+    createShadowQuestionnaire,
+    deleteQuestionnaire,
+    fetchMyQuestionnaires,
+    fetchQuestionnaire,
+    fetchQuestionnaireById,
     removeDimension,
     updateQuestionnaire
 } from "../../api/Questionnaire";
@@ -68,33 +71,80 @@ const store = {
     },
     actions: {
         /**
-         * Loads all Questionnaires belonging to the current DataClient from the
-         * API.
+         * Check, if a Questionnaire with the given Questionnaire's id already
+         * exists.
+         * If so, overwrite the existing one.
+         * Otherwise append the new one to the list.
          *
-         * @param context
-         * @returns {Future}
-         * @resolves with nothing
-         * @rejects with API error message
+         * Also adds/overwrites all child Dimensions.
+         *
+         * @param dispatch
+         * @param commit
+         * @param {Questionnaire} questionnaire
+         * @return {Future}
+         * @resolve {Questionnaire}
+         * @reject
          * @cancel
          */
-        loadMyQuestionnaires({commit, dispatch, getters, rootGetters}) {
-            const dataClient = rootGetters["session/dataClient"];
-
-            return fetchMyQuestionnaires(dataClient.language)
-                .chain(questionnaires => {
-                    for (const questionnaire of questionnaires) {
-                        commit("patchQuestionnaire", {questionnaire});
+        patchQuestionnaireInStore({dispatch, commit}, {questionnaire}) {
+            return Future((reject, resolve) => {
+                commit("patchQuestionnaire", {questionnaire});
+                resolve(questionnaire);
+            })
+                .chain(questionnaire => {
+                    const patchDimensionFutures = [];
+                    for (const dimension of questionnaire.dimensions) {
+                        patchDimensionFutures.push(
+                            dispatch("questions/patchDimension",
+                                {dimension},
+                                {root: true}
+                            )
+                        );
                     }
-                    return Future.of(true);
+                    return Future.parallel(Infinity, patchDimensionFutures)
+                        .map(() => questionnaire);
+                });
+        },
+        /**
+         * Removes the given Questionnaire from the store.
+         *
+         * Ignored, if the Questionnaire is not found in the store.
+         *
+         * Also removes all child Dimensions from the store.
+         *
+         * @param commit
+         * @param dispatch
+         * @param {Questionnaire} questionnaire
+         * @returns {Future}
+         * @resolve {Boolean} to true
+         * @reject
+         * @cancel
+         */
+        removeQuestionnaireFromStore({commit, dispatch}, {questionnaire}) {
+            return Future((reject, resolve) => {
+                commit("removeQuestionnaire", {questionnaire});
+                resolve(true);
+            })
+                .chain(() => {
+                    const removeDimensionFutures = [];
+                    for (const dimension of questionnaire.dimensions) {
+                        removeDimensionFutures.push(
+                            dispatch(
+                                "dimensions/removeDimensionFromStore",
+                                {dimension},
+                                {root: true}
+                            )
+                        );
+                    }
+                    return Future.parallel(Infinity, removeDimensionFutures)
+                        .map(() => true)
                 });
         },
         /**
          * Create a new ConcreteQuestionnaire via the API and add it to the
          * store.
          *
-         * @param commit
-         * // TODO: is owner parameter necessary?
-         * @param {DataClient} dataClient
+         * @param dispatch
          * @param {Language} language
          * @param {String} name
          * @param {String} description
@@ -103,12 +153,11 @@ const store = {
          * @param {String} xapiTarget
          *
          * @return {Future}
-         * @resolve see API
-         * @reject see API
+         * @resolve {ConcreteQuestionnaire}
+         * @reject {TypeError|ApiError}
          * @cancel
          */
-        createConcreteQuestionnaire({commit}, {
-            dataClient,
+        createConcreteQuestionnaire({dispatch}, {
             language,
             name,
             description,
@@ -116,14 +165,69 @@ const store = {
             allowEmbedded,
             xapiTarget
         }) {
-            return createConcreteQuestionnaire(language, name, description, isPublic, allowEmbedded, xapiTarget).chain(
-                questionnaire => {
-                    commit("patchQuestionnaire", {questionnaire});
-                    return Future.of(questionnaire);
-                }
+            return createConcreteQuestionnaire(
+                language,
+                name,
+                description,
+                isPublic,
+                allowEmbedded,
+                xapiTarget
             )
+                .chain(
+                    questionnaire => dispatch(
+                        "patchQuestionnaireInStore", {questionnaire}
+                    )
+                );
         },
-        // TODO: createShadowQuestionnaire
+        /**
+         * Create a new ShadowQuestionnaire via the API and add it to the
+         * store.
+         *
+         * @param dispatch
+         * @param {ConcreteQuestionnaire} concreteQuestionnaire
+         *
+         * @return {Future}
+         * @resolve {ShadowQuestionnaire}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        createShadowQuestionnaire({dispatch}, {concreteQuestionnaire}) {
+            return createShadowQuestionnaire(concreteQuestionnaire)
+                .chain(
+                    shadowQuestionnaire => dispatch(
+                        "patchQuestionnaireInStore",
+                        {questionnaire: shadowQuestionnaire}
+                    )
+                );
+        },
+        /**
+         * Loads all Questionnaires belonging to the current DataClient from the
+         * API.
+         *
+         * @param dispatch
+         * @param rootGetters
+         * @returns {Future}
+         * @resolves {Array<Questionnaire>}
+         * @rejects with API error message
+         * @cancel
+         */
+        loadMyQuestionnaires({dispatch, rootGetters}) {
+            const dataClient = rootGetters["session/dataClient"];
+
+            return fetchMyQuestionnaires(dataClient.language)
+                .chain(questionnaires => {
+                    const patchQuestionnaireFutures = [];
+                    for (const questionnaire of questionnaires) {
+                        patchQuestionnaireFutures.push(
+                            dispatch(
+                                "patchQuestionnaireInStore",
+                                {questionnaire}
+                            )
+                        );
+                    }
+                    return Future.parallel(Infinity, patchQuestionnaireFutures);
+                });
+        },
         /**
          * Fetches the Questionnaire in a certain Language via the API.
          * If the Questionnaire is already in the store, it will be
@@ -132,7 +236,7 @@ const store = {
          *
          * At least one of href and id must be provided.
          *
-         * @param commit
+         * @param dispatch
          * @param {String} href
          * @param {String} id
          * @param {Language} language
@@ -142,7 +246,7 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestionnaire({commit}, {href = null, id = null, language = null}) {
+        fetchQuestionnaire({dispatch}, {href = null, id = null, language = null}) {
             let future;
             if (isNil(href) && isNil(id)) {
                 return Future.reject(
@@ -155,35 +259,17 @@ const store = {
                 future = fetchQuestionnaireById(id, language);
             }
             return future
-                .chain(questionnaire => {
-                    commit("patchQuestionnaire", {questionnaire});
-
-                    // MAYBE: refactor this, so that only dimensions have
-                    // to be added. could do this in a separate action and have
-                    // an action on Dimension store, which adds the Questions.
-                    for (const dimension of questionnaire.dimensions) {
-                        commit(
-                            "dimensions/patchDimension",
-                            {dimension},
-                            {root: true}
-                        );
-                        for (const question of dimension.questions) {
-                            commit(
-                                "questions/patchQuestion",
-                                {question},
-                                {root: true}
-                            );
-                        }
-                    }
-                    return Future.of(questionnaire);
-                })
+                .chain(questionnaire => dispatch(
+                    "patchQuestionnaireInStore",
+                    {questionnaire}
+                ));
         },
         /**
          * Updates the given params on the Questionnaire and updates the
          * Questionnaire in the store. Translatable fields are set in the given
          * language or the Questionnaires current language.
          *
-         * @param commit
+         * @param dispatch
          * @param {Questionnaire} questionnaire
          * @param {Language} language
          * @param {Object} params
@@ -193,16 +279,16 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        updateQuestionnaire({commit}, {questionnaire, language = null, params}) {
+        updateQuestionnaire({dispatch}, {questionnaire, language = null, params}) {
             const correctLanguage = isNil(language)
                 ? questionnaire.languageData.currentLanguage
                 : language;
 
             return updateQuestionnaire(questionnaire, correctLanguage, params)
-                .chain(result => {
-                    commit("patchQuestionnaire", {questionnaire: result});
-                    return Future.of(result);
-                })
+                .chain(result => dispatch(
+                    "patchQuestionnaireInStore",
+                    {questionnaire: result}
+                ))
                 // TODO: remove this
                 // Patches the questionnaire manually and incredibly stupidly
                 // just so that the app seems to work without the api.
@@ -212,19 +298,20 @@ const store = {
                             questionnaire[key] = params[key];
                         }
                     }
-                    // This commit isn't technically necessary, since the object
-                    // is mutated directly above, but it let's us use the
+                    // This dispatch isn't technically necessary, since the
+                    // object is mutated directly above, but it let's us use the
                     // devtools while playing around without api.
-                    commit("patchQuestionnaire", {questionnaire});
-                    // This prevents us from seeing any errors.
-                    return Future.of(questionnaire);
+                    return dispatch(
+                        "patchQuestionnaireInStore",
+                        {questionnaire}
+                    );
                 });
         },
         /**
          * Deletes the given Questionnaire via the API and removes it from the
          * store.
          *
-         * @param commit
+         * @param dispatch
          * @param {Questionnaire} questionnaire
          *
          * @return {Future}
@@ -232,54 +319,28 @@ const store = {
          * @reject see API
          * @cancel
          */
-        deleteQuestionnaire({commit}, {questionnaire}) {
+        deleteQuestionnaire({dispatch}, {questionnaire}) {
             return deleteQuestionnaire(questionnaire)
-                .chain(() => {
-                    commit("removeQuestionnaire", {questionnaire});
-
-                    for (const dimension of questionnaire.dimensions) {
-                        for (const question of dimension.questions) {
-                            commit(
-                                "questions/removeQuestion",
-                                {question},
-                                {root: true}
-                            );
-                        }
-                        commit(
-                            "dimensions/removeDimension",
-                            {dimension},
-                            {root: true}
-                        );
-                    }
-                    return Future.of(true);
-                })
+                .chain(() => dispatch(
+                    "removeQuestionnaireFromStore",
+                    {questionnaire}
+                ))
                 // TODO: remove this
                 // Remove the questionnaire even if the API throws an error.
                 // This is used for testing while the API is not ready yet.
                 .chainRej(error => {
-                    commit("removeQuestionnaire", {questionnaire});
-
-                    for (const dimension of questionnaire.dimensions) {
-                        for (const question of dimension.questions) {
-                            commit(
-                                "questions/removeQuestion",
-                                {question},
-                                {root: true}
-                            );
-                        }
-                        commit(
-                            "dimensions/removeDimension",
-                            {dimension},
-                            {root: true}
-                        );
-                    }
-                    return Future.reject(error);
-                });
+                    return dispatch(
+                        "removeQuestionnaireFromStore",
+                        {questionnaire}
+                    )
+                        .chain(() => Future.reject(error));
+                })
         },
         /**
          * Add a new ConcreteDimension to the ConcreteQuestionnaire.
          *
          * @param commit
+         * @param dispatch
          * @param rootGetters
          * @param {ConcreteQuestionnaire} questionnaire
          * @param {String} name
@@ -290,7 +351,7 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        addConcreteDimension({commit, rootGetters},
+        addConcreteDimension({commit, dispatch, rootGetters},
                              {
                                  questionnaire,
                                  params: {name, randomizeQuestions}
@@ -309,12 +370,11 @@ const store = {
                     questionnaire,
                     dimension: concreteDimension
                 });
-                commit(
-                    "dimensions/patchDimension",
+                return dispatch(
+                    "dimensions/patchDimensionInStore",
                     {dimension: concreteDimension},
                     {root: true}
                 );
-                return Future.of(concreteDimension);
             })
         },
         /**
@@ -359,36 +419,29 @@ const store = {
                     questionnaire,
                     dimension: shadowDimension
                 });
-                // Add new ShadowDimension to Dimension store
-                commit(
-                    "dimensions/patchDimension",
-                    {dimension: shadowDimension},
+                return dispatch(
+                    "dimensions/patchDimensionInStore",
+                    {dimension: concreteDimension},
                     {root: true}
-                );
-                // Add ShadowQuestions created on the server to Question store
-                for (const shadowQuestion of shadowDimension.questions) {
-                    commit(
-                        "questions/patchQuestion",
-                        {question: shadowQuestion},
-                        {root: true}
-                    );
-                }
+                )
                 // Reload original ConcreteDimension to have an accurate
                 // reference count
-                return dispatch(
-                    "dimensions/fetchDimension",
-                    {
-                        href: concreteDimension.href,
-                        language: concreteDimension.languageData.currentLanguage
-                    }
+                    .chain(() => dispatch(
+                        "dimensions/fetchDimension",
+                        {
+                            href: concreteDimension.href,
+                            language: concreteDimension.languageData.currentLanguage
+                        }
+                    ))
                     // still resolve to the new ShadowDimension
-                ).map(() => shadowDimension);
+                    .map(() => shadowDimension);
             })
         },
         /**
          * Removes a Dimension from a ConcreteQuestionnaire.
          *
          * @param commit
+         * @param dispatch
          * @param {ConcreteQuestionnaire} questionnaire
          * @param {Dimension} dimension
          *
@@ -397,7 +450,7 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        removeDimension({commit}, {questionnaire, dimension}) {
+        removeDimension({commit, dispatch}, {questionnaire, dimension}) {
             if (questionnaire.isShadow) {
                 return Future.reject(
                     new ValidationError(
@@ -416,20 +469,11 @@ const store = {
                             dimension
                         }
                     );
-
-                    for (const question of dimension.questions) {
-                        commit(
-                            "questions/removeQuestion",
-                            {question},
-                            {root: true}
-                        );
-                    }
-                    commit(
-                        "dimensions/removeDimension",
+                    return dispatch(
+                        "dimensions/removeDimensionFromStore",
                         {dimension},
                         {root: true}
                     );
-                    return Future.of(questionnaire);
                 })
         }
     },

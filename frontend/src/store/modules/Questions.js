@@ -29,12 +29,49 @@ const store = {
     },
     actions: {
         /**
+         * Check, if a Question with the given Question's id already
+         * exists.
+         * If so, overwrite the existing one.
+         * Otherwise append the new one to the list.
+         *
+         * @param commit
+         * @param {Question} question
+         * @return {Future}
+         * @resolve {Question}
+         * @reject
+         * @cancel
+         */
+        patchQuestionInStore({commit}, {question}) {
+            return Future((reject, resolve) => {
+                commit("patchQuestion", {question});
+                resolve(question);
+            });
+        },
+        /**
+         * Removes the given Question from the store.
+         *
+         * Ignored, if the Question is not found in the store.
+         *
+         * @param commit
+         * @param {Question} question
+         * @returns {Future}
+         * @resolve {Boolean} to true
+         * @reject
+         * @cancel
+         */
+        removeQuestionFromStore({commit}, {question}) {
+            return Future((reject, resolve) => {
+                commit("removeQuestion", {question});
+                resolve(true);
+            });
+        },
+        /**
          * Fetches the Question in a certain Language via the API.
          * If the Question is already in the store, it will be
          * overwritten with the API result. Otherwise the Question is
          * added.
          *
-         * @param commit
+         * @param dispatch
          * @param {String} href
          * @param {Language} language
          *
@@ -43,19 +80,18 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestion({commit}, {href, language}) {
+        fetchQuestion({dispatch}, {href, language}) {
             return fetchQuestion(href, language)
-                .chain(question => {
-                    commit("patchQuestion", {question});
-                    return Future.of(question);
-                });
+                .chain(
+                    question => dispatch("patchQuestionInStore", {question})
+                );
         },
         /**
          * Updates the given params on the Question and updates the
          * Question in the store. Translatable fields are set in the given
          * language or the Questions current language.
          *
-         * @param commit
+         * @param dispatch
          * @param {Question} question
          * @param {Language} language
          * @param {Object} params
@@ -65,16 +101,15 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        updateQuestion({commit}, {question, language = null, params}) {
+        updateQuestion({dispatch}, {question, language = null, params}) {
             const correctLanguage = isNil(language)
                 ? question.languageData.currentLanguage
                 : language;
 
             return updateQuestion(question, correctLanguage, params)
-                .chain(result => {
-                    commit("patchQuestion", {question: result});
-                    return Future.of(result);
-                })
+                .chain(result =>
+                    dispatch("patchQuestionInStore", {result})
+                )
                 // TODO: remove this
                 // Patches the question manually and incredibly stupidly
                 // just so that the app seems to work without the api.
@@ -84,12 +119,10 @@ const store = {
                             question[key] = params[key];
                         }
                     }
-                    // This commit isn't technically necessary, since the object
-                    // is mutated directly above, but it let's us use the
+                    // This dispatch isn't technically necessary, since the
+                    // object is mutated directly above, but it let's us use the
                     // devtools while playing around without api.
-                    commit("patchQuestion", {question});
-                    // This prevents us from seeing any errors.
-                    return Future.of(question);
+                    return dispatch("patchQuestionInStore", {question});
                 });
         }
     },

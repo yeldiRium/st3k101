@@ -216,5 +216,6 @@ export {
     parseDataClient,
     parseQuestionnaire,
     parseShadowQuestionnaire,
-    parseConcreteQuestionnaire
+    parseConcreteQuestionnaire,
+    parseDimension
 };

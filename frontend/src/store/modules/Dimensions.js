@@ -35,12 +35,82 @@ const store = {
     },
     actions: {
         /**
+         * Check, if a Dimension with the given Dimension's id already
+         * exists.
+         * If so, overwrite the existing one.
+         * Otherwise append the new one to the list.
+         *
+         * Also adds/overwrites all child Questions.
+         *
+         * @param dispatch
+         * @param commit
+         * @param {Dimension} dimension
+         * @return {Future}
+         * @resolve {Dimension}
+         * @reject
+         * @cancel
+         */
+        patchDimensionInStore({dispatch, commit}, {dimension}) {
+            return Future((reject, resolve) => {
+                commit("patchDimension", {dimension});
+                resolve(dimension);
+            })
+                .chain(dimension => {
+                    const patchQuestionFutures = [];
+                    for (const question of dimension.questions) {
+                        patchQuestionFutures.push(
+                            dispatch("questions/patchQuestion",
+                                {question},
+                                {root: true}
+                            )
+                        );
+                    }
+                    return Future.parallel(Infinity, patchQuestionFutures)
+                        .map(() => dimension);
+                });
+        },
+        /**
+         * Removes the given Dimension from the store.
+         *
+         * Ignored, if the Dimension is not found in the store.
+         *
+         * Also removes all child Questions from the store.
+         *
+         * @param commit
+         * @param dispatch
+         * @param {Dimension} dimension
+         * @returns {Future}
+         * @resolve {Boolean} to true
+         * @reject
+         * @cancel
+         */
+        removeDimensionFromStore({commit, dispatch}, {dimension}) {
+            return Future((reject, resolve) => {
+                commit("removeDimension", {dimension});
+                resolve(true);
+            })
+                .chain(() => {
+                    const removeQuestionFutures = [];
+                    for (const question of dimension.questions) {
+                        removeQuestionFutures.push(
+                            dispatch(
+                                "questions/removeQuestionFromStore",
+                                {question},
+                                {root: true}
+                            )
+                        );
+                    }
+                    return Future.parallel(Infinity, removeQuestionFutures)
+                        .map(() => true)
+                });
+        },
+        /**
          * Fetches the Dimension in a certain Language via the API.
          * If the Dimension is already in the store, it will be
          * overwritten with the API result. Otherwise the Dimension is
          * added.
          *
-         * @param commit
+         * @param dispatch
          * @param {String} href
          * @param {Language} language
          *
@@ -49,27 +119,18 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchDimension({commit}, {href, language}) {
+        fetchDimension({dispatch}, {href, language}) {
             return fetchDimension(href, language)
-                .chain(dimension => {
-                    commit("patchDimension", {dimension});
-                    // Add each Question to Question store for direct lookup
-                    for (const question of dimension.questions) {
-                        commit(
-                            "questions/patchQuestion",
-                            {question},
-                            {root: true}
-                        );
-                    }
-                    return Future.of(dimension);
-                });
+                .chain(
+                    dimension => dispatch("patchDimensionInStore", {dimension})
+                );
         },
         /**
          * Updates the given params on the Dimension and updates the
          * Dimension in the store. Translatable fields are set in the given
          * language or the Dimensions current language.
          *
-         * @param commit
+         * @param dispatch
          * @param {Dimension} dimension
          * @param {Language} language
          * @param {Object} params
@@ -79,16 +140,13 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        updateDimension({commit}, {dimension, language = null, params}) {
+        updateDimension({dispatch}, {dimension, language = null, params}) {
             const correctLanguage = isNil(language)
                 ? dimension.languageData.currentLanguage
                 : language;
 
             return updateDimension(dimension, correctLanguage, params)
-                .chain(result => {
-                    commit("patchDimension", {dimension: result});
-                    return Future.of(result);
-                })
+                .chain(result => dispatch("patchDimensionInStore", {result}))
                 // TODO: remove this
                 // Patches the dimension manually and incredibly stupidly
                 // just so that the app seems to work without the api.
@@ -101,15 +159,14 @@ const store = {
                     // This commit isn't technically necessary, since the object
                     // is mutated directly above, but it let's us use the
                     // devtools while playing around without api.
-                    commit("patchDimension", {dimension});
-                    // This prevents us from seeing any errors.
-                    return Future.of(dimension);
+                    return dispatch("patchDimensionInStore", {dimension});
                 });
         },
         /**
          * Add a new ConcreteQuestion to the ConcreteDimension.
          *
          * @param commit
+         * @param dispatch
          * @param rootGetters
          * @param {ConcreteDimension} dimension
          * @param {String} text
@@ -120,7 +177,7 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        addConcreteQuestion({commit, rootGetters},
+        addConcreteQuestion({commit, dispatch, rootGetters},
                             {
                                 dimension,
                                 params: {text, range}
@@ -147,12 +204,11 @@ const store = {
                         question: concreteQuestion
                     }
                 );
-                commit(
-                    "questions/patchQuestion",
+                return dispatch(
+                    "questions/patchQuestionInStore",
                     {question: concreteQuestion},
                     {root: true}
                 );
-                return Future.of(concreteQuestion);
             })
         },
         /**
@@ -160,6 +216,7 @@ const store = {
          * the given ConcreteQuestion.
          *
          * @param commit
+         * @param dispatch
          * @param rootGetters
          * @param {ConcreteDimension} dimension
          * @param {ConcreteQuestion} concreteQuestion
@@ -200,28 +257,29 @@ const store = {
                     dimension,
                     question: shadowQuestion
                 });
-                // add the new ShadowQuestion to the Question store
-                commit(
-                    "questions/patchQuestion",
-                    {shadowQuestion},
-                    {root: true}
-                );
-                // Reload the ConcreteQuestion to increase the reference count
                 return dispatch(
-                    "questions/fetchQuestion",
-                    {
-                        href: concreteQuestion.href,
-                        language: concreteQuestion.languageData.currentLanguage
-                    },
+                    "questions/patchQuestionInStore",
+                    {question: shadowQuestion},
                     {root: true}
+                )
+                // Reload the ConcreteQuestion to increase the reference count
+                    .chain(() => dispatch(
+                        "questions/fetchQuestion",
+                        {
+                            href: concreteQuestion.href,
+                            language: concreteQuestion.languageData.currentLanguage
+                        },
+                        {root: true}
+                    ))
                     // but still resolve to the ShadowQuestion
-                ).map(() => shadowQuestion);
+                    .map(() => shadowQuestion);
             })
         },
         /**
          * Removes a Question from a ConcreteDimension.
          *
          * @param commit
+         * @param dispatch
          * @param {ConcreteDimension} dimension
          * @param {Question} question
          *
@@ -230,7 +288,7 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        removeQuestion({commit}, {dimension, question}) {
+        removeQuestion({commit, dispatch}, {dimension, question}) {
             if (dimension.isShadow) {
                 return Future.reject(
                     new ValidationError(
@@ -249,12 +307,11 @@ const store = {
                             question
                         }
                     );
-                    commit(
-                        "questions/removeQuestion",
+                    return dispatch(
+                        "quesitons/removeQuestionFromStore",
                         {question},
                         {root: true}
                     );
-                    return Future.of(dimension);
                 })
         }
     },

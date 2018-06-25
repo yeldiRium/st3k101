@@ -3,7 +3,7 @@ import {contains, map, path, pipe, prop, without} from "ramda";
 
 import {extractJson} from "./Util/Response";
 import {fetchApi} from "./Util/Request";
-import {parseQuestionnaire} from "./Util/Parse";
+import {parseDimension, parseQuestionnaire} from "./Util/Parse";
 
 import {
     ConcreteQuestionnaire,

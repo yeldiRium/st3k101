@@ -81,7 +81,6 @@
                     this.$store.dispatch(
                         "questionnaires/createConcreteQuestionnaire",
                         {
-                            dataClient: this.dataClient,
                             language: this.dataClient.language,
                             name,
                             description,
