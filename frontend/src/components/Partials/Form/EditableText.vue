@@ -86,7 +86,6 @@
             cancelEditing() {
                 this.editing = false;
                 this.runningValue = this.storedValue;
-                this.$emit("input", this.storedValue);
             }
         }
     }
