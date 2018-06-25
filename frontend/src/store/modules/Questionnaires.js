@@ -20,10 +20,11 @@ import {
     addShadowDimension,
     createConcreteQuestionnaire,
     deleteQuestionnaire, fetchMyQuestionnaires,
-    fetchQuestionnaire,
+    fetchQuestionnaire, fetchQuestionnaireById,
     removeDimension,
     updateQuestionnaire
 } from "../../api/Questionnaire";
+import {BadRequestError} from "../../api/Errors";
 
 const store = {
     namespaced: true,
@@ -137,17 +138,31 @@ const store = {
          * overwritten with the API result. Otherwise the Questionnaire is
          * added.
          *
+         * At least one of href and id must be provided.
+         *
          * @param commit
          * @param {String} href
+         * @param {String} id
          * @param {Language} language
          *
          * @return {Future}
          * @resolve {Questionnaire} to true
-         * @reject with an API error message
+         * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestionnaire({commit}, {href, language}) {
-            return fetchQuestionnaire(href, language)
+        fetchQuestionnaire({commit}, {href = null, id = null, language = null}) {
+            let future;
+            if (isNil(href) && isNil(id)) {
+                return Future.reject(
+                    new BadRequestError("At least href or id has to be provided.")
+                );
+            }
+            if (!isNil(href)) {
+                future = fetchQuestionnaire(href, language);
+            } else {
+                future = fetchQuestionnaireById(id, language);
+            }
+            return future
                 .chain(questionnaire => {
                     commit("patchQuestionnaire", {questionnaire});
 

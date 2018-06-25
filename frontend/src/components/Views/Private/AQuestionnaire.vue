@@ -1,16 +1,19 @@
 <template>
     <div class="a-questionnaire">
-        <Questionnaire :key="questionnaire.href"
-                  :questionnaire="questionnaire"
-                  :deletable="false"
-                  :style="itemStyle"
-                  :initiallyExpanded="true"
+        <Questionnaire v-if="questionnaire"
+                       :key="questionnaire.href"
+                       :questionnaire="questionnaire"
+                       :deletable="false"
+                       :style="itemStyle"
+                       :initiallyExpanded="true"
+                       :showLink="false"
         />
     </div>
 </template>
 
 <script>
     import {mapGetters, mapState} from "vuex-fluture";
+    import {isNil} from "ramda";
 
     import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
 
@@ -19,12 +22,34 @@
         components: {
             Questionnaire
         },
+        data() {
+            return {
+                questionnaire: null
+            };
+        },
+        created() {
+            this.questionnaire = this
+                .questionnaireById(this.$route.params.id);
+
+            if (isNil(this.questionnaire)) {
+                this.$load(
+                    this.$store.dispatch(
+                        "questionnaires/fetchQuestionnaire",
+                        {
+                            id: this.$route.params.id
+                        }
+                    )
+                ).fork(
+                    this.$handleApiError,
+                    questionnaire => {
+                        this.questionnaire = questionnaire;
+                    }
+                );
+            }
+        },
         computed: {
             ...mapGetters("questionnaires", ["questionnaireById"]),
             ...mapState("global", ["window"]),
-            questionnaire() {
-                return this.questionnaireById(this.$route.params.id);
-            },
             itemStyle() {
                 let width = "1200px";
                 if (this.window.width * .8 < 1200) {

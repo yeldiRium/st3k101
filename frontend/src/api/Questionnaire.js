@@ -140,9 +140,29 @@ function fetchMyQuestionnaires(language) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchQuestionnaire(href, language) {
-    // TODO: fetch Questionnaire from API
-    return Future.reject("Please implement this.");
+function fetchQuestionnaire(href, language = null) {
+    return fetchApi(
+        href,
+        {
+            language,
+            authenticate: true
+        })
+        .chain(extractJson)
+        .map(parseQuestionnaire);
+}
+
+/**
+ * Fetches a Questionnaire by a given id and build its href.
+ *
+ * @param {String} id
+ * @param {Language} language
+ * @returns {Future}
+ * @resolve {Questionnaire}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function fetchQuestionnaireById(id, language) {
+    return fetchQuestionnaire(`/api/questionnaire/${id}`, language);
 }
 
 /**
@@ -397,6 +417,7 @@ export {
     createShadowQuestionnaire,
     fetchMyQuestionnaires,
     fetchQuestionnaire,
+    fetchQuestionnaireById,
     updateQuestionnaire,
     deleteQuestionnaire,
     addConcreteDimension,
