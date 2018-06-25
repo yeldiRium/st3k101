@@ -28,12 +28,23 @@ class BadRequestError extends ApiError {
 }
 
 /**
+ * 401
+ */
+class AuthorizationError extends ApiError {
+    constructor(s, payload) {
+        super(s);
+        this.name = "AuthorizationError";
+        this.payload = payload;
+    }
+}
+
+/**
  * 403
  */
-class AuthenticationError extends ApiError {
+class ForbiddenError extends ApiError {
     constructor(s) {
         super(s);
-        this.name = "AuthenticationError";
+        this.name = "ForbiddenError";
     }
 }
 
@@ -71,7 +82,8 @@ class UnknownError extends ApiError {
 
 export {
     NotFoundError,
-    AuthenticationError,
+    AuthorizationError,
+    ForbiddenError,
     BadRequestError,
     ConflictError,
     UnknownError

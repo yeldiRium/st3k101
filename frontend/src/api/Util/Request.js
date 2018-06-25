@@ -3,7 +3,7 @@ import Future from "fluture";
 
 import {buildApiUrl} from "./Path";
 import {categorizeResponse} from "./Response";
-import {AuthenticationError} from "../Errors";
+import {ForbiddenError} from "../Errors";
 
 import store from "../../store";
 
@@ -61,7 +61,7 @@ function fetchApi(path,
                   }) {
     if (authenticate && !store.getters["session/isLoggedIn"]) {
         return Future.reject(
-            new AuthenticationError("User not logged in.")
+            new ForbiddenError("User not logged in.")
         );
     }
 

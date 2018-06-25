@@ -38,7 +38,8 @@ const Plugin = {
                         text: "An unknown error has occured. Please try again. If this problem persists, start crying."
                     });
                     break;
-                case "AuthenticationError":
+                case "AuthorizationError":
+                case "ForbiddenError":
                     store.commit("session/endSession");
                     router.push({name: "Authentication"});
                     console.log(this);

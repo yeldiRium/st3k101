@@ -1,11 +1,11 @@
 import {curry} from "ramda";
 import Future from "fluture";
 import {
-    AuthenticationError,
+    ForbiddenError,
     BadRequestError,
     ConflictError,
     NotFoundError,
-    UnknownError
+    UnknownError, AuthorizationError
 } from "../Errors";
 
 /**
@@ -30,8 +30,10 @@ function categorizeResponse(response) {
                 .chain(data =>
                     Future.reject(new BadRequestError("Bad request.", data))
                 );
+        case 401:
+            return Future.reject(new AuthorizationError("Not authorized."));
         case 403:
-            return Future.reject(new AuthenticationError("Not authorized."));
+            return Future.reject(new ForbiddenError("Forbidden."));
         case 404:
             return Future.reject(new NotFoundError("Resource not found."));
         case 409:
