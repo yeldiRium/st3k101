@@ -138,7 +138,7 @@ function parseShadowQuestionnaire({
         published,
         allow_embedded,
         xapi_target,
-        map(parseDimension(dimensions)),
+        map(parseDimension, dimensions),
         null // TODO: set once API is adjusted to output referenceTo
     )
 }
@@ -193,7 +193,7 @@ function parseConcreteQuestionnaire({
         published,
         allow_embedded,
         xapi_target,
-        map(parseDimension(dimensions)),
+        map(parseDimension, dimensions),
         0, // TODO: set once API is adjusted to output incomingReferenceCount
         [] // TODO: set once API is adjusted to output ownedIncomingReferences
     )
