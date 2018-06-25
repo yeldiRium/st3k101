@@ -86,7 +86,12 @@ const store = {
                 reject("No session cookie found.");
             })
                 .chain(sessionToken =>
-                    context.dispatch("startSession", {sessionToken}));
+                    context.dispatch("startSession", {sessionToken}))
+                .chainRej(error => {
+                    context.commit("endSession");
+                    removeItem("sessionToken");
+                    return Future.reject(error);
+                });
         },
         /**
          * Starts the Session, sets the cookie and retrieves the DataClient.
