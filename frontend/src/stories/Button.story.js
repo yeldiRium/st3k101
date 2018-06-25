@@ -15,7 +15,7 @@ storiesOf('Button', module)
         },
         template: '<Button @click="action">"This is a basic Button."</Button>',
         methods: {
-            action: action("button-click")
+            action: action("button-clicked")
         }
     }))
     .add('noripple', () => ({
@@ -24,7 +24,7 @@ storiesOf('Button', module)
         },
         template: '<Button @click="action" :ripple="false">"This is a Button without ripple effect."</Button>',
         methods: {
-            action: action("button-click")
+            action: action("button-clicked")
         }
     }))
     .add('generic', () => ({
@@ -41,6 +41,6 @@ storiesOf('Button', module)
         },
         template: '<Button @click="action" :ripple="ripple" :elevation="elevation" :offset="offset">"This is a Button without ripple effect."</Button>',
         methods: {
-            action: action("button-click")
+            action: action("button-clicked")
         }
     }));
