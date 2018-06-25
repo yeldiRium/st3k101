@@ -16,7 +16,7 @@
                        v-model="name"
                 />
 
-                <textarea :value="description"/>
+                <textarea v-model="description"/>
 
                 <Toggle v-model="isPublic">
                     <template slot="off">
