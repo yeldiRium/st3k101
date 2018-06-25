@@ -3,6 +3,7 @@ from functools import wraps
 from typing import List, Union, Tuple
 
 from flask import g
+from flask_restful import abort
 
 from framework import make_error
 from framework.internationalization import _
@@ -56,7 +57,7 @@ def needs_role(*roles: List[Union[Role, Tuple[Role]]]):
             if fulfills_role(user, *roles):
                 return route(*args, **kwargs)
             else:
-                return make_error(_("Forbidden"), 403)
+                abort(401)
 
         return wrapped
 
@@ -71,13 +72,13 @@ def needs_minimum_role(role: Role):
         def wrapped(*args, **kwargs):
             user = g._current_user
             if not user:
-                return make_error(_("Forbidden"), 403)
+                return abort(401)
             highest_role = sorted(user.roles)[0]
 
             if highest_role <= role:
                 return route(*args, **kwargs)
             else:
-                return make_error(_("Forbidden"), 403)
+                return abort(401)
 
         return wrapped
 
