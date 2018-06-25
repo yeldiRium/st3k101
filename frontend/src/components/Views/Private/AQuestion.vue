@@ -1,10 +1,12 @@
 <template>
     <div class="a-question">
-        <Question :key="question.href"
+        <Question v-if="question"
+                  :key="question.href"
                   :question="question"
                   :deletable="false"
                   :style="itemStyle"
                   :initiallyExpanded="true"
+                  :showLink="false"
         />
     </div>
 </template>
@@ -19,12 +21,33 @@
         components: {
             Question
         },
+        data() {
+            return {
+                question: null
+            };
+        },
+        created() {
+            this.question = this.questionById(this.$route.params.id);
+
+            if (isNil(this.question)) {
+                this.$load(
+                    this.$store.dispatch(
+                        "questions/fetchQuestion",
+                        {
+                            id: this.$route.params.id
+                        }
+                    )
+                ).fork(
+                    this.$handleApiError,
+                    question => {
+                        this.question = question;
+                    }
+                );
+            }
+        },
         computed: {
             ...mapGetters("questions", ["questionById"]),
             ...mapState("global", ["window"]),
-            question() {
-                return this.questionById(this.$route.params.id);
-            },
             itemStyle() {
                 let width = "1200px";
                 if (this.window.width * .8 < 1200) {
