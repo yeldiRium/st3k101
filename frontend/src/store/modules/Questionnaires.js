@@ -116,15 +116,7 @@ const store = {
             allowEmbedded,
             xapiTarget
         }) {
-            return createConcreteQuestionnaire(
-                dataClient,
-                language,
-                name,
-                description,
-                isPublic,
-                allowEmbedded,
-                xapiTarget
-            ).chain(
+            return createConcreteQuestionnaire(language, name, description, isPublic, allowEmbedded, xapiTarget).chain(
                 questionnaire => {
                     commit("patchQuestionnaire", {questionnaire});
                     return Future.of(questionnaire);
@@ -312,12 +304,7 @@ const store = {
                 );
             }
 
-            return addConcreteDimension(
-                questionnaire,
-                rootGetters["session/dataClient"],
-                name,
-                randomizeQuestions
-            ).chain(concreteDimension => {
+            return addConcreteDimension(questionnaire, name, randomizeQuestions).chain(concreteDimension => {
                 commit("addDimensionToQuestionnaire", {
                     questionnaire,
                     dimension: concreteDimension
@@ -367,11 +354,7 @@ const store = {
                 );
             }
 
-            return addShadowDimension(
-                questionnaire,
-                rootGetters["session/dataClient"],
-                concreteDimension
-            ).chain(shadowDimension => {
+            return addShadowDimension(questionnaire, concreteDimension).chain(shadowDimension => {
                 commit("addDimensionToQuestionnaire", {
                     questionnaire,
                     dimension: shadowDimension

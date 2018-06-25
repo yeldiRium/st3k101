@@ -1,5 +1,5 @@
 import Future from "fluture";
-import {contains, map, without} from "ramda";
+import {contains, map, path, pipe, prop, without} from "ramda";
 
 import {extractJson} from "./Util/Response";
 import {fetchApi} from "./Util/Request";
@@ -9,11 +9,8 @@ import {
     ConcreteQuestionnaire,
     ShadowQuestionnaire
 } from "../model/SurveyBase/Questionnaire";
-import {
-    ConcreteDimension,
-    ShadowDimension
-} from "../model/SurveyBase/Dimension";
-import {LanguageData} from "../model/Language";
+import {ConcreteDimension} from "../model/SurveyBase/Dimension";
+import {updateDimension} from "./Dimension";
 
 const properties = [
     "name", "description", "isPublic", "allowEmbedded", "xapiTarget"
@@ -26,8 +23,6 @@ const concreteProperties = [
 /**
  * Create a new ConcreteQuestionnaire.
  *
- * TODO: is owner parameter necessary?
- * @param {DataClient} owner
  * @param {Language} language
  * @param {String} name
  * @param {String} description
@@ -39,35 +34,37 @@ const concreteProperties = [
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function createConcreteQuestionnaire(owner,
-                                     language,
+function createConcreteQuestionnaire(language,
                                      name,
                                      description,
                                      isPublic,
                                      allowEmbedded,
                                      xapiTarget = "") {
-    // TODO: create via API
-    // TODO: retrieve correct href
-    const href = (Math.random() + 1).toString(36);
-    // TODO: retrieve correct id
-    const id = href;
-    const languageData = new LanguageData(language, language, [language]);
-
-    // TODO: remove timeout. this is for testing purposes
-    return Future.of(new ConcreteQuestionnaire(
-        href,
-        id,
-        [owner],
-        languageData,
+    const creationData = {
         name,
-        description,
-        isPublic,
-        allowEmbedded,
-        xapiTarget,
-        [],
-        0,
-        []
-    ));
+        description
+    };
+    const patchData = {
+        published: isPublic,
+        "allow_embedded": allowEmbedded,
+        "xapi_target": xapiTarget
+    };
+    // First create the ConcreteQuestionnaire with initial data
+    return fetchApi(
+        "/api/dataclient/concrete_questionnaire",
+        {
+            method: "POST",
+            authenticate: true,
+            body: JSON.stringify(creationData),
+            language
+        }
+    )
+        .chain(extractJson)
+        .map(pipe(prop("questionniare"), parseQuestionnaire))
+        // Then update it with the rest of the data
+        .chain(questionnaire => updateQuestionnaire(
+            questionnaire, language, patchData
+        ));
 }
 
 /**
@@ -76,41 +73,25 @@ function createConcreteQuestionnaire(owner,
  * Since this creates a new reference to the given Questionnaire, it should be
  * updated or reloaded afterwards.
  *
- * TODO: is owner parameter necessary?
- * @param {DataClient} owner
  * @param {ConcreteQuestionnaire} questionnaire
  * @return {Future}
  * @resolve {ShadowQuestionnaire}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function createShadowQuestionnaire(owner, questionnaire) {
-    // TODO: create via API
-    // TODO: retrieve correct href
-    const href = (Math.random() + 1).toString(36);
-    // TODO: retrieve correct id
-    const id = href;
-    const languageData = new LanguageData(
-        questionnaire.languageData.currentLanguage,
-        questionnaire.languageData.originalLanguage,
-        [...questionnaire.languageData.availableLanguages]
-    );
-    // TODO: retrieve correct ShadowDimensions
-    const shadowDimensions = [];
-
-    return Future.of(new ShadowQuestionnaire(
-        href,
-        id,
-        [owner],
-        languageData,
-        questionnaire.name,
-        questionnaire.description,
-        questionnaire.isPublic,
-        questionnaire.allowEmbedded,
-        questionnaire.xapiTarget,
-        shadowDimensions,
-        questionnaire
-    ));
+function createShadowQuestionnaire(questionnaire) {
+    return fetchApi(
+        "/api/dataclient_shadow_questionnaire",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                id: questionnaire.id
+            }),
+            authenticate: true
+        }
+    )
+        .chain(extractJson)
+        .map(pipe(prop("questionnaire"), parseQuestionnaire));
 }
 
 /**
@@ -169,9 +150,6 @@ function fetchQuestionnaireById(id, language) {
  * Updates the Questionnaire's fields. If a field is translatable, it is set
  * in the given language.
  *
- * Only allowed parameters are passed.
- * I.e. name and description can only be updated on ConcreteQuestionnaires.
- *
  * @param {Questionnaire} questionnaire
  * @param {Language} language
  * @param {Object} params
@@ -182,22 +160,17 @@ function fetchQuestionnaireById(id, language) {
  * @cancel
  */
 function updateQuestionnaire(questionnaire, language, params) {
-    const filteredParams = {};
-    for (const key in params) {
-        // If it is a concrete property, it can only be set on a Concrete-
-        // Questionnaire
-        if (contains(key, concreteProperties)) {
-            if (questionnaire.isConcrete) {
-                filteredParams[key] = params[key];
-            }
-        } else if (contains(key, properties)) {
-            filteredParams[key] = params[key];
+    return fetchApi(
+        questionnaire.href,
+        {
+            method: "PATCH",
+            authenticate: true,
+            body: JSON.stringify(params),
+            language
         }
-    }
-
-    // TODO: set props via api and return new Questionnaire
-
-    return Future.reject("Please implement this.");
+    )
+        .chain(extractJson)
+        .map(pipe(prop("questionnaire"), parseQuestionnaire));
 }
 
 /**
@@ -210,8 +183,14 @@ function updateQuestionnaire(questionnaire, language, params) {
  * @cancel
  */
 function deleteQuestionnaire(questionnaire) {
-    // TODO: delete via API
-    return Future.reject("Please implement this.");
+    return fetchApi(
+        questionnaire.href,
+        {
+            method: "DELETE",
+            authenticate: true
+        }
+    )
+        .map(() => true);
 }
 
 /**
@@ -222,8 +201,6 @@ function deleteQuestionnaire(questionnaire) {
  * mension appears.
  *
  * @param {ConcreteQuestionnaire} questionnaire
- * TODO: is owner parameter necessary?
- * @param {DataClient} owner
  * @param {String} name
  * @param {Boolean} randomizeQuestions
  *
@@ -232,26 +209,23 @@ function deleteQuestionnaire(questionnaire) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
-    // TODO: add via API
-    // TODO: retrieve correct href
-    const href = (Math.random() + 1).toString(36);
-    // TODO: retrieve correct id
-    const id = href;
-    const language = questionnaire.languageData.currentLanguage;
-    const languageData = new LanguageData(language, language, [language]);
-
-    return Future.of(new ConcreteDimension(
-        href,
-        id,
-        [owner],
-        languageData,
-        name,
-        [],
-        randomizeQuestions,
-        0,
-        []
-    ));
+function addConcreteDimension(questionnaire, name, randomizeQuestions) {
+    return fetchApi(
+        questionnaire.href + "/concrete_dimension",
+        {
+            method: "POST",
+            authenticate: true,
+            body: JSON.stringify({name})
+        }
+    )
+        .chain(extractJson)
+        .map(pipe(prop("dimension"), parseDimension))
+        // Update dimension with non-initial parameters after creation
+        .chain(dimension => updateDimension(
+            dimension,
+            questionnaire.languageData.currentLanguage,
+            {randomizeQuestions}
+        ));
 }
 
 /**
@@ -264,8 +238,6 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
  * reference appears.
  *
  * @param {ConcreteQuestionnaire} questionnaire
- * TODO: is owner parameter necessary?
- * @param {DataClient} owner
  * @param {ConcreteDimension} dimension
  *
  * @return {Future}
@@ -273,30 +245,17 @@ function addConcreteDimension(questionnaire, owner, name, randomizeQuestions) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addShadowDimension(questionnaire, owner, dimension) {
-    // TODO: add via API
-    // TODO: retrieve correct href
-    const href = (Math.random() + 1).toString(36);
-    // TODO: retrieve correct id
-    const id = href;
-    const languageData = new LanguageData(
-        dimension.languageData.currentLanguage,
-        dimension.languageData.originalLanguage,
-        [...dimension.languageData.availableLanguages]
-    );
-    // TODO: retrieve ShadowQuestions
-    const shadowQuestions = [];
-
-    return Future.of(new ShadowDimension(
-        href,
-        id,
-        [owner],
-        languageData,
-        dimension.name,
-        shadowQuestions,
-        dimension.randomizeQuestions,
-        dimension
-    ));
+function addShadowDimension(questionnaire, dimension) {
+    return fetchApi(
+        questionnaire.href + "/shadow_dimension",
+        {
+            method: "POST",
+            authenticate: true,
+            body: {id: questionnaire.id}
+        }
+    )
+        .chain(extractJson)
+        .map(pipe(prop("dimension"), parseDimension));
 }
 
 /**
@@ -312,13 +271,17 @@ function addShadowDimension(questionnaire, owner, dimension) {
  * @resolve {Boolean} to true
  * @reject {TypeError|ApiError}
  * @cancel
- *
- * TODO: is the resolve value sensible? Should this maybe resolve with the updated ConcreteQuestionnaire? Define API behavior.
  */
 function removeDimension(questionnaire, dimension) {
     if (contains(dimension, questionnaire.dimensions)) {
-        // TODO: delete via API
-        return Future.of(true);
+        return fetchApi(
+            dimension.href,
+            {
+                method: "DELETE",
+                authenticate: true
+            }
+        )
+            .map(() => true);
     } else {
         return Future.reject("Dimension not contained in Questionnaire.");
     }
