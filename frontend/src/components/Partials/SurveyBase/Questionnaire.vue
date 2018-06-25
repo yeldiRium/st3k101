@@ -3,12 +3,12 @@
          :class="classes"
     >
         <ListItem class="questionnaire__title"
-                  :text="questionnaire.name"
+                  :value="questionnaire.name"
                   :subtext="subtext"
                   :mini="expanded"
                   :ellipseText="!expanded"
                   :disabled="!isEditable(questionnaire)"
-                  @edit="updateQuestionnaireName"
+                  @input="updateQuestionnaireName"
         >
             <router-link :to="{name: 'AQuestionnaire', params: {id: questionnaire.id}}">
                 <IconLink class="list-item__icon"
@@ -45,8 +45,8 @@
 
             <template>
                 <EditableText v-if="questionnaire.isConcrete"
-                              :text="questionnaire.description"
-                              @edit="updateDescription"
+                              :value="questionnaire.description"
+                              @input="updateDescription"
                               :textArea="true"
                 />
                 <div v-else>
@@ -78,8 +78,8 @@
                 </template>
             </Toggle>
 
-            <EditableText :text="questionnaire.xapiTarget"
-                          @edit="updateXapiTarget"
+            <EditableText :value="questionnaire.xapiTarget"
+                          @input="updateXapiTarget"
             />
 
             <div class="questionnaire__dimensions">

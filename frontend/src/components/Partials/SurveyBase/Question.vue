@@ -2,12 +2,12 @@
     <div class="question"
          :class="classes"
     >
-        <ListItem :text="question.text"
+        <ListItem :value="question.text"
                   class="question__title"
                   :ellipseText="!expanded"
                   :mini="true"
                   :disabled="!isEditable(question)"
-                  @edit="updateQuestionText"
+                  @input="updateQuestionText"
         >
             <router-link :to="{name: 'AQuestion', params: {id: question.id}}">
                 <IconLink class="list-item__icon"

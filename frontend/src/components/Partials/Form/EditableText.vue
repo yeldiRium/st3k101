@@ -6,12 +6,12 @@
              v-click-outside="cancelEditing"
         >
             <textarea v-if="textArea"
-                      :value="text"
+                      v-model="runningValue"
                       ref="input"
                       @keyup.esc="cancelEditing"
             />
             <input v-else
-                   :value="text"
+                   v-model="runningValue"
                    ref="input"
                    @keyup.enter="finishEditing"
                    @keyup.esc="cancelEditing"
@@ -25,7 +25,7 @@
              v-else
              @dblclick.prevent.stop="startEditing"
         >
-            {{ text }}
+            {{ value }}
         </div>
     </div>
 </template>
@@ -34,7 +34,7 @@
     export default {
         name: "EditableText",
         props: {
-            text: {
+            value: {
                 type: String
             },
             ellipseText: {
@@ -49,27 +49,34 @@
         data() {
             return {
                 editing: false,
-                storedValue: ""
+                storedValue: "",
+                runningValue: ""
             };
         },
+        watch: {
+            value: {
+                immediate: true,
+                handler(value) {
+                    this.runningValue = value;
+                }
+            }
+        },
         methods: {
-            handleInput(event) {
-                this.$emit("edit", event);
-            },
             startEditing() {
                 this.editing = true;
-                this.storedValue = this.text;
+                this.storedValue = this.runningValue;
                 this.$nextTick(() => {
                     this.$refs.input.focus();
                 })
             },
             finishEditing() {
                 this.editing = false;
-                this.$emit("edit", this.$refs.input.value);
+                this.$emit("input", this.runningValue);
             },
             cancelEditing() {
                 this.editing = false;
-                this.$emit("edit", this.storedValue);
+                this.runningValue = this.storedValue;
+                this.$emit("input", this.storedValue);
             }
         }
     }

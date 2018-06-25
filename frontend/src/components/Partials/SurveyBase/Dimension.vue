@@ -3,12 +3,12 @@
          :class="classes"
     >
         <ListItem class="dimension__title"
-                  :text="dimension.name"
+                  :value="dimension.name"
                   :subtext="subtext"
                   :mini="expanded"
                   :ellipseText="!expanded"
                   :disabled="!isEditable(dimension)"
-                  @edit="updateDimensionName"
+                  @input="updateDimensionName"
         >
             <router-link :to="{name: 'ADimension', params: {id: dimension.id}}">
                 <IconLink class="list-item__icon"

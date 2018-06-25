@@ -2,22 +2,22 @@
     <div class="list-item" :class="classes">
         <div class="list-item__text"
              :class="textClasses"
-             :title="text"
-             v-on="$listeners"
+             :title="value"
+             v-on="listeners"
         >
-            <EditableText :text="text"
+            <EditableText :value="value"
                           v-if="editableText && !disabled"
-                          @edit="$emit('edit', $event)"
+                          @input="$emit('input', $event)"
                           :ellipseText="ellipseText"
             />
             <template v-else>
-                {{ text }}
+                {{ value }}
             </template>
         </div>
         <div class="list-item__sub-text"
              :class="subTextClasses"
              :title="subtext"
-             v-on="$listeners"
+             v-on="listeners"
         >
             {{ subtext }}
         </div>
@@ -31,6 +31,8 @@
 </template>
 
 <script>
+    import {dissoc} from "ramda";
+
     import EditableText from "../Form/EditableText";
 
     export default {
@@ -39,7 +41,7 @@
             EditableText
         },
         props: {
-            text: {
+            value: {
                 type: String
             },
             subtext: {
@@ -72,6 +74,17 @@
             }
         },
         computed: {
+            /**
+             * Remove input listeners from passed events.
+             * Since there is a manual listen on @input on the EditableText
+             * component, this would make the listener redundant and fire on
+             * unintended events.
+             *
+             * @returns {Object}
+             */
+            listeners() {
+                return dissoc("input", this.$listeners);
+            },
             classes() {
                 return {
                     "list-item--mini": this.mini,

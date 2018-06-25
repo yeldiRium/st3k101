@@ -20,14 +20,12 @@
     import {without} from "ramda";
 
     import Button from "../../Partials/Form/Button";
-    import ListItem from "../../Partials/List/Item";
     import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
 
     export default {
         name: "MyQuestionnaires",
         components: {
             Button,
-            ListItem,
             Questionnaire
         },
         created() {

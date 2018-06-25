@@ -1,32 +1,36 @@
 <template>
     <div class="TestListItem_container">
-        <ListItem text="Dies ist scheinbar ein ListItem."
+        <ListItem v-model="text1"
+                  :key="text1"
                   subtext="Und das hier soll ein Subtext sein?!? Mach mal besser länger."
         >
-            <icon-visible class="list-item-icon" />
-            <icon-reorder class="list-item-icon" />
+            <icon-visible class="list-item-icon"/>
+            <icon-reorder class="list-item-icon"/>
         </ListItem>
-        <ListItem text="Dieses ListItem ist disabled."
+        <ListItem v-model="text2"
+                  :key="text2"
                   subtext="Diesmal mit einem kürzeren Subtext."
                   :disabled="true"
         >
-            <icon-invisible class="list-item-icon" />
-            <icon-reorder class="list-item-icon" />
+            <icon-invisible class="list-item-icon"/>
+            <icon-reorder class="list-item-icon"/>
         </ListItem>
-        <ListItem text="Und ein mini ListItem."
+        <ListItem v-model="text3"
+                  :key="text3"
                   subtext=""
                   :mini="true"
         >
-            <icon-invisible class="list-item-icon" />
-            <icon-reorder class="list-item-icon" />
+            <icon-invisible class="list-item-icon"/>
+            <icon-reorder class="list-item-icon"/>
         </ListItem>
-        <ListItem text="Mini und disabled."
+        <ListItem v-model="text4"
+                  :key="text4"
                   subtext=""
                   :mini="true"
                   :disabled="true"
         >
-            <icon-visible class="list-item-icon" />
-            <icon-reorder class="list-item-icon" />
+            <icon-visible class="list-item-icon"/>
+            <icon-reorder class="list-item-icon"/>
         </ListItem>
     </div>
 </template>
@@ -45,6 +49,14 @@
             IconVisible,
             IconInvisible,
             IconReorder
+        },
+        data() {
+            return {
+                text1: "Dies ist scheinbar ein ListItem.",
+                text2: "Dieses ListItem ist disabled.",
+                text3: "Und ein mini ListItem.",
+                text4: "Mini und disabled."
+            }
         }
     }
 </script>
