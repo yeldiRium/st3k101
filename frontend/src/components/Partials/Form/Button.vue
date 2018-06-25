@@ -95,6 +95,10 @@
              * @param event
              */
             rippleAnimation(event) {
+                if(this.ripple === false) {
+                    return;
+                }
+
                 const timing = 0.75;
                 const tl = new TimelineMax();
                 const x = event.offsetX;
