@@ -24,7 +24,9 @@
              :class="{'editable-text__text--ellipse': ellipseText}"
              v-else
         >
-            {{ value }}
+            <span>
+                {{ value }}
+            </span>
             <IconEdit class="editable-text__edit-icon"
                       height="1em"
                       width="1em"
@@ -96,8 +98,14 @@
 
     .editable-text {
         &__text {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1em;
+
             &--ellipse {
-                @include ellipse();
+                span {
+                    @include ellipse();
+                }
             }
         }
 

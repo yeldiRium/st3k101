@@ -45,7 +45,8 @@
                 type: String
             },
             subtext: {
-                type: String
+                type: String,
+                default: ""
             },
             // Overrides editableText
             disabled: {
@@ -87,8 +88,8 @@
             },
             classes() {
                 return {
-                    "list-item--mini": this.mini,
-                    "list-item--big": !this.mini,
+                    "list-item--mini": this.mini || this.subtext === "",
+                    "list-item--big": !(this.mini || this.subtext === ""),
                     "list-item--disabled": this.disabled,
                     "list-item--with-icons": this.icons,
                     "list-item--no-icons": !this.icons
@@ -163,12 +164,14 @@
             grid-area: text;
             align-self: end;
 
-            padding-right: 5px;
-
             font-size: 1.1em;
 
             &--ellipse {
                 @include ellipse;
+            }
+
+            .editable-text {
+                width: 100%;
             }
         }
 
