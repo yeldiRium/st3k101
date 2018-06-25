@@ -1,5 +1,8 @@
 import Future from "fluture";
-import {contains} from "ramda";
+import {contains, pipe, prop} from "ramda";
+
+import {extractJson} from "./Util/Response";
+import {parseQuestion} from "./Util/Parse";
 
 import Question, {
     ConcreteQuestion,
@@ -21,17 +24,36 @@ const concreteProperties = ["text"];
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchQuestion(href, language) {
-    // TODO: fetch Question from API
-    return Future.reject("Please implement this.");
+function fetchQuestion(href, language = null) {
+    return fetchApi(
+        href,
+        {
+            authenticate: true,
+            language
+        }
+    )
+        .chain(extractJson)
+        .map(parseQuestion);
+}
+
+/**
+ * Fetches a Question by building its href from its id in the given language.
+ *
+ * @param {String} id
+ * @param {Language} language
+ *
+ * @return {Future}
+ * @resolve {Question}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function fetchQuestionById(id, language = null) {
+    return fetchQuestion(`/api/question/${id}`, language);
 }
 
 /**
  * Updates the Question's fields. If a field is translatable, it is set
  * in the given language.
- *
- * Only allowed parameters are passed.
- * I.e. text can only be updated on ConcreteQuestions.
  *
  * @param {Question} question
  * @param {Language} language
@@ -43,22 +65,17 @@ function fetchQuestion(href, language) {
  * @cancel
  */
 function updateQuestion(question, language, params) {
-    const filteredParams = {};
-    for (const key in params) {
-        // If it is a concrete property, it can only be set on a Concrete-
-        // Question
-        if (contains(key, concreteProperties)) {
-            if (question.isConcrete) {
-                filteredParams[key] = params[key];
-            }
-        } else if (contains(key, properties)) {
-            filteredParams[key] = params[key];
+    return fetchApi(
+        question.href,
+        {
+            method: "PATCH",
+            authenticate: true,
+            body: JSON.stringify(params),
+            language
         }
-    }
-
-    // TODO: set props via api and return new Question
-
-    return Future.reject("Please implement this.");
+    )
+        .chain(extractJson)
+        .map(pipe(prop("question"), parseQuestion));
 }
 
 /**
@@ -153,6 +170,7 @@ function populateQuestion(question) {
 
 export {
     fetchQuestion,
+    fetchQuestionById,
     updateQuestion,
     populateOwnedIncomingReferences,
     populateReferenceTo,

@@ -4,13 +4,13 @@ import {contains, map, path, pipe, prop, without} from "ramda";
 import {extractJson} from "./Util/Response";
 import {fetchApi} from "./Util/Request";
 import {parseDimension, parseQuestionnaire} from "./Util/Parse";
+import {updateDimension} from "./Dimension";
 
 import {
     ConcreteQuestionnaire,
     ShadowQuestionnaire
 } from "../model/SurveyBase/Questionnaire";
 import {ConcreteDimension} from "../model/SurveyBase/Dimension";
-import {updateDimension} from "./Dimension";
 
 const properties = [
     "name", "description", "isPublic", "allowEmbedded", "xapiTarget"
@@ -142,7 +142,7 @@ function fetchQuestionnaire(href, language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchQuestionnaireById(id, language) {
+function fetchQuestionnaireById(id, language = null) {
     return fetchQuestionnaire(`/api/questionnaire/${id}`, language);
 }
 
@@ -215,7 +215,8 @@ function addConcreteDimension(questionnaire, name, randomizeQuestions) {
         {
             method: "POST",
             authenticate: true,
-            body: JSON.stringify({name})
+            body: JSON.stringify({name}),
+            language: questionnaire.languageData.currentLanguage
         }
     )
         .chain(extractJson)

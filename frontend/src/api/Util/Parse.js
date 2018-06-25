@@ -210,6 +210,10 @@ function parseDimension(data) {
     return {};
 }
 
+function parseQuestion(data) {
+    return {};
+}
+
 export {
     parseLanguage,
     parseLanguageData,
@@ -217,5 +221,6 @@ export {
     parseQuestionnaire,
     parseShadowQuestionnaire,
     parseConcreteQuestionnaire,
-    parseDimension
+    parseDimension,
+    parseQuestion
 };

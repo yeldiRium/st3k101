@@ -1,12 +1,15 @@
 import Future from "fluture";
-import {contains, without} from "ramda";
+import {contains, pipe, prop, without} from "ramda";
+
+import {extractJson} from "./Util/Response";
+import {updateQuestion} from "./Question";
+import {parseQuestion} from "./Util/Parse";
 
 import {
     ConcreteDimension,
     ShadowDimension
 } from "../model/SurveyBase/Dimension";
-import {ConcreteQuestion, ShadowQuestion} from "../model/SurveyBase/Question";
-import {LanguageData} from "../model/Language";
+import {ConcreteQuestion} from "../model/SurveyBase/Question";
 
 const properties = ["name", "randomizeQuestions"];
 
@@ -23,17 +26,36 @@ const concreteProperties = ["name"];
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchDimension(href, language) {
-    // TODO: fetch Dimension from API
-    return Future.reject("Please implement this.");
+function fetchDimension(href, language = null) {
+    return fetchApi(
+        href,
+        {
+            authenticate: true,
+            language
+        }
+    )
+        .chain(extractJson)
+        .map(parseDimension);
+}
+
+/**
+ * Fetches a Dimension by building its href from its id in the given language.
+ *
+ * @param {String} id
+ * @param {Language} language
+ *
+ * @return {Future}
+ * @resolve {Dimension}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function fetchDimensionById(id, language = null) {
+    return fetchDimension(`/api/dimension/${id}`, language);
 }
 
 /**
  * Updates the Dimension's fields. If a field is translatable, it is set
  * in the given language.
- *
- * Only allowed parameters are passed.
- * I.e. name and description can only be updated on ConcreteDimensions.
  *
  * @param {Dimension} dimension
  * @param {Language} language
@@ -45,22 +67,16 @@ function fetchDimension(href, language) {
  * @cancel
  */
 function updateDimension(dimension, language, params) {
-    const filteredParams = {};
-    for (const key in params) {
-        // If it is a concrete property, it can only be set on a Concrete-
-        // Dimension
-        if (contains(key, concreteProperties)) {
-            if (dimension.isConcrete) {
-                filteredParams[key] = params[key];
-            }
-        } else if (contains(key, properties)) {
-            filteredParams[key] = params[key];
+    return fetchApi(
+        dimension.href,
+        {
+            method: "PATCH",
+            authenticate: true,
+            body: JSON.stringify(params)
         }
-    }
-
-    // TODO: set props via api and return new Dimension
-
-    return Future.reject("Please implement this.");
+    )
+        .chain(extractJson)
+        .map(pipe(prop("dimension"), parseDimension));
 }
 
 /**
@@ -71,8 +87,6 @@ function updateDimension(dimension, language, params) {
  * new Question appears.
  *
  * @param {ConcreteDimension} dimension
- * TODO: is owner parameter necessary?
- * @param {DataClient} owner
  * @param {String} text
  * @param {Range} range
  * @return Future
@@ -80,25 +94,23 @@ function updateDimension(dimension, language, params) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addConcreteQuestion(dimension, owner, text, range) {
-    // TODO: create via API
-    // TODO: retrieve correct href
-    const href = (Math.random() + 1).toString(36);
-    // TODO: retrieve correct id
-    const id = href;
-    const language = dimension.languageData.currentLanguage;
-    const languageData = new LanguageData(language, language, [language]);
-
-    return Future.of(new ConcreteQuestion(
-        href,
-        id,
-        [owner],
-        languageData,
-        text,
-        range,
-        0,
-        []
-    ));
+function addConcreteQuestion(dimension, text, range) {
+    return fetchApi(
+        dimension.href + "/concrete_question",
+        {
+            method: "POST",
+            authenticate: true,
+            body: JSON.stringify({text}),
+            language: dimension.languageData.currentLanguage
+        }
+    )
+        .chain(extractJson)
+        .map(pipe(prop("question"), parseQuestion))
+        .chain(question => updateQuestion(
+            question,
+            dimension.languageData.currentLanguage,
+            {range}
+        ));
 }
 
 /**
@@ -112,35 +124,23 @@ function addConcreteQuestion(dimension, owner, text, range) {
  * increase in references
  *
  * @param {ConcreteDimension} dimension
- * TODO: is owner parameter necessary?
- * @param {DataClient} owner
  * @param {ConcreteQuestion} question
- * @return Future
+ * @return {Future}
  * @resolve {ShadowQuestionnaire}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addShadowQuestion(dimension, owner, question) {
-    // TODO: create via API
-    // TODO: retrieve correct href
-    const href = (Math.random() + 1).toString(36);
-    // TODO: retrieve correct id
-    const id = href;
-    const languageData = new LanguageData(
-        question.languageData.currentLanguage,
-        question.languageData.originalLanguage,
-        [...question.languageData.availableLanguages]
-    );
-
-    return Future.of(new ShadowQuestion(
-        href,
-        id,
-        [owner],
-        languageData,
-        question.text,
-        question.range.clone(),
-        question
-    ));
+function addShadowQuestion(dimension, question) {
+    return fetchApi(
+        dimension.href + "/shadow_question",
+        {
+            method: "POST",
+            authenticate: true,
+            body: JSON.stringify({id: question.id})
+        }
+    )
+        .chain(extractJson)
+        .map(pipe(prop("question"), parseQuestion));
 }
 
 /**
@@ -152,16 +152,20 @@ function addShadowQuestion(dimension, owner, question) {
  * @param {ConcreteDimension} dimension
  * @param {Question} question
  * @return {Future}
- * @resolve to true
+ * @resolve {Boolean} to true
  * @reject {TypeError|ApiError}
  * @cancel
- *
- * TODO: is the resolve value sensible? Should this maybe resolve with the updated ConcreteDimension? Define API behavior.
  */
 function removeQuestion(dimension, question) {
     if (contains(question, dimension.questions)) {
-        // TODO: delete via API
-        return Future.of(true);
+        return fetchApi(
+            question.href,
+            {
+                method: "DELETE",
+                authenticate: true
+            }
+        )
+            .map(() => true);
     } else {
         return Future.reject("Question not contained in Dimension.");
     }
@@ -254,6 +258,7 @@ function populateDimension(dimension) {
 
 export {
     fetchDimension,
+    fetchDimensionById,
     updateDimension,
     addConcreteQuestion,
     addShadowQuestion,

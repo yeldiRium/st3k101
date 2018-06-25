@@ -8,6 +8,11 @@ import {
     removeQuestion,
     updateDimension
 } from "../../api/Dimension";
+import {
+    fetchQuestionnaire,
+    fetchQuestionnaireById
+} from "../../api/Questionnaire";
+import {BadRequestError} from "../../api/Errors";
 
 const store = {
     namespaced: true,
@@ -110,8 +115,11 @@ const store = {
          * overwritten with the API result. Otherwise the Dimension is
          * added.
          *
+         * At least one of href and id must be provided.
+         *
          * @param dispatch
          * @param {String} href
+         * @param id
          * @param {Language} language
          *
          * @return {Future}
@@ -119,11 +127,23 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchDimension({dispatch}, {href, language}) {
-            return fetchDimension(href, language)
-                .chain(
-                    dimension => dispatch("patchDimensionInStore", {dimension})
+        fetchDimension({dispatch}, {href = null, id = null, language = null}) {
+            let future;
+            if (isNil(href) && isNil(id)) {
+                return Future.reject(
+                    new BadRequestError("At least href or id has to be provided.")
                 );
+            }
+            if (!isNil(href)) {
+                future = fetchDimension(href, language);
+            } else {
+                future = fetchDimensionById(id, language);
+            }
+            return future
+                .chain(dimension => dispatch(
+                    "patchDimensionInStore",
+                    {dimension}
+                ));
         },
         /**
          * Updates the given params on the Dimension and updates the
@@ -191,12 +211,7 @@ const store = {
                 );
             }
 
-            return addConcreteQuestion(
-                dimension,
-                rootGetters["session/dataClient"],
-                text,
-                range
-            ).chain(concreteQuestion => {
+            return addConcreteQuestion(dimension, text, range).chain(concreteQuestion => {
                 commit(
                     "addQuestionToDimension",
                     {
@@ -248,11 +263,7 @@ const store = {
                 );
             }
 
-            return addShadowQuestion(
-                dimension,
-                rootGetters["session/dataClient"],
-                concreteQuestion
-            ).chain(shadowQuestion => {
+            return addShadowQuestion(dimension, concreteQuestion).chain(shadowQuestion => {
                 commit("addQuestionToDimension", {
                     dimension,
                     question: shadowQuestion

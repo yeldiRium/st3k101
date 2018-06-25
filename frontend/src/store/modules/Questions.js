@@ -2,6 +2,7 @@ import {bind, find, isNil, map, reject} from "ramda";
 import Future from "fluture";
 
 import {fetchQuestion, updateQuestion} from "../../api/Question";
+import {BadRequestError} from "../../api/Errors";
 
 const store = {
     namespaced: true,
@@ -71,8 +72,11 @@ const store = {
          * overwritten with the API result. Otherwise the Question is
          * added.
          *
+         * At least one of href and id must be provided.
+         *
          * @param dispatch
          * @param {String} href
+         * @param id
          * @param {Language} language
          *
          * @return {Future}
@@ -80,11 +84,23 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestion({dispatch}, {href, language}) {
-            return fetchQuestion(href, language)
-                .chain(
-                    question => dispatch("patchQuestionInStore", {question})
+        fetchQuestion({dispatch}, {href = null, id = null, language = null}) {
+            let future;
+            if (isNil(href) && isNil(id)) {
+                return Future.reject(
+                    new BadRequestError("At least href or id has to be provided.")
                 );
+            }
+            if (!isNil(href)) {
+                future = fetchQuestion(href, language);
+            } else {
+                future = fetchQuestionById(id, language);
+            }
+            return future
+                .chain(question => dispatch(
+                    "patchQuestionInStore",
+                    {question}
+                ));
         },
         /**
          * Updates the given params on the Question and updates the
