@@ -26,6 +26,22 @@ function getAuthenticationHeaders(authenticate = true) {
     }
 }
 
+/**
+ * Returns an object containing a accept-language header, if the given language
+ * is not null.
+ *
+ * @param {Language} language
+ * @returns {Object}
+ */
+function getLanguageHeaders(language = null) {
+    if (isNil(language)) {
+        return {};
+    }
+    return {
+        "Accept-Language": language.shortName
+    };
+}
+
 const defaultHeaders = {
     "Content-Type": "application/json"
 };
@@ -45,6 +61,7 @@ const defaultHeaders = {
  * @param {String} body
  * @param {Object<String>} headers
  * @param {Boolean} authenticate
+ * @param {Language} language
  *
  * @return {Future}
  * @resolve {Response}
@@ -57,7 +74,8 @@ function fetchApi(path,
                       method = "GET",
                       body = "",
                       headers = {},
-                      authenticate = false
+                      authenticate = false,
+                      language = null
                   }) {
     if (authenticate && !store.getters["session/isLoggedIn"]) {
         return Future.reject(
@@ -72,7 +90,8 @@ function fetchApi(path,
         const useHeaders = {
             ...defaultHeaders,
             ...headers,
-            ...getAuthenticationHeaders(authenticate)
+            ...getAuthenticationHeaders(authenticate),
+            ...getLanguageHeaders(language)
         };
 
         const fetchParams = {
