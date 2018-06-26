@@ -17,7 +17,7 @@ __author__ = "Noah Hummel"
 class CurrentDataClientResource(Resource):
     @needs_minimum_role(Role.User)
     def get(self):
-        return DataClientSchema().dump(current_user())
+        return DataClientSchema().dump(current_user()).data
 
     def post(self):
         schema = DataClientSchema()
@@ -47,7 +47,7 @@ class CurrentDataClientResource(Resource):
 
         db.session.add(dataclient)
         db.session.commit()
-        return schema.dump(dataclient), 201
+        return schema.dump(dataclient).data, 201
 
     @needs_minimum_role(Role.User)
     def patch(self):
@@ -76,7 +76,7 @@ class CurrentDataClientResource(Resource):
 
         response = {
             'message': 'DataClient updated.',
-            'data_client': schema.dump(dataclient)
+            'data_client': schema.dump(dataclient).data
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -85,7 +85,7 @@ class CurrentDataClientResource(Resource):
 
     @needs_minimum_role(Role.User)
     def delete(self):
-        dataclient_data = DataClientSchema().dump(current_user())
+        dataclient_data = DataClientSchema().dump(current_user()).data
         db.session.delete(current_user())
         db.session.commit()
         users.logout()
@@ -105,7 +105,7 @@ class DataClientResource(Resource):
                 abort(403, message='You are not allowed to access other user\'s'
                                    ' data.')
         dataclient = DataClient.query.get_or_404(dataclient_id)
-        return schema.dump(dataclient)
+        return schema.dump(dataclient).data
 
     @needs_minimum_role(Role.User)
     def delete(self, dataclient_id=None):
@@ -114,7 +114,7 @@ class DataClientResource(Resource):
                 abort(403, message='You are not allowed to remove other user\'s'
                                    ' accounts.')
         dataclient = DataClient.query.get_or_404(dataclient_id)
-        dataclient_data = DataClientSchema().dump(dataclient)
+        dataclient_data = DataClientSchema().dump(dataclient).data
         db.session.delete(dataclient)
         db.session.commit()
         return {
@@ -154,7 +154,7 @@ class DataClientResource(Resource):
 
         response = {
             'message': 'DataClient updated.',
-            'data_client': schema.dump(dataclient)
+            'data_client': schema.dump(dataclient).data
         }
         if errors:
             response['message'] += ' Some errors occurred.'

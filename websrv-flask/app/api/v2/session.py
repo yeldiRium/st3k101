@@ -25,7 +25,7 @@ class SessionResource(Resource):
 
         try:
             session_token = users.login(data['email'], data['password'])
-            return SessionSchema().dump({'session_token': session_token})
+            return SessionSchema().dump({'session_token': session_token}).data
         except BadCredentialsException:
             abort(404, message='User not found.')
 
