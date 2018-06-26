@@ -10,9 +10,9 @@ import IconExpandMore from "../assets/icons/baseline-expand_more-24px.svg";
 storiesOf('ListItem', module)
     .addDecorator(withKnobs)
     .addDecorator(() => ({
-        template: '<div style="display: flex; justify-content: center">' +
-        '   <div style="min-width: 300px">' +
-        '       <story/>' +
+        template: '<div style="display: grid; justify-items: center; grid-row-gap: 50px">' +
+        '   <div v-for="n in 10" :style="{\'min-width\': `${100 * n + 50}px`}">' +
+        '       {{ 100 * n + 50 }}px: <story/>' +
         '   </div>' +
         '</div>'
     }))
