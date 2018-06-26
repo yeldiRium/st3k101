@@ -1,4 +1,4 @@
-from marshmallow import fields
+from marshmallow import fields, Schema
 
 from api.v2.schema.survey_base import SurveyBaseSchema
 from model.SQLAlchemy.models.Question import ShadowQuestion
@@ -13,3 +13,7 @@ class QuestionSchema(SurveyBaseSchema):
 
     def is_shadow(self, obj):
         return isinstance(obj, ShadowQuestion)
+
+
+class ShadowQuestionSchema(Schema):
+    id = fields.Integer(required=True)
