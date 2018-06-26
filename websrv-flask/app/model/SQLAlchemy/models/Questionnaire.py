@@ -193,11 +193,16 @@ class Questionnaire(SurveyBase):
     def delete(self):
         item_deleted.send(self, person=current_user())
 
-        for copy in self.copies:
-            q = ConcreteQuestionnaire.from_shadow(copy)
-            db.session.add(q)
-        for copy in self.copies:
-            db.session.delete(copy)
+        if isinstance(self, ConcreteQuestionnaire):
+            # Create concrete questionnaires from all shadow copies of
+            # this questionnaire. We don't want to deletes other peoples'
+            # questionnaires.
+            for copy in self.copies:
+                q = ConcreteQuestionnaire.from_shadow(copy)
+                db.session.add(q)
+            for copy in self.copies:
+                db.session.delete(copy)
+                
         db.session.delete(self)
 
     def add_qac_module(self, qac_module: QACModule):

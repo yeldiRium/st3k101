@@ -67,8 +67,10 @@ class QuestionnaireResource(Resource):
     @needs_minimum_role(Role.User)
     def delete(self, questionnaire_id=None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
-        if not questionnaire.modifiable_by(current_user()):
+        if not questionnaire.accessible_by(current_user()):
             abort(404)
+        if not questionnaire.modifiable_by(current_user()):
+            abort(403)
         data = QuestionnaireSchema().dump(questionnaire).data
         questionnaire.delete()
         db.session.commit()
