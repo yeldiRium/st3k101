@@ -1,0 +1,25 @@
+from marshmallow import Schema, fields
+
+from api.v2.schema.datasubject import DataSubjectSchema
+
+__author__ = "Noah Hummel"
+
+
+class QuestionSubmissionSchema(Schema):
+    id = fields.Integer()
+    value = fields.Integer()
+
+
+class DimensionSubmissionSchema(Schema):
+    id = fields.Integer(required=True)
+    questions = fields.Nested(QuestionSubmissionSchema,
+                              many=True, required=True)
+
+
+class SubmissionSchema(Schema):
+    questionnaire_id = fields.Integer()
+    data_subject = fields.Nested(DataSubjectSchema, required=True)
+    password = fields.String()
+    captcha_token = fields.String(required=True)
+    dimensions = fields.Nested(DimensionSubmissionSchema,
+                               many=True, required=True)
