@@ -21,7 +21,7 @@ class QuestionnaireResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
             abort(404)
-        return schema.dump(questionnaire).data
+        return schema.dump(questionnaire)
 
     @needs_minimum_role(Role.User)
     def patch(self, questionnaire_id=None):
@@ -57,7 +57,7 @@ class QuestionnaireResource(Resource):
 
         response = {
             'message': 'Questionnaire updated.',
-            'questionnaire': schema.dump(questionnaire).data
+            'questionnaire': schema.dump(questionnaire)
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -69,7 +69,7 @@ class QuestionnaireResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.modifiable_by(current_user()):
             abort(404)
-        data = QuestionnaireSchema().dump(questionnaire).data
+        data = QuestionnaireSchema().dump(questionnaire)
         questionnaire.delete()
         db.session.commit()
         return {
@@ -135,6 +135,7 @@ class ConcreteQuestionnaireResource(Resource):
 
 
 class ShadowQuestionnaireResource(Resource):
+    @needs_minimum_role(Role.User)
     def post(self):
         schema = ShadowQuestionnaireSchema()
         data, errors = schema.load(request.json)
@@ -148,8 +149,12 @@ class ShadowQuestionnaireResource(Resource):
                 'errors': errors
             }, 400
 
-        concrete_questionnaire = ConcreteQuestionnaire.query.get_or_404(data['id'])
-        shadow_questionnaire = ShadowQuestionnaire(concrete_questionnaire)
+        questionnaire = Questionnaire.query.get_or_404(data['id'])
+        if not questionnaire.accessible_by(current_user()):
+            abort(404)
+        if questionnaire.shadow:
+            abort(403)
+        shadow_questionnaire = ShadowQuestionnaire(questionnaire)
         db.session.add(shadow_questionnaire)
         db.session.commit()
 

@@ -106,16 +106,22 @@ class ConcreteDimensionResource(Resource):
                 'errors': errors
             }, 400
 
-        questionnaire = ConcreteQuestionnaire.query.get_or_404(questionnaire_id)
+        questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
             abort(404)
         if not questionnaire.modifiable_by(current_user()):
             abort(403)
-        questionnaire.new_dimension(data['name'])
+        if questionnaire.shadow:
+            abort(403)
+
+        dimension = questionnaire.new_dimension(data['name'])
         for k, v in data.items():
-            if k == 'template' and not current_has_minimum_role(Role.Contributor):
-                errors[k] = 'You need to be a contributor to publish templates.'
-                continue
+            if k == 'template':
+                if not current_has_minimum_role(Role.Contributor):
+                    errors[k] = ['You need to be a contributor to publish '
+                                 'templates.']
+                    continue
+            setattr(dimension, k, v)
         db.session.commit()
 
         data = QuestionnaireSchema().dump(questionnaire)
@@ -130,6 +136,7 @@ class ConcreteDimensionResource(Resource):
 
 
 class ShadowDimensionResource(Resource):
+    @needs_minimum_role(Role.User)
     def post(self, questionnaire_id=None):
         schema = ShadowDimensionSchema()
         data, errors = schema.load(request.json)
@@ -143,13 +150,15 @@ class ShadowDimensionResource(Resource):
                 'errors': errors
             }, 400
 
-        questionnaire = ConcreteQuestionnaire.query.get_or_404(questionnaire_id)
-        concrete_dimension = ConcreteDimension.query.get_or_404(data['id'])
+        questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
+        dimension = Dimension.query.get_or_404(data['id'])
         if not questionnaire.accessible_by(current_user()):
             abort(404)
         if not questionnaire.modifiable_by(current_user()):
             abort(403)
-        questionnaire.add_shadow_dimension(concrete_dimension)
+        if dimension.shadow:
+            abort(403)
+        questionnaire.add_shadow_dimension(dimension)
         db.session.commit()
 
         data = QuestionnaireSchema().dump(questionnaire)
