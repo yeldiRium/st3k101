@@ -54,7 +54,7 @@ class DimensionResource(Resource):
                 if k not in shadow_attributes:
                     errors[k] = ['Can\'t update {} of a ShadowDimension. The '
                                  'contributor owning the template is '
-                                 'responsible for the Dimension\'s content.']
+                                 'responsible for the Dimension\'s content.'.format(k)]
                     continue
             else:
                 if k == 'template' and not current_has_minimum_role(Role.Contributor):
