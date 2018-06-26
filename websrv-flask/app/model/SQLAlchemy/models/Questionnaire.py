@@ -202,7 +202,7 @@ class Questionnaire(SurveyBase):
                 db.session.add(q)
             for copy in self.copies:
                 db.session.delete(copy)
-                
+
         db.session.delete(self)
 
     def add_qac_module(self, qac_module: QACModule):
