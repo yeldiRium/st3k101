@@ -5,10 +5,6 @@ import Language from "../../model/Language";
 const store = {
     namespaced: true,
     state: {
-        loading: {
-            state: "loading",
-            error: null
-        },
         currentLanguage: {
             short: "de",
             long: "Deutsch"
@@ -26,14 +22,6 @@ const store = {
             new Language("ch", "Chinese")
         ]
     },
-    getters: {
-        loading: state => {
-            return {
-                loadingState: state.loading.state,
-                error: state.loading.error
-            };
-        },
-    },
     actions: {
         /**
          * TODO:
@@ -45,10 +33,6 @@ const store = {
         }
     },
     mutations: {
-        setLoadingState(state, {loadingState, error}) {
-            state.loading.state = loadingState;
-            state.loading.error = error;
-        },
         setCurrentLanguage(state, language) {
             state.currentLanguage = language;
         },
