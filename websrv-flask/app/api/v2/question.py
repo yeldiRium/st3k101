@@ -48,7 +48,8 @@ class QuestionResource(Resource):
         schema = QuestionSchema()
         data, errors = schema.load(request.json, partial=True)
         for err in errors:
-            del data[err]
+            if err in data:
+                del data[err]
         if not data:
             return {
                 'message': 'Question not updated. Some errors occurred.',
@@ -58,7 +59,7 @@ class QuestionResource(Resource):
         if isinstance(question, ShadowQuestion):
             abort(403)
 
-        for k, v in data.keys:
+        for k, v in data.items():
             if 'k' == 'template':
                 if not current_has_minimum_role(Role.Contributor):
                     errors[k] = ['You need to be a contributor to publish '
@@ -94,7 +95,7 @@ class QuestionResource(Resource):
 
 class ConcreteQuestionResource(Resource):
     @needs_minimum_role(Role.User)
-    def post(self, questionnaire_id: int, dimension_id: int):
+    def post(self, questionnaire_id: int=None, dimension_id: int=None):
         schema = QuestionSchema()
         data, errors = schema.load(request.json)
         for err in errors:
@@ -141,7 +142,7 @@ class ConcreteQuestionResource(Resource):
 
 class ShadowQuestionResource(Resource):
     @needs_minimum_role(Role.User)
-    def post(self, questionnaire_id: int, dimension_id: int):
+    def post(self, questionnaire_id: int=None, dimension_id: int=None):
         schema = ShadowQuestionSchema()
         data, errors = schema.load(request.json)
         dimension = Dimension.query.get_or_404(dimension_id)
@@ -173,7 +174,7 @@ class ShadowQuestionResource(Resource):
 
 class QuestionListResource(Resource):
     @needs_minimum_role(Role.User)
-    def get(self, questionnaire_id: int, dimension_id: int):
+    def get(self, questionnaire_id: int=None, dimension_id: int=None):
         dimension = Dimension.query.get_or_404(dimension_id)
         if not dimension.accessible_by(current_user()):
             abort(404)
