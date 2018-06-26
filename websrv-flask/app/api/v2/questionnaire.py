@@ -161,7 +161,7 @@ class ShadowQuestionnaireResource(Resource):
         data = QuestionnaireSchema().dump(shadow_questionnaire).data
         return {
             'message': 'Questionnaire created.',
-            'dimension': data
+            'questionnaire': data
         }, 201
 
 
