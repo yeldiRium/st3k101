@@ -156,6 +156,8 @@ class ShadowDimensionResource(Resource):
             abort(404)
         if not questionnaire.modifiable_by(current_user()):
             abort(403)
+        if questionnaire.shadow:
+            abort(403)
         if dimension.shadow:
             abort(403)
         questionnaire.add_shadow_dimension(dimension)
