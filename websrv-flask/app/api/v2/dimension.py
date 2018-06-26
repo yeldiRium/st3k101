@@ -24,7 +24,7 @@ class DimensionResource(Resource):
                 abort(404)
         if not dimension.accessible_by(current_user()):
             abort(404)
-        return DimensionSchema().dump(dimension)
+        return DimensionSchema().dump(dimension).data
 
     @needs_minimum_role(Role.User)
     def patch(self, questionnaire_id=None, dimension_id=None):
@@ -65,7 +65,7 @@ class DimensionResource(Resource):
 
         response = {
             'message': 'Dimension updated.',
-            'dimension': schema.dump(dimension)
+            'dimension': schema.dump(dimension).data
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -83,7 +83,7 @@ class DimensionResource(Resource):
             abort(404)
         if not dimension.modifiable_by(current_user()):
             abort(403)
-        data = DimensionSchema().dump(dimension)
+        data = DimensionSchema().dump(dimension).data
         questionnaire.remove_dimension(dimension)
         db.session.commit()
         return {
@@ -124,7 +124,7 @@ class ConcreteDimensionResource(Resource):
             setattr(dimension, k, v)
         db.session.commit()
 
-        data = QuestionnaireSchema().dump(questionnaire)
+        data = QuestionnaireSchema().dump(questionnaire).data
         response = {
             'message': 'Dimension created.',
             'questionnaire': data
@@ -161,7 +161,7 @@ class ShadowDimensionResource(Resource):
         questionnaire.add_shadow_dimension(dimension)
         db.session.commit()
 
-        data = QuestionnaireSchema().dump(questionnaire)
+        data = QuestionnaireSchema().dump(questionnaire).data
         return {
             'message': 'Dimension created.',
             'questionnaire': data
@@ -175,14 +175,14 @@ class DimensionListResource(Resource):
         if not questionnaire.accessible_by(current_user()):
             abort(404)
         schema = DimensionSchema(many=True)
-        return schema.dump(questionnaire.dimensions)
+        return schema.dump(questionnaire.dimensions).data
 
 
 class TemplateDimensionListResource(Resource):
     def get(self):
         templates = Dimension.query.filter_by(_template=True).all()
         schema = DimensionSchema(many=True)
-        return schema.dump(templates)
+        return schema.dump(templates).data
 
 
 api.add_resource(

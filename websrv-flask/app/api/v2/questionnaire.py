@@ -21,7 +21,7 @@ class QuestionnaireResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
             abort(404)
-        return schema.dump(questionnaire)
+        return schema.dump(questionnaire).data
 
     @needs_minimum_role(Role.User)
     def patch(self, questionnaire_id=None):
@@ -57,7 +57,7 @@ class QuestionnaireResource(Resource):
 
         response = {
             'message': 'Questionnaire updated.',
-            'questionnaire': schema.dump(questionnaire)
+            'questionnaire': schema.dump(questionnaire).data
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -69,7 +69,7 @@ class QuestionnaireResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.modifiable_by(current_user()):
             abort(404)
-        data = QuestionnaireSchema().dump(questionnaire)
+        data = QuestionnaireSchema().dump(questionnaire).data
         questionnaire.delete()
         db.session.commit()
         return {
@@ -92,14 +92,14 @@ class QuestionnaireListResource(Resource):
         questionnaires = query.all()
 
         schema = QuestionnaireSchema(many=True)
-        return schema.dump(questionnaires)
+        return schema.dump(questionnaires).data
 
 
 class TemplateQuestionnaireListResource(Resource):
     def get(self):
         templates = Questionnaire.query.filter_by(_template=True).all()
         schema = QuestionnaireSchema(many=True)
-        return schema.dump(templates)
+        return schema.dump(templates).data
 
 
 class ConcreteQuestionnaireResource(Resource):
@@ -126,7 +126,7 @@ class ConcreteQuestionnaireResource(Resource):
 
         response = {
             'message': 'Questionnaire created.',
-            'questionnaire': schema.dump(questionnaire)
+            'questionnaire': schema.dump(questionnaire).data
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -158,7 +158,7 @@ class ShadowQuestionnaireResource(Resource):
         db.session.add(shadow_questionnaire)
         db.session.commit()
 
-        data = QuestionnaireSchema().dump(shadow_questionnaire)
+        data = QuestionnaireSchema().dump(shadow_questionnaire).data
         return {
             'message': 'Questionnaire created.',
             'dimension': data
