@@ -72,11 +72,11 @@
              * the dimension.
              */
             create() {
+                this.$modal.hide("modal-create-dimension");
                 this.handler({
                     name: this.name,
                     randomizeQuestions: this.randomizeQuestions
                 });
-                this.$modal.hide("modal-create-dimension");
             }
         }
     }

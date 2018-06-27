@@ -70,11 +70,11 @@
              * translate the dimension.
              */
             translate() {
+                this.$modal.hide("modal-translate-dimension");
                 this.handler({
                     language: this.language,
                     name: this.name
                 });
-                this.$modal.hide("modal-translate-dimension");
             }
         }
     }

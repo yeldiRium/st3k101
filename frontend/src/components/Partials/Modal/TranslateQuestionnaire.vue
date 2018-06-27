@@ -77,12 +77,12 @@
              * translate the questionnaire.
              */
             translate() {
+                this.$modal.hide("modal-translate-questionnaire");
                 this.handler({
                     language: this.language,
                     name: this.name,
                     description: this.description
                 });
-                this.$modal.hide("modal-translate-questionnaire");
             }
         }
     }

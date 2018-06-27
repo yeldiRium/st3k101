@@ -88,6 +88,7 @@
              * ate the questionnaire.
              */
             create() {
+                this.$modal.hide("modal-create-questionnaire");
                 this.handler({
                     name: this.name,
                     description: this.description,
@@ -95,7 +96,6 @@
                     allowEmbedded: this.allowEmbedded,
                     xapiTarget: this.xapiTarget
                 });
-                this.$modal.hide("modal-create-questionnaire");
             }
         }
     }

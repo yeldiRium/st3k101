@@ -62,11 +62,11 @@
              * new Question.
              */
             create() {
+                this.$modal.hide("modal-create-question");
                 this.handler({
                     text: this.text,
                     range: this.range
                 });
-                this.$modal.hide("modal-create-question");
             }
         }
     }
