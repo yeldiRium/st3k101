@@ -62,7 +62,8 @@
     export default {
         data() {
             return {
-                menuOpen: false
+                menuOpen: false,
+                recomputeHack: 0
             }
         },
         props: {
@@ -75,6 +76,9 @@
             ...mapState("language", ["languages"]),
             ...mapState("global", ["window"]),
             menuStyle() {
+                // Establish a dependency and force update on property change.
+                this.recomputeHack;
+
                 const boundingRect = this.$refs.currentLanguage
                     .getBoundingClientRect();
 
@@ -106,6 +110,7 @@
         methods: {
             openLanguageMenu() {
                 this.menuOpen = true;
+                this.recomputeHack++;
             },
             closeLanguageMenu() {
                 this.menuOpen = false;
