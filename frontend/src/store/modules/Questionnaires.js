@@ -1,15 +1,20 @@
 import {
     __,
     any,
+    assoc,
     bind,
+    clone,
     contains,
     filter,
     find,
     isNil,
     keys,
     map,
+    pipe,
     prop,
-    reject
+    reject,
+    uniq,
+    without
 } from "ramda";
 import Future from "fluture";
 
@@ -49,24 +54,57 @@ const store = {
             const dataClient = rootGetters["session/dataClient"];
 
             if (!isNil(dataClient)) {
-                return filter(
-                    questionnaire => questionnaire.isOwnedBy(dataClient),
-                    state.questionnaires
-                );
+                const questionnaires = pipe(
+                    filter(
+                        questionnaire => questionnaire.isOwnedBy(dataClient)
+                    ),
+                    map(clone)
+                )(state.questionnaires);
+                for (const questionnaire of questionnaires) {
+                    questionnaire.dimensions = map(
+                        rootGetters["dimensions/dimensionById"],
+                        questionnaire.dimensions
+                    );
+                }
+                return questionnaires;
             }
             return [];
         },
         questionnaireById(state) {
-            return id => find(
-                questionnaire => questionnaire.id === id,
-                state.questionnaires
-            )
+            return function (id) {
+                const questionnaire = clone(find(
+                    questionnaire => questionnaire.id === id,
+                    state.questionnaires
+                ));
+
+                if (isNil(questionnaire)) {
+                    return null;
+                }
+
+                questionnaire.dimensions = map(
+                    rootGetters["dimensions/dimensionById"],
+                    questionnaire.dimensions
+                );
+                return questionnaire;
+            }
         },
         questionnaireByHref(state) {
-            return href => find(
-                questionnaire => questionnaire.href === href,
-                state.questionnaires
-            )
+            return function (href) {
+                const questionnaire = clone(find(
+                    questionnaire => questionnaire.href === href,
+                    state.questionnaires
+                ));
+
+                if (isNil(questionnaire)) {
+                    return null;
+                }
+
+                questionnaire.dimensions = map(
+                    rootGetters["dimensions/dimensionByid"],
+                    questionnaire.dimensions
+                );
+                return questionnaire;
+            }
         }
     },
     actions: {
@@ -78,6 +116,9 @@ const store = {
          *
          * Also adds/overwrites all child Dimensions.
          *
+         * Does so bottom up, so that hierarchies are never partially in the
+         * store.
+         *
          * @param dispatch
          * @param commit
          * @param {Questionnaire} questionnaire
@@ -87,22 +128,19 @@ const store = {
          * @cancel
          */
         patchQuestionnaireInStore({dispatch, commit}, {questionnaire}) {
-            return Future((reject, resolve) => {
-                commit("patchQuestionnaire", {questionnaire});
-                resolve(questionnaire);
-            })
-                .chain(questionnaire => {
-                    const patchDimensionFutures = [];
-                    for (const dimension of questionnaire.dimensions) {
-                        patchDimensionFutures.push(
-                            dispatch("dimensions/patchDimensionInStore",
-                                {dimension},
-                                {root: true}
-                            )
-                        );
-                    }
-                    return Future.parallel(Infinity, patchDimensionFutures)
-                        .map(() => questionnaire);
+            const patchDimensionFutures = [];
+            for (const dimension of questionnaire.dimensions) {
+                patchDimensionFutures.push(
+                    dispatch("dimensions/patchDimensionInStore",
+                        {dimension},
+                        {root: true}
+                    )
+                );
+            }
+            return Future.parallel(Infinity, patchDimensionFutures)
+                .chain(() => {
+                    commit("patchQuestionnaire", {questionnaire});
+                    return Future.of(questionnaire);
                 });
         },
         /**
@@ -488,6 +526,11 @@ const store = {
          * @param {Questionnaire} questionnaire
          */
         patchQuestionnaire(state, {questionnaire}) {
+            questionnaire.dimensions = map(
+                dimension => dimension.id,
+                questionnaire.dimensions
+            );
+
             let existingQuestionnaireWasReplaced = false;
             state.questionnaires = map(
                 iQuestionnaire => {
@@ -529,22 +572,8 @@ const store = {
          */
         addDimensionToQuestionnaire(state, {questionnaire, dimension}) {
             if (!isNil(questionnaire)) {
-                let existingDimensionWasReplaced = false;
-                questionnaire.dimensions = map(
-                    iDimension => {
-                        if (dimension.identifiesWith(iDimension)) {
-                            existingDimensionWasReplaced = true;
-                            return dimension;
-                        }
-                        return iDimension;
-                    },
-                    questionnaire.dimensions
-                );
-                if (existingDimensionWasReplaced) {
-                    return;
-                }
-
-                questionnaire.dimensions.push(dimension);
+                questionnaire.dimensions.push(dimension.id);
+                questionnaire.dimensions = uniq(questionnaire.dimensions);
             }
         },
         /**
@@ -557,8 +586,8 @@ const store = {
          */
         removeDimensionFromQuestionnaire(state, {questionnaire, dimension}) {
             if (!isNil(questionnaire)) {
-                questionnaire.dimensions = reject(
-                    iDimension => iDimension.id === dimension.id,
+                questionnaire.dimensions = without(
+                    [dimension.id],
                     questionnaire.dimensions
                 );
             }

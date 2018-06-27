@@ -1,4 +1,14 @@
-import {bind, find, isNil, map, reject} from "ramda";
+import {
+    assoc,
+    bind,
+    clone,
+    find,
+    isNil,
+    map,
+    reject,
+    uniq,
+    without
+} from "ramda";
 import Future from "fluture";
 
 import {
@@ -8,10 +18,6 @@ import {
     removeQuestion,
     updateDimension
 } from "../../api/Dimension";
-import {
-    fetchQuestionnaire,
-    fetchQuestionnaireById
-} from "../../api/Questionnaire";
 import {BadRequestError} from "../../api/Errors";
 
 const store = {
@@ -25,17 +31,41 @@ const store = {
         dimensions: []
     },
     getters: {
-        dimensionById(state) {
-            return id => find(
-                dimension => dimension.id === id,
-                state.dimensions
-            )
+        dimensionById(state, getters, rootState, rootGetters) {
+            return function (id) {
+                const dimension = clone(find(
+                    dimension => dimension.id === id,
+                    state.dimensions
+                ));
+
+                if (isNil(dimension)) {
+                    return null;
+                }
+
+                dimension.questions = map(
+                    rootGetters["questions/questionById"],
+                    dimension.questions
+                );
+                return dimension;
+            }
         },
         dimensionByHref(state) {
-            return href => find(
-                dimension => dimension.href === href,
-                state.dimensions
-            )
+            return function (href) {
+                const dimension = clone(find(
+                    dimension => dimension.href === href,
+                    state.dimensions
+                ));
+
+                if (isNil(dimension)) {
+                    return null;
+                }
+
+                dimension.questions = map(
+                    rootGetters["questions/questionByid"],
+                    dimension.questions
+                );
+                return dimension;
+            }
         }
     },
     actions: {
@@ -47,6 +77,9 @@ const store = {
          *
          * Also adds/overwrites all child Questions.
          *
+         * Does so bottom up, so that hierarchies are never partially in the
+         * store.
+         *
          * @param dispatch
          * @param commit
          * @param {Dimension} dimension
@@ -56,22 +89,19 @@ const store = {
          * @cancel
          */
         patchDimensionInStore({dispatch, commit}, {dimension}) {
-            return Future((reject, resolve) => {
-                commit("patchDimension", {dimension});
-                resolve(dimension);
-            })
-                .chain(dimension => {
-                    const patchQuestionFutures = [];
-                    for (const question of dimension.questions) {
-                        patchQuestionFutures.push(
-                            dispatch("questions/patchQuestionInStore",
-                                {question},
-                                {root: true}
-                            )
-                        );
-                    }
-                    return Future.parallel(Infinity, patchQuestionFutures)
-                        .map(() => dimension);
+            const patchQuestionFutures = [];
+            for (const question of dimension.questions) {
+                patchQuestionFutures.push(
+                    dispatch("questions/patchQuestionInStore",
+                        {question},
+                        {root: true}
+                    )
+                );
+            }
+            return Future.parallel(Infinity, patchQuestionFutures)
+                .chain(() => {
+                    commit("patchDimension", {dimension});
+                    return Future.of(dimension);
                 });
         },
         /**
@@ -323,12 +353,18 @@ const store = {
          * @param {Dimension} dimension
          */
         patchDimension(state, {dimension}) {
+            const normalizedDimension = dimension.clone();
+            normalizedDimension.questions = map(
+                question => question.id,
+                normalizedDimension.questions
+            );
+
             let existingDimensionWasReplaced = false;
             state.dimensions = map(
                 iDimension => {
-                    if (dimension.identifiesWith(iDimension)) {
+                    if (normalizedDimension.identifiesWith(iDimension)) {
                         existingDimensionWasReplaced = true;
-                        return dimension;
+                        return normalizedDimension;
                     }
                     return iDimension;
                 },
@@ -338,7 +374,7 @@ const store = {
                 return;
             }
 
-            state.dimensions.push(dimension);
+            state.dimensions.push(normalizedDimension);
         },
         /**
          * Removes the given Dimension from the store.
@@ -364,22 +400,8 @@ const store = {
          */
         addQuestionToDimension(state, {dimension, question}) {
             if (!isNil(dimension)) {
-                let existingQuestionWasReplaced = false;
-                dimension.questions = map(
-                    iQuestion => {
-                        if (question.identifiesWith(iQuestion)) {
-                            existingQuestionWasReplaced = true;
-                            return question;
-                        }
-                        return iQuestion;
-                    },
-                    dimension.questions
-                );
-                if (existingQuestionWasReplaced) {
-                    return;
-                }
-
-                dimension.questions.push(question);
+                dimension.questions.push(question.id);
+                dimension.questions = uniq(dimension.questions);
             }
         },
         /**
@@ -392,8 +414,8 @@ const store = {
          */
         removeQuestionFromDimension(state, {dimension, question}) {
             if (!isNil(dimension)) {
-                dimension.questions = reject(
-                    iQuestion => iQuestion.id === question.id,
+                dimension.questions = without(
+                    [question.id],
                     dimension.questions
                 );
             }
