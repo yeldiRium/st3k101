@@ -28,7 +28,7 @@
             <LanguagePicker class="list-item__language-picker"
                             :language-data="questionnaire.languageData"
                             @choose-language="changeLanguage"
-                            @choose-language-unavailable="addNewTranslation"
+                            @choose-language-unavailable="openAddNewTranslationDialog"
             />
             <IconReorder class="list-item__icon"
                          v-if="draggable"
@@ -214,18 +214,37 @@
                 );
             },
             /**
-             * Add a new translation to the Questionnaire.
-             * This means set new field values via API for the given languages
-             * and then fetch the questionnaire anew in the now existing language.
-             * @param language
+             * Opens a dialog for entering a new translation.
+             *
+             * @param {Language} language
              */
-            addNewTranslation(language) {
+            openAddNewTranslationDialog(language) {
                 if (!this.isEditable(this.questionnaire)) {
                     return;
                 }
-                // TODO: display dialog which asks for data
-                const name = "tbd";
-                const description = "tbd";
+                this.$modal.show(
+                    "modal-translate-questionnaire",
+                    {
+                        language,
+                        handler: this.addNewTranslation,
+                        name: this.questionnaire.name,
+                        description: this.questionnaire.description
+                    }
+                );
+            },
+            /**
+             * Add a new translation to the Questionnaire.
+             * This means set new field values via API for the given languages
+             * and then fetch the questionnaire anew in the now existing language.
+             *
+             * @param {Language} language
+             * @param {String} name
+             * @param {String} description
+             */
+            addNewTranslation({language, name, description}) {
+                if (!this.isEditable(this.questionnaire)) {
+                    return;
+                }
 
                 this.$load(
                     this.$store.dispatch(

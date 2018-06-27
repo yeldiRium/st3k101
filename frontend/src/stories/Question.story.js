@@ -6,6 +6,7 @@ import StoryRouter from "storybook-vue-router";
 
 import Question from "../components/Partials/SurveyBase/Question";
 import Dialog from "../components/Partials/Modal/Dialog";
+import TranslateQuestion from "../components/Partials/Modal/TranslateQuestion";
 
 import store from "./Fixtures/TestStore";
 
@@ -14,13 +15,15 @@ storiesOf('Question', module)
     .addDecorator(withKnobs)
     .addDecorator(() => ({
         components: {
-            Dialog
+            Dialog,
+            TranslateQuestion
         },
         template: '<div style="display: grid; justify-items: center; grid-row-gap: 50px">' +
         '   <div v-for="n in 10" :style="{\'min-width\': `${100 * n + 50}px`}">' +
         '       {{ 100 * n + 50 }}px: <story/>' +
         '   </div>' +
         '   <Dialog />' +
+        '   <TranslateQuestion />' +
         '</div>',
         store
     }))

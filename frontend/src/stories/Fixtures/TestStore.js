@@ -139,6 +139,7 @@ const store = new Vuex.Store({
                 updateQuestion({commit}, {params}) {
                     commit("updateQuestion", {params});
                     action("question-updated")(params);
+                    return question1;
                 }
             },
             mutations: {
@@ -164,6 +165,7 @@ const store = new Vuex.Store({
                 updateDimension({commit}, {params}) {
                     commit("updateDimension", {params});
                     action("dimension-updated")(params);
+                    return dimension1;
                 },
                 addConcreteQuestion: action("concreteQuestion-added"),
                 removeQuestion: action("question-removed")
@@ -191,6 +193,7 @@ const store = new Vuex.Store({
                 updateQuestionnaire({commit}, {params}) {
                     commit("updateQuestionnaire", {params});
                     action("questionnaire-updated")(params);
+                    return questionnaire1;
                 },
                 addConcreteDimension: action("concreteDimension-added"),
                 removeDimension: action("dimension-removed")

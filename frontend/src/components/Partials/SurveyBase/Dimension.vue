@@ -28,7 +28,7 @@
             <LanguagePicker class="list-item__language-picker"
                             :language-data="dimension.languageData"
                             @choose-language="changeLanguage"
-                            @choose-language-unavailable="addNewTranslation"
+                            @choose-language-unavailable="openAddNewTranslationDialog"
             />
             <IconReorder class="list-item__icon"
                          v-if="draggable"
@@ -180,17 +180,34 @@
                 );
             },
             /**
-             * Add a new translation to the Dimension.
-             * This means set new field values via API for the given languages
-             * and then fetch the Dimension anew in the now existing language.
-             * @param language
+             * Opens a dialog for entering a new translation.
+             *
+             * @param {Language} language
              */
-            addNewTranslation(language) {
+            openAddNewTranslationDialog(language) {
                 if (!this.isEditable(this.dimension)) {
                     return;
                 }
-                // TODO: display dialog which asks for data
-                const name = "tbd";
+                this.$modal.show(
+                    "modal-translate-dimension",
+                    {
+                        language,
+                        handler: this.addNewTranslation,
+                        name: this.dimension.name
+                    }
+                );
+            },
+            /**
+             * Add a new translation to the Dimension.
+             * This means set new field values via API for the given languages
+             * and then fetch the Dimension anew in the now existing language.
+             * @param {Language} language
+             * @param {String} name
+             */
+            addNewTranslation({language, name}) {
+                if (!this.isEditable(this.dimension)) {
+                    return;
+                }
 
                 this.$load(
                     this.$store.dispatch(

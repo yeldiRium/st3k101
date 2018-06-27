@@ -27,7 +27,7 @@
             <LanguagePicker class="list-item__language-picker"
                             :language-data="question.languageData"
                             @choose-language="changeLanguage"
-                            @choose-language-unavailable="addNewTranslation"
+                            @choose-language-unavailable="openAddNewTranslationDialog"
             />
             <IconReorder class="list-item__icon"
                          v-if="draggable"
@@ -155,15 +155,35 @@
                 );
             },
             /**
+             * Opens a dialog for entering a new translation.
+             *
+             * @param {Language} language
+             */
+            openAddNewTranslationDialog(language) {
+                if (!this.isEditable(this.question)) {
+                    return;
+                }
+                this.$modal.show(
+                    "modal-translate-question",
+                    {
+                        language,
+                        handler: this.addNewTranslation,
+                        text: this.question.text
+                    }
+                );
+            },
+            /**
              * Add a new translation to the Question.
              * This means set new field values via API for the given languages
              * and then fetch the question anew in the now existing language.
-             * @param language
+             *
+             * @param {Language} language
+             * @param {String} text
              */
-            addNewTranslation(language) {
-                // TODO: clarify, when this should be available
-                // TODO: display dialog which asks for data
-                const text = "tbd";
+            addNewTranslation({language, text}) {
+                if (!this.isEditable(this.question)) {
+                    return;
+                }
 
                 const cancel = this.$load(
                     this.$store.dispatch(

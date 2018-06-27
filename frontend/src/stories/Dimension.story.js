@@ -7,6 +7,8 @@ import StoryRouter from "storybook-vue-router";
 import Dimension from "../components/Partials/SurveyBase/Dimension";
 import Dialog from "../components/Partials/Modal/Dialog";
 import CreateQuestion from "../components/Partials/Modal/CreateQuestion";
+import TranslateQuestion from "../components/Partials/Modal/TranslateQuestion";
+import TranslateDimension from "../components/Partials/Modal/TranslateDimension";
 
 import store from "./Fixtures/TestStore";
 
@@ -16,7 +18,9 @@ storiesOf('Dimension', module)
     .addDecorator(() => ({
         components: {
             Dialog,
-            CreateQuestion
+            CreateQuestion,
+            TranslateQuestion,
+            TranslateDimension
         },
         template: '<div style="display: grid; justify-items: center; grid-row-gap: 50px">' +
         '   <div v-for="n in 10" :style="{\'min-width\': `${100 * n + 50}px`}">' +
@@ -24,6 +28,8 @@ storiesOf('Dimension', module)
         '   </div>' +
         '   <Dialog />' +
         '   <CreateQuestion />' +
+        '   <TranslateQuestion />' +
+        '   <TranslateDimension />' +
         '</div>',
         store
     }))

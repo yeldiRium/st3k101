@@ -8,6 +8,9 @@ import Questionnaire from "../components/Partials/SurveyBase/Questionnaire";
 import Dialog from "../components/Partials/Modal/Dialog";
 import CreateQuestion from "../components/Partials/Modal/CreateQuestion";
 import CreateDimension from "../components/Partials/Modal/CreateDimension";
+import TranslateQuestion from "../components/Partials/Modal/TranslateQuestion";
+import TranslateDimension from "../components/Partials/Modal/TranslateDimension";
+import TranslateQuestionnaire from "../components/Partials/Modal/TranslateQuestionnaire";
 
 import store from "./Fixtures/TestStore";
 
@@ -18,7 +21,10 @@ storiesOf('Questionnaire', module)
         components: {
             Dialog,
             CreateQuestion,
-            CreateDimension
+            CreateDimension,
+            TranslateQuestion,
+            TranslateDimension,
+            TranslateQuestionnaire
         },
         template: '<div style="display: grid; justify-items: center; grid-row-gap: 50px">' +
         '   <div v-for="n in 10" :style="{\'min-width\': `${100 * n + 50}px`}">' +
@@ -27,6 +33,9 @@ storiesOf('Questionnaire', module)
         '   <Dialog />' +
         '   <CreateQuestion />' +
         '   <CreateDimension />' +
+        '   <TranslateQuestion />' +
+        '   <TranslateDimension />' +
+        '   <TranslateQuestionnaire />' +
         '</div>',
         store
     }))

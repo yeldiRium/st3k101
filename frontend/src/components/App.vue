@@ -1,16 +1,19 @@
 <template>
     <div id="app">
-        <router-view />
+        <router-view/>
         <notifications
                 position="top right"
         />
-        <Dialog />
+        <Dialog/>
         <LoadingSpinnerModal
                 :size="width"
         />
         <CreateQuestion/>
         <CreateDimension/>
         <CreateQuestionnaire/>
+        <TranslateQuestion/>
+        <TranslateDimension/>
+        <TranslateQuestionnaire/>
     </div>
 </template>
 
@@ -21,13 +24,19 @@
     import CreateQuestion from "./Partials/Modal/CreateQuestion";
     import CreateDimension from "./Partials/Modal/CreateDimension";
     import CreateQuestionnaire from "./Partials/Modal/CreateQuestionnaire";
+    import TranslateQuestion from "./Partials/Modal/TranslateQuestion";
+    import TranslateDimension from "./Partials/Modal/TranslateDimension";
+    import TranslateQuestionnaire from "./Partials/Modal/TranslateQuestionnaire";
 
     export default {
         components: {
             Dialog,
             CreateQuestion,
             CreateDimension,
-            CreateQuestionnaire
+            CreateQuestionnaire,
+            TranslateQuestion,
+            TranslateDimension,
+            TranslateQuestionnaire
         },
         computed: {
             ...mapState("global", ["window"]),
