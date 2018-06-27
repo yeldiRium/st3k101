@@ -32,6 +32,7 @@ function getAuthenticationHeaders(authenticate = true) {
  *
  * @param {Language} language
  * @returns {Object}
+ * @deprecated
  */
 function getLanguageHeaders(language = null) {
     if (isNil(language)) {
@@ -90,8 +91,7 @@ function fetchApi(path,
         const useHeaders = {
             ...defaultHeaders,
             ...headers,
-            ...getAuthenticationHeaders(authenticate),
-            ...getLanguageHeaders(language)
+            ...getAuthenticationHeaders(authenticate)
         };
 
         const fetchParams = {
@@ -104,7 +104,7 @@ function fetchApi(path,
             fetchParams["body"] = body;
         }
 
-        fetch(buildApiUrl(path), fetchParams)
+        fetch(buildApiUrl(path, language), fetchParams)
             .then(resolve)
             .catch(reject);
 
