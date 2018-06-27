@@ -6,6 +6,15 @@ import {
     ConcreteQuestionnaire,
     ShadowQuestionnaire
 } from "../../model/SurveyBase/Questionnaire";
+import {
+    ConcreteDimension,
+    ShadowDimension
+} from "../../model/SurveyBase/Dimension";
+import {
+    ConcreteQuestion,
+    ShadowQuestion
+} from "../../model/SurveyBase/Question";
+import Range from "../../model/SurveyBase/Config/Range";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -105,6 +114,7 @@ function parseQuestionnaire(data) {
  * @param {Object} original_language
  * @param {Array} available_languages
  * @param {Array} qac_modules TODO: handle QAC modules
+ * @param {String} shadow_href TODO: this should be full object
  *
  * @return {ShadowQuestionnaire}
  */
@@ -116,13 +126,14 @@ function parseShadowQuestionnaire({
                                       description,
                                       dimensions,
                                       published,
-                                      template,
+                                      template, // TODO: do something with this
                                       allow_embedded,
                                       xapi_target,
                                       current_language,
                                       original_language,
                                       available_languages,
-                                      qac_modules
+                                      qac_modules,
+                                      shadow_href
                                   }) {
     return new ShadowQuestionnaire(
         href,
@@ -171,7 +182,7 @@ function parseConcreteQuestionnaire({
                                         description,
                                         dimensions,
                                         published,
-                                        template,
+                                        template, // TODO: do something with this
                                         allow_embedded,
                                         xapi_target,
                                         current_language,
@@ -207,11 +218,207 @@ function parseConcreteQuestionnaire({
  * @return {Dimension}
  */
 function parseDimension(data) {
-    return {};
+    if (prop("shadow", data) === true) {
+        return parseShadowDimension(data);
+    }
+    return parseConcreteDimension(data);
 }
 
+/**
+ * Parses the common API representation of a ShadowDimension.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @param {Array} owners
+ * @param {String} name
+ * @param {Array} questions
+ * @param {Boolean} randomize_question_order
+ * @param {Boolean} template
+ * @param {Object} current_language
+ * @param {Object} original_language
+ * @param {Array} available_languages
+ *
+ * @return {ShadowDimension}
+ */
+function parseShadowDimension({
+                                  href,
+                                  id,
+                                  owners,
+                                  name,
+                                  questions,
+                                  randomize_question_order,
+                                  template, // TODO: do something with this
+                                  current_language,
+                                  original_language,
+                                  available_languages
+                              }) {
+    return new ShadowDimension(
+        href,
+        id,
+        map(parseSmallDataClient, owners),
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        name,
+        map(parseQuestion, questions),
+        randomize_question_order,
+        null // TODO: set reference_to correctly
+    );
+}
+
+/**
+ * Parses the common API representation of a ConcreteQuestionnaire.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @param {Array} owners
+ * @param {String} name
+ * @param {Array} questions
+ * @param {Boolean} randomize_question_order
+ * @param {Boolean} template
+ * @param {Object} current_language
+ * @param {Object} original_language
+ * @param {Array} available_languages
+ *
+ * @return {ConcreteDimension}
+ */
+function parseConcreteDimension({
+                                    href,
+                                    id,
+                                    owners,
+                                    name,
+                                    questions,
+                                    randomize_question_order,
+                                    template, // TODO: do something with this
+                                    current_language,
+                                    original_language,
+                                    available_languages
+                                }) {
+    return new ConcreteDimension(
+        href,
+        id,
+        map(parseSmallDataClient, owners),
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        name,
+        map(parseQuestion, questions),
+        randomize_question_order,
+        0, // TODO: set once API is adjusted to output incomingReferenceCount
+        [] // TODO: set once API is adjusted to output ownedIncomingReferences
+    )
+}
+
+/**
+ * Parses a range.
+ *
+ * @param {Number} end
+ *
+ * @returns {Range}
+ */
+function parseRange(end) {
+    return new Range({end})
+}
+
+/**
+ * Parses the common API representation of a Question and recognizes, whe-
+ * ther it is a ShadowQuestion or a ConcreteQuestion.
+ *
+ * @param {Object} data
+ * @return {Question}
+ */
 function parseQuestion(data) {
-    return {};
+    if (prop("shadow", data) === true) {
+        return parseShadowQuestion(data);
+    }
+    return parseConcreteQuestion(data);
+}
+
+/**
+ * Parses the common API representation of a ShadowQuestion.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @param {Array} owners
+ * @param {String} text
+ * @param {Number} range TODO: currently only a number, should be an object or sth in the future
+ * @param {Boolean} template
+ * @param {Object} current_language
+ * @param {Object} original_language
+ * @param {Array} available_languages
+ *
+ * @return {ShadowQuestion}
+ */
+function parseShadowQuestion({
+                                 href,
+                                 id,
+                                 owners,
+                                 text,
+                                 range,
+                                 template, // TODO: do something with this
+                                 current_language,
+                                 original_language,
+                                 available_languages
+                             }) {
+    return new ShadowQuestion(
+        href,
+        id,
+        map(parseSmallDataClient, owners),
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        text,
+        map(parseRange, range),
+        null // TODO: set reference_to correctly
+    );
+}
+
+/**
+ * Parses the common API representation of a ConcreteQuestionnaire.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @param {Array} owners
+ * @param {String} text
+ * @param {Number} range TODO: currently only a number, should be an object or sth in the future
+ * @param {Boolean} template
+ * @param {Object} current_language
+ * @param {Object} original_language
+ * @param {Array} available_languages
+ *
+ * @return {ConcreteQuestion}
+ */
+function parseConcreteQuestion({
+                                   href,
+                                   id,
+                                   owners,
+                                   text,
+                                   range,
+                                   template, // TODO: do something with this
+                                   current_language,
+                                   original_language,
+                                   available_languages
+                               }) {
+    return new ConcreteQuestion(
+        href,
+        id,
+        map(parseSmallDataClient, owners),
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        text,
+        parseRange(range),
+        0, // TODO: set once API is adjusted to output incomingReferenceCount
+        [] // TODO: set once API is adjusted to output ownedIncomingReferences
+    )
 }
 
 export {
@@ -222,5 +429,10 @@ export {
     parseShadowQuestionnaire,
     parseConcreteQuestionnaire,
     parseDimension,
-    parseQuestion
+    parseShadowDimension,
+    parseConcreteDimension,
+    parseRange,
+    parseQuestion,
+    parseShadowQuestion,
+    parseConcreteQuestion
 };

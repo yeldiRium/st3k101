@@ -69,7 +69,9 @@ class ConcreteDimension extends Dimension {
                 name,
                 questions,
                 randomizeQuestions,
-                incomingReferenceCount, ownedIncomingReferences) {
+                incomingReferenceCount,
+                ownedIncomingReferences
+    ) {
         super(href, id, owners, languageData, name, questions, randomizeQuestions);
 
         this.incomingReferenceCount = incomingReferenceCount;
@@ -114,7 +116,9 @@ class ShadowDimension extends Dimension {
                 languageData,
                 name,
                 questions,
-                randomizeQuestions, referenceTo) {
+                randomizeQuestions,
+                referenceTo
+    ) {
         super(href, id, owners, languageData, name, questions, randomizeQuestions);
         this.referenceTo = referenceTo;
     }

@@ -74,7 +74,9 @@ class ConcreteQuestion extends Question {
                 languageData,
                 text,
                 range,
-                incomingReferenceCount, ownedIncomingReferences) {
+                incomingReferenceCount,
+                ownedIncomingReferences
+    ) {
         if (incomingReferenceCount < ownedIncomingReferences.length) {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
@@ -123,7 +125,9 @@ class ShadowQuestion extends Question {
                 owners,
                 languageData,
                 text,
-                range, referenceTo) {
+                range,
+                referenceTo
+    ) {
         super(href, id, owners, languageData, text, range);
         this.referenceTo = referenceTo;
     }
