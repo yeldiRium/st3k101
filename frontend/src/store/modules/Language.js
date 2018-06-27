@@ -1,6 +1,8 @@
 import {__, allPass, has, map} from "ramda";
+import Future from "fluture";
 
 import Language from "../../model/Language";
+import {fetchLanguages} from "../../api/Language";
 
 const store = {
     namespaced: true,
@@ -9,35 +11,51 @@ const store = {
             short: "de",
             long: "Deutsch"
         },
-        languageOptions: [],
         /**
-         * TODO: this needs to be populated.
-         * @type {Array.<Language>} List of all languages in the system.
+         * @type {Array<Language>} List of all languages in the system.
          */
-        languages: [
-            new Language("de", "German"),
-            new Language("en", "English"),
-            new Language("it", "Italian"),
-            new Language("es", "Spanish"),
-            new Language("ch", "Chinese")
-        ]
+        languages: null
     },
     actions: {
         /**
-         * TODO:
-         * Fetch the available Languages from the API and parse them to be
-         * usable by the dropdown menu.
+         * Fetches the available Languages on the server.
+         *
+         * TODO: remove hardcoded languages, once API works.
+         *
+         * @returns {Future}
+         * @resolve {Array<Language>}
+         * @reject {TypeError|ApiError}
+         * @cancel
          */
         fetchLanguages({commit}) {
-            return [];
+            return fetchLanguages()
+                .chain(languages => {
+                    commit("setLanguages", languages);
+                    return Future.of(languages);
+                })
+                .chainRej(error => {
+                    const hardCodedLanguages = [
+                        new Language("de", "German"),
+                        new Language("en", "English"),
+                        new Language("it", "Italian"),
+                        new Language("es", "Spanish"),
+                        new Language("ch", "Chinese")
+                    ];
+                    commit("setLanguages", hardCodedLanguages);
+                    return Future.of(hardCodedLanguages)
+                });
         }
     },
     mutations: {
         setCurrentLanguage(state, language) {
             state.currentLanguage = language;
         },
-        setLanguageOptions(state, languageOptions) {
-            state.languageOptions = languageOptions;
+        /**
+         * @param state
+         * @param {Array<Language>} languages
+         */
+        setLanguages(state, languages) {
+            state.languages = languages;
         }
     }
 };
