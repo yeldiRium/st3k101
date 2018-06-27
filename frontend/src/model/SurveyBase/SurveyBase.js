@@ -10,10 +10,24 @@ class SurveyBase extends OwnedResource {
      */
     constructor(href,
                 id,
-                owners, languageData) {
+                owners,
+                languageData
+    ) {
         super(href, id, owners);
 
         this.languageData = languageData;
+    }
+
+    /**
+     * @returns {SurveyBase}
+     */
+    clone() {
+        return new SurveyBase(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone()
+        );
     }
 }
 

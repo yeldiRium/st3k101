@@ -1,4 +1,6 @@
 import SurveyBase from "./SurveyBase";
+import Question from "./Question";
+import {clone, map} from "ramda";
 
 class Questionnaire extends SurveyBase {
     /**
@@ -54,7 +56,23 @@ class Questionnaire extends SurveyBase {
         throw new Error("Please override this.");
     }
 
-    // TODO: implement fetchTranslation(language)
+    /**
+     * @returns {Questionnaire}
+     */
+    clone() {
+        return new Questionnaire(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            this.description,
+            this.isPublic,
+            this.allowEmbedded,
+            this.xapiTarget,
+            map(clone, this.dimensions)
+        );
+    }
 }
 
 class ConcreteQuestionnaire extends Questionnaire {
@@ -112,6 +130,26 @@ class ConcreteQuestionnaire extends Questionnaire {
     ownedIncomingReferenceCount() {
         return this.ownedIncomingReferences.length;
     }
+
+    /**
+     * @returns {ConcreteQuestionnaire}
+     */
+    clone() {
+        return new ConcreteQuestionnaire(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            this.description,
+            this.isPublic,
+            this.allowEmbedded,
+            this.xapiTarget,
+            map(clone, this.dimensions),
+            this.incomingReferenceCount,
+            map(clone, this.ownedIncomingReferences)
+        );
+    }
 }
 
 class ShadowQuestionnaire extends Questionnaire {
@@ -151,6 +189,25 @@ class ShadowQuestionnaire extends Questionnaire {
 
     get isConcrete() {
         return false;
+    }
+
+    /**
+     * @returns {ShadowQuestionnaire}
+     */
+    clone() {
+        return new ShadowQuestionnaire(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            this.description,
+            this.isPublic,
+            this.allowEmbedded,
+            this.xapiTarget,
+            map(clone, this.dimensions),
+            this.referenceTo.clone()
+        );
     }
 }
 

@@ -36,6 +36,16 @@ class Resource {
     identifiesWith(otherResource) {
         return this.href === otherResource.href;
     }
+
+    /**
+     * @returns {Resource}
+     */
+    clone() {
+        return new Resource(
+            this._href,
+            this._id
+        );
+    }
 }
 
 /**

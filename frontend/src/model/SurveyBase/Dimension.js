@@ -1,4 +1,5 @@
 import SurveyBase from "./SurveyBase";
+import {clone, map} from "ramda";
 
 class Dimension extends SurveyBase {
     /**
@@ -16,7 +17,8 @@ class Dimension extends SurveyBase {
                 owners,
                 languageData,
                 name,
-                questions, randomizeQuestions) {
+                questions,
+                randomizeQuestions) {
         super(href, id, owners, languageData);
         this.name = name;
         this.questions = questions;
@@ -41,7 +43,20 @@ class Dimension extends SurveyBase {
         throw new Error("Please override this.");
     }
 
-    // TODO: implement fetchTranslation(language)
+    /**
+     * @returns {Dimension}
+     */
+    clone() {
+        return new Dimension(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            map(clone, this.questions),
+            this.randomizeQuestions
+        );
+    }
 }
 
 class ConcreteDimension extends Dimension {
@@ -70,8 +85,7 @@ class ConcreteDimension extends Dimension {
                 questions,
                 randomizeQuestions,
                 incomingReferenceCount,
-                ownedIncomingReferences
-    ) {
+                ownedIncomingReferences) {
         super(href, id, owners, languageData, name, questions, randomizeQuestions);
 
         this.incomingReferenceCount = incomingReferenceCount;
@@ -84,6 +98,23 @@ class ConcreteDimension extends Dimension {
 
     get isConcrete() {
         return true;
+    }
+
+    /**
+     * @returns {ConcreteDimension}
+     */
+    clone() {
+        return new ConcreteDimension(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            map(clone, this.questions),
+            this.randomizeQuestions,
+            this.incomingReferenceCount,
+            map(clone, this.ownedIncomingReferences)
+        )
     }
 
     /**
@@ -117,8 +148,7 @@ class ShadowDimension extends Dimension {
                 name,
                 questions,
                 randomizeQuestions,
-                referenceTo
-    ) {
+                referenceTo) {
         super(href, id, owners, languageData, name, questions, randomizeQuestions);
         this.referenceTo = referenceTo;
     }
@@ -129,6 +159,19 @@ class ShadowDimension extends Dimension {
 
     get isConcrete() {
         return false;
+    }
+
+    clone() {
+        return new ShadowDimension(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            map(clone, this.questions),
+            this.randomizeQuestions,
+            this.referenceTo.clone()
+        )
     }
 }
 

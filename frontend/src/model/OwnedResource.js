@@ -14,7 +14,8 @@ class OwnedResource extends Resource {
      */
     constructor(href,
                 id,
-                owners) {
+                owners
+    ) {
         super(href, id);
         this._owners = owners;
     }
@@ -34,6 +35,17 @@ class OwnedResource extends Resource {
         return any(
             owner => party.identifiesWith(owner),
             this.owners
+        );
+    }
+
+    /**
+     * @returns {OwnedResource}
+     */
+    clone() {
+        return new OwnedResource(
+            this._href,
+            this._id,
+            [...this._owners]
         );
     }
 }

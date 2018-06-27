@@ -1,6 +1,7 @@
 import SurveyBase from "./SurveyBase";
 
 import Range from "./Config/Range";
+import {clone, map} from "ramda";
 
 /**
  * BaseClass for ShadowQuestion and ConcreteQuestion.
@@ -45,7 +46,19 @@ class Question extends SurveyBase {
         throw new Error("Please override this.");
     }
 
-    // TODO: implement fetchTranslation(language)
+    /**
+     * @returns {Question}
+     */
+    clone() {
+        return new Question(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.text,
+            this.range.clone()
+        );
+    }
 }
 
 /**
@@ -103,6 +116,22 @@ class ConcreteQuestion extends Question {
     ownedIncomingReferenceCount() {
         return this.ownedIncomingReferences.length;
     }
+
+    /**
+     * @returns {ConcreteQuestion}
+     */
+    clone() {
+        return new ConcreteQuestion(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.text,
+            this.range.clone(),
+            this.incomingReferenceCount,
+            map(clone, this.ownedIncomingReferences)
+        );
+    }
 }
 
 /**
@@ -138,6 +167,21 @@ class ShadowQuestion extends Question {
 
     get isConcrete() {
         return false;
+    }
+
+    /**
+     * @returns {ShadowQuestion}
+     */
+    clone() {
+        return new ShadowQuestion(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.text,
+            this.range.clone(),
+            this.referenceTo.clone()
+        );
     }
 }
 
