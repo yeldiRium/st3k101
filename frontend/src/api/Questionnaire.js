@@ -60,7 +60,7 @@ function createConcreteQuestionnaire(language,
         }
     )
         .chain(extractJson)
-        .map(pipe(prop("questionniare"), parseQuestionnaire))
+        .map(pipe(prop("questionnaire"), parseQuestionnaire))
         // Then update it with the rest of the data
         .chain(questionnaire => updateQuestionnaire(
             questionnaire, language, patchData

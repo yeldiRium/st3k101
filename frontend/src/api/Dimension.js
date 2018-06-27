@@ -1,6 +1,7 @@
 import Future from "fluture";
 import {contains, pipe, prop, without} from "ramda";
 
+import {fetchApi} from "./Util/Request";
 import {extractJson} from "./Util/Response";
 import {updateQuestion} from "./Question";
 import {parseQuestion} from "./Util/Parse";
