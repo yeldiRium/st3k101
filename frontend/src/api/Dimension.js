@@ -73,7 +73,8 @@ function updateDimension(dimension, language, params) {
         {
             method: "PATCH",
             authenticate: true,
-            body: JSON.stringify(params)
+            body: JSON.stringify(params),
+            language
         }
     )
         .chain(extractJson)

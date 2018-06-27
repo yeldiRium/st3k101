@@ -214,7 +214,7 @@
                         "dimensions/updateDimension",
                         {
                             dimension: this.dimension,
-                            language: language,
+                            language,
                             params: {
                                 name
                             }

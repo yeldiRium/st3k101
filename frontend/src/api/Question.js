@@ -79,6 +79,18 @@ function updateQuestion(question, language, params) {
         .map(pipe(prop("question"), parseQuestion));
 }
 
+function fetchAvailableTemplates(language) {
+    return fetchApi(
+        "/api/question/template",
+        {
+            authenticate: true,
+            language
+        }
+    )
+        .chain(extractJson)
+        .map()
+}
+
 /**
  * Takes in a Question and populates its incoming references field by replacing
  * all resolvable References with their corresponding ShadowQuestion instances.

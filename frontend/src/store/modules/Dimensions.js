@@ -166,21 +166,7 @@ const store = {
                 : language;
 
             return updateDimension(dimension, correctLanguage, params)
-                .chain(result => dispatch("patchDimensionInStore", {result}))
-                // TODO: remove this
-                // Patches the dimension manually and incredibly stupidly
-                // just so that the app seems to work without the api.
-                .chainRej(error => {
-                    for (const key in params) {
-                        if (!isNil(dimension[key])) {
-                            dimension[key] = params[key];
-                        }
-                    }
-                    // This commit isn't technically necessary, since the object
-                    // is mutated directly above, but it let's us use the
-                    // devtools while playing around without api.
-                    return dispatch("patchDimensionInStore", {dimension});
-                });
+                .chain(result => dispatch("patchDimensionInStore", {dimension: result}));
         },
         /**
          * Add a new ConcreteQuestion to the ConcreteDimension.
