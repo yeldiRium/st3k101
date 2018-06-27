@@ -95,7 +95,7 @@ const store = {
                     const patchDimensionFutures = [];
                     for (const dimension of questionnaire.dimensions) {
                         patchDimensionFutures.push(
-                            dispatch("questions/patchDimension",
+                            dispatch("dimensions/patchDimensionInStore",
                                 {dimension},
                                 {root: true}
                             )

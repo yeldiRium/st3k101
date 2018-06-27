@@ -64,7 +64,7 @@ const store = {
                     const patchQuestionFutures = [];
                     for (const question of dimension.questions) {
                         patchQuestionFutures.push(
-                            dispatch("questions/patchQuestion",
+                            dispatch("questions/patchQuestionInStore",
                                 {question},
                                 {root: true}
                             )
