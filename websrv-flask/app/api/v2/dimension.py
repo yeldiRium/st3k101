@@ -54,7 +54,7 @@ class DimensionResource(Resource):
                 if k not in shadow_attributes:
                     errors[k] = ['Can\'t update {} of a ShadowDimension. The '
                                  'contributor owning the template is '
-                                 'responsible for the Dimension\'s content.']
+                                 'responsible for the Dimension\'s content.'.format(k)]
                     continue
             else:
                 if k == 'template' and not current_has_minimum_role(Role.Contributor):
@@ -155,6 +155,8 @@ class ShadowDimensionResource(Resource):
         if not questionnaire.accessible_by(current_user()):
             abort(404)
         if not questionnaire.modifiable_by(current_user()):
+            abort(403)
+        if questionnaire.shadow:
             abort(403)
         if dimension.shadow:
             abort(403)

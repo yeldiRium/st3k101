@@ -118,12 +118,13 @@ class Dimension(SurveyBase):
         if question not in self.questions:
             raise KeyError("Question not in Dimension.")
         self.questions.remove(question)
+        text = question.text
 
         relationship_updated.send(
             self,
             relationship_name=__('Question'),
             action=RelationshipAction.Remove,
-            related_object=question.name,
+            related_object=text,
             person=current_user()
         )
 
