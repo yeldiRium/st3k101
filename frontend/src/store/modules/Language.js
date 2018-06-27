@@ -1,89 +1,61 @@
 import {__, allPass, has, map} from "ramda";
 import Future from "fluture";
 
-import LanguageAPI from "../../api/Model/Language";
 import Language from "../../model/Language";
+import {fetchLanguages} from "../../api/Language";
 
 const store = {
     namespaced: true,
     state: {
-        loading: {
-            state: "loading",
-            error: null
-        },
         currentLanguage: {
             short: "de",
             long: "Deutsch"
         },
-        languageOptions: [],
         /**
-         * TODO: this needs to be populated.
-         * @type {Array.<Language>} List of all languages in the system.
+         * @type {Array<Language>} List of all languages in the system.
          */
-        languages: [
-            new Language("de", "German"),
-            new Language("en", "English"),
-            new Language("it", "Italian"),
-            new Language("es", "Spanish"),
-            new Language("ch", "Chinese")
-        ]
-    },
-    getters: {
-        loading: state => {
-            return {
-                loadingState: state.loading.state,
-                error: state.loading.error
-            };
-        },
+        languages: null
     },
     actions: {
         /**
-         * Fetch the available Languages from the API and parse them to be
-         * usable by the dropdown menu.
+         * Fetches the available Languages on the server.
+         *
+         * TODO: remove hardcoded languages, once API works.
+         *
+         * @returns {Future}
+         * @resolve {Array<Language>}
+         * @reject {TypeError|ApiError}
+         * @cancel
          */
         fetchLanguages({commit}) {
-            return LanguageAPI.all()
-                .mapRej(error => {
-                    commit(
-                        "setLoadingState", {
-                            loadingState: "error",
-                            error: error
-                        }
-                    );
-                    return error;
+            return fetchLanguages()
+                .chain(languages => {
+                    commit("setLanguages", languages);
+                    return Future.of(languages);
                 })
-                .map(
-                    data => {
-                        data = map(
-                            languageTuple => ({
-                                short: languageTuple[0],
-                                long: languageTuple[1]
-                            }),
-                            data
-                        );
-                        commit(
-                            "setLoadingState", {
-                                loadingState: "done"
-                            }
-                        );
-                        commit("setLanguageOptions", data);
-
-                        return data;
-                    }
-                )
-                .promise();
+                .chainRej(error => {
+                    const hardCodedLanguages = [
+                        new Language("de", "German"),
+                        new Language("en", "English"),
+                        new Language("it", "Italian"),
+                        new Language("es", "Spanish"),
+                        new Language("ch", "Chinese")
+                    ];
+                    commit("setLanguages", hardCodedLanguages);
+                    return Future.of(hardCodedLanguages)
+                });
         }
     },
     mutations: {
-        setLoadingState(state, {loadingState, error}) {
-            state.loading.state = loadingState;
-            state.loading.error = error;
-        },
         setCurrentLanguage(state, language) {
             state.currentLanguage = language;
         },
-        setLanguageOptions(state, languageOptions) {
-            state.languageOptions = languageOptions;
+        /**
+         * @param state
+         * @param {Array<Language>} languages
+         */
+        setLanguages(state, languages) {
+            state.languages = languages;
         }
     }
 };
@@ -104,9 +76,7 @@ export default store;
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return Future.tryP(
-        () => rootStore.dispatch(`${namespace}/fetchLanguages`)
-    );
+    return rootStore.dispatch(`${namespace}/fetchLanguages`);
 };
 
 export {

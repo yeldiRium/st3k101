@@ -1,6 +1,7 @@
 <template>
     <modal name="modal-create-dimension"
            height="auto"
+           @before-open="beforeOpen"
     >
         <CreateResource
                 @cancel="cancel"
@@ -29,10 +30,8 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
-
-    import {Language, LanguageData} from "../../../model/Language";
-    import {ConcreteDimension} from "../../../model/SurveyBase/Dimension";
+    import {isNil} from "ramda";
+    import {mapState} from "vuex-fluture";
 
     import CreateResource from "./CreateResource";
     import Toggle from "../Form/ToggleButton";
@@ -43,14 +42,10 @@
             CreateResource,
             Toggle
         },
-        props: {
-            /** @type {Language} */
-            language: {
-                type: Language
-            }
-        },
         data() {
             return {
+                language: null,
+                handler: null,
                 name: "Dimension name",
                 randomizeQuestions: false
             }
@@ -59,6 +54,16 @@
             ...mapState("session", ["dataClient"])
         },
         methods: {
+            beforeOpen({params: {language, handler}}) {
+                if (isNil(language)) {
+                    throw new Error("Parameter language required!");
+                }
+                if (isNil(handler)) {
+                    throw new Error("Parameter handler required!");
+                }
+                this.language = language;
+                this.handler = handler;
+            },
             cancel() {
                 this.$modal.hide("modal-create-dimension");
             },
@@ -67,14 +72,11 @@
              * the dimension.
              */
             create() {
-                this.$emit(
-                    "dimension-create",
-                    {
-                        name: this.name,
-                        randomizeQuestions: this.randomizeQuestions
-                    }
-                );
                 this.$modal.hide("modal-create-dimension");
+                this.handler({
+                    name: this.name,
+                    randomizeQuestions: this.randomizeQuestions
+                });
             }
         }
     }

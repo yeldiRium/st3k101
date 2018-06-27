@@ -34,8 +34,9 @@
 </template>
 
 <script>
-    import Range from "../../../../model/SurveyBase/Config/Range";
     import RangeSVG from "./RangeSVG";
+
+    import Range from "../../../../model/SurveyBase/Config/Range";
 
     export default {
         name: "RangeEditor",

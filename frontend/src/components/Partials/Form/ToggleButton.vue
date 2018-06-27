@@ -83,9 +83,9 @@
         grid-column-gap: 1em;
         grid-template-areas: "left toggle-button right";
 
-        > div {
-            height: 1em;
+        align-items: center;
 
+        > div {
             color: $slightlylight;
         }
 
@@ -100,9 +100,6 @@
         }
 
         &__button {
-            width: 100%;
-            height: 100%;
-
             grid-area: toggle-button;
 
             -webkit-user-select: none;

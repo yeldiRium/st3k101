@@ -1,11 +1,12 @@
-import Future from "fluture";
-
 import SurveyBase from "./SurveyBase";
+import Question from "./Question";
+import {clone, map} from "ramda";
 
 class Questionnaire extends SurveyBase {
     /**
      * @param {string} href See Resource.
-     * @param {Party} owner See OwnedResource.
+     * @param {String} id See Resource.
+     * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name The Questionnaire's name.
      * @param {string} description A description for the Questionnaire.
@@ -18,7 +19,8 @@ class Questionnaire extends SurveyBase {
      *  sions.
      */
     constructor(href,
-                owner,
+                id,
+                owners,
                 languageData,
                 name,
                 description,
@@ -26,7 +28,7 @@ class Questionnaire extends SurveyBase {
                 allowEmbedded,
                 xapiTarget,
                 dimensions) {
-        super(href, owner, languageData);
+        super(href, id, owners, languageData);
 
         this.name = name;
         this.description = description;
@@ -54,13 +56,30 @@ class Questionnaire extends SurveyBase {
         throw new Error("Please override this.");
     }
 
-    // TODO: implement fetchTranslation(language)
+    /**
+     * @returns {Questionnaire}
+     */
+    clone() {
+        return new Questionnaire(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            this.description,
+            this.isPublic,
+            this.allowEmbedded,
+            this.xapiTarget,
+            map(clone, this.dimensions)
+        );
+    }
 }
 
 class ConcreteQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
-     * @param {Party} owner See OwnedResource.
+     * @param {String} id See Resource.
+     * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
@@ -77,7 +96,8 @@ class ConcreteQuestionnaire extends Questionnaire {
      *  ces) to this Questionnaire, which the current user owns.
      */
     constructor(href,
-                owner,
+                id,
+                owners,
                 languageData,
                 name,
                 description,
@@ -87,15 +107,7 @@ class ConcreteQuestionnaire extends Questionnaire {
                 dimensions,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
-        super(href,
-            owner,
-            languageData,
-            name,
-            description,
-            isPublic,
-            allowEmbedded,
-            xapiTarget,
-            dimensions);
+        super(href, id, owners, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
 
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
@@ -118,12 +130,33 @@ class ConcreteQuestionnaire extends Questionnaire {
     ownedIncomingReferenceCount() {
         return this.ownedIncomingReferences.length;
     }
+
+    /**
+     * @returns {ConcreteQuestionnaire}
+     */
+    clone() {
+        return new ConcreteQuestionnaire(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            this.description,
+            this.isPublic,
+            this.allowEmbedded,
+            this.xapiTarget,
+            map(clone, this.dimensions),
+            this.incomingReferenceCount,
+            map(clone, this.ownedIncomingReferences)
+        );
+    }
 }
 
 class ShadowQuestionnaire extends Questionnaire {
     /**
      * @param {string} href See Resource.
-     * @param {Party} owner See OwnedResource.
+     * @param {String} id See Resource.
+     * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
@@ -135,7 +168,8 @@ class ShadowQuestionnaire extends Questionnaire {
      *  ferenced Questionnaire.
      */
     constructor(href,
-                owner,
+                id,
+                owners,
                 languageData,
                 name,
                 description,
@@ -144,15 +178,7 @@ class ShadowQuestionnaire extends Questionnaire {
                 xapiTarget,
                 dimensions,
                 referenceTo) {
-        super(href,
-            owner,
-            languageData,
-            name,
-            description,
-            isPublic,
-            allowEmbedded,
-            xapiTarget,
-            dimensions);
+        super(href, id, owners, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
 
         this.referenceTo = referenceTo;
     }
@@ -164,92 +190,24 @@ class ShadowQuestionnaire extends Questionnaire {
     get isConcrete() {
         return false;
     }
-}
 
-/**
- * Takes in a Questionnaire and populates its incoming references field by re-
- * placing all resolvable References with their corresponding ShadowQuestion-
- * naire instances.
- *
- * Accesses the API to load the Questionnaires.
- *
- * TODO: implement. currently this replaces all Resource-type references with
- *       empty objects.
- *
- * @param {ConcreteQuestionnaire} concreteQuestionnaire
- * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
- */
-function populateOwnedIncomingReferences(concreteQuestionnaire) {
-    const resolvedShadowQuestionnaireFutures = [];
-
-    // Use basic for loop to easily replace values.
-    for (let i = 0;
-         i < concreteQuestionnaire.ownedIncomingReferences.length;
-         i++) {
-        let reference = concreteQuestionnaire.ownedIncomingReferences[i];
-
-        if (instanceOf(reference, Resource)) {
-            // TODO: fetch ShadowQuestionnaire and replace
-            const shadowQuestionFuture = Future.of({}) // <- replace with actual API call
-                .map(shadowQuestionnaire => {
-                    concreteQuestionnaire.ownedIncomingReferences[i] =
-                        shadowQuestionnaire;
-                    return true;
-                });
-
-            resolvedShadowQuestionnaireFutures.push(shadowQuestionFuture);
-        }
-    }
-    return Future.parallel(Infinity, resolvedShadowQuestionnaireFutures);
-}
-
-/**
- * If the referenceTo field contains a Resource, it is resolved to a
- * ConcreteQuestionnaire instance. Otherwise it is left as is.
- *
- * Accesses the API to load the Questionnaire.
- *
- * If it is invalid or does not resolve to anything, an error is thrown.
- *
- * TODO: implement this. currently it replaces the reference with an empty
- *       object.
- *
- * @param {ShadowQuestionnaire} shadowQuestionnaire
- * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
- */
-function populateReferenceTo(shadowQuestionnaire) {
-    if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
-        // TODO: fetch ConcreteQuestionnaire and replace
-        return Future.of({}) // <- replace with actual API call
-            .map(concreteQuestionnaire => {
-                shadowQuestionnaire.referenceTo = concreteQuestionnaire;
-            });
-    }
-    return Future.of(true);
-}
-
-/**
- * Based on the type of the given Questionnaire this either populates its inco-
- * ming references or its referenceTo field.
- *
- * @param {Questionnaire} questionnaire
- * @return {Future}
- * @resolve with nothing, since the change is made in place.
- * @reject with an API error message.
- * @cancel TODO: can this actually be cancelled?
- */
-function populateQuestionnaire(questionnaire) {
-    if (instanceOf(questionnaire, ShadowQuestionnaire)) {
-        return populateReferenceTo(questionnaire);
-    }
-    if (instanceOf(questionnaire, ConcreteQuestionnaire)) {
-        return populateOwnedIncomingReferences(questionnaire);
+    /**
+     * @returns {ShadowQuestionnaire}
+     */
+    clone() {
+        return new ShadowQuestionnaire(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone(),
+            this.name,
+            this.description,
+            this.isPublic,
+            this.allowEmbedded,
+            this.xapiTarget,
+            map(clone, this.dimensions),
+            this.referenceTo.clone()
+        );
     }
 }
 
@@ -258,8 +216,5 @@ export default Questionnaire;
 export {
     Questionnaire,
     ConcreteQuestionnaire,
-    ShadowQuestionnaire,
-    populateOwnedIncomingReferences,
-    populateReferenceTo,
-    populateQuestionnaire
+    ShadowQuestionnaire
 }

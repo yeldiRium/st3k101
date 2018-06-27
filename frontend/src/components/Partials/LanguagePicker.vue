@@ -50,21 +50,20 @@
                 </span>
             </div>
         </div>
-        <!-- dropdown select box of all languages -->
-        <!-- preview with language.long, language.short as value -->
     </div>
 </template>
 
 <script>
     import {contains, toUpper, without} from "ramda";
+    import {mapState} from "vuex-fluture";
 
-    import {mapState} from "vuex";
     import {LanguageData} from "../../model/Language";
 
     export default {
         data() {
             return {
-                menuOpen: false
+                menuOpen: false,
+                recomputeHack: 0
             }
         },
         props: {
@@ -77,17 +76,23 @@
             ...mapState("language", ["languages"]),
             ...mapState("global", ["window"]),
             menuStyle() {
+                // Establish a dependency and force update on property change.
+                this.recomputeHack;
+
+                const boundingRect = this.$refs.currentLanguage
+                    .getBoundingClientRect();
+
                 const width = Math.min(
                     200,
                     Math.round(this.window.width * 0.8)
                 );
                 const x = Math.max(
                     0,
-                    this.$refs.currentLanguage.offsetLeft - width
+                    boundingRect.left - width
                 );
                 const y = Math.max(
                     0,
-                    this.$refs.currentLanguage.offsetTop
+                    boundingRect.top
                 );
                 return {
                     width: `${width}px`,
@@ -105,6 +110,7 @@
         methods: {
             openLanguageMenu() {
                 this.menuOpen = true;
+                this.recomputeHack++;
             },
             closeLanguageMenu() {
                 this.menuOpen = false;

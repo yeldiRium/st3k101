@@ -1,10 +1,22 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex from "vuex-fluture";
 import Future from "fluture";
 
-import {store as global, initialize as initializeGlobalStore} from "./modules/Global";
-import {store as language, initialize as initializeLanguageStore} from "./modules/Language";
-import {store as session} from "./modules/Session";
+import {
+    initialize as initializeGlobalStore,
+    store as global
+} from "./modules/Global";
+import {
+    initialize as initializeLanguageStore,
+    store as language
+} from "./modules/Language";
+import {
+    initialize as initializeSessionStore,
+    store as session
+} from "./modules/Session";
+import {store as questionnaires} from "./modules/Questionnaires";
+import {store as dimensions} from "./modules/Dimensions";
+import {store as questions} from "./modules/Questions";
 
 Vue.use(Vuex);
 
@@ -13,8 +25,7 @@ const store = new Vuex.Store({
         initialLoading: "loading"
     },
     getters: {
-        loading: (state, getters, rootState, rootGetters) => {
-            // TODO: respect submodules' loading states
+        loading: (state) => {
             return state.initialLoading;
         }
     },
@@ -29,7 +40,10 @@ const store = new Vuex.Store({
     modules: {
         global,
         language,
-        session
+        session,
+        questionnaires,
+        dimensions,
+        questions
     }
 });
 
@@ -47,8 +61,9 @@ export default store;
  */
 const initialize = function () {
     return Future.parallel(Infinity, [
+        initializeGlobalStore(store, "global"),
         initializeLanguageStore(store, "language"),
-        initializeGlobalStore(store, "global")
+        initializeSessionStore(store, "session")
     ]);
 };
 

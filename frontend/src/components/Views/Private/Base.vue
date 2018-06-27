@@ -3,44 +3,35 @@
         <MenuBarPrivate/>
 
         <div class="content">
-            <router-view />
+            <router-view :key="$route.fullPath"/>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapGetters} from "vuex-fluture";
+
     import LanguagePicker from "../../Partials/LanguagePicker";
     import MenuBarPrivate from "../../Partials/Menu/MenuBarPrivate"
 
     export default {
         components: {LanguagePicker, MenuBarPrivate},
         name: "App",
-        created() {
-            if (!this.$store.getters["session/isLoggedIn"]) {
-                this.$router.replace({
-                    name: "PublicBase"
-                })
-            }
-        },
-        data: () => ({
-            drawer: true,
-            searchBar: false,
-            navigationItems: [
-                {
-                    action: "Dashboard",
-                    icon: "dashboard",
-                    text: "Dashboard"
-                },
-                {
-                    action: "SurveyForSubmission",
-                    icon: "image",
-                    text: "Survey",
-                    payload: {
-                        id: "blub"
+        watch: {
+            isLoggedIn: {
+                immediate: true,
+                handler(isLoggedIn) {
+                    if (!isLoggedIn) {
+                        this.$router.replace({
+                            name: "Authentication"
+                        })
                     }
                 }
-            ]
-        })
+            }
+        },
+        computed: {
+            ...mapGetters("session", ["isLoggedIn"])
+        }
     };
 </script>
 
@@ -59,9 +50,7 @@
         width: 100%;
 
         display: grid;
-        grid-template-areas:
-            "content"
-            "menubar";
+        grid-template-areas: "content" "menubar";
         grid-template-rows: auto 15%;
     }
 

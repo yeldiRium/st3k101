@@ -3,16 +3,31 @@ import OwnedResource from "../OwnedResource";
 class SurveyBase extends OwnedResource {
     /**
      * @param {string} href See Resource.
-     * @param {Party} owner See OwnedResource.
+     * @param {String} id See Resource.
+     * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData Language information about
      *  the SurveyBase.
      */
     constructor(href,
-                owner,
-                languageData) {
-        super(href, owner);
+                id,
+                owners,
+                languageData
+    ) {
+        super(href, id, owners);
 
         this.languageData = languageData;
+    }
+
+    /**
+     * @returns {SurveyBase}
+     */
+    clone() {
+        return new SurveyBase(
+            this._href,
+            this._id,
+            [...this._owners],
+            this.languageData.clone()
+        );
     }
 }
 

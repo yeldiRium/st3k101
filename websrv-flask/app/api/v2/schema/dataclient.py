@@ -1,3 +1,6 @@
+from typing import Type
+
+from flask_restful import Resource
 from marshmallow import fields
 
 from api.v2.schema import RESTFulSchema

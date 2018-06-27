@@ -5,8 +5,8 @@ import Resource from "./Resource";
  * \o/
  */
 class Party extends Resource {
-    constructor(href) {
-        super(href);
+    constructor(href, id) {
+        super(href, id);
     }
 }
 

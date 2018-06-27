@@ -1,5 +1,6 @@
 import Resource from "./Resource";
 import Party from "./Party";
+import {any} from "ramda";
 
 /**
  * A Resource that can be owned by someone.
@@ -8,19 +9,22 @@ class OwnedResource extends Resource {
     /**
      *
      * @param {string} href See Resource.
-     * @param {Party} owner
+     * @param {String} id See Resource.
+     * @param {Array<Party>} owners
      */
     constructor(href,
-                owner) {
-        super(href);
-        this._owner = owner;
+                id,
+                owners
+    ) {
+        super(href, id);
+        this._owners = owners;
     }
 
     /**
-     * @returns {Party}
+     * @returns {Array<Party>}
      */
-    get owner() {
-        return this._owner;
+    get owners() {
+        return this._owners;
     }
 
     /**
@@ -28,7 +32,21 @@ class OwnedResource extends Resource {
      * @return {boolean} True, if the OwnedResource is owned by the given Party.
      */
     isOwnedBy(party) {
-        return party.identifiesWith(this._owner);
+        return any(
+            owner => party.identifiesWith(owner),
+            this.owners
+        );
+    }
+
+    /**
+     * @returns {OwnedResource}
+     */
+    clone() {
+        return new OwnedResource(
+            this._href,
+            this._id,
+            [...this._owners]
+        );
     }
 }
 

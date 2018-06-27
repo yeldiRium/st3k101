@@ -3,26 +3,28 @@ import Router from "vue-router";
 
 import PublicBase from "../components/Views/Public/Base";
 import SurveyForSubmission from "../components/Views/Public/SurveyForSubmission";
+import Authentication from "../components/Views/Public/Authentication";
 
 import PrivateBase from "../components/Views/Private/Base";
 import Dashboard from "../components/Views/Private/Dashboard";
-import Questionnaires from "../components/Views/Private/Questionnaires";
+import MyQuestionnaires from "../components/Views/Private/MyQuestionnaires";
 import Account from "../components/Views/Private/Account";
+import AQuestion from "../components/Views/Private/AQuestion";
+import ADimension from "../components/Views/Private/ADimension";
+import AQuestionnaire from "../components/Views/Private/AQuestionnaire";
 
 import TestingBase from "../components/Views/Testing/Base";
 import TestListItem from "../components/Views/Testing/TestListItem";
-import TestListQuestion from "../components/Views/Testing/TestListQuestion";
-import TestFullQuestion from "../components/Views/Testing/TestFullQuestion";
+import TestQuestion from "../components/Views/Testing/TestQuestion";
 import TestRangeEditor from "../components/Views/Testing/TestRangeEditor";
 import TestPrivateMenuBar from "../components/Views/Testing/TestPrivateMenuBar";
 import TestToggle from "../components/Views/Testing/TestToggle";
 import TestModal from "../components/Views/Testing/TestModal";
 import TestButton from "../components/Views/Testing/TestButton";
-import TestListDimension from "../components/Views/Testing/TestListDimension";
-import TestFullDimension from "../components/Views/Testing/TestFullDimension";
+import TestDimension from "../components/Views/Testing/TestDimension";
 import TestEditableText from "../components/Views/Testing/TestEditableText";
-import TestListQuestionnaire from "../components/Views/Testing/TestListQuestionnaire";
-import TestFullQuestionnaire from "../components/Views/Testing/TestFullQuestionnaire";
+import TestQuestionnaire from "../components/Views/Testing/TestQuestionnaire";
+import TestLoadingSpinnerModal from "../components/Views/Testing/TestLoadingSpinnerModal";
 
 Vue.use(Router);
 
@@ -38,6 +40,11 @@ export default new Router({
                     path: "survey/:id",
                     name: "SurveyForSubmission",
                     component: SurveyForSubmission
+                },
+                {
+                    path: "authentication",
+                    name: "Authentication",
+                    component: Authentication
                 }
             ]
         },
@@ -49,9 +56,14 @@ export default new Router({
 
             children: [
                 {
+                    path: "dashboard",
+                    name: "Dashboard",
+                    component: Dashboard
+                },
+                {
                     path: "questionnaires",
-                    name: "Questionnaires",
-                    component: Questionnaires
+                    name: "MyQuestionnaires",
+                    component: MyQuestionnaires
                 },
                 {
                     path: "account",
@@ -59,9 +71,19 @@ export default new Router({
                     component: Account
                 },
                 {
-                    path: "dashboard",
-                    name: "Dashboard",
-                    component: Dashboard
+                    path: "question/:id",
+                    name: "AQuestion",
+                    component: AQuestion
+                },
+                {
+                    path: "dimension/:id",
+                    name: "ADimension",
+                    component: ADimension
+                },
+                {
+                    path: "questionnaire/:id",
+                    name: "AQuestionnaire",
+                    component: AQuestionnaire
                 }
             ]
         },
@@ -80,12 +102,8 @@ export default new Router({
                     component: TestListItem
                 },
                 {
-                    path: "ListQuestion",
-                    component: TestListQuestion
-                },
-                {
-                    path: "FullQuestion",
-                    component: TestFullQuestion
+                    path: "Question",
+                    component: TestQuestion
                 },
                 {
                     path: "RangeEditor",
@@ -104,24 +122,20 @@ export default new Router({
                     component: TestButton
                 },
                 {
-                    path: "ListDimension",
-                    component: TestListDimension
-                },
-                {
-                    path: "FullDimension",
-                    component: TestFullDimension
+                    path: "Dimension",
+                    component: TestDimension
                 },
                 {
                     path: "EditableText",
                     component: TestEditableText
                 },
                 {
-                    path: "ListQuestionnaire",
-                    component: TestListQuestionnaire
+                    path: "Questionnaire",
+                    component: TestQuestionnaire
                 },
                 {
-                    path: "FullQuestionnaire",
-                    component: TestFullQuestionnaire
+                    path: "LoadingSpinnerModal",
+                    component: TestLoadingSpinnerModal
                 }
             ]
         }

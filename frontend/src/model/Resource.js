@@ -6,17 +6,11 @@ class Resource {
     /**
      *
      * @param {string} href
+     * @param {String} id
      */
-    constructor(href) {
+    constructor(href, id) {
         this._href = href;
-    }
-
-    /**
-     *
-     * @param {string} href
-     */
-    set href(href) {
-        this._href = href;
+        this._id = id;
     }
 
     /**
@@ -27,12 +21,30 @@ class Resource {
         return this._href;
     }
 
-    /**     *
+    /**
+     *
+     * @returns {String}
+     */
+    get id() {
+        return this._id;
+    }
+
+    /**
      * @param {Resource} otherResource
      * @return {boolean} If the Resources are equal.
      */
     identifiesWith(otherResource) {
         return this.href === otherResource.href;
+    }
+
+    /**
+     * @returns {Resource}
+     */
+    clone() {
+        return new Resource(
+            this._href,
+            this._id
+        );
     }
 }
 

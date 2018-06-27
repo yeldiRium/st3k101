@@ -22,11 +22,8 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
-
-    import {Language, LanguageData} from "../../../model/Language";
+    import {isNil} from "ramda";
     import {Range} from "../../../model/SurveyBase/Config/Range";
-    import {ConcreteQuestion} from "../../../model/SurveyBase/Question";
 
     import CreateResource from "./CreateResource";
     import RangeEditor from "../SurveyBase/Config/RangeEditor";
@@ -37,20 +34,24 @@
             CreateResource,
             RangeEditor
         },
-        props: {
-            /** @type {Language} */
-            language: {
-                type: Language
-            }
-        },
         data() {
             return {
+                language: null,
+                handler: null,
                 text: "Question text",
                 range: null
             }
         },
         methods: {
-            beforeOpen() {
+            beforeOpen({params: {language, handler}}) {
+                if (isNil(language)) {
+                    throw new Error("Parameter language required!");
+                }
+                if (isNil(handler)) {
+                    throw new Error("Parameter handler required!");
+                }
+                this.language = language;
+                this.handler = handler;
                 this.range = new Range({end: 10});
             },
             cancel() {
@@ -61,11 +62,11 @@
              * new Question.
              */
             create() {
-                this.$emit("question-create", {
+                this.$modal.hide("modal-create-question");
+                this.handler({
                     text: this.text,
                     range: this.range
                 });
-                this.$modal.hide("modal-create-question");
             }
         }
     }

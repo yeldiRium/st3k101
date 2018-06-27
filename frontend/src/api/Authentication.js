@@ -1,104 +1,89 @@
 import Future from "fluture";
 import {prop} from "ramda";
+import {checkStatus, extractJson} from "./Util/Response";
+import {parseDataClient} from "./Util/Parse";
+import {fetchApi} from "./Util/Request";
 
-import PathHandling from "./Utility/PathHandling";
-import ResultHandling from "./Utility/ResponseHandling";
-
-export default {
-    /**
-     * TODO: implement
-     * Logs a user in.
-     *
-     * @param email
-     * @param password
-     * @return a Future.
-     * @resolves with a sessionToken, if the credentials are valid.
-     * @rejects with a reason, if the credentials are invalid or another error
-     * occured.
-     * @cancel
-     */
-    login: function (email, password) {
-        return Future((reject, resolve) => {
-            const controller = new AbortController();
-            const signal = controller.signal;
-
-            fetch(PathHandling.buildApiPath("/api/auth/login"), {
-                "method": "POST",
-                "mode": "cors",
-                "data": JSON.stringify({
-                    email,
-                    password
-                }),
-                signal
-            })
-                .then(resolve)
-                .catch(reject);
-
-            return controller.abort;
+/**
+ * Register a new DataClient.
+ *
+ * @param {String} email
+ * @param {String} password
+ * @return {Future}
+ * @resolve {DataClient}
+ * @reject {TypeError|ApiError}
+ * @cancel see fetchApi
+ */
+function register(email, password) {
+    return fetchApi("/api/dataclient", {
+        method: "POST",
+        body: JSON.stringify({
+            email,
+            password
         })
-            .chain(ResultHandling.checkStatus(200))
-            .chain(ResultHandling.extractJson)
-            .map(prop("session_token"))
-            .chainRej(ResultHandling.extractJson);
-    },
-    /**
-     * TODO: implement
-     * Logs the user with the given sessionToken out.
-     *
-     * @param sessionToken
-     * @returns a Future.
-     * @resolve with True, if everything went well.
-     * @rejects with a reason, if an error occured.
-     * @cancel
-     */
-    logout: function (sessionToken) {
-        return Future((reject, resolve) => {
-            const controller = new AbortController();
-            const signal = controller.signal;
-
-            fetch(PathHandling.buildApiPath("/api/auth/logout"), {
-                "method": "GET",
-                "mode": "cors",
-                signal
-            })
-                .then(resolve)
-                .catch(reject);
-
-            return controller.abort;
-        })
-            .chain(ResultHandling.checkStatus(200))
-            .chain(ResultHandling.extractJson)
-            .map(() => true)
-            .chainRej(ResultHandling.extractJson);
-    },
-    /**
-     * TODO: implement
-     * Checks, if a given sessionToken is valid.
-     *
-     * @param sessionToken
-     * @returns a Future.
-     * @resolves with True, if the sessionToken is valid.
-     * @rejects with False, if the sessionToken is invalid.
-     * @cancel
-     */
-    isSessionValid: function (sessionToken) {
-        return Future((reject, resolve) => {
-            const controller = new AbortController();
-            const signal = controller.signal;
-
-            fetch(PathHandling.buildApiPath(`/api/auth/${sessionToken}/isValid`), {
-                "method": "GET",
-                "mode": "cors",
-                signal
-            })
-                .then(resolve)
-                .catch(reject);
-
-            return controller.abort;
-        })
-            .chain(ResultHandling.checkStatus(200))
-            .chain(ResultHandling.extractJson)
-            .map(prop("result"))
-            .chainRej(ResultHandling.extractJson);
-    }
+    })
+        .chain(extractJson)
+        .map(parseDataClient);
 }
+
+/**
+ * Requests a Session Token for a DataClient.
+ *
+ * @param {String} email
+ * @param {String} password
+ * @return {Future}
+ * @resolve {String} to session token.
+ * @reject {TypeError|ApiError}
+ * @cancel see fetchApi
+ */
+function requestSession(email, password) {
+    return fetchApi("/api/session", {
+        method: "POST",
+        body: JSON.stringify({
+            email,
+            password
+        })
+    })
+        .chain(extractJson)
+        .map(prop("session_token"));
+}
+
+/**
+ * Ends a Session.
+ *
+ * @return {Future}
+ * @resolve {Boolean} to true
+ * @reject {TypeError|ApiError}
+ * @cancel see fetchApi
+ */
+function endSession() {
+    return fetchApi("/api/session", {
+        method: "DELETE",
+        authenticate: true
+    })
+        .map(() => true);
+}
+
+/**
+ * Retrieves the currently logged in DataClient.
+ * Obviously only works when authenticated.
+ *
+ * @return {Future}
+ * @resolve {DataClient}
+ * @reject {TypeError|ApiError}
+ * @cancel see fetchApi
+ */
+function getCurrentDataClient() {
+    return fetchApi("/api/dataclient", {
+        authenticate: true
+    })
+        .chain(extractJson)
+        .map(parseDataClient);
+}
+
+export {
+    register,
+    requestSession,
+    endSession,
+    getCurrentDataClient
+};

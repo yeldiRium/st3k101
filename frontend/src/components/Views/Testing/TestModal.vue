@@ -38,7 +38,7 @@
     import {Range} from "../../../model/SurveyBase/Config/Range";
     import {Language, LanguageData} from "../../../model/Language";
 
-    import FullQuestion from "../../Partials/SurveyBase/Full/Question";
+    import Question from "../../Partials/SurveyBase/Question";
     import CreateQuestion from "../../Partials/Modal/CreateQuestion";
     import CreateDimension from "../../Partials/Modal/CreateDimension";
     import Dialog from "../../Partials/Modal/Dialog";
@@ -59,18 +59,10 @@
                 [english]
             );
             return {
-                question: new ConcreteQuestion(
-                    "http://blubblab/api/question/1",
-                    dataClient,
-                    languageData,
-                    "Diese ConcreteQuestion gehört mir. Sie hat einen extra langen Text zum testen.",
-                    new Range({end: 5}),
-                    5,
-                    [
-                        new Resource("http://blubblab/api/question/myidlel"),
-                        new Resource("http://blubblab/api/question/myid2lul")
-                    ]
-                )
+                question: new ConcreteQuestion("http://blubblab/api/question/1", "1", dataClient, languageData, "Diese ConcreteQuestion gehört mir. Sie hat einen extra langen Text zum testen.", new Range({end: 5}), 5, [
+                    new Resource("http://blubblab/api/question/myidlel", "myidlel"),
+                    new Resource("http://blubblab/api/question/myid2lul", "myid2lul")
+                ])
             };
         },
         methods: {
@@ -109,7 +101,7 @@
             },
             click3() {
                 this.$modal.show(
-                    FullQuestion,
+                    Question,
                     {
                         question: this.question
                     },

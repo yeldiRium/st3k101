@@ -2,7 +2,7 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex";
+    import {mapGetters} from "vuex-fluture";
 
     /**
      * Defines some properties and methods for OwnedResources.
@@ -48,7 +48,7 @@
              */
             isEditable(ownedResource) {
                 return this.isOwnedByCurrentDataClient(ownedResource)
-                    && !ownedResource.isShadow;
+                    && ownedResource.isConcrete;
             },
             /**
              * Whether the SurveyBase is deletable.

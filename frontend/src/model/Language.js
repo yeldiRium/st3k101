@@ -27,6 +27,14 @@ class LanguageData {
         this.originalLanguage = originalLanguage;
         this.availableLanguages = availableLanguages;
     }
+
+    clone() {
+        return new LanguageData(
+            this.currentLanguage,
+            this.originalLanguage,
+            [...this.availableLanguages]
+        );
+    }
 }
 
 export default Language;

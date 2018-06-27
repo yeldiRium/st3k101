@@ -14,8 +14,6 @@
 </template>
 
 <script>
-    import Questionnaire from "../../../api/Model/Questionnaire";
-
     export default {
         data() {
             return {
@@ -24,16 +22,7 @@
             };
         },
         mounted() {
-            Questionnaire.get(this.$route.params.id)
-                .fork(
-                    data => {
-                        this.loading = "error";
-                    },
-                    data => {
-                        this.questionnaire = data;
-                        this.loading = "done";
-                    }
-                )
+
         }
     }
 </script>

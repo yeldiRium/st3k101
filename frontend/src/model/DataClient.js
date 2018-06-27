@@ -4,18 +4,19 @@ class DataClient extends Party {
     /**
      *
      * @param {String} href See Resource.
+     * @param {String} id See Resource.
      * @param {String} email
      * @param {Language} language
      */
     constructor(href,
+                id,
                 email,
-                language) {
-        super(href);
+                language
+    ) {
+        super(href, id);
         this._email = email;
         this._language = language;
     }
-
-    // TODO: refactor email out into own model and/or validate
 
     /**
      * @param {String} email
@@ -31,8 +32,6 @@ class DataClient extends Party {
         return this._email;
     }
 
-    // TODO: refactor language out into own model and/or validate
-
     /**
      * @param {Language} language
      */
@@ -45,6 +44,18 @@ class DataClient extends Party {
      */
     get language() {
         return this._language;
+    }
+
+    /**
+     * @returns {DataClient}
+     */
+    clone() {
+        return new DataClient(
+            this._href,
+            this._id,
+            this._email,
+            this._language
+        );
     }
 }
 

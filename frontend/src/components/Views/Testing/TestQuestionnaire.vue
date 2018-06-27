@@ -1,0 +1,118 @@
+<template>
+    <div class="TestQuestionnaire_container">
+        <Questionnaire :questionnaire="questionnaires[0]"/>
+        <Questionnaire :questionnaire="questionnaires[1]"/>
+        <Questionnaire :questionnaire="questionnaires[2]"/>
+        <Questionnaire :questionnaire="questionnaires[3]"/>
+    </div>
+</template>
+
+<script>
+    import {drop} from "ramda";
+
+    import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
+
+    import DataClient from "../../../model/DataClient";
+    import Resource from "../../../model/Resource";
+    import {
+        ConcreteQuestion,
+        ShadowQuestion
+    } from "../../../model/SurveyBase/Question";
+    import {
+        ConcreteDimension,
+        ShadowDimension
+    } from "../../../model/SurveyBase/Dimension";
+    import {Language, LanguageData} from "../../../model/Language";
+    import {Range} from "../../../model/SurveyBase/Config/Range";
+    import {
+        ConcreteQuestionnaire,
+        ShadowQuestionnaire
+    } from "../../../model/SurveyBase/Questionnaire";
+
+    export default {
+        name: "TestListQuestionnaire",
+        components: {
+            Questionnaire
+        },
+        data: function () {
+            const dataClient = this.$store.getters["session/dataClient"];
+            const english = new Language("en", "English");
+            const someoneElse = new DataClient("somehrefNOT", "somehrefNOT", "blub@blub.blub", english);
+            const languageData = new LanguageData(
+                english,
+                english,
+                [english]
+            );
+            const questions = [
+                // Owned ConcreteQuestion with 5 incoming references.
+                // Two of those references are from owned Questions.
+                new ConcreteQuestion("http://blubblab/api/question/1", "1", dataClient, languageData, "Diese ConcreteQuestion gehört mir.Sie hat einen extra langen Text zum testen.", new Range({end: 5}), 5, [
+                    new Resource("http://blubblab/api/question/myidlel", "myidlel"),
+                    new Resource("http://blubblab/api/question/myid2lul", "myid2lul")
+                ]),
+                // Owned ShadowQuestion.
+                new ShadowQuestion("http://blubblab/api/question/2", "2", dataClient, languageData, "Diese ShadowQuestion gehört mir.", new Range({
+                    start: 2,
+                    end: 10
+                }), new Resource("http://blubblab/api/question/someonesidlel", "someonesidlel")),
+                // Not owned ConcreteQuestion with 3 incoming references.
+                // One of those reference is from an owned ListQuestion.
+                new ConcreteQuestion("http://blubblab/api/question/3", "3", someoneElse, languageData, "Diese ConcreteQuestion gehört mir nicht.Sie hat einen extra langen Text zum testen.", new Range({
+                    start: 0,
+                    end: 7
+                }), 3, [
+                    new Resource("http://blubblab/api/question/myotheridkek", "myotheridkek")
+                ]),
+                // Not owned ShadowQuestion.
+                new ShadowQuestion("http://blubblab/api/question/4", "4", someoneElse, languageData, "Diese ShadowQuestion gehört mir nicht.", new Range({end: 5}), new Resource("http://blubblab/api/question/someonesotheridtrell", 0))
+            ];
+
+            const dimensions = [
+                // Owned ConcreteDimension with 5 incoming references.
+                // Two of those references are from owned Dimensions.
+                new ConcreteDimension
+                ("http://blubblab/api/dimension/1", "1", dataClient, languageData, "Diese ConcreteDimension gehört mir. Sie hat einen extra langen Text zum testen. Ihre Questions sind randomized.", drop(0, questions), true, 5, [
+                    new Resource("http://blubblab/api/dimension/myidlel", "myidlel"),
+                    new Resource("http://blubblab/api/dimension/myid2lul", "myid2lul")
+                ]),
+                // Owned ShadowDimension.
+                new ShadowDimension("http://blubblab/api/dimension/2", "2", dataClient, languageData, "Diese ShadowDimension gehört mir. Ihre Questions sind in fester Reihenfolge.", drop(0, questions), false, new Resource("http://blubblab/api/dimension/someonesidlel", "someonesidlel")),
+                // Not owned ConcreteDimension with 3 incoming references.
+                // One of those reference is from an owned ListDimension.
+                new ConcreteDimension("http://blubblab/api/dimension/3", "3", someoneElse, languageData, "Diese ConcreteDimension gehört mir nicht. Sie hat einen extra langen Text zum testen. Ihre Questions sind randomized.", drop(0, questions), true, 3, [
+                    new Resource("http://blubblab/api/dimension/myotheridkek", "myotheridkek")
+                ]),
+                // Not owned ShadowDimension.
+                new ShadowDimension("http://blubblab/api/dimension/4", "4", someoneElse, languageData, "Diese ShadowDimension gehört mir nicht. Ihre Questions sind in fester Reihenfolge.", drop(0, questions), false, new Resource("http://blubblab/api/questionnaire/someonesotheridtrell", 0))
+            ];
+
+            return {
+                questionnaires: [
+                    new ConcreteQuestionnaire("http://blubblab/api/questionnaire/1", "1", dataClient, languageData, "Dieser ConcreteQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", true, true, "i don't even know, what this is", drop(0, dimensions), 2, [
+                        new Resource("http://blubbla/api/dimension/someonesquestionnaire", "someonesquestionnaire")
+                    ]),
+                    new ShadowQuestionnaire("http://blubblab/api/questionnaire/2", "2", dataClient, languageData, "Dieser ShadowQuestionnaire gehört mir.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", false, true, "i don't even know, what this is", drop(0, dimensions), new Resource("http://blubbla/api/questionnaire/1", "1")),
+                    new ConcreteQuestionnaire("http://blubblab/api/questionnaire/3", "3", someoneElse, languageData, "Dieser ConcreteQuestionnaire gehört mir nicht.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", true, false, "i don't even know, what this is", drop(0, dimensions), 2, [
+                        new Resource("http://blubbla/api/dimension/someonesquestionnaire2", "someonesquestionnaire2")
+                    ]),
+                    new ShadowQuestionnaire("http://blubblab/api/questionnaire/4", "4", someoneElse, languageData, "Dieser ShadowQuestionnaire gehört mir nicht.", "Ein schöner Questionnaire, nicht wahr? Dies ist seine Beschreibung.", false, false, "i don't even know, what this is", drop(0, dimensions), new Resource("http://blubbla/api/questionnaire/3", "3"))
+                ]
+            }
+        }
+    }
+</script>
+
+<style lang="scss">
+    .TestQuestionnaire_container {
+        width: 100%;
+        height: 100%;
+
+        padding: 0;
+        margin: 0;
+
+        .questionnaire {
+            width: 90vw;
+        }
+    }
+
+</style>

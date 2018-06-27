@@ -1,8 +1,8 @@
 <template>
     <div class="TestEditableText_container">
-        <EditableText v-model="text1" /><br/><br/>
-        <EditableText v-model="text2" /><br/><br/>
-        <EditableText v-model="text3" /><br/><br/>
+        <EditableText v-model="text1" :key="text1" /><br/><br/>
+        <EditableText v-model="text2" :key="text2" /><br/><br/>
+        <EditableText v-model="text3" :key="text3" /><br/><br/>
     </div>
 </template>
 
