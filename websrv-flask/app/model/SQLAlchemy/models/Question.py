@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import Dict
 
 from framework.internationalization import __
+from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType, TrackingArg
 from model.SQLAlchemy.models.DataSubject import DataSubject
 from model.SQLAlchemy.models.QuestionResult import QuestionResult
@@ -57,6 +58,11 @@ class Question(SurveyBase):
 
     @property
     @abstractmethod
+    def reference_id(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
     def text(self) -> str:
         raise NotImplementedError
 
@@ -73,6 +79,10 @@ class Question(SurveyBase):
     @property
     def original_language(self) -> str:
         return self.dimension.original_language
+
+    @property
+    def available_languages(self):
+        return [BabelLanguage[k] for k in self.text_translations.keys()]
 
     @staticmethod
     def get_results_by_subject(subject: DataSubject):
@@ -138,11 +148,14 @@ class ConcreteQuestion(Question):
     __tablename__ = 'concrete_question'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
+    reference_id = db.Column(db.String(128))
     range = db.Column(db.SmallInteger, default=10, nullable=False)
 
     # translatable columns
     text_translations = db.Column(MUTABLE_HSTORE)
     text = translation_hybrid(text_translations)
+
+    shadow = False
 
     def __init__(self, text: str, **kwargs):
         super(ConcreteQuestion, self).__init__(text=text, **kwargs)
@@ -151,6 +164,7 @@ class ConcreteQuestion(Question):
     def from_shadow(shadow):
         q = ConcreteQuestion("")
         q.dirty = shadow.dirty
+        q.reference_id = shadow.reference_id
 
         stat = shadow.statistic
         shadow.statistic = None
@@ -175,6 +189,8 @@ class ShadowQuestion(Question):
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
 
+    shadow = True
+
     def __init__(self, question, **kwargs):
         super(ShadowQuestion, self).__init__(**kwargs)
         self._referenced_object = question
@@ -186,6 +202,10 @@ class ShadowQuestion(Question):
     @property
     def concrete(self):
         return self._referenced_object
+
+    @property
+    def reference_id(self):
+        return self._referenced_object.reference_id
 
     @property
     def text(self) -> str:

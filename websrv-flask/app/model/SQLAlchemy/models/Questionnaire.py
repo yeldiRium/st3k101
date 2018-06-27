@@ -93,6 +93,10 @@ class Questionnaire(SurveyBase):
         raise NotImplementedError
 
     @property
+    def available_languages(self):
+        return [BabelLanguage[k] for k in self.name_translations.keys()]
+
+    @property
     def question_count(self) -> int:
         """
         :return: The number of questions associated with the Questionnaire.
@@ -187,13 +191,18 @@ class Questionnaire(SurveyBase):
         self.dimensions.remove(dimension)
 
     def delete(self):
-        item_deleted.send(self, current_user())
+        item_deleted.send(self, person=current_user())
 
-        for copy in self.copies:
-            q = ConcreteQuestionnaire.from_shadow(copy)
-            db.session.add(q)
-        for copy in self.copies:
-            db.session.delete(copy)
+        if isinstance(self, ConcreteQuestionnaire):
+            # Create concrete questionnaires from all shadow copies of
+            # this questionnaire. We don't want to deletes other peoples'
+            # questionnaires.
+            for copy in self.copies:
+                q = ConcreteQuestionnaire.from_shadow(copy)
+                db.session.add(q)
+            for copy in self.copies:
+                db.session.delete(copy)
+
         db.session.delete(self)
 
     def add_qac_module(self, qac_module: QACModule):
@@ -296,11 +305,14 @@ class ConcreteQuestionnaire(Questionnaire):
     __tablename__ = 'concrete_questionnaire'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
+    reference_id = db.Column(db.String(128))
     name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
     description_translations = db.Column(MUTABLE_HSTORE)
     description = translation_hybrid(description_translations)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
+
+    shadow = False
 
     def __init__(self, name, description, **kwargs):
         self.original_language = g._language
@@ -318,6 +330,7 @@ class ConcreteQuestionnaire(Questionnaire):
         q.allow_embedded = shadow.allow_embedded
         q.xapi_target = shadow.xapi_target
         q.owners = shadow.owners
+        q.reference_id = shadow.reference_id
 
         for s_dimension in shadow.dimensions:
             c_dimension = ConcreteDimension.from_shadow(s_dimension)
@@ -337,6 +350,8 @@ class ShadowQuestionnaire(Questionnaire):
     _referenced_object = db.relationship(ConcreteQuestionnaire,
                                          foreign_keys=[_referenced_object_id],
                                          backref='copies')
+
+    shadow = True
 
     def __init__(self, questionnaire, **kwargs):
         super(ShadowQuestionnaire, self).__init__(**kwargs)
@@ -364,6 +379,10 @@ class ShadowQuestionnaire(Questionnaire):
         if self._referenced_object is None:
             return None
         return self._referenced_object
+
+    @property
+    def reference_id(self):
+        return self._referenced_object.reference_id
 
     @property
     def name(self) -> str:

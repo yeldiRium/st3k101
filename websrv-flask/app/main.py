@@ -24,18 +24,20 @@ def before_request():
     """
     g._config = app.config  # g is always reachable, app might not be
 
-    # Try to detect session based on session token
-    session_token = request.args.get('session_token')
-    if not session_token:
-        session_token = request.cookies.get('session_token')
-
+    # parse bearer token auth
     g._current_user = None
-    if session_token:
-        # also validates token, raises ClientIpChangedException if
-        # IP pinning fails
-        if auth.validate_activity(session_token):
-            g._current_user = DataClient.query.get_or_404(auth.who_is(session_token))
-            g._current_session_token = session_token
+    g._current_session_token = None
+    auth_string = request.headers.get('authorization')
+    if auth_string and auth_string.startswith('Bearer'):
+        try:
+            session_token = auth_string.split()[1]
+            if auth.validate_activity(session_token):
+                g._current_user = DataClient.query.get(auth.who_is(session_token))
+                if g._current_user:
+                    g._current_session_token = session_token
+                import sys
+                print("Logged in as {}".format(g._current_user), file=sys.stderr)
+        except: pass
 
     # Setting the locale for the current request
     g._language = BabelLanguage[g._config[
@@ -106,7 +108,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: L'Error
     """
-    return render_template("home_404.html"), 404
+    return "Nisch da", 404  # render_template("home_404.html"), 404
 
 
 @app.errorhandler(500)
@@ -171,12 +173,11 @@ def backend():
 # Database models
 import model.SQLAlchemy.models
 
-# Survey Frontend, what DataSubject sees
-import api.v1.SurveyFrontend
-import api.v1.Verification
-
-# Auth related pages like login, registration
-import api.v1.Auth
+import api.v2.question
+import api.v2.session
+import api.v2.dataclient
+import api.v2.questionnaire
+import api.v2.dimension
 
 # CLI commands
 import cli
