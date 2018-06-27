@@ -129,10 +129,10 @@ class ConcreteQuestionResource(Resource):
             setattr(question, k, v)
         db.session.commit()
 
-        data = DimensionSchema().dump(dimension).data
+        data = QuestionSchema().dump(question).data
         response = {
             'message': 'Question created.',
-            'dimension': data
+            'question': data
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -165,10 +165,10 @@ class ShadowQuestionResource(Resource):
         dimension.add_shadow_question(question)
         db.session.commit()
 
-        data = DimensionSchema().dump(dimension).data
+        data = QuestionSchema().dump(question).data
         return {
             'message': 'Question created.',
-            'dimension': data
+            'question': data
         }, 201
 
 

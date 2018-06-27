@@ -124,10 +124,10 @@ class ConcreteDimensionResource(Resource):
             setattr(dimension, k, v)
         db.session.commit()
 
-        data = QuestionnaireSchema().dump(questionnaire).data
+        data = DimensionSchema().dump(dimension).data
         response = {
             'message': 'Dimension created.',
-            'questionnaire': data
+            'dimension': data
         }
         if errors:
             response['message'] += ' Some errors occurred.'
@@ -163,10 +163,10 @@ class ShadowDimensionResource(Resource):
         questionnaire.add_shadow_dimension(dimension)
         db.session.commit()
 
-        data = QuestionnaireSchema().dump(questionnaire).data
+        data = DimensionSchema().dump(dimension).data
         return {
             'message': 'Dimension created.',
-            'questionnaire': data
+            'dimension': data
         }
 
 
