@@ -4,29 +4,35 @@ import {boolean, withKnobs} from "@storybook/addon-knobs";
 import {action} from "@storybook/addon-actions";
 import StoryRouter from "storybook-vue-router";
 
-import Question from "../components/Partials/SurveyBase/Question";
+import Questionnaire from "../components/Partials/SurveyBase/Questionnaire";
 import Dialog from "../components/Partials/Modal/Dialog";
+import CreateQuestion from "../components/Partials/Modal/CreateQuestion";
+import CreateDimension from "../components/Partials/Modal/CreateDimension";
 
 import store from "./Fixtures/TestStore";
 
-storiesOf('Question', module)
+storiesOf('Questionnaire', module)
     .addDecorator(StoryRouter())
     .addDecorator(withKnobs)
     .addDecorator(() => ({
         components: {
-            Dialog
+            Dialog,
+            CreateQuestion,
+            CreateDimension
         },
         template: '<div style="display: grid; justify-items: center; grid-row-gap: 50px">' +
         '   <div v-for="n in 10" :style="{\'min-width\': `${100 * n + 50}px`}">' +
         '       {{ 100 * n + 50 }}px: <story/>' +
         '   </div>' +
         '   <Dialog />' +
+        '   <CreateQuestion />' +
+        '   <CreateDimension />' +
         '</div>',
         store
     }))
     .add('basic', () => ({
         components: {
-            Question
+            Questionnaire
         },
         data() {
             return {
@@ -34,11 +40,11 @@ storiesOf('Question', module)
             }
         },
         computed: {
-            ...mapGetters("questions", ["question"])
+            ...mapGetters("questionnaires", ["questionnaire"])
         },
-        template: '<Question :question="question" :show-link="showLink" @question-delete="questionDelete"/>',
+        template: '<Questionnaire :questionnaire="questionnaire" :show-link="showLink" @questionnaire-delete="questionnaireDelete"/>',
         store,
         methods: {
-            questionDelete: action("question-delete")
+            questionnaireDelete: action("questionnaire-delete")
         }
     }));

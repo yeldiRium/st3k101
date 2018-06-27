@@ -4,29 +4,32 @@ import {boolean, withKnobs} from "@storybook/addon-knobs";
 import {action} from "@storybook/addon-actions";
 import StoryRouter from "storybook-vue-router";
 
-import Question from "../components/Partials/SurveyBase/Question";
+import Dimension from "../components/Partials/SurveyBase/Dimension";
 import Dialog from "../components/Partials/Modal/Dialog";
+import CreateQuestion from "../components/Partials/Modal/CreateQuestion";
 
 import store from "./Fixtures/TestStore";
 
-storiesOf('Question', module)
+storiesOf('Dimension', module)
     .addDecorator(StoryRouter())
     .addDecorator(withKnobs)
     .addDecorator(() => ({
         components: {
-            Dialog
+            Dialog,
+            CreateQuestion
         },
         template: '<div style="display: grid; justify-items: center; grid-row-gap: 50px">' +
         '   <div v-for="n in 10" :style="{\'min-width\': `${100 * n + 50}px`}">' +
         '       {{ 100 * n + 50 }}px: <story/>' +
         '   </div>' +
         '   <Dialog />' +
+        '   <CreateQuestion />' +
         '</div>',
         store
     }))
     .add('basic', () => ({
         components: {
-            Question
+            Dimension
         },
         data() {
             return {
@@ -34,11 +37,11 @@ storiesOf('Question', module)
             }
         },
         computed: {
-            ...mapGetters("questions", ["question"])
+            ...mapGetters("dimensions", ["dimension"])
         },
-        template: '<Question :question="question" :show-link="showLink" @question-delete="questionDelete"/>',
+        template: '<Dimension :dimension="dimension" :show-link="showLink" @dimension-delete="dimensionDelete"/>',
         store,
         methods: {
-            questionDelete: action("question-delete")
+            dimensionDelete: action("dimension-delete")
         }
     }));
