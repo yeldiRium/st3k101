@@ -1,4 +1,4 @@
-import {__, allPass, has, map} from "ramda";
+import {__, allPass, ascend, has, map, prop, sort} from "ramda";
 import Future from "fluture";
 
 import Language from "../../model/Language";
@@ -28,8 +28,10 @@ const store = {
         fetchLanguages({commit}) {
             return fetchLanguages()
                 .chain(languages => {
-                    commit("setLanguages", languages);
-                    return Future.of(languages);
+                    const byShortName = ascend(prop("shortName"));
+                    const sortedLanguages = sort(byShortName, languages);
+                    commit("setLanguages", sortedLanguages);
+                    return Future.of(sortedLanguages);
                 });
         }
     },
