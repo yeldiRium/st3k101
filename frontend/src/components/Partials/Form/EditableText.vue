@@ -21,18 +21,22 @@
             </button>
         </div>
         <div class="editable-text__text"
-             :class="{'editable-text__text--ellipse': ellipseText}"
+             :class="{'editable-text__text--ellipse': ellipseText, 'editable-text__text--editLeft': editLeft}"
              v-else
         >
-            <span>
+            <span v-if="!editLeft">
                 {{ value }}
             </span>
-            <IconEdit class="editable-text__edit-icon"
-                      height="1em"
-                      width="1em"
-                      viewBox="0 0 24 24"
-                      @click.native.prevent.stop="startEditing"
+            <IconEdit
+                    class="editable-text__edit-icon"
+                    height="1em"
+                    width="1em"
+                    viewBox="0 0 24 24"
+                    @click.native.prevent.stop="startEditing"
             />
+            <span v-if="editLeft">
+                {{ value }}
+            </span>
         </div>
     </div>
 </template>
@@ -54,6 +58,10 @@
                 default: false
             },
             textArea: {
+                type: Boolean,
+                default: false
+            },
+            editLeft: {
                 type: Boolean,
                 default: false
             }
@@ -106,6 +114,10 @@
                 span {
                     @include ellipse();
                 }
+            }
+
+            &--editLeft {
+                grid-template-columns: 1em 1fr;
             }
         }
 

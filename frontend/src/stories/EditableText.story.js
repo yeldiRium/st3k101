@@ -23,4 +23,19 @@ storiesOf('EditableText', module)
         methods: {
             action: action("text-edited")
         }
+    }))
+    .add('basic edit left', () => ({
+        components: {
+            EditableText
+        },
+        data() {
+            return {
+                text: "This text is editable and has its button on the left",
+                textArea: boolean("TextArea", false)
+            }
+        },
+        template: '<EditableText v-model="text" @input="action" :textArea="textArea" :edit-left="true" />',
+        methods: {
+            action: action("text-edited")
+        }
     }));
