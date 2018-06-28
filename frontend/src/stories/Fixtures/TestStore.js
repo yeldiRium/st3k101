@@ -6,9 +6,7 @@ import {
     initialize as initializeGlobalStore,
     store as global
 } from "../../store/modules/Global";
-import {byShortName} from "../../model/Language";
-
-import Language, {LanguageData} from "../../model/Language";
+import Language, {byShortName, LanguageData} from "../../model/Language";
 import DataClient from "../../model/DataClient";
 import Range from "../../model/SurveyBase/Config/Range";
 import {
@@ -27,6 +25,15 @@ const spanish = new Language("es", "Espanol");
 const italian = new Language("it", "Italiano");
 const japanese = new Language("jp", "Japanese");
 const chinese = new Language("ch", "Chinese");
+
+const languages = sort(byShortName, [
+    english,
+    german,
+    spanish,
+    italian,
+    japanese,
+    chinese
+]);
 
 const languageData = new LanguageData(
     english,
@@ -114,14 +121,7 @@ const store = new Vuex.Store({
         language: {
             namespaced: true,
             state: {
-                languages: sort(byShortName, [
-                    english,
-                    german,
-                    spanish,
-                    italian,
-                    japanese,
-                    chinese
-                ])
+                languages
             },
             actions: {
                 fetchLanguages: action("languages-fetched")
