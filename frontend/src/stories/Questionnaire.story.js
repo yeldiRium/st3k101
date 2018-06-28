@@ -27,7 +27,7 @@ storiesOf('Questionnaire', module)
             TranslateQuestionnaire
         },
         template: '<div style="display: grid; justify-items: center; grid-row-gap: 50px">' +
-        '   <div v-for="n in 10" :style="{\'min-width\': `${100 * n + 50}px`}">' +
+        '   <div v-for="n in 10" :style="{\'width\': `${100 * n + 50}px`}">' +
         '       {{ 100 * n + 50 }}px: <story/>' +
         '   </div>' +
         '   <Dialog />' +
