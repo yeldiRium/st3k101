@@ -15,6 +15,7 @@ import {
     ConcreteQuestion,
     ShadowQuestion
 } from "../../model/SurveyBase/Question";
+import {Resource} from "../../model/Resource";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -46,6 +47,17 @@ function parseLanguageData({
         parseLanguage(original_language),
         map(parseLanguage, available_languages)
     );
+}
+
+/**
+ * Parses a simple resource.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @returns {Resource}
+ */
+function parseResource({href, id}) {
+    return new Resource(href, id);
 }
 
 /**
@@ -114,7 +126,7 @@ function parseQuestionnaire(data) {
  * @param {Object} original_language
  * @param {Array} available_languages
  * @param {Array} qac_modules TODO: handle QAC modules
- * @param {String} shadow_href TODO: this should be full object
+ * @param {Object} reference_to
  *
  * @return {ShadowQuestionnaire}
  */
@@ -132,7 +144,7 @@ function parseShadowQuestionnaire({
                                       original_language,
                                       available_languages,
                                       qac_modules,
-                                      shadow_href
+                                      reference_to
                                   }) {
     return new ShadowQuestionnaire(
         href,
@@ -149,7 +161,7 @@ function parseShadowQuestionnaire({
         allow_embedded,
         xapi_target,
         map(parseDimension, dimensions),
-        null // TODO: set once API is adjusted to output referenceTo
+        parseResource(reference_to)
     )
 }
 
@@ -237,7 +249,7 @@ function parseDimension(data) {
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
- * @param {String} shadow_href TODO: this should be full object
+ * @param {Object} reference_to
  *
  * @return {ShadowDimension}
  */
@@ -251,7 +263,7 @@ function parseShadowDimension({
                                   current_language,
                                   original_language,
                                   available_languages,
-                                  shadow_href
+                                  reference_to
                               }) {
     return new ShadowDimension(
         href,
@@ -265,7 +277,7 @@ function parseShadowDimension({
         name,
         map(parseQuestion, questions),
         randomize_question_order,
-        null // TODO: set reference_to correctly
+        parseResource(reference_to)
     );
 }
 
@@ -342,7 +354,7 @@ function parseQuestion(data) {
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
- * @param {String} shadow_href TODO: this should be full object
+ * @param {Object} reference_to
  *
  * @return {ShadowQuestion}
  */
@@ -356,7 +368,7 @@ function parseShadowQuestion({
                                  current_language,
                                  original_language,
                                  available_languages,
-                                 shadow_href
+                                 reference_to
                              }) {
     return new ShadowQuestion(
         href,
@@ -369,7 +381,7 @@ function parseShadowQuestion({
         }),
         text,
         new Range({start: range_start, end: range_end}),
-        null // TODO: set reference_to correctly
+        parseResource(reference_to)
     );
 }
 
