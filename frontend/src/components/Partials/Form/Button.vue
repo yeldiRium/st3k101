@@ -145,6 +145,7 @@
 
         display: grid;
         grid-template-areas: "content";
+        grid-template-columns: fit-content(0px);
 
         &__content {
             grid-area: content;
@@ -152,6 +153,8 @@
 
             text-align: center;
             padding: 0.3em 0.5em 0.3em 0.5em;
+
+            white-space: nowrap;
         }
 
         &__ripple {
