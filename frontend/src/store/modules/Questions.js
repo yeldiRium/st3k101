@@ -169,21 +169,7 @@ const store = {
             return updateQuestion(question, correctLanguage, params)
                 .chain(result =>
                     dispatch("patchQuestionInStore", {question: result})
-                )
-                // TODO: remove this
-                // Patches the question manually and incredibly stupidly
-                // just so that the app seems to work without the api.
-                .chainRej(error => {
-                    for (const key in params) {
-                        if (!isNil(question[key])) {
-                            question[key] = params[key];
-                        }
-                    }
-                    // This dispatch isn't technically necessary, since the
-                    // object is mutated directly above, but it let's us use the
-                    // devtools while playing around without api.
-                    return dispatch("patchQuestionInStore", {question});
-                });
+                );
         }
     },
     mutations: {
