@@ -39,20 +39,20 @@
              v-if="expanded"
              ref="dropdown"
         >
+            <span class="questionnaire__table-label">
+                References:
+            </span>
             <ReferenceCounter :object="dimension"
                               v-if="dimension.isConcrete"
             />
 
+            <span class="questionnaire__table-label">
+                Randomize Question order:
+            </span>
             <Toggle :value="dimension.randomizeQuestions"
                     :disabled="!isOwnedByCurrentDataClient(dimension)"
                     @input="updateRandomizeQuestions"
             >
-                <template slot="off">
-                    in order
-                </template>
-                <template slot="on">
-                    randomize
-                </template>
             </Toggle>
 
             <div class="dimension__questions">
@@ -394,28 +394,34 @@
         }
 
         &__body {
-            display: flex;
-            flex-flow: column;
-            align-items: center;
+            padding: 0.5em 2em 0.5em 0;
 
-            > * {
-                width: 95%;
-                margin-top: 8px;
-                margin-bottom: 8px;
-            }
+            display: grid;
+            grid-template-columns: minmax(max-content, 1fr) 5fr;
+            grid-row-gap: 0.5em;
+            align-items: center;
 
             > *:not(.dimension__questions) {
                 text-align: center;
             }
         }
 
+        &__table-label {
+            padding: 0 0.5em 0 0.5em;
+        }
+
         &__questions {
+            width: 100%;
+
             display: flex;
             flex-flow: column;
+
+            grid-column: 1 / span 2;
         }
 
         &__buttons {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
 
             margin-bottom: 8px;

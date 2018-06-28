@@ -38,9 +38,16 @@
              v-if="expanded"
              ref="dropdown"
         >
+            <span class="questionnaire__table-label">
+                References:
+            </span>
             <ReferenceCounter :object="question"
                               v-if="question.isConcrete"
             />
+
+            <span class="questionnaire__table-label">
+                Range:
+            </span>
             <template>
                 <RangeEditor :value="question.range"
                              @input="updateRange"
@@ -309,28 +316,26 @@
         }
 
         &__body {
-            width: 80%;
-            align-self: center;
+            padding: 0.5em 2em 0.5em 0;
 
-            display: flex;
-            flex-flow: column;
+            display: grid;
+            grid-template-columns: minmax(max-content, 1fr) 5fr;
+            grid-row-gap: 0.5em;
             align-items: center;
 
             > * {
-                width: 100%;
-                text-align: center;
-                margin-top: 8px;
-                margin-bottom: 8px;
-            }
-
-            .reference-counter {
-                margin-bottom: 8px;
+                text-align: center
             }
 
         }
 
+        &__table-label {
+            padding: 0 0.5em 0 0.5em;
+        }
+
         &__buttons {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
 
             margin-bottom: 8px;
