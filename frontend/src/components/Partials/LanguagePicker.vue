@@ -140,7 +140,7 @@
                 this.menuOpen = true;
                 this.filterString = "";
                 this.recomputeHack++;
-                
+
                 this.$nextTick(() => {
                     this.$refs.filter.focus();
                 });
