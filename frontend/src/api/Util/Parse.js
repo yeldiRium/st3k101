@@ -182,6 +182,8 @@ function parseShadowQuestionnaire({
  * @param {Object} original_language
  * @param {Array} available_languages
  * @param {Array} qac_modules TODO: handle QAC modules
+ * @param {Array} owned_incoming_references
+ * @param {Number} incoming_reference_count
  *
  * @return {ConcreteQuestionnaire}
  */
@@ -199,7 +201,9 @@ function parseConcreteQuestionnaire({
                                         current_language,
                                         original_language,
                                         available_languages,
-                                        qac_modules
+                                        qac_modules,
+                                        owned_incoming_references,
+                                        incoming_reference_count
                                     }) {
     return new ConcreteQuestionnaire(
         href,
@@ -217,8 +221,8 @@ function parseConcreteQuestionnaire({
         allow_embedded,
         xapi_target,
         map(parseDimension, dimensions),
-        0,
-        []
+        incoming_reference_count,
+        map(parseResource, owned_incoming_references)
     );
 }
 
@@ -294,6 +298,8 @@ function parseShadowDimension({
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
+ * @param {Array} owned_incoming_references
+ * @param {Number} incoming_reference_count
  *
  * @return {ConcreteDimension}
  */
@@ -307,7 +313,9 @@ function parseConcreteDimension({
                                     template,
                                     current_language,
                                     original_language,
-                                    available_languages
+                                    available_languages,
+                                    owned_incoming_references,
+                                    incoming_reference_count
                                 }) {
     return new ConcreteDimension(
         href,
@@ -322,8 +330,8 @@ function parseConcreteDimension({
         name,
         map(parseQuestion, questions),
         randomize_question_order,
-        0,
-        []
+        incoming_reference_count,
+        map(parseResource, owned_incoming_references)
     );
 }
 
@@ -398,6 +406,8 @@ function parseShadowQuestion({
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
+ * @param {Array} owned_incoming_references
+ * @param {Number} incoming_reference_count
  *
  * @return {ConcreteQuestion}
  */
@@ -411,7 +421,9 @@ function parseConcreteQuestion({
                                    template,
                                    current_language,
                                    original_language,
-                                   available_languages
+                                   available_languages,
+                                        owned_incoming_references,
+                                        incoming_reference_count
                                }) {
     return new ConcreteQuestion(
         href,
@@ -425,8 +437,8 @@ function parseConcreteQuestion({
         template,
         text,
         new Range({start: range_start, end: range_end}),
-        0,
-        []
+        incoming_reference_count,
+        map(parseResource, owned_incoming_references)
     );
 }
 
