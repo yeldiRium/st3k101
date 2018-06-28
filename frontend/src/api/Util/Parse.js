@@ -162,7 +162,7 @@ function parseShadowQuestionnaire({
         xapi_target,
         map(parseDimension, dimensions),
         parseResource(reference_to)
-    )
+    );
 }
 
 /**
@@ -219,7 +219,7 @@ function parseConcreteQuestionnaire({
         map(parseDimension, dimensions),
         0,
         []
-    )
+    );
 }
 
 /**
@@ -324,7 +324,7 @@ function parseConcreteDimension({
         randomize_question_order,
         0,
         []
-    )
+    );
 }
 
 /**
@@ -427,7 +427,7 @@ function parseConcreteQuestion({
         new Range({start: range_start, end: range_end}),
         0,
         []
-    )
+    );
 }
 
 export {
