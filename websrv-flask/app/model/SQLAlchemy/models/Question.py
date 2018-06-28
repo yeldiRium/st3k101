@@ -221,5 +221,9 @@ class ShadowQuestion(Question):
         return self._referenced_object.text_translations
 
     @property
-    def range(self) -> int:
-        return self._referenced_object.range
+    def range_start(self) -> int:
+        return self._referenced_object.range_start
+
+    @property
+    def range_end(self) -> int:
+        return self._referenced_object.range_end
