@@ -2,7 +2,7 @@
     <div class="authentication"
          :style="style"
     >
-        <div class="authentication__login elevation-12"
+        <div class="authentication__login"
              v-if="isLogin"
         >
             <div class="authentication__title">
@@ -308,8 +308,8 @@
         &__register, &__login {
             grid-area: content;
 
-            border-radius: 15px;
-            padding: 15px;
+            //border-radius: 15px;
+            //padding: 15px;
 
             display: grid;
             grid-template-columns: 100%;
