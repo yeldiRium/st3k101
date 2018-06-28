@@ -18,7 +18,7 @@ class SurveyBaseSchema(RESTFulSchema):
     current_language = fields.Method('get_current_language', dump_only=True)
     available_languages = fields.List(enum_field(BabelLanguage), dump_only=True)
     shadow = fields.Boolean(dump_only=True)
-    shadow_href = fields.Method('build_shadow_href', dump_only=True)
+    reference_to = fields.Method('build_reference_to', dump_only=True)
     owners = fields.Nested(DataClientSchema(only=("id", "href")), many=True,
                            dump_only=True)
 
@@ -31,7 +31,10 @@ class SurveyBaseSchema(RESTFulSchema):
             'value': current_language.value
         }
 
-    def build_shadow_href(self, obj: SurveyBase):
+    def build_reference_to(self, obj: SurveyBase):
         if not obj.shadow:
             return missing
-        return super(SurveyBaseSchema, self).build_href(obj.concrete)
+        return {
+            "href": super(SurveyBaseSchema, self).build_href(obj.concrete),
+            "id": obj.concrete.id
+        }
