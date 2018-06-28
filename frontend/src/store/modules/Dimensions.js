@@ -14,7 +14,7 @@ import Future from "fluture";
 import {
     addConcreteQuestion,
     addShadowQuestion,
-    fetchDimension,
+    fetchDimension, fetchDimensionById,
     removeQuestion,
     updateDimension
 } from "../../api/Dimension";
@@ -49,7 +49,7 @@ const store = {
                 return dimension;
             }
         },
-        dimensionByHref(state) {
+        dimensionByHref(state, getters, rootState, rootGetters) {
             return function (href) {
                 const dimension = clone(find(
                     dimension => dimension.href === href,

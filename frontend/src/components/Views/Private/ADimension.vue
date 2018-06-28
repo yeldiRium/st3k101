@@ -41,7 +41,7 @@
                 ).fork(
                     this.$handleApiError,
                     dimension => {
-                        this.dimension = dimension;
+                        this.dimension = this.dimensionById(dimension.id);
                     }
                 );
             }

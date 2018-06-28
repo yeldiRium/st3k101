@@ -28,8 +28,7 @@
             };
         },
         created() {
-            this.questionnaire = this
-                .questionnaireById(this.$route.params.id);
+            this.questionnaire = this.questionnaireById(this.$route.params.id);
 
             if (isNil(this.questionnaire)) {
                 this.$load(
@@ -42,7 +41,8 @@
                 ).fork(
                     this.$handleApiError,
                     questionnaire => {
-                        this.questionnaire = questionnaire;
+                        this.questionnaire = this
+                            .questionnaireById(questionnaire.id);
                     }
                 );
             }

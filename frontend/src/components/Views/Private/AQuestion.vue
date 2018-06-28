@@ -12,6 +12,7 @@
 </template>
 
 <script>
+    import {isNil} from "ramda";
     import {mapGetters, mapState} from "vuex-fluture";
 
     import Question from "../../Partials/SurveyBase/Question";
@@ -40,7 +41,7 @@
                 ).fork(
                     this.$handleApiError,
                     question => {
-                        this.question = question;
+                        this.question = this.questionById(question.id);
                     }
                 );
             }

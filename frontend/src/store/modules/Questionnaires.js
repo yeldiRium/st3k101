@@ -70,7 +70,7 @@ const store = {
             }
             return [];
         },
-        questionnaireById(state) {
+        questionnaireById(state, getters, rootState, rootGetters) {
             return function (id) {
                 const questionnaire = clone(find(
                     questionnaire => questionnaire.id === id,
@@ -88,7 +88,7 @@ const store = {
                 return questionnaire;
             }
         },
-        questionnaireByHref(state) {
+        questionnaireByHref(state, getters, rootState, rootGetters) {
             return function (href) {
                 const questionnaire = clone(find(
                     questionnaire => questionnaire.href === href,
