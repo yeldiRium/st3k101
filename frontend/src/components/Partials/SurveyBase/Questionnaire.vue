@@ -221,6 +221,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -278,6 +279,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -296,6 +298,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -314,6 +317,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -329,6 +333,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -344,6 +349,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -359,6 +365,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -403,6 +410,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
@@ -421,6 +429,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
+                        this.$emit("updated");
                     }
                 );
             },
