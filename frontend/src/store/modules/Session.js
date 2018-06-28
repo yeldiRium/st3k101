@@ -177,9 +177,6 @@ const store = {
 /**
  * Initializes this store's content.
  *
- * Since actions encase their return value in a resolved Promise (if the value
- * isn't a Promise itself), the Promise's resolving value has to be untangled.
- *
  * Loads a SessionToken from cookie - it one exists.
  * If so, checks, if it is still valid.
  * If so, fetches the according DataClient.

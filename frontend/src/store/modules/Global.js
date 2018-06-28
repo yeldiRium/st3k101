@@ -38,9 +38,6 @@ export default store;
 /**
  * Initializes this store's content.
  *
- * Since actions encase their return value in a resolved Promise (if the value
- * isn't a Promise itself), the Promise's resolving value has to be untangled.
- *
  * @param rootStore The instantiated store.
  * @param namespace The namespace in which this store resides.
  * @return a Future
