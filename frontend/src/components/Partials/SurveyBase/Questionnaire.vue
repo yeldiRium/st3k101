@@ -10,7 +10,8 @@
                   :disabled="!isEditable(questionnaire)"
                   @input="updateQuestionnaireName"
         >
-            <router-link :to="{name: 'AQuestionnaire', params: {id: questionnaire.id}}">
+            <router-link
+                    :to="{name: 'AQuestionnaire', params: {id: questionnaire.id}}">
                 <IconLink class="list-item__icon"
                           v-if="showLink"
                 />
@@ -39,47 +40,52 @@
              v-if="expanded"
              ref="dropdown"
         >
+            <span class="questionnaire__table-label">
+                References:
+            </span>
             <ReferenceCounter :object="questionnaire"
                               v-if="questionnaire.isConcrete"
             />
 
+            <span class="questionnaire__table-label">
+                Description:
+            </span>
             <template>
                 <EditableText v-if="questionnaire.isConcrete"
                               :value="questionnaire.description"
                               @input="updateDescription"
-                              :textArea="true"
+                              :text-area="true"
+                              :edit-left="true"
                 />
                 <div v-else>
                     {{ questionnaire.description }}
                 </div>
             </template>
 
+            <span class="questionnaire__table-label">
+                Published:
+            </span>
             <Toggle :value="questionnaire.isPublic"
                     :disabled="!isOwnedByCurrentDataClient(questionnaire)"
                     @input="updateIsPublic"
             >
-                <template slot="off">
-                    locked
-                </template>
-                <template slot="on">
-                    published
-                </template>
             </Toggle>
 
+            <span class="questionnaire__table-label">
+                Allow Embedding:
+            </span>
             <Toggle :value="questionnaire.allowEmbedded"
                     :disabled="!isOwnedByCurrentDataClient(questionnaire)"
                     @input="updateAllowEmbedded"
             >
-                <template slot="off">
-                    only in browser
-                </template>
-                <template slot="on">
-                    allow embedding
-                </template>
             </Toggle>
 
+            <span class="questionnaire__table-label">
+                XAPI Target:
+            </span>
             <EditableText :value="questionnaire.xapiTarget"
                           @input="updateXapiTarget"
+                          :edit-left="true"
             />
 
             <div class="questionnaire__dimensions">
@@ -477,28 +483,34 @@
         }
 
         &__body {
-            display: flex;
-            flex-flow: column;
-            align-items: center;
+            padding: 0.5em 2em 0.5em 0;
 
-            > * {
-                width: 95%;
-                margin-top: 8px;
-                margin-bottom: 8px;
-            }
+            display: grid;
+            grid-template-columns: minmax(max-content, 1fr) 5fr;
+            grid-row-gap: 0.5em;
+            align-items: center;
 
             > *:not(.questionnaire__dimensions) {
                 text-align: center;
             }
         }
 
+        &__table-label {
+            padding: 0 0.5em 0 0.5em;
+        }
+
         &__dimensions {
+            width: 100%;
+
             display: flex;
             flex-flow: column;
+
+            grid-column: 1 / span 2;
         }
 
         &__buttons {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
 
             margin-bottom: 8px;

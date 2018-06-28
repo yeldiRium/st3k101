@@ -139,10 +139,14 @@
         justify-items: center;
 
         &__questionnaires {
+            width: 100%;
+
             display: grid;
             grid-template-columns: 100%;
             grid-auto-flow: row;
             grid-row-gap: 0.5em;
+
+            justify-items: center;
         }
 
         &__buttons {
