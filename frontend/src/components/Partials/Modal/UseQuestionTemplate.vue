@@ -52,6 +52,15 @@
                     throw new Error("Parameter handler required!");
                 }
                 this.handler = handler;
+
+                this.$load(
+                    this.$store.dispatch("questions/fetchQuestionTemplates", {})
+                )
+                    .fork(
+                        this.$handleApiError,
+                        () => {
+                        }
+                    );
             },
             cancel() {
                 this.$modal.hide("modal-use-question-template");

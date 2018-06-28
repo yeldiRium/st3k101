@@ -31,6 +31,7 @@
     import {isNil} from "ramda";
 
     import Button from "../Form/Button";
+    import {fetchQuestionnaireTemplates} from "../../../api/Questionnaire";
 
     export default {
         name: "ModalUseQuestionnaireTemplate",
@@ -52,6 +53,15 @@
                     throw new Error("Parameter handler required!");
                 }
                 this.handler = handler;
+
+                this.$load(
+                    this.$store.dispatch("questionnaires/fetchQuestionnaireTemplates", {})
+                )
+                    .fork(
+                        this.$handleApiError,
+                        () => {
+                        }
+                    );
             },
             cancel() {
                 this.$modal.hide("modal-use-questionnaire-template");
