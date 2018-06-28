@@ -89,7 +89,7 @@ function fetchQuestionTemplates(language = null) {
  */
 function updateQuestion(question, language, params) {
     let parsedParams = clone(params);
-    if (has("range"), params) {
+    if (has("range", params)) {
        parsedParams = dissoc("range", parsedParams);
        parsedParams = assoc(
            "range_start",
