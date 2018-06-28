@@ -80,7 +80,17 @@
                 );
             },
             useQuestionnaireTemplate({questionnaire}) {
-                console.log(questionnaire);
+                this.$load(
+                    this.$store.dispatch(
+                        "questionnaires/createShadowQuestionnaire",
+                        {concreteQuestionnaire: questionnaire}
+                    )
+                )
+                    .fork(
+                        this.$handleApiError,
+                        () => {
+                        }
+                    );
             },
             openNewQuestionnaireDialog() {
                 this.$modal.show(
