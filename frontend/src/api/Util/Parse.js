@@ -2,6 +2,7 @@ import {map, prop} from "ramda";
 
 import {Language, LanguageData} from "../../model/Language";
 import DataClient from "../../model/DataClient";
+import Range from "../../model/SurveyBase/Config/Range";
 import {
     ConcreteQuestionnaire,
     ShadowQuestionnaire
@@ -14,7 +15,6 @@ import {
     ConcreteQuestion,
     ShadowQuestion
 } from "../../model/SurveyBase/Question";
-import Range from "../../model/SurveyBase/Config/Range";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -314,17 +314,6 @@ function parseConcreteDimension({
 }
 
 /**
- * Parses a range.
- *
- * @param {Number} end
- *
- * @returns {Range}
- */
-function parseRange(end) {
-    return new Range({end})
-}
-
-/**
  * Parses the common API representation of a Question and recognizes, whe-
  * ther it is a ShadowQuestion or a ConcreteQuestion.
  *
@@ -345,7 +334,8 @@ function parseQuestion(data) {
  * @param {String} id
  * @param {Array} owners
  * @param {String} text
- * @param {Number} range TODO: currently only a number, should be an object or sth in the future
+ * @param {Number} range_start
+ * @param {Number} range_end
  * @param {Boolean} template
  * @param {Object} current_language
  * @param {Object} original_language
@@ -358,7 +348,8 @@ function parseShadowQuestion({
                                  id,
                                  owners,
                                  text,
-                                 range,
+                                 range_start,
+                                 range_end,
                                  template, // TODO: do something with this
                                  current_language,
                                  original_language,
@@ -374,7 +365,7 @@ function parseShadowQuestion({
             available_languages
         }),
         text,
-        map(parseRange, range),
+        new Range({start: range_start, end: range_end}),
         null // TODO: set reference_to correctly
     );
 }
@@ -386,7 +377,8 @@ function parseShadowQuestion({
  * @param {String} id
  * @param {Array} owners
  * @param {String} text
- * @param {Number} range TODO: currently only a number, should be an object or sth in the future
+ * @param {Number} range_start
+ * @param {Number} range_end
  * @param {Boolean} template
  * @param {Object} current_language
  * @param {Object} original_language
@@ -399,7 +391,8 @@ function parseConcreteQuestion({
                                    id,
                                    owners,
                                    text,
-                                   range,
+                                   range_start,
+                                   range_end,
                                    template, // TODO: do something with this
                                    current_language,
                                    original_language,
@@ -415,7 +408,7 @@ function parseConcreteQuestion({
             available_languages
         }),
         text,
-        parseRange(range),
+        new Range({start: range_start, end: range_end}),
         0, // TODO: set once API is adjusted to output incomingReferenceCount
         [] // TODO: set once API is adjusted to output ownedIncomingReferences
     )

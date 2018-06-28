@@ -335,7 +335,7 @@ const store = {
                         }
                     );
                     return dispatch(
-                        "quesitons/removeQuestionFromStore",
+                        "questions/removeQuestionFromStore",
                         {question},
                         {root: true}
                     );

@@ -1,5 +1,5 @@
 import Future from "fluture";
-import {contains, pipe, prop} from "ramda";
+import {assoc, clone, contains, dissoc, has, pipe, prop} from "ramda";
 
 import {fetchApi} from "./Util/Request";
 import {extractJson} from "./Util/Response";
@@ -66,12 +66,27 @@ function fetchQuestionById(id, language = null) {
  * @cancel
  */
 function updateQuestion(question, language, params) {
+    let parsedParams = clone(params);
+    if (has("range"), params) {
+       parsedParams = dissoc("range", parsedParams);
+       parsedParams = assoc(
+           "range_start",
+           params["range"].start,
+           parsedParams
+       );
+       parsedParams = assoc(
+           "range_end",
+           params["range"].end,
+           parsedParams
+       );
+    }
+
     return fetchApi(
         question.href,
         {
             method: "PATCH",
             authenticate: true,
-            body: JSON.stringify(params),
+            body: JSON.stringify(parsedParams),
             language
         }
     )

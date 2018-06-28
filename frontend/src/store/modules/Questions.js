@@ -124,7 +124,7 @@ const store = {
 
             return updateQuestion(question, correctLanguage, params)
                 .chain(result =>
-                    dispatch("patchQuestionInStore", {result})
+                    dispatch("patchQuestionInStore", {question: result})
                 )
                 // TODO: remove this
                 // Patches the question manually and incredibly stupidly

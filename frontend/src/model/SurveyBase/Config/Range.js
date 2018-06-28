@@ -91,8 +91,8 @@ class Range {
      */
     clone() {
         return new Range({
-            start: this.start,
-            end: this.end
+            start: this._start,
+            end: this._end
         });
     }
 }
