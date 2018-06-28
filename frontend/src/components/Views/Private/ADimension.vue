@@ -7,6 +7,7 @@
                    :style="itemStyle"
                    :initiallyExpanded="true"
                    :showLink="false"
+                   @updated="reloadDimension"
         />
     </div>
 </template>
@@ -28,7 +29,7 @@
             };
         },
         created() {
-            this.dimension = this.dimensionById(this.$route.params.id);
+            this.reloadDimension();
 
             if (isNil(this.dimension)) {
                 this.$load(
@@ -40,8 +41,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    dimension => {
-                        this.dimension = this.dimensionById(dimension.id);
+                    () => {
+                        this.reloadDimension();
                     }
                 );
             }
@@ -58,6 +59,13 @@
                 return {
                     width: width
                 };
+            }
+        },
+        methods: {
+            reloadDimension() {
+                this.dimension = this.dimensionById(
+                    Number(this.$route.params.id)
+                );
             }
         }
     }

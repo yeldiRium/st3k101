@@ -7,6 +7,7 @@
                   :style="itemStyle"
                   :initiallyExpanded="true"
                   :showLink="false"
+                  @updated="reloadQuestion"
         />
     </div>
 </template>
@@ -28,7 +29,7 @@
             };
         },
         created() {
-            this.question = this.questionById(this.$route.params.id);
+            this.reloadQuestion();
 
             if (isNil(this.question)) {
                 this.$load(
@@ -40,8 +41,8 @@
                     )
                 ).fork(
                     this.$handleApiError,
-                    question => {
-                        this.question = this.questionById(question.id);
+                    () => {
+                        this.reloadQuestion();
                     }
                 );
             }
@@ -58,6 +59,13 @@
                 return {
                     width: width
                 };
+            }
+        },
+        methods: {
+            reloadQuestion() {
+                this.question = this.questionById(
+                    Number(this.$route.params.id)
+                );
             }
         }
     }
