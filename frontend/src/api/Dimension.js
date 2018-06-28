@@ -1,5 +1,5 @@
 import Future from "fluture";
-import {contains, pipe, prop, without} from "ramda";
+import {assoc, clone, contains, dissoc, has, pipe, prop, without} from "ramda";
 
 import {fetchApi} from "./Util/Request";
 import {extractJson} from "./Util/Response";
@@ -68,12 +68,22 @@ function fetchDimensionById(id, language = null) {
  * @cancel
  */
 function updateDimension(dimension, language, params) {
+    let parsedParams = clone(params);
+    if (has("randomizeQuestions"), params) {
+       parsedParams = dissoc("randomizeQuestions", parsedParams);
+       parsedParams = assoc(
+           "randomize_question_order",
+           params["randomizeQuestions"],
+           parsedParams
+       );
+    }
+
     return fetchApi(
         dimension.href,
         {
             method: "PATCH",
             authenticate: true,
-            body: JSON.stringify(params),
+            body: JSON.stringify(parsedParams),
             language
         }
     )

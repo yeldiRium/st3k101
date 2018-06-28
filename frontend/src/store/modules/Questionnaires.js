@@ -403,17 +403,18 @@ const store = {
                 );
             }
 
-            return addConcreteDimension(questionnaire, name, randomizeQuestions).chain(concreteDimension => {
-                commit("addDimensionToQuestionnaire", {
-                    questionnaire,
-                    dimension: concreteDimension
-                });
-                return dispatch(
-                    "dimensions/patchDimensionInStore",
-                    {dimension: concreteDimension},
-                    {root: true}
-                );
-            })
+            return addConcreteDimension(questionnaire, name, randomizeQuestions)
+                .chain(concreteDimension => {
+                    commit("addDimensionToQuestionnaire", {
+                        questionnaire,
+                        dimension: concreteDimension
+                    });
+                    return dispatch(
+                        "dimensions/patchDimensionInStore",
+                        {dimension: concreteDimension},
+                        {root: true}
+                    );
+                })
         },
         /**
          * Add a new ShadowDimension to the ConcreteQuestionnaire referencing
@@ -571,9 +572,15 @@ const store = {
          * @param {Dimension} dimension
          */
         addDimensionToQuestionnaire(state, {questionnaire, dimension}) {
-            if (!isNil(questionnaire)) {
-                questionnaire.dimensions.push(dimension.id);
-                questionnaire.dimensions = uniq(questionnaire.dimensions);
+            const questionnaireInStore = find(
+                bind(questionnaire.identifiesWith, questionnaire),
+                state.questionnaires
+            );
+
+            if (!isNil(questionnaireInStore)) {
+                questionnaireInStore.dimensions.push(dimension.id);
+                questionnaireInStore.dimensions =
+                    uniq(questionnaireInStore.dimensions);
             }
         },
         /**
@@ -585,10 +592,15 @@ const store = {
          * @param {Dimension} dimension
          */
         removeDimensionFromQuestionnaire(state, {questionnaire, dimension}) {
-            if (!isNil(questionnaire)) {
-                questionnaire.dimensions = without(
+            const questionnaireInStore = find(
+                bind(questionnaire.identifiesWith, questionnaire),
+                state.questionnaires
+            );
+
+            if (!isNil(questionnaireInStore)) {
+                questionnaireInStore.dimensions = without(
                     [dimension.id],
-                    questionnaire.dimensions
+                    questionnaireInStore.dimensions
                 );
             }
         }

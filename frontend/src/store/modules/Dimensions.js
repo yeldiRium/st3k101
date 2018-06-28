@@ -399,9 +399,14 @@ const store = {
          * @param {Question} question
          */
         addQuestionToDimension(state, {dimension, question}) {
-            if (!isNil(dimension)) {
-                dimension.questions.push(question.id);
-                dimension.questions = uniq(dimension.questions);
+            const dimensionInStore = find(
+                bind(dimension.identifiesWith, dimension),
+                state.dimensions
+            );
+
+            if (!isNil(dimensionInStore)) {
+                dimensionInStore.questions.push(question.id);
+                dimensionInStore.questions = uniq(dimensionInStore.questions);
             }
         },
         /**
@@ -413,10 +418,15 @@ const store = {
          * @param {Question} question
          */
         removeQuestionFromDimension(state, {dimension, question}) {
-            if (!isNil(dimension)) {
-                dimension.questions = without(
+            const dimensionInStore = find(
+                bind(dimension.identifiesWith, dimension),
+                state.dimensions
+            );
+
+            if (!isNil(dimensionInStore)) {
+                dimensionInStore.questions = without(
                     [question.id],
-                    dimension.questions
+                    dimensionInStore.questions
                 );
             }
         }
