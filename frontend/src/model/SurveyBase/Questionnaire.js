@@ -8,6 +8,7 @@ class Questionnaire extends SurveyBase {
      * @param {String} id See Resource.
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
+     * @param {Boolean} template See SurveyBase.
      * @param {string} name The Questionnaire's name.
      * @param {string} description A description for the Questionnaire.
      * @param {boolean} isPublic Whether the Questionnaire can be filled out and
@@ -22,13 +23,14 @@ class Questionnaire extends SurveyBase {
                 id,
                 owners,
                 languageData,
+                template,
                 name,
                 description,
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
                 dimensions) {
-        super(href, id, owners, languageData, false);
+        super(href, id, owners, languageData, template);
 
         this.name = name;
         this.description = description;
@@ -65,6 +67,7 @@ class Questionnaire extends SurveyBase {
             this._id,
             [...this._owners],
             this.languageData.clone(),
+            this.template,
             this.name,
             this.description,
             this.isPublic,
@@ -114,6 +117,7 @@ class ConcreteQuestionnaire extends Questionnaire {
             id,
             owners,
             languageData,
+            template,
             name,
             description,
             isPublic,

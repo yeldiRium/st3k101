@@ -25,7 +25,7 @@ class Question extends SurveyBase {
                 template,
                 text,
                 range) {
-        super(href, id, owners, languageData, false);
+        super(href, id, owners, languageData, template);
 
         this.text = text;
         this.range = range;
@@ -58,7 +58,7 @@ class Question extends SurveyBase {
             this._id,
             [...this._owners],
             this.languageData.clone(),
-            false,
+            this.template,
             this.text,
             this.range.clone()
         );
@@ -131,7 +131,7 @@ class ConcreteQuestion extends Question {
             this._id,
             [...this._owners],
             this.languageData.clone(),
-            false,
+            this.template,
             this.text,
             this.range.clone(),
             this.incomingReferenceCount,
