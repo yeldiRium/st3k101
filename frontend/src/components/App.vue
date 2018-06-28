@@ -11,6 +11,9 @@
         <CreateQuestion/>
         <CreateDimension/>
         <CreateQuestionnaire/>
+        <UseQuestionTemplate/>
+        <UseDimensionTemplate/>
+        <UseQuestionnaireTemplate/>
         <TranslateQuestion/>
         <TranslateDimension/>
         <TranslateQuestionnaire/>
@@ -24,6 +27,9 @@
     import CreateQuestion from "./Partials/Modal/CreateQuestion";
     import CreateDimension from "./Partials/Modal/CreateDimension";
     import CreateQuestionnaire from "./Partials/Modal/CreateQuestionnaire";
+    import UseQuestionTemplate from "./Partials/Modal/UseQuestionTemplate";
+    import UseDimensionTemplate from "./Partials/Modal/UseDimensionTemplate";
+    import UseQuestionnaireTemplate from "./Partials/Modal/UseQuestionnaireTemplate";
     import TranslateQuestion from "./Partials/Modal/TranslateQuestion";
     import TranslateDimension from "./Partials/Modal/TranslateDimension";
     import TranslateQuestionnaire from "./Partials/Modal/TranslateQuestionnaire";
@@ -34,6 +40,9 @@
             CreateQuestion,
             CreateDimension,
             CreateQuestionnaire,
+            UseQuestionTemplate,
+            UseDimensionTemplate,
+            UseQuestionnaireTemplate,
             TranslateQuestion,
             TranslateDimension,
             TranslateQuestionnaire

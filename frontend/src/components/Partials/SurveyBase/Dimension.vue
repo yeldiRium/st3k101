@@ -74,6 +74,11 @@
             >
                 Add new Question
             </Button>
+            <Button v-if="isEditable(dimension)"
+                    @click="openUseQuestionTemplateDialog"
+            >
+                Use Question template
+            </Button>
             <Button v-if="isDeletable(dimension)"
                     @click="deleteDimension"
             >
@@ -266,6 +271,17 @@
                     () => {
                     }
                 );
+            },
+            openUseQuestionTemplateDialog() {
+                this.$modal.show(
+                    "modal-use-question-template",
+                    {
+                        handler: this.useQuestionTemplate
+                    }
+                );
+            },
+            useQuestionTemplate({question}) {
+                console.log(question);
             },
             openNewQuestionDialog() {
                 if (!this.isEditable(this.dimension)) {

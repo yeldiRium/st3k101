@@ -1,17 +1,26 @@
 <template>
     <div class="my-questionnaires">
-        <Questionnaire :style="itemStyle"
-                       v-for="questionnaire in myQuestionnaires"
-                       :key="questionnaire.href"
-                       :questionnaire="questionnaire"
-                       @questionnaire-delete="deleteQuestionnaire(questionnaire)"
-        />
+        <div class="my-questionnaires__questionnaires">
+            <Questionnaire :style="itemStyle"
+                           v-for="questionnaire in myQuestionnaires"
+                           :key="questionnaire.href"
+                           :questionnaire="questionnaire"
+                           @questionnaire-delete="deleteQuestionnaire(questionnaire)"
+            />
+        </div>
 
-        <Button class="my-questionnaires__add-questionnaire-button"
-                @click="openNewQuestionnaireDialog"
-        >
-            Add new Questionnaire
-        </Button>
+        <div class="my-questionnaires__buttons">
+            <Button class="my-questionnaires__add-questionnaire-button"
+                    @click="openNewQuestionnaireDialog"
+            >
+                Add new Questionnaire
+            </Button>
+            <Button class="my-questionnaires__use-template-button"
+                    @click="openUseQuestionnaireTemplateDialog"
+            >
+                Use Questionnaire template
+            </Button>
+        </div>
     </div>
 </template>
 
@@ -61,6 +70,17 @@
                     () => {
                     }
                 )
+            },
+            openUseQuestionnaireTemplateDialog() {
+                this.$modal.show(
+                    "modal-use-questionnaire-template",
+                    {
+                        handler: this.useQuestionnaireTemplate
+                    }
+                );
+            },
+            useQuestionnaireTemplate({questionnaire}) {
+                console.log(questionnaire);
             },
             openNewQuestionnaireDialog() {
                 this.$modal.show(
@@ -117,5 +137,18 @@
         grid-row-gap: 0.5em;
 
         justify-items: center;
+
+        &__questionnaires {
+            display: grid;
+            grid-template-columns: 100%;
+            grid-auto-flow: row;
+            grid-row-gap: 0.5em;
+        }
+
+        &__buttons {
+            display: grid;
+            grid-auto-flow: column;
+            grid-column-gap: 0.5em;
+        }
     }
 </style>

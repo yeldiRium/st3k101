@@ -100,6 +100,11 @@
             >
                 Add new Dimension
             </Button>
+            <Button v-if="isEditable(questionnaire)"
+                    @click="openUseDimensionTemplateDialog"
+            >
+                Use Dimension template
+            </Button>
             <Button v-if="isDeletable(questionnaire)"
                     @click="deleteQuestionnaire"
             >
@@ -350,6 +355,17 @@
                     () => {
                     }
                 );
+            },
+            openUseDimensionTemplateDialog() {
+                this.$modal.show(
+                    "modal-use-dimension-template",
+                    {
+                        handler: this.useDimensionTemplate
+                    }
+                );
+            },
+            useDimensionTemplate({dimension}) {
+                console.log(dimension);
             },
             openNewDimensionDialog() {
                 if (!this.isEditable(this.questionnaire)) {
