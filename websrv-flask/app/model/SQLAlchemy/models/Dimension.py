@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from typing import Dict
 
+from flask import g
+
 from auth.users import current_user
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
@@ -141,6 +143,7 @@ class ConcreteDimension(Dimension):
     text_color = db.Column(db.String(7), nullable=False, default='#000000')
     name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
+    original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
 
     shadow = False
 
@@ -161,6 +164,7 @@ class ConcreteDimension(Dimension):
         self.text_color = color
 
     def __init__(self, name: str, **kwargs):
+        self.original_language = g._language
         super(ConcreteDimension, self).__init__(name=name, **kwargs)
 
     @staticmethod

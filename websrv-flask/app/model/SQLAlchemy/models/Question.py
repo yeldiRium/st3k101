@@ -1,6 +1,8 @@
 from abc import abstractmethod
 from typing import Dict
 
+from flask import g
+
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType, TrackingArg
@@ -150,6 +152,7 @@ class ConcreteQuestion(Question):
 
     reference_id = db.Column(db.String(128))
     range = db.Column(db.SmallInteger, default=10, nullable=False)
+    original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
 
     # translatable columns
     text_translations = db.Column(MUTABLE_HSTORE)
@@ -158,6 +161,7 @@ class ConcreteQuestion(Question):
     shadow = False
 
     def __init__(self, text: str, **kwargs):
+        self.original_language = g._language
         super(ConcreteQuestion, self).__init__(text=text, **kwargs)
 
     @staticmethod
