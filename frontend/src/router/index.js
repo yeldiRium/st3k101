@@ -13,19 +13,6 @@ import AQuestion from "../components/Views/Private/AQuestion";
 import ADimension from "../components/Views/Private/ADimension";
 import AQuestionnaire from "../components/Views/Private/AQuestionnaire";
 
-import TestingBase from "../components/Views/Testing/Base";
-import TestListItem from "../components/Views/Testing/TestListItem";
-import TestQuestion from "../components/Views/Testing/TestQuestion";
-import TestRangeEditor from "../components/Views/Testing/TestRangeEditor";
-import TestPrivateMenuBar from "../components/Views/Testing/TestPrivateMenuBar";
-import TestToggle from "../components/Views/Testing/TestToggle";
-import TestModal from "../components/Views/Testing/TestModal";
-import TestButton from "../components/Views/Testing/TestButton";
-import TestDimension from "../components/Views/Testing/TestDimension";
-import TestEditableText from "../components/Views/Testing/TestEditableText";
-import TestQuestionnaire from "../components/Views/Testing/TestQuestionnaire";
-import TestLoadingSpinnerModal from "../components/Views/Testing/TestLoadingSpinnerModal";
-
 Vue.use(Router);
 
 export default new Router({
@@ -84,58 +71,6 @@ export default new Router({
                     path: "questionnaire/:id",
                     name: "AQuestionnaire",
                     component: AQuestionnaire
-                }
-            ]
-        },
-        {
-            path: "/testing/",
-            name: "Testing",
-            component: TestingBase,
-
-            children: [
-                {
-                    path: "PMB",
-                    component: TestPrivateMenuBar
-                },
-                {
-                    path: "ListItem",
-                    component: TestListItem
-                },
-                {
-                    path: "Question",
-                    component: TestQuestion
-                },
-                {
-                    path: "RangeEditor",
-                    component: TestRangeEditor
-                },
-                {
-                    path: "Toggle",
-                    component: TestToggle
-                },
-                {
-                    path: "Modal",
-                    component: TestModal
-                },
-                {
-                    path: "Button",
-                    component: TestButton
-                },
-                {
-                    path: "Dimension",
-                    component: TestDimension
-                },
-                {
-                    path: "EditableText",
-                    component: TestEditableText
-                },
-                {
-                    path: "Questionnaire",
-                    component: TestQuestionnaire
-                },
-                {
-                    path: "LoadingSpinnerModal",
-                    component: TestLoadingSpinnerModal
                 }
             ]
         }
