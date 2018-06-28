@@ -8,7 +8,8 @@ __author__ = "Noah Hummel"
 
 class QuestionSchema(SurveyBaseSchema):
     text = fields.String(required=True)
-    range = fields.Integer(default=10)
+    range_start = fields.Integer(default=10)
+    range_end = fields.Integer(default=0)
     shadow = fields.Method('is_shadow')
 
     def is_shadow(self, obj):

@@ -151,7 +151,8 @@ class ConcreteQuestion(Question):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     reference_id = db.Column(db.String(128))
-    range = db.Column(db.SmallInteger, default=10, nullable=False)
+    range_start = db.Column(db.SmallInteger, default=0, nullable=False)
+    range_end = db.Column(db.SmallInteger, default=10, nullable=False)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
 
     # translatable columns
