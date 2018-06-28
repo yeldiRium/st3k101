@@ -1,3 +1,5 @@
+import {ascend, prop} from "ramda";
+
 class Language {
     constructor(shortName, longName) {
         this.shortName = shortName;
@@ -37,9 +39,12 @@ class LanguageData {
     }
 }
 
+const byShortName = ascend(prop("shortName"));
+
 export default Language;
 
 export {
     Language,
-    LanguageData
+    LanguageData,
+    byShortName
 }

@@ -1,10 +1,8 @@
-import {__, allPass, ascend, has, map, prop, sort} from "ramda";
+import {sort} from "ramda";
 import Future from "fluture";
 
-import Language from "../../model/Language";
+import {byShortName, Language} from "../../model/Language";
 import {fetchLanguages} from "../../api/Language";
-
-const byShortName = ascend(prop("shortName"));
 
 const store = {
     namespaced: true,
@@ -68,6 +66,5 @@ const initialize = function (rootStore, namespace) {
 
 export {
     store,
-    initialize,
-    byShortName
+    initialize
 }
