@@ -13,13 +13,18 @@
              v-click-outside="closeLanguageMenu"
              v-if="menuOpen"
         >
+            <input
+                    name="filter"
+                    ref="filter"
+                    v-model="filterString"
+            />
             <div class="language-picker__heading"
-                 v-if="languageData.availableLanguages.length > 0"
+                 v-if="filteredLanguages.length > 0"
             >
                 Available languages
             </div>
             <div class="language-picker__item"
-                 v-for="language in languageData.availableLanguages"
+                 v-for="language in filteredLanguages"
                  :key="language.shortName"
                  @click="chooseLanguage(language)"
             >
@@ -32,13 +37,13 @@
             </div>
 
             <div class="language-picker__heading"
-                 v-if="unusedLanguages.length > 0"
+                 v-if="filteredUnusedLanguages.length > 0"
             >
                 Unused languages
             </div>
 
             <div class="language-picker__item"
-                 v-for="language in unusedLanguages"
+                 v-for="language in filteredUnusedLanguages"
                  :key="language.shortName"
                  @click="chooseLanguage(language, false)"
             >
@@ -54,7 +59,19 @@
 </template>
 
 <script>
-    import {contains, toUpper, without} from "ramda";
+    import {
+        __,
+        curry,
+        filter,
+        intersperse,
+        join,
+        pipe,
+        prop,
+        split,
+        test,
+        toUpper,
+        without
+    } from "ramda";
     import {mapState} from "vuex-fluture";
 
     import {LanguageData} from "../../model/Language";
@@ -62,6 +79,7 @@
     export default {
         data() {
             return {
+                filterString: "",
                 menuOpen: false,
                 recomputeHack: 0
             }
@@ -105,12 +123,27 @@
                     this.languageData.availableLanguages,
                     this.languages
                 );
+            },
+            filteredLanguages() {
+                return this.fuzzyFilter(
+                    this.languageData.availableLanguages
+                );
+            },
+            filteredUnusedLanguages() {
+                return this.fuzzyFilter(
+                    this.unusedLanguages
+                );
             }
         },
         methods: {
             openLanguageMenu() {
                 this.menuOpen = true;
+                this.filterString = "";
                 this.recomputeHack++;
+                
+                this.$nextTick(() => {
+                    this.$refs.filter.focus();
+                });
             },
             closeLanguageMenu() {
                 this.menuOpen = false;
@@ -123,7 +156,41 @@
                 }
                 this.closeLanguageMenu();
             },
+            /**
+             * Filters the list by fuzzy matching the current filterString a-
+             * gainst each element.
+             * @param {Array<Language>} list
+             * @returns {Array<Language>}
+             */
+            fuzzyFilter(list) {
+                return filter(
+                    pipe(
+                        prop("longName"),
+                        test(
+                            pipe(
+                                split(""),
+                                intersperse(".*"),
+                                join(""),
+                                curry(RegExp)(__, "i")
+                            )(this.filterString)
+                        )
+                    ),
+                    list
+                );
+            },
+            onKeyUp() {
+                // Enter key was pressed
+                if (event.which == 27) {
+                    this.closeLanguageMenu();
+                }
+            },
             toUpper
+        },
+        beforeMount() {
+            window.addEventListener("keyup", this.onKeyUp);
+        },
+        beforeDestroy() {
+            window.removeEventListener("keyup", this.onKeyUp);
         }
     }
 </script>
