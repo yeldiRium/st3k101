@@ -43,8 +43,8 @@ const store = {
          */
         questionTemplates(state, getters, rootState, rootGetters) {
             return filter(
-                dimension => dimension.template,
-                state.dimensions
+                question => question.template,
+                state.questions
             );
         }
     },
