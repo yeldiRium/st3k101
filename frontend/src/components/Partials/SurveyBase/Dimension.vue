@@ -39,12 +39,19 @@
              v-if="expanded"
              ref="dropdown"
         >
-            <template v-if="dimension.isConcrete">
-                <span class="dimension__table-label">
-                    References:
-                </span>
-                <ReferenceCounter :object="dimension"
-                />
+            <template>
+                <template v-if="dimension.isConcrete">
+                    <span class="dimension__table-label">
+                        References:
+                    </span>
+                    <ReferenceCounter :object="dimension"
+                    />
+                </template>
+                <template v-else>
+                    <span class="dimension__table-label dimension__table-label--span-2">
+                        <router-link :to="{name: 'ADimension', params: {id: dimension.referenceTo.id}}">Go to template</router-link>
+                    </span>
+                </template>
             </template>
 
             <span class="questionnaire__table-label">
@@ -416,6 +423,10 @@
 
         &__table-label {
             padding: 0 0.5em 0 0.5em;
+
+            &--span-2 {
+                grid-column: 1 / span 2;
+            }
         }
 
         &__questions {

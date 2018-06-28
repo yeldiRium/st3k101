@@ -40,12 +40,19 @@
              v-if="expanded"
              ref="dropdown"
         >
-            <template v-if="questionnaire.isConcrete">
-                <span class="questionnaire__table-label">
-                    References:
-                </span>
-                <ReferenceCounter :object="questionnaire"
-                />
+            <template>
+                <template v-if="questionnaire.isConcrete">
+                    <span class="questionnaire__table-label">
+                        References:
+                    </span>
+                    <ReferenceCounter :object="questionnaire"
+                    />
+                </template>
+                <template v-else>
+                    <span class="questionnaire__table-label questionnaire__table-label--span-2">
+                        <router-link :to="{name: 'AQuestionnaire', params: {id: questionnaire.referenceTo.id}}">Go to template</router-link>
+                    </span>
+                </template>
             </template>
 
             <span class="questionnaire__table-label">
@@ -514,6 +521,10 @@
 
         &__table-label {
             padding: 0 0.5em 0 0.5em;
+
+            &--span-2 {
+                grid-column: 1 / span 2;
+            }
         }
 
         &__dimensions {
