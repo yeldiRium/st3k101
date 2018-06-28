@@ -40,12 +40,13 @@
              v-if="expanded"
              ref="dropdown"
         >
-            <span class="questionnaire__table-label">
-                References:
-            </span>
-            <ReferenceCounter :object="questionnaire"
-                              v-if="questionnaire.isConcrete"
-            />
+            <template v-if="questionnaire.isConcrete">
+                <span class="questionnaire__table-label">
+                    References:
+                </span>
+                <ReferenceCounter :object="questionnaire"
+                />
+            </template>
 
             <span class="questionnaire__table-label">
                 Description:
@@ -83,10 +84,16 @@
             <span class="questionnaire__table-label">
                 XAPI Target:
             </span>
-            <EditableText :value="questionnaire.xapiTarget"
-                          @input="updateXapiTarget"
-                          :edit-left="true"
-            />
+            <template>
+                <EditableText v-if="questionnaire.isConcrete"
+                              :value="questionnaire.xapiTarget"
+                              @input="updateXapiTarget"
+                              :edit-left="true"
+                />
+                <div v-else>
+                    {{ questionnaire.xapiTarget }}
+                </div>
+            </template>
 
             <div class="questionnaire__dimensions">
                 <Dimension class="dimension--bordered"
