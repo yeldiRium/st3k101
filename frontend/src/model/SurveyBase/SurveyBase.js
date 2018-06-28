@@ -7,15 +7,18 @@ class SurveyBase extends OwnedResource {
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData Language information about
      *  the SurveyBase.
+     * @param {Boolean} template Whether the SurveyBase may be used as a
+     *  template.
      */
     constructor(href,
                 id,
                 owners,
-                languageData
-    ) {
+                languageData,
+                template) {
         super(href, id, owners);
 
         this.languageData = languageData;
+        this.template = template;
     }
 
     /**
@@ -26,7 +29,8 @@ class SurveyBase extends OwnedResource {
             this._href,
             this._id,
             [...this._owners],
-            this.languageData.clone()
+            this.languageData.clone(),
+            this.template
         );
     }
 }

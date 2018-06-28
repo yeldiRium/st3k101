@@ -39,16 +39,10 @@ const dataClient = new DataClient(
     english
 );
 
-const question1 = new ConcreteQuestion(
-    "http://localhost:1337/api/question/2",
-    2,
-    [dataClient],
-    languageData,
-    "Question Text",
-    new Range({start: 0, end: 10}),
-    3,
-    []
-);
+const question1 = new ConcreteQuestion("http://localhost:1337/api/question/2", 2, [dataClient], languageData, false, "Question Text", new Range({
+    start: 0,
+    end: 10
+}), 3, []);
 
 const question2 = new ShadowQuestion(
     "http://localhost:1337/api/question/3",
@@ -61,17 +55,7 @@ const question2 = new ShadowQuestion(
 );
 question1.ownedIncomingReferences.push(question2);
 
-const dimension1 = new ConcreteDimension(
-    "http://localhost:1337/api/dimension/4",
-    4,
-    [dataClient],
-    languageData,
-    "Dimension name",
-    [question1, question2],
-    false,
-    5,
-    []
-);
+const dimension1 = new ConcreteDimension("http://localhost:1337/api/dimension/4", 4, [dataClient], languageData, "Dimension name", [question1, question2], false, 5, [], false);
 
 const dimension2 = new ShadowDimension(
     "http://localhost:1337/api/dimension/5",
@@ -85,20 +69,7 @@ const dimension2 = new ShadowDimension(
 );
 dimension1.ownedIncomingReferences.push(dimension2);
 
-const questionnaire1 = new ConcreteQuestionnaire(
-    "http://localhost:1337/api/questionnaire/6",
-    6,
-    [dataClient],
-    languageData,
-    "Questionnaire name",
-    "Questionnaire description",
-    true,
-    true,
-    "xapi target",
-    [dimension1, dimension2],
-    2,
-    []
-);
+const questionnaire1 = new ConcreteQuestionnaire("http://localhost:1337/api/questionnaire/6", 6, [dataClient], languageData, false, "Questionnaire name", "Questionnaire description", true, true, "xapi target", [dimension1, dimension2], 2, []);
 
 const store = new Vuex.Store({
     modules: {

@@ -105,6 +105,13 @@ const store = {
                 );
                 return questionnaire;
             }
+        },
+        questionnaireTemplates(state) {
+            return pipe(
+                filter(
+                    questionnaire => questionnaire.template
+                )
+            )
         }
     },
     actions: {

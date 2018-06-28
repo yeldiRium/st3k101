@@ -28,7 +28,7 @@ class Questionnaire extends SurveyBase {
                 allowEmbedded,
                 xapiTarget,
                 dimensions) {
-        super(href, id, owners, languageData);
+        super(href, id, owners, languageData, false);
 
         this.name = name;
         this.description = description;
@@ -81,6 +81,7 @@ class ConcreteQuestionnaire extends Questionnaire {
      * @param {String} id See Resource.
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
+     * @param {Boolean} template See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
      * @param {boolean} isPublic See Questionnaire.
@@ -99,6 +100,7 @@ class ConcreteQuestionnaire extends Questionnaire {
                 id,
                 owners,
                 languageData,
+                template,
                 name,
                 description,
                 isPublic,
@@ -107,7 +109,18 @@ class ConcreteQuestionnaire extends Questionnaire {
                 dimensions,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
-        super(href, id, owners, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
+        super(
+            href,
+            id,
+            owners,
+            languageData,
+            name,
+            description,
+            isPublic,
+            allowEmbedded,
+            xapiTarget,
+            dimensions
+        );
 
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
@@ -140,6 +153,7 @@ class ConcreteQuestionnaire extends Questionnaire {
             this._id,
             [...this._owners],
             this.languageData.clone(),
+            this.template,
             this.name,
             this.description,
             this.isPublic,
@@ -178,7 +192,18 @@ class ShadowQuestionnaire extends Questionnaire {
                 xapiTarget,
                 dimensions,
                 referenceTo) {
-        super(href, id, owners, languageData, name, description, isPublic, allowEmbedded, xapiTarget, dimensions);
+        super(
+            href,
+            id,
+            owners,
+            languageData,
+            name,
+            description,
+            isPublic,
+            allowEmbedded,
+            xapiTarget,
+            dimensions
+        );
 
         this.referenceTo = referenceTo;
     }

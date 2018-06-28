@@ -7,6 +7,7 @@ class Dimension extends SurveyBase {
      * @param {String} id See Resource.
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
+     * @param {Boolean} template See SurveyBase.
      * @param {string} name The Dimension's name.
      * @param {Array.<Question>} questions An Array of all connected Questions.
      * @param {boolean} randomizeQuestions Whether the Questions should be dis-
@@ -16,10 +17,11 @@ class Dimension extends SurveyBase {
                 id,
                 owners,
                 languageData,
+                template,
                 name,
                 questions,
                 randomizeQuestions) {
-        super(href, id, owners, languageData);
+        super(href, id, owners, languageData, template);
         this.name = name;
         this.questions = questions;
         this.randomizeQuestions = randomizeQuestions;
@@ -52,6 +54,7 @@ class Dimension extends SurveyBase {
             this._id,
             [...this._owners],
             this.languageData.clone(),
+            this.template,
             this.name,
             map(clone, this.questions),
             this.randomizeQuestions
@@ -66,6 +69,7 @@ class ConcreteDimension extends Dimension {
      * @param {String} id See Resource.
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
+     * @param {Boolean} template See SurveyBase.
      * @param {string} name See Dimension.
      * @param {Array.<Question>} questions See Dimension.
      * @param {boolean} randomizeQuestions See Dimension.
@@ -81,12 +85,22 @@ class ConcreteDimension extends Dimension {
                 id,
                 owners,
                 languageData,
+                template,
                 name,
                 questions,
                 randomizeQuestions,
                 incomingReferenceCount,
                 ownedIncomingReferences) {
-        super(href, id, owners, languageData, name, questions, randomizeQuestions);
+        super(
+            href,
+            id,
+            owners,
+            languageData,
+            template,
+            name,
+            questions,
+            randomizeQuestions
+        );
 
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
@@ -109,6 +123,7 @@ class ConcreteDimension extends Dimension {
             this._id,
             [...this._owners],
             this.languageData.clone(),
+            this.template,
             this.name,
             map(clone, this.questions),
             this.randomizeQuestions,
@@ -149,7 +164,16 @@ class ShadowDimension extends Dimension {
                 questions,
                 randomizeQuestions,
                 referenceTo) {
-        super(href, id, owners, languageData, name, questions, randomizeQuestions);
+        super(
+            href,
+            id,
+            owners,
+            languageData,
+            false,
+            name,
+            questions,
+            randomizeQuestions
+        );
         this.referenceTo = referenceTo;
     }
 

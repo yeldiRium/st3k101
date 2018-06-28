@@ -1,5 +1,15 @@
 import Future from "fluture";
-import {assoc, clone, contains, dissoc, has, pipe, prop, without} from "ramda";
+import {
+    assoc,
+    clone,
+    contains,
+    dissoc,
+    has,
+    map,
+    pipe,
+    prop,
+    without
+} from "ramda";
 
 import {fetchApi} from "./Util/Request";
 import {extractJson} from "./Util/Response";
@@ -55,6 +65,28 @@ function fetchDimensionById(id, language = null) {
 }
 
 /**
+ * Fetches a list of all available template Dimensions.
+ *
+ * @param {Language} language on optional language in which the list should be
+ *  retrieved
+ * @returns {Future}
+ * @resolve {Array<ConcreteDimension>}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function fetchDimensionTemplates(language = null) {
+    return fetchApi(
+        "/api/dimension/template",
+        {
+            authenticate: true,
+            language
+        }
+    )
+        .chain(extractJson)
+        .map(map(parseDimension));
+}
+
+/**
  * Updates the Dimension's fields. If a field is translatable, it is set
  * in the given language.
  *
@@ -70,12 +102,12 @@ function fetchDimensionById(id, language = null) {
 function updateDimension(dimension, language, params) {
     let parsedParams = clone(params);
     if (has("randomizeQuestions"), params) {
-       parsedParams = dissoc("randomizeQuestions", parsedParams);
-       parsedParams = assoc(
-           "randomize_question_order",
-           params["randomizeQuestions"],
-           parsedParams
-       );
+        parsedParams = dissoc("randomizeQuestions", parsedParams);
+        parsedParams = assoc(
+            "randomize_question_order",
+            params["randomizeQuestions"],
+            parsedParams
+        );
     }
 
     return fetchApi(

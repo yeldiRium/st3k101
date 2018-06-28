@@ -147,6 +147,28 @@ function fetchQuestionnaireById(id, language = null) {
 }
 
 /**
+ * Fetches a list of all available template Questionnaires.
+ *
+ * @param {Language} language on optional language in which the list should be
+ *  retrieved
+ * @returns {Future}
+ * @resolve {Array<ConcreteQuestionnaire>}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function fetchQuestionnaireTemplates(language = null) {
+    return fetchApi(
+        "/api/questionnaire/template",
+        {
+            authenticate: true,
+            language
+        }
+    )
+        .chain(extractJson)
+        .map(map(parseQuestionnaire));
+}
+
+/**
  * Updates the Questionnaire's fields. If a field is translatable, it is set
  * in the given language.
  *

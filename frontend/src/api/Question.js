@@ -1,9 +1,9 @@
 import Future from "fluture";
-import {assoc, clone, contains, dissoc, has, pipe, prop} from "ramda";
+import {assoc, clone, contains, dissoc, has, map, pipe, prop} from "ramda";
 
 import {fetchApi} from "./Util/Request";
 import {extractJson} from "./Util/Response";
-import {parseQuestion} from "./Util/Parse";
+import {parseDimension, parseQuestion} from "./Util/Parse";
 
 import Question, {
     ConcreteQuestion,
@@ -50,6 +50,28 @@ function fetchQuestion(href, language = null) {
  */
 function fetchQuestionById(id, language = null) {
     return fetchQuestion(`/api/question/${id}`, language);
+}
+
+/**
+ * Fetches a list of all available template Questions.
+ *
+ * @param {Language} language on optional language in which the list should be
+ *  retrieved
+ * @returns {Future}
+ * @resolve {Array<ConcreteQuestion>}
+ * @reject {TypeError|ApiError}
+ * @cancel
+ */
+function fetchQuestionTemplates(language = null) {
+    return fetchApi(
+        "/api/question/template",
+        {
+            authenticate: true,
+            language
+        }
+    )
+        .chain(extractJson)
+        .map(map(parseQuestion));
 }
 
 /**

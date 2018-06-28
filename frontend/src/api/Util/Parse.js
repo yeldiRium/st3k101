@@ -126,7 +126,6 @@ function parseShadowQuestionnaire({
                                       description,
                                       dimensions,
                                       published,
-                                      template, // TODO: do something with this
                                       allow_embedded,
                                       xapi_target,
                                       current_language,
@@ -182,7 +181,7 @@ function parseConcreteQuestionnaire({
                                         description,
                                         dimensions,
                                         published,
-                                        template, // TODO: do something with this
+                                        template,
                                         allow_embedded,
                                         xapi_target,
                                         current_language,
@@ -199,14 +198,15 @@ function parseConcreteQuestionnaire({
             original_language,
             available_languages
         }),
+        template,
         name,
         description,
         published,
         allow_embedded,
         xapi_target,
         map(parseDimension, dimensions),
-        0, // TODO: set once API is adjusted to output incomingReferenceCount
-        [] // TODO: set once API is adjusted to output ownedIncomingReferences
+        0,
+        []
     )
 }
 
@@ -237,6 +237,7 @@ function parseDimension(data) {
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
+ * @param {String} shadow_href TODO: this should be full object
  *
  * @return {ShadowDimension}
  */
@@ -247,10 +248,10 @@ function parseShadowDimension({
                                   name,
                                   questions,
                                   randomize_question_order,
-                                  template, // TODO: do something with this
                                   current_language,
                                   original_language,
-                                  available_languages
+                                  available_languages,
+                                  shadow_href
                               }) {
     return new ShadowDimension(
         href,
@@ -291,7 +292,7 @@ function parseConcreteDimension({
                                     name,
                                     questions,
                                     randomize_question_order,
-                                    template, // TODO: do something with this
+                                    template,
                                     current_language,
                                     original_language,
                                     available_languages
@@ -305,11 +306,12 @@ function parseConcreteDimension({
             original_language,
             available_languages
         }),
+        template,
         name,
         map(parseQuestion, questions),
         randomize_question_order,
-        0, // TODO: set once API is adjusted to output incomingReferenceCount
-        [] // TODO: set once API is adjusted to output ownedIncomingReferences
+        0,
+        []
     )
 }
 
@@ -340,6 +342,7 @@ function parseQuestion(data) {
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
+ * @param {String} shadow_href TODO: this should be full object
  *
  * @return {ShadowQuestion}
  */
@@ -350,10 +353,10 @@ function parseShadowQuestion({
                                  text,
                                  range_start,
                                  range_end,
-                                 template, // TODO: do something with this
                                  current_language,
                                  original_language,
-                                 available_languages
+                                 available_languages,
+                                 shadow_href
                              }) {
     return new ShadowQuestion(
         href,
@@ -393,7 +396,7 @@ function parseConcreteQuestion({
                                    text,
                                    range_start,
                                    range_end,
-                                   template, // TODO: do something with this
+                                   template,
                                    current_language,
                                    original_language,
                                    available_languages
@@ -407,10 +410,11 @@ function parseConcreteQuestion({
             original_language,
             available_languages
         }),
+        template,
         text,
         new Range({start: range_start, end: range_end}),
-        0, // TODO: set once API is adjusted to output incomingReferenceCount
-        [] // TODO: set once API is adjusted to output ownedIncomingReferences
+        0,
+        []
     )
 }
 
@@ -424,7 +428,6 @@ export {
     parseDimension,
     parseShadowDimension,
     parseConcreteDimension,
-    parseRange,
     parseQuestion,
     parseShadowQuestion,
     parseConcreteQuestion
