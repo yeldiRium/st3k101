@@ -362,11 +362,6 @@ class ShadowQuestionnaire(Questionnaire):
                 dimension = dimension.concrete
             s_dimension = ShadowDimension(dimension)
             self.dimensions.append(s_dimension)
-            for question in dimension.questions:
-                if not isinstance(question, ConcreteQuestion):
-                    question = question.concrete
-                s_question = ShadowQuestion(question)
-                s_dimension.questions.append(s_question)
 
     @property
     def concrete_id(self):
