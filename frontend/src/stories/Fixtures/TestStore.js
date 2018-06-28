@@ -1,11 +1,12 @@
 import Vuex from "vuex-fluture";
-import {isNil} from "ramda";
+import {isNil, sort} from "ramda";
 import {action} from "@storybook/addon-actions";
 
 import {
     initialize as initializeGlobalStore,
     store as global
 } from "../../store/modules/Global";
+import {byShortName} from "../../model/Language";
 
 import Language, {LanguageData} from "../../model/Language";
 import DataClient from "../../model/DataClient";
@@ -24,6 +25,8 @@ const english = new Language("en", "English");
 const german = new Language("de", "Deutsch");
 const spanish = new Language("es", "Espanol");
 const italian = new Language("it", "Italiano");
+const japanese = new Language("jp", "Japanese");
+const chinese = new Language("ch", "Chinese");
 
 const languageData = new LanguageData(
     english,
@@ -111,12 +114,14 @@ const store = new Vuex.Store({
         language: {
             namespaced: true,
             state: {
-                languages: [
+                languages: sort(byShortName, [
                     english,
                     german,
                     spanish,
-                    italian
-                ]
+                    italian,
+                    japanese,
+                    chinese
+                ])
             },
             actions: {
                 fetchLanguages: action("languages-fetched")
