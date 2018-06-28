@@ -1,8 +1,10 @@
-import {bind, find, isNil, map, reject} from "ramda";
+import {bind, filter, find, isNil, map, pipe, reject} from "ramda";
 import Future from "fluture";
 
 import {
-    fetchQuestion, fetchQuestionById,
+    fetchQuestion,
+    fetchQuestionById,
+    fetchQuestionTemplates,
     updateQuestion
 } from "../../api/Question";
 import {BadRequestError} from "../../api/Errors";
@@ -29,6 +31,21 @@ const store = {
                 question => question.href === href,
                 state.questions
             )
+        },
+        /**
+         * Returns al Questions that can be used as templates.
+         *
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param rootGetters
+         * @returns {Array<ConcreteQuestion>}
+         */
+        questionTemplates(state, getters, rootState, rootGetters) {
+            return filter(
+                dimension => dimension.template,
+                state.dimensions
+            );
         }
     },
     actions: {
@@ -104,6 +121,30 @@ const store = {
                     "patchQuestionInStore",
                     {question}
                 ));
+        },
+        /**
+         * Fetches a list of all available template Questions.
+         *
+         * @param dispatch
+         * @param {Language} language on optional language in which the list should be
+         *  retrieved
+         * @returns {Future}
+         * @resolve {Array<ConcreteQuestion>}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        fetchQuestionTemplates({dispatch}, {language = null}) {
+            return fetchQuestionTemplates(language)
+                .chain(templates => {
+                    const patchTemplateFutures = [];
+                    for (const template of templates) {
+                        patchTemplateFutures.push(dispatch(
+                            "patchQuestionInStore",
+                            {question: template}
+                        ));
+                    }
+                    return Future.parallel(Infinity, patchTemplateFutures);
+                });
         },
         /**
          * Updates the given params on the Question and updates the

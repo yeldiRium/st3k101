@@ -29,6 +29,7 @@ import {
     fetchMyQuestionnaires,
     fetchQuestionnaire,
     fetchQuestionnaireById,
+    fetchQuestionnaireTemplates,
     removeDimension,
     updateQuestionnaire
 } from "../../api/Questionnaire";
@@ -106,12 +107,29 @@ const store = {
                 return questionnaire;
             }
         },
-        questionnaireTemplates(state) {
-            return pipe(
+        /**
+         * Returns al Questionnaires that can be used as templates.
+         *
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param rootGetters
+         * @returns {Array<ConcreteQuestionnaire>}
+         */
+        questionnaireTemplates(state, getters, rootState, rootGetters) {
+            const questionnaires = pipe(
                 filter(
                     questionnaire => questionnaire.template
-                )
-            )
+                ),
+                map(clone)
+            )(state.questionnaires);
+            for (const questionnaire of questionnaires) {
+                questionnaire.dimensions = map(
+                    rootGetters["dimensions/dimensionById"],
+                    questionnaire.dimensions
+                );
+            }
+            return questionnaires;
         }
     },
     actions: {
@@ -308,6 +326,30 @@ const store = {
                     "patchQuestionnaireInStore",
                     {questionnaire}
                 ));
+        },
+        /**
+         * Fetches a list of all available template Questionnaires.
+         *
+         * @param dispatch
+         * @param {Language} language on optional language in which the list should be
+         *  retrieved
+         * @returns {Future}
+         * @resolve {Array<ConcreteQuestionnaire>}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        fetchQuestionnaireTemplates({dispatch}, {language = null}) {
+            return fetchQuestionnaireTemplates(language)
+                .chain(templates => {
+                    const patchTemplateFutures = [];
+                    for (const template of templates) {
+                        patchTemplateFutures.push(dispatch(
+                            "patchQuestionnaireInStore",
+                            {questionnaire: template}
+                        ));
+                    }
+                    return Future.parallel(Infinity, patchTemplateFutures);
+                });
         },
         /**
          * Updates the given params on the Questionnaire and updates the

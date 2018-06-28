@@ -221,6 +221,7 @@ function populateQuestion(question) {
 export {
     fetchQuestion,
     fetchQuestionById,
+    fetchQuestionTemplates,
     updateQuestion,
     populateOwnedIncomingReferences,
     populateReferenceTo,

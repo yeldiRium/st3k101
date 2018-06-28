@@ -404,6 +404,7 @@ export {
     fetchMyQuestionnaires,
     fetchQuestionnaire,
     fetchQuestionnaireById,
+    fetchQuestionnaireTemplates,
     updateQuestionnaire,
     deleteQuestionnaire,
     addConcreteDimension,

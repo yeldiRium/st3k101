@@ -2,9 +2,11 @@ import {
     assoc,
     bind,
     clone,
+    filter,
     find,
     isNil,
     map,
+    pipe,
     reject,
     uniq,
     without
@@ -14,7 +16,9 @@ import Future from "fluture";
 import {
     addConcreteQuestion,
     addShadowQuestion,
-    fetchDimension, fetchDimensionById,
+    fetchDimension,
+    fetchDimensionById,
+    fetchDimensionTemplates,
     removeQuestion,
     updateDimension
 } from "../../api/Dimension";
@@ -66,6 +70,30 @@ const store = {
                 );
                 return dimension;
             }
+        },
+        /**
+         * Returns al Dimensions that can be used as templates.
+         *
+         * @param state
+         * @param getters
+         * @param rootState
+         * @param rootGetters
+         * @returns {Array<ConcreteDimension>}
+         */
+        dimensionTemplates(state, getters, rootState, rootGetters) {
+            const dimensions = pipe(
+                filter(
+                    dimension => dimension.template
+                ),
+                map(clone)
+            )(state.dimensions);
+            for (const dimension of dimensions) {
+                dimension.dimensions = map(
+                    rootGetters["questions/questionById"],
+                    dimension.dimensions
+                );
+            }
+            return dimensions;
         }
     },
     actions: {
@@ -174,6 +202,30 @@ const store = {
                     "patchDimensionInStore",
                     {dimension}
                 ));
+        },
+        /**
+         * Fetches a list of all available template Dimensions.
+         *
+         * @param dispatch
+         * @param {Language} language on optional language in which the list should be
+         *  retrieved
+         * @returns {Future}
+         * @resolve {Array<ConcreteDimension>}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        fetchDimensionTemplates({dispatch}, {language = null}) {
+            return fetchDimensionTemplates(language)
+                .chain(templates => {
+                    const patchTemplateFutures = [];
+                    for (const template of templates) {
+                        patchTemplateFutures.push(dispatch(
+                            "patchDimensionInStore",
+                            {dimension: template}
+                        ));
+                    }
+                    return Future.parallel(Infinity, patchTemplateFutures);
+                });
         },
         /**
          * Updates the given params on the Dimension and updates the

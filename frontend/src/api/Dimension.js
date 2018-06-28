@@ -303,6 +303,7 @@ function populateDimension(dimension) {
 export {
     fetchDimension,
     fetchDimensionById,
+    fetchDimensionTemplates,
     updateDimension,
     addConcreteQuestion,
     addShadowQuestion,
