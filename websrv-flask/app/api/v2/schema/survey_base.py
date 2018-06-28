@@ -6,6 +6,7 @@ from api.v2.schema.dataclient import DataClientSchema
 from api.v2.schema.fields import enum_field
 from framework.internationalization.babel_languages import BabelLanguage
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
+from auth.users import current_user
 
 __author__ = "Noah Hummel"
 
@@ -21,6 +22,14 @@ class SurveyBaseSchema(RESTFulSchema):
     reference_to = fields.Method('build_reference_to', dump_only=True)
     owners = fields.Nested(DataClientSchema(only=("id", "href")), many=True,
                            dump_only=True)
+    owned_incoming_references = fields.Method(
+        'build_owned_incoming_references',
+        dump_only=True
+    )
+    incoming_reference_count = fields.Method(
+        'build_incoming_reference_count',
+        dump_only=True
+    )
 
     def get_current_language(self, obj):
         current_language = g._language
@@ -38,3 +47,18 @@ class SurveyBaseSchema(RESTFulSchema):
             "href": super(SurveyBaseSchema, self).build_href(obj.concrete),
             "id": obj.concrete.id
         }
+
+    def build_owned_incoming_references(self, obj: SurveyBase):
+        return list(map(
+            lambda q: {
+                "href": super(SurveyBaseSchema, self).build_href(q),
+                "id": q.id
+            },
+            filter(
+                lambda q: q.accessible_by(current_user()),
+                obj.copies
+            )
+        ))
+
+    def build_incoming_reference_count(self, obj: SurveyBase):
+        return len(obj.copies)
