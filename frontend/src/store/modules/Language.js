@@ -4,6 +4,8 @@ import Future from "fluture";
 import Language from "../../model/Language";
 import {fetchLanguages} from "../../api/Language";
 
+const byShortName = ascend(prop("shortName"));
+
 const store = {
     namespaced: true,
     state: {
@@ -28,7 +30,6 @@ const store = {
         fetchLanguages({commit}) {
             return fetchLanguages()
                 .chain(languages => {
-                    const byShortName = ascend(prop("shortName"));
                     const sortedLanguages = sort(byShortName, languages);
                     commit("setLanguages", sortedLanguages);
                     return Future.of(sortedLanguages);
@@ -67,5 +68,6 @@ const initialize = function (rootStore, namespace) {
 
 export {
     store,
-    initialize
+    initialize,
+    byShortName
 }
