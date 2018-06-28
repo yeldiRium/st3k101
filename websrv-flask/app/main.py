@@ -178,6 +178,7 @@ import api.v2.session
 import api.v2.dataclient
 import api.v2.questionnaire
 import api.v2.dimension
+import api.v2.languages
 
 # CLI commands
 import cli
