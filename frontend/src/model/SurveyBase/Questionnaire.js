@@ -201,6 +201,7 @@ class ShadowQuestionnaire extends Questionnaire {
             id,
             owners,
             languageData,
+            false,
             name,
             description,
             isPublic,
