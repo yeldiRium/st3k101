@@ -81,7 +81,7 @@ function createConcreteQuestionnaire(language,
  */
 function createShadowQuestionnaire(questionnaire) {
     return fetchApi(
-        "/api/dataclient_shadow_questionnaire",
+        "/api/dataclient/shadow_questionnaire",
         {
             method: "POST",
             body: JSON.stringify({
