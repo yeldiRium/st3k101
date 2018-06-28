@@ -156,6 +156,8 @@
 
             display: flex;
             flex-flow: column;
+
+            z-index: 1000;
         }
 
         &__item {
