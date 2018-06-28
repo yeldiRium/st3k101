@@ -39,12 +39,13 @@
              v-if="expanded"
              ref="dropdown"
         >
-            <span class="questionnaire__table-label">
-                References:
-            </span>
-            <ReferenceCounter :object="dimension"
-                              v-if="dimension.isConcrete"
-            />
+            <template v-if="dimension.isConcrete">
+                <span class="dimension__table-label">
+                    References:
+                </span>
+                <ReferenceCounter :object="dimension"
+                />
+            </template>
 
             <span class="questionnaire__table-label">
                 Randomize Question order:
@@ -81,6 +82,7 @@
             </Button>
             <Button v-if="isDeletable(dimension)"
                     @click="deleteDimension"
+                    :class="{'button--grey': dimension.isShadow}"
             >
                 delete
             </Button>

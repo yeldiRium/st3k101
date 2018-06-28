@@ -38,12 +38,13 @@
              v-if="expanded"
              ref="dropdown"
         >
-            <span class="questionnaire__table-label">
-                References:
-            </span>
-            <ReferenceCounter :object="question"
-                              v-if="question.isConcrete"
-            />
+            <template v-if="question.isConcrete">
+                <span class="question__table-label">
+                    References:
+                </span>
+                <ReferenceCounter :object="question"
+                />
+            </template>
 
             <span class="questionnaire__table-label">
                 Range:
@@ -64,6 +65,7 @@
         >
             <Button v-if="isDeletable(question)"
                     @click="deleteQuestion"
+                    :class="{'button--grey': question.isShadow}"
             >
                 delete
             </Button>

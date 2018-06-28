@@ -120,6 +120,7 @@
             </Button>
             <Button v-if="isDeletable(questionnaire)"
                     @click="deleteQuestionnaire"
+                    :class="{'button--grey': questionnaire.isShadow}"
             >
                 delete
             </Button>
