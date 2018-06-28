@@ -9,8 +9,6 @@
 <script>
     import {mapGetters} from "vuex-fluture";
 
-    import {endSession} from "../../../api/Authentication";
-
     import Button from "../../Partials/Form/Button";
 
     export default {
@@ -18,8 +16,8 @@
         components: {
             Button
         },
-        computad: {
-            ...mapGetters("session", ["sessionToken"])
+        computed: {
+            ...mapGetters("session", ["dataClient"])
         },
         methods: {
             logout() {
