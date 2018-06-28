@@ -58,17 +58,17 @@ export default new Router({
                     component: Account
                 },
                 {
-                    path: "question/:id",
+                    path: "questionnaires/question/:id",
                     name: "AQuestion",
                     component: AQuestion
                 },
                 {
-                    path: "dimension/:id",
+                    path: "questionnaires/dimension/:id",
                     name: "ADimension",
                     component: ADimension
                 },
                 {
-                    path: "questionnaire/:id",
+                    path: "questionnaires/questionnaire/:id",
                     name: "AQuestionnaire",
                     component: AQuestionnaire
                 }
