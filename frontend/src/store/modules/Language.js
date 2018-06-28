@@ -20,8 +20,6 @@ const store = {
         /**
          * Fetches the available Languages on the server.
          *
-         * TODO: remove hardcoded languages, once API works.
-         *
          * @returns {Future}
          * @resolve {Array<Language>}
          * @reject {TypeError|ApiError}
@@ -32,17 +30,6 @@ const store = {
                 .chain(languages => {
                     commit("setLanguages", languages);
                     return Future.of(languages);
-                })
-                .chainRej(error => {
-                    const hardCodedLanguages = [
-                        new Language("de", "German"),
-                        new Language("en", "English"),
-                        new Language("it", "Italian"),
-                        new Language("es", "Spanish"),
-                        new Language("ch", "Chinese")
-                    ];
-                    commit("setLanguages", hardCodedLanguages);
-                    return Future.of(hardCodedLanguages)
                 });
         }
     },
