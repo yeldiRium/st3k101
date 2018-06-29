@@ -1,9 +1,13 @@
+from abc import abstractmethod
+from typing import List
+
 from flask import g
-from marshmallow import fields, missing
+from marshmallow import fields, missing, post_dump
 
 from api.v2.schema import RESTFulSchema
 from api.v2.schema.dataclient import DataClientSchema
 from api.v2.schema.fields import enum_field
+from auth.users import current_user
 from framework.internationalization.babel_languages import BabelLanguage
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
 
@@ -35,3 +39,26 @@ class SurveyBaseSchema(RESTFulSchema):
         if not obj.shadow:
             return missing
         return super(SurveyBaseSchema, self).build_href(obj.concrete)
+
+    @classmethod
+    def get_private(cls) -> List[str]:
+        if hasattr(cls, '__private__'):
+            return cls.__private__
+        return []
+
+    @post_dump(pass_original=True, pass_many=False)
+    def strip_private_fields(self, data, original_data: SurveyBase = None):
+
+        def _strip(d):
+            for k in self.get_private():
+                del d[k]
+            return d
+
+        if isinstance(original_data, list):
+            for od in original_data:
+                if od.id == data['id']:
+                    original_data = od
+                    break
+
+        if not original_data.modifiable_by(current_user()):
+            return _strip(data)
