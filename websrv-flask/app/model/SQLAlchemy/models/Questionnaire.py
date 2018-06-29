@@ -34,18 +34,20 @@ class Questionnaire(SurveyBase):
     allow_embedded = db.Column(db.Boolean, nullable=False, default=False)
     xapi_target = db.Column(db.String(512))
 
+    # challenge data
+    email_whitelist = db.Column(db.ARRAY(db.String))
+    email_whitelist_enabled = db.Column(db.Boolean)
+    email_blacklist = db.Column(db.ARRAY(db.String))
+    email_blacklist_enabled = db.Column(db.Boolean)
+    password = db.Column(db.String(64))
+    password_enabled = db.Column(db.Boolean)
+
     # relationships
     dimensions = db.relationship(
         'Dimension',
         backref='questionnaire',
         cascade='all, delete-orphan',
         foreign_keys=[Dimension.questionnaire_id]
-    )
-    qac_modules = db.relationship(
-        'QACModule',
-        backref='questionnaire',
-        cascade='all, delete-orphan',
-        foreign_keys=[QACModule.questionnaire_id]
     )
 
     tracker_args = {
@@ -65,7 +67,12 @@ class Questionnaire(SurveyBase):
 
     def __init__(self, **kwargs):
         super(Questionnaire, self).__init__(**kwargs)
-        self.qac_modules = [TOSQAC(), EMailVerificationQAC()]
+        self.password = ''
+        self.email_blacklist = []
+        self.email_whitelist = []
+        self.password_enabled = False
+        self.email_blacklist_enabled = False
+        self.email_whitelist_enabled = False
 
     @property
     @abstractmethod
@@ -204,99 +211,6 @@ class Questionnaire(SurveyBase):
                 db.session.delete(copy)
 
         db.session.delete(self)
-
-    def add_qac_module(self, qac_module: QACModule):
-        if qac_module.qac_id in (qm.qac_id for qm in self.qac_modules):
-            raise QACAlreadyEnabledException
-        self.qac_modules.append(qac_module)
-
-    def get_qac_module_by_qac_id(self, qac_id: str) -> Optional[QACModule]:
-        """
-        Returns QACModule with given qac_id (previously name.msgid)
-        if it is present in Questionnaire.qac_modules
-        :param qac_id:
-        :return: The QACModule or None if not present
-        """
-        qac_module = None
-        for qm in self.qac_modules:
-            if qm.qac_id == qac_id:
-                qac_module = qm
-                break
-        return qac_module
-
-    @staticmethod
-    @deprecated(version='2.0', reason='YAML templates will be removed in version 2.0')
-    def parse_yaml(path_to_yaml: str) -> Dict[str, Any]:
-        """
-        Parses a YAMl template file for Questionnaire and raises Exceptions if
-        the schema is invalid.
-        :param path_to_yaml: str Path to the file to parse
-        :return: dict The parsed YAML file.
-        """
-        with open(path_to_yaml) as fd:
-            contents = yaml.load(fd)
-        schema = {
-            "name": str,
-            "description": str,
-            "questions": dict
-        }
-        try:
-            if type(contents) != type(schema):
-                raise Exception(_("Template needs to be a dictionary"))
-            for k, v in schema.items():
-                if k not in contents:
-                    raise Exception(_("Missing argument in template: ") + k)
-                if not isinstance(contents[k], v):
-                    raise Exception(_("Argument has wrong type: ") + k +
-                                    _(" Expected: ") + str(v) +
-                                    _(" Got: ") + str(type(contents[k])))
-        except Exception as e:
-            raise YAMLTemplateInvalidException(e.args[0])
-
-        name = contents["name"]
-        if len(name) < 1:
-            raise YAMLTemplateInvalidException(_("Empty name specified"))
-
-        return contents
-
-    @staticmethod
-    @deprecated(version='2.0', reason='YAML templates will be removed in version 2.0')
-    def get_available_templates() -> Dict[str, str]:
-        """
-        :return: dict A list of available template files a a dictionary of
-                      {template_name: template_path}
-        """
-        template_files = dict({})
-        for dirname, sdn, filenames in os.walk(
-                g._config["SURVEY_TEMPLATE_PATH"]):
-            for filename in filenames:
-                abspath = os.path.join(dirname, filename)
-                try:
-                    contents = Questionnaire.parse_yaml(abspath)
-                except (YAMLTemplateInvalidException, IOError):
-                    continue
-                template_files[contents["name"]] = abspath
-        return template_files
-
-    @staticmethod
-    @deprecated(version='2.0', reason='YAML templates will be removed in version 2.0')
-    def from_yaml(path_to_yaml: str) -> "Questionnaire":
-        """
-        Factory method for creating a Questionnaire from a YAML file.
-        :param path_to_yaml: str Path to the YAML file to parse
-        :return: Questionnaire The newly created Questionnaire
-        """
-        contents = Questionnaire.parse_yaml(path_to_yaml)
-        questionnaire = Questionnaire(name=contents["name"],
-                                      description=contents["description"])
-        for dimension_name, question_texts in contents["questions"].items():
-            dimension = Dimension(name=dimension_name,
-                                  questionnaire=questionnaire)
-            for text in question_texts:
-                Question(text=text, dimension=dimension)
-            db.session.add(questionnaire)
-
-        return questionnaire
 
 
 class ConcreteQuestionnaire(Questionnaire):
