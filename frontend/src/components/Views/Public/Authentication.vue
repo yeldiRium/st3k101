@@ -61,7 +61,7 @@
                 </Button>
             </div>
         </div>
-        <div class="authentication__register elevation-12"
+        <div class="authentication__register"
              v-else
         >
             <div class="authentication__title">
