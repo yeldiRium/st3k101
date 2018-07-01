@@ -41,11 +41,32 @@
 </script>
 
 <style lang="scss">
+    @import "../../../scss/_variables";
+
     .challenge-form {
+        border: 1px solid $primary;
+
+        &__head {
+            margin-bottom: 0.3em;
+        }
+
         &__body {
             display: grid;
             grid-template-columns: minmax(max-content, 1fr) 5fr;
             grid-row-gap: 0.2em;
+        }
+
+        &__field {
+            width: 100%;
+            display: flex;
+
+            > input {
+                flex-grow: 3;
+            }
+
+            > button {
+                flex-grow: 1;
+            }
         }
     }
 </style>

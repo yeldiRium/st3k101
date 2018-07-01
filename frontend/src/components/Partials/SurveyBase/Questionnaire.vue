@@ -144,7 +144,7 @@
 
                         Hide Challenges
                     </div>
-                    <ChallengeForm
+                    <ChooseChallengeForm
                             v-for="challenge in questionnaire.challenges"
                             :key="challenge.name"
                             :challenge="challenge"
@@ -190,7 +190,7 @@
     import ReferenceCounter from "./Config/ReferenceCounter";
     import Toggle from "../Form/ToggleButton";
     import Button from "../Form/Button";
-    import ChallengeForm from "./Challenge/ChallengeForm";
+    import ChooseChallengeForm from "./Challenge/ChooseChallengeForm";
 
     import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
@@ -208,7 +208,7 @@
             Toggle,
             EditableText,
             Button,
-            ChallengeForm,
+            ChooseChallengeForm,
             IconLink,
             IconReorder,
             IconExpandLess,

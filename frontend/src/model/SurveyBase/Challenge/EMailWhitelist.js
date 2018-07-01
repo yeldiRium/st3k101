@@ -15,7 +15,7 @@ class EMailWhitelist extends Challenge {
     }
 
     get name() {
-        return "EMailWhitelist Challenge";
+        return "EMailWhitelist";
     }
 
     /**
