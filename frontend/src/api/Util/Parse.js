@@ -16,6 +16,7 @@ import {
     ShadowQuestion
 } from "../../model/SurveyBase/Question";
 import {Resource} from "../../model/Resource";
+import EMailWhitelist from "../../model/SurveyBase/Challenge/EMailWhitelist";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -96,6 +97,34 @@ function parseSmallDataClient({id, href}) {
 }
 
 /**
+ * Parses all challenges present in the given data into an array of Challenges.
+ *
+ * TODO: add more Challenges
+ *
+ * @param {Object} questionnaire A API representation of a Questionnaire.
+ * @return {Array<Challenge>}
+ */
+function parseChallenges(questionnaire) {
+    return [
+        parseEMailWhitelist(questionnaire)
+    ];
+}
+
+/**
+ * Parses the EMailWhitelist Challenge.
+ *
+ * @param {Array<String>} email_whitelist
+ * @param {Boolean} email_whitelist_enabled
+ * @returns {EMailWhitelist}
+ */
+function parseEMailWhitelist({email_whitelist, email_whitelist_enabled}) {
+    return new EMailWhitelist(
+        email_whitelist_enabled,
+        email_whitelist
+    );
+}
+
+/**
  * Parses the common API representation of a Questionnaire and recognizes, whe-
  * ther it is a ShadowQuestionnaire or a ConcreteQuestionnaire.
  *
@@ -104,9 +133,9 @@ function parseSmallDataClient({id, href}) {
  */
 function parseQuestionnaire(data) {
     if (prop("shadow", data) === true) {
-        return parseShadowQuestionnaire(data);
+        return parseShadowQuestionnaire(data, data);
     }
-    return parseConcreteQuestionnaire(data);
+    return parseConcreteQuestionnaire(data, data);
 }
 
 /**
@@ -126,8 +155,8 @@ function parseQuestionnaire(data) {
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
- * @param {Array} qac_modules TODO: handle QAC modules
  * @param {Object} reference_to
+ * @param {Object} whole The whole thing again, but not destructured
  *
  * @return {ShadowQuestionnaire}
  */
@@ -145,9 +174,8 @@ function parseShadowQuestionnaire({
                                       current_language,
                                       original_language,
                                       available_languages,
-                                      qac_modules,
                                       reference_to
-                                  }) {
+                                  }, whole) {
     return new ShadowQuestionnaire(
         href,
         id,
@@ -185,9 +213,9 @@ function parseShadowQuestionnaire({
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
- * @param {Array} qac_modules TODO: handle QAC modules
  * @param {Array} owned_incoming_references
  * @param {Number} incoming_reference_count
+ * @param {Object} whole The whole thing again, but not destructured
  *
  * @return {ConcreteQuestionnaire}
  */
@@ -206,10 +234,9 @@ function parseConcreteQuestionnaire({
                                         current_language,
                                         original_language,
                                         available_languages,
-                                        qac_modules,
                                         owned_incoming_references,
                                         incoming_reference_count
-                                    }) {
+                                  }, whole) {
     return new ConcreteQuestionnaire(
         href,
         id,
