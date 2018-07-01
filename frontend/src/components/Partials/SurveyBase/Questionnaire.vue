@@ -50,7 +50,8 @@
                 </template>
                 <template v-else>
                     <span class="questionnaire__table-label questionnaire__table-label--span-2">
-                        <router-link :to="{name: 'AQuestionnaire', params: {id: questionnaire.referenceTo.id}}">Go to template</router-link>
+                        <router-link
+                                :to="{name: 'AQuestionnaire', params: {id: questionnaire.referenceTo.id}}">Go to template</router-link>
                     </span>
                 </template>
             </template>
@@ -125,6 +126,32 @@
                            @dimension-delete="deleteDimension"
                 />
             </div>
+
+            <div class="questionnaire__challenges">
+                <div
+                        class="questionnaire__challenge-placeholder"
+                        v-if="!expandChallenges"
+                        @click="toggleExpandChallenges"
+                >
+
+                    Show Challenges
+                </div>
+                <template v-else>
+                    <div
+                            class="questionnaire__challenge-placeholder"
+                            @click="toggleExpandChallenges"
+                    >
+
+                        Hide Challenges
+                    </div>
+                    <ChallengeForm
+                            v-for="challenge in questionnaire.challenges"
+                            :key="challenge.name"
+                            :challenge="challenge"
+                            @input="updateChallenge"
+                    />
+                </template>
+            </div>
         </div>
         <div class="questionnaire__buttons"
              v-if="expanded"
@@ -151,7 +178,7 @@
 
 <script>
     import {mapState} from "vuex-fluture";
-    import {assoc, map, path, sum, without} from "ramda";
+    import {assoc, map, path, sum} from "ramda";
 
     import {Questionnaire} from "../../../model/SurveyBase/Questionnaire";
 
@@ -163,6 +190,7 @@
     import ReferenceCounter from "./Config/ReferenceCounter";
     import Toggle from "../Form/ToggleButton";
     import Button from "../Form/Button";
+    import ChallengeForm from "./Challenge/ChallengeForm";
 
     import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
@@ -180,6 +208,7 @@
             Toggle,
             EditableText,
             Button,
+            ChallengeForm,
             IconLink,
             IconReorder,
             IconExpandLess,
@@ -207,7 +236,8 @@
                 },
                 dropdown: {
                     height: 0
-                }
+                },
+                expandChallenges: false
             }
         },
         computed: {
@@ -236,6 +266,9 @@
         methods: {
             toggleExpanded() {
                 this.expanded = !this.expanded;
+            },
+            toggleExpandChallenges() {
+                this.expandChallenges = !this.expandChallenges;
             },
             /**
              * Switch the Questionnaire to the given language.
@@ -320,7 +353,7 @@
              * @param {Boolean} mustBeEditable Whether the Questionnaire must be
              *  editable for this to work.
              */
-            updateQuestionnaire(prop, value, mustBeEditable=false) {
+            updateQuestionnaire(prop, value, mustBeEditable = false) {
                 if (mustBeEditable && !this.isEditable(this.questionnaire)) {
                     return;
                 }
@@ -428,6 +461,27 @@
                         ]
                     }
                 )
+            },
+            /**
+             * Replaces the given challenge in the questionnaire.
+             *
+             * @param {Challenge} newChallenge
+             */
+            updateChallenge(newChallenge) {
+                this.$load(
+                    this.$store.dispatch(
+                        "questionnaires/updateChallengeOnQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            challenge: newChallenge
+                        }
+                    )
+                ).fork(
+                    this.$handleApiError,
+                    () => {
+                        this.$emit("updated");
+                    }
+                );
             }
         },
         created() {
@@ -482,7 +536,7 @@
             }
         }
 
-        &__dimensions {
+        &__dimensions, &__challenges {
             width: 100%;
 
             display: flex;

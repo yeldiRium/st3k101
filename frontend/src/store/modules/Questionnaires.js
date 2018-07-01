@@ -1,5 +1,6 @@
 import {
     __,
+    always,
     any,
     assoc,
     bind,
@@ -11,9 +12,10 @@ import {
     keys,
     map,
     pipe,
-    prop,
+    prop, propEq,
     reject,
     uniq,
+    when,
     without
 } from "ramda";
 import Future from "fluture";
@@ -376,6 +378,36 @@ const store = {
                     "patchQuestionnaireInStore",
                     {questionnaire: result}
                 ));
+        },
+        /**
+         * Replaces the old Challenge of the given kind with a new one on a gi-
+         * ven Questionnaire.
+         *
+         * TODO: set via API
+         *
+         * @param dispatch
+         * @param {Questionnaire} questionnaire
+         * @param {Challenge} challenge
+         *
+         * @return {Future}
+         * @resolve {Questionnaire}
+         * @reject {TypeError|ApiError}
+         * @cancel
+         */
+        updateChallengeOnQuestionnaire({dispatch}, {questionnaire, challenge}) {
+            const newQuestionnaire = questionnaire.clone();
+            newQuestionnaire.challenges = map(
+                when(
+                    propEq("name", challenge.name),
+                    always(challenge)
+                ),
+                newQuestionnaire.challenges
+            );
+
+            return dispatch(
+                "patchQuestionnaireInStore",
+                {questionnaire: newQuestionnaire}
+            );
         },
         /**
          * Deletes the given Questionnaire via the API and removes it from the

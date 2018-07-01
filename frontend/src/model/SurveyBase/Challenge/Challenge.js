@@ -7,21 +7,31 @@ class Challenge {
         this.isEnabled = isEnabled;
     }
 
+    get name() {
+        throw new Error("Please implement this.");
+    }
+
     /**
      * @returns {Challenge} The newly isEnabled challenge.
      */
     enable() {
-        const challenge = this.clone();
-        challenge.isEnabled = true;
-        return challenge;
+        return this.set(true);
     }
 
     /**
      * @returns {Challenge} The newly disabled challenge.
      */
     disable() {
+        return this.set(false);
+    }
+
+    /**
+     * @param isEnabled
+     * @returns {Challenge} The newly enabled/disabled challenge.
+     */
+    set(isEnabled) {
         const challenge = this.clone();
-        challenge.isEnabled = false;
+        challenge.isEnabled = isEnabled;
         return challenge;
     }
 

@@ -14,6 +14,10 @@ class EMailWhitelist extends Challenge {
         this.emails = uniq(emails);
     }
 
+    get name() {
+        return "EMailWhitelist Challenge";
+    }
+
     /**
      * Returns a new EMailWhitelist with the added email.
      *
