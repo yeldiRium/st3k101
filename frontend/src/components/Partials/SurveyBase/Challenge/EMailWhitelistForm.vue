@@ -41,8 +41,13 @@
                 templist: ""
             };
         },
-        created() {
-            this.templist = join(", ", this.challenge.emails)
+        watch: {
+            challenge: {
+                immediate: true,
+                handler(newChallenge) {
+                    this.templist = join(", ", this.challenge.emails);
+                }
+            }
         },
         methods: {
             setList() {

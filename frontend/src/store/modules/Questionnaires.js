@@ -12,7 +12,8 @@ import {
     keys,
     map,
     pipe,
-    prop, propEq,
+    prop,
+    propEq,
     reject,
     uniq,
     when,
@@ -33,7 +34,7 @@ import {
     fetchQuestionnaireById,
     fetchQuestionnaireTemplates,
     removeDimension,
-    updateQuestionnaire
+    updateQuestionnaire as apiUpdateQuestionnaire
 } from "../../api/Questionnaire";
 import {BadRequestError} from "../../api/Errors";
 
@@ -373,7 +374,7 @@ const store = {
                 ? questionnaire.languageData.currentLanguage
                 : language;
 
-            return updateQuestionnaire(questionnaire, correctLanguage, params)
+            return apiUpdateQuestionnaire(questionnaire, correctLanguage, params)
                 .chain(result => dispatch(
                     "patchQuestionnaireInStore",
                     {questionnaire: result}
@@ -395,19 +396,28 @@ const store = {
          * @cancel
          */
         updateChallengeOnQuestionnaire({dispatch}, {questionnaire, challenge}) {
-            const newQuestionnaire = questionnaire.clone();
-            newQuestionnaire.challenges = map(
-                when(
-                    propEq("name", challenge.name),
-                    always(challenge)
-                ),
-                newQuestionnaire.challenges
-            );
+            let data = {};
 
-            return dispatch(
-                "patchQuestionnaireInStore",
-                {questionnaire: newQuestionnaire}
-            );
+            switch (challenge.name) {
+                case "EMailWhitelist":
+                    data["email_whitelist"] = challenge.emails;
+                    data["email_whitelist_enabled"] = challenge.isEnabled;
+                    break;
+                default:
+                    return Future.reject(
+                        new BadRequestError("Challenge's name is invalid.")
+                    );
+            }
+
+            return apiUpdateQuestionnaire(
+                questionnaire,
+                questionnaire.languageData.currentLanguage,
+                data
+            )
+                .chain(result => dispatch(
+                    "patchQuestionnaireInStore",
+                    {questionnaire: result}
+                ));
         },
         /**
          * Deletes the given Questionnaire via the API and removes it from the
