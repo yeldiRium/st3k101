@@ -7,7 +7,7 @@
                   :ellipseText="!expanded"
                   :mini="true"
                   :disabled="!isEditable(question)"
-                  @input="updateQuestionText"
+                  @input="updateQuestion('text', $event, true)"
         >
             <router-link :to="{name: 'AQuestion', params: {id: question.id}}">
                 <IconLink class="list-item__icon"
@@ -53,12 +53,26 @@
                 </template>
             </template>
 
+            <span class="question__table-label">
+                Reference ID:
+            </span>
+            <template>
+                <EditableText v-if="question.isConcrete"
+                              :value="question.referenceId"
+                              @input="updateQuestion('referenceId', $event, true)"
+                              :edit-left="true"
+                />
+                <div v-else>
+                    {{ question.referenceId }}
+                </div>
+            </template>
+
             <span class="questionnaire__table-label">
                 Range:
             </span>
             <template>
                 <RangeEditor :value="question.range"
-                             @input="updateRange"
+                             @input="updateQuestion('range', $event, true)"
                              v-if="isOwnedByCurrentDataClient(question) && question.isConcrete"
                 />
                 <Range :range="question.range"
@@ -81,6 +95,8 @@
 </template>
 
 <script>
+    import {assoc} from "ramda";
+
     import {Question} from "../../../model/SurveyBase/Question";
 
     import {setRange, setText} from "../../../api/Question";
@@ -92,6 +108,7 @@
     import RangeEditor from "./Config/RangeEditor";
     import Range from "./Config/RangeSVG";
     import Button from "../Form/Button";
+    import EditableText from "../Form/EditableText";
 
     import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
@@ -108,6 +125,7 @@
             RangeEditor,
             Range,
             Button,
+            EditableText,
             IconLink,
             IconReorder,
             IconExpandMore,
@@ -225,51 +243,23 @@
                 );
             },
             /**
-             * Update the question's text.
+             * Generically updates the Question via the Store.
              *
-             * @param {String} text
+             * @param {String} prop The name of the updated property.
+             * @param {*} value The new value for it.
+             * @param {Boolean} mustBeEditable Whether the Question must be
+             *  editable for this to work.
              */
-            updateQuestionText(text) {
-                if (!this.isEditable(this.question)) {
+            updateQuestion(prop, value, mustBeEditable=false) {
+                if (mustBeEditable && !this.isEditable(this.question)) {
                     return;
                 }
-                const cancel = this.$load(
+                this.$load(
                     this.$store.dispatch(
                         "questions/updateQuestion",
                         {
                             question: this.question,
-                            params: {
-                                text
-                            }
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Update the question's range.
-             *
-             * This is asynchronous, since the API is informed and then the
-             * update is executed.
-             *
-             * @param {Range} range
-             */
-            updateRange(range) {
-                if (!this.isEditable(this.question)) {
-                    return;
-                }
-                const cancel = this.$load(
-                    this.$store.dispatch(
-                        "questions/updateQuestion",
-                        {
-                            question: this.question,
-                            params: {
-                                range
-                            }
+                            params: assoc(prop, value, {})
                         }
                     )
                 ).fork(

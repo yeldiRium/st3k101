@@ -8,7 +8,7 @@
                   :mini="expanded"
                   :ellipseText="!expanded"
                   :disabled="!isEditable(questionnaire)"
-                  @input="updateQuestionnaireName"
+                  @input="updateQuestionnaire('name', $event, true)"
         >
             <router-link
                     :to="{name: 'AQuestionnaire', params: {id: questionnaire.id}}">
@@ -61,7 +61,7 @@
             <template>
                 <EditableText v-if="questionnaire.isConcrete"
                               :value="questionnaire.description"
-                              @input="updateDescription"
+                              @input="updateQuestionnaire('description', $event, true)"
                               :text-area="true"
                               :edit-left="true"
                 />
@@ -71,11 +71,39 @@
             </template>
 
             <span class="questionnaire__table-label">
+                XAPI Target:
+            </span>
+            <template>
+                <EditableText v-if="questionnaire.isConcrete"
+                              :value="questionnaire.xapiTarget"
+                              @input="updateQuestionnaire('xapiTarget', $event)"
+                              :edit-left="true"
+                />
+                <div v-else>
+                    {{ questionnaire.xapiTarget }}
+                </div>
+            </template>
+
+            <span class="questionnaire__table-label">
+                Reference ID:
+            </span>
+            <template>
+                <EditableText v-if="questionnaire.isConcrete"
+                              :value="questionnaire.referenceId"
+                              @input="updateQuestionnaire('referenceId', $event, true)"
+                              :edit-left="true"
+                />
+                <div v-else>
+                    {{ questionnaire.referenceId }}
+                </div>
+            </template>
+
+            <span class="questionnaire__table-label">
                 Published:
             </span>
             <Toggle :value="questionnaire.isPublic"
                     :disabled="!isOwnedByCurrentDataClient(questionnaire)"
-                    @input="updateIsPublic"
+                    @input="updateQuestionnaire('isPublic', $event)"
             >
             </Toggle>
 
@@ -84,23 +112,9 @@
             </span>
             <Toggle :value="questionnaire.allowEmbedded"
                     :disabled="!isOwnedByCurrentDataClient(questionnaire)"
-                    @input="updateAllowEmbedded"
+                    @input="updateQuestionnaire('allowEmbedded', $event)"
             >
             </Toggle>
-
-            <span class="questionnaire__table-label">
-                XAPI Target:
-            </span>
-            <template>
-                <EditableText v-if="questionnaire.isConcrete"
-                              :value="questionnaire.xapiTarget"
-                              @input="updateXapiTarget"
-                              :edit-left="true"
-                />
-                <div v-else>
-                    {{ questionnaire.xapiTarget }}
-                </div>
-            </template>
 
             <div class="questionnaire__dimensions">
                 <Dimension class="dimension--bordered"
@@ -137,7 +151,7 @@
 
 <script>
     import {mapState} from "vuex-fluture";
-    import {map, path, sum, without} from "ramda";
+    import {assoc, map, path, sum, without} from "ramda";
 
     import {Questionnaire} from "../../../model/SurveyBase/Questionnaire";
 
@@ -298,8 +312,16 @@
                     }
                 );
             },
-            updateQuestionnaireName(name) {
-                if (!this.isEditable(this.questionnaire)) {
+            /**
+             * Generically updates the Questionnaire via the Store.
+             *
+             * @param {String} prop The name of the updated property.
+             * @param {*} value The new value for it.
+             * @param {Boolean} mustBeEditable Whether the Questionnaire must be
+             *  editable for this to work.
+             */
+            updateQuestionnaire(prop, value, mustBeEditable=false) {
+                if (mustBeEditable && !this.isEditable(this.questionnaire)) {
                     return;
                 }
                 this.$load(
@@ -307,74 +329,7 @@
                         "questionnaires/updateQuestionnaire",
                         {
                             questionnaire: this.questionnaire,
-                            params: {name}
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            updateDescription(description) {
-                if (!this.isEditable(this.questionnaire)) {
-                    return;
-                }
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            params: {description}
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            updateIsPublic(isPublic) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            params: {isPublic}
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            updateAllowEmbedded(allowEmbedded) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            params: {allowEmbedded}
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            updateXapiTarget(xapiTarget) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            params: {xapiTarget}
+                            params: assoc(prop, value, {})
                         }
                     )
                 ).fork(

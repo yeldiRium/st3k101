@@ -8,7 +8,7 @@
                   :mini="expanded"
                   :ellipseText="!expanded"
                   :disabled="!isEditable(dimension)"
-                  @input="updateDimensionName"
+                  @input="updateDimension('name', $event, true)"
         >
             <router-link :to="{name: 'ADimension', params: {id: dimension.id}}">
                 <IconLink class="list-item__icon"
@@ -54,12 +54,26 @@
                 </template>
             </template>
 
+            <span class="dimension__table-label">
+                Reference ID:
+            </span>
+            <template>
+                <EditableText v-if="dimension.isConcrete"
+                              :value="dimension.referenceId"
+                              @input="updateDimension('referenceId', $event, true)"
+                              :edit-left="true"
+                />
+                <div v-else>
+                    {{ dimension.referenceId }}
+                </div>
+            </template>
+
             <span class="questionnaire__table-label">
                 Randomize Question order:
             </span>
             <Toggle :value="dimension.randomizeQuestions"
                     :disabled="!isOwnedByCurrentDataClient(dimension)"
-                    @input="updateRandomizeQuestions"
+                    @input="updateDimension('randomizeQuestions', $event)"
             >
             </Toggle>
 
@@ -99,7 +113,7 @@
 
 <script>
     import {mapState} from "vuex-fluture";
-    import {without} from "ramda";
+    import {assoc} from "ramda";
 
     import {Dimension} from "../../../model/SurveyBase/Dimension";
 
@@ -110,6 +124,7 @@
     import ReferenceCounter from "./Config/ReferenceCounter";
     import Toggle from "../Form/ToggleButton";
     import Button from "../Form/Button";
+    import EditableText from "../Form/EditableText";
 
     import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
@@ -126,6 +141,7 @@
             ReferenceCounter,
             Toggle,
             Button,
+            EditableText,
             IconLink,
             IconReorder,
             IconExpandLess,
@@ -246,8 +262,16 @@
                     }
                 );
             },
-            updateDimensionName(name) {
-                if (!this.isEditable(this.dimension)) {
+            /**
+             * Generically updates the Dimension via the Store.
+             *
+             * @param {String} prop The name of the updated property.
+             * @param {*} value The new value for it.
+             * @param {Boolean} mustBeEditable Whether the Dimension must be
+             *  editable for this to work.
+             */
+            updateDimension(prop, value, mustBeEditable=false) {
+                if (mustBeEditable && !this.isEditable(this.dimension)) {
                     return;
                 }
                 this.$load(
@@ -255,27 +279,7 @@
                         "dimensions/updateDimension",
                         {
                             dimension: this.dimension,
-                            params: {
-                                name
-                            }
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            updateRandomizeQuestions(randomizeQuestions) {
-                this.$load(
-                    this.$store.dispatch(
-                        "dimensions/updateDimension",
-                        {
-                            dimension: this.dimension,
-                            params: {
-                                randomizeQuestions
-                            }
+                            params: assoc(prop, value, {})
                         }
                     )
                 ).fork(
