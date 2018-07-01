@@ -407,6 +407,10 @@ const store = {
                     data["email_blacklist"] = challenge.emails;
                     data["email_blacklist_enabled"] = challenge.isEnabled;
                     break;
+                case "Password":
+                    data["password"] = challenge.password;
+                    data["password_enabled"] = challenge.isEnabled;
+                    break;
                 default:
                     return Future.reject(
                         new BadRequestError("Challenge's name is invalid.")

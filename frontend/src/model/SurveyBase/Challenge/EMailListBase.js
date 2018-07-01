@@ -4,7 +4,6 @@ import Challenge from "./Challenge";
 
 class EMailListBase extends Challenge {
     /**
-     *
      * @param {Boolean} isEnabled See Challenge.
      * @param {Array<String>} emails of whitelisted emails.
      */

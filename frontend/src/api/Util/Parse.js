@@ -18,6 +18,7 @@ import {
 import {Resource} from "../../model/Resource";
 import EMailWhitelist from "../../model/SurveyBase/Challenge/EMailWhitelist";
 import EMailBlacklist from "../../model/SurveyBase/Challenge/EMailBlacklist";
+import Password from "../../model/SurveyBase/Challenge/Password";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -107,8 +108,9 @@ function parseSmallDataClient({id, href}) {
  */
 function parseChallenges(questionnaire) {
     return [
-        parseEMailWhitelist(questionnaire),
-        parseEmailBlacklist(questionnaire)
+        parseEMailWhitelistChallenge(questionnaire),
+        parseEmailBlacklistChallenge(questionnaire),
+        parsePasswordChallenge(questionnaire)
     ];
 }
 
@@ -119,7 +121,10 @@ function parseChallenges(questionnaire) {
  * @param {Array<String>} email_whitelist
  * @returns {EMailWhitelist}
  */
-function parseEMailWhitelist({email_whitelist_enabled, email_whitelist}) {
+function parseEMailWhitelistChallenge({
+                                          email_whitelist_enabled,
+                                          email_whitelist
+                                      }) {
     return new EMailWhitelist(
         email_whitelist_enabled,
         email_whitelist
@@ -133,10 +138,28 @@ function parseEMailWhitelist({email_whitelist_enabled, email_whitelist}) {
  * @param {Array<String>} email_blacklist
  * @returns {EMailBlacklist}
  */
-function parseEmailBlacklist({email_blacklist_enabled, email_blacklist}) {
+function parseEmailBlacklistChallenge({
+                                 email_blacklist_enabled,
+                                 email_blacklist
+                             }) {
     return new EMailBlacklist(
         email_blacklist_enabled,
         email_blacklist
+    );
+}
+
+/**
+ * Parses the Password Challenge.
+ *
+ * @param {Boolean} password_enabled
+ * @param {String} password
+ * @returns {Password}
+ */
+
+function parsePasswordChallenge({password_enabled, password}) {
+    return new Password(
+        password_enabled,
+        password
     );
 }
 
@@ -509,6 +532,10 @@ export {
     parseLanguage,
     parseLanguageData,
     parseDataClient,
+    parseChallenges,
+    parseEMailWhitelistChallenge,
+    parseEmailBlacklistChallenge,
+    parsePasswordChallenge,
     parseQuestionnaire,
     parseShadowQuestionnaire,
     parseConcreteQuestionnaire,
