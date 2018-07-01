@@ -403,6 +403,10 @@ const store = {
                     data["email_whitelist"] = challenge.emails;
                     data["email_whitelist_enabled"] = challenge.isEnabled;
                     break;
+                case "EMailBlacklist":
+                    data["email_blacklist"] = challenge.emails;
+                    data["email_blacklist_enabled"] = challenge.isEnabled;
+                    break;
                 default:
                     return Future.reject(
                         new BadRequestError("Challenge's name is invalid.")

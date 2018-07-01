@@ -1,20 +1,30 @@
 <template>
-    <EMailWhitelistForm
-            v-bind="$attrs"
-            v-on="$listeners"
-            v-if="challenge.name === 'EMailWhitelist'"
-            :challenge="challenge"
-    />
+    <div class="chosen-challenge-form">
+        <EMailListForm
+                v-bind="$attrs"
+                v-on="$listeners"
+                v-if="challenge.name === 'EMailWhitelist'"
+                :challenge="challenge"
+                name="E-Mail Whitelist Challenge"
+        />
+        <EMailListForm
+                v-bind="$attrs"
+                v-on="$listeners"
+                v-if="challenge.name === 'EMailBlacklist'"
+                :challenge="challenge"
+                name="E-Mail Blacklist Challenge"
+        />
+    </div>
 </template>
 
 <script>
-    import EMailWhitelistForm from "./EMailWhitelistForm";
+    import EMailListForm from "./EMailListForm";
     import Challenge from "../../../../model/SurveyBase/Challenge/Challenge";
 
     export default {
         name: "ChooseChallengeForm",
         components: {
-            EMailWhitelistForm
+            EMailListForm
         },
         props: {
             challenge: {

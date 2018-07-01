@@ -5,7 +5,7 @@
             :challenge="challenge"
     >
         <span slot="head">
-            E-Mail Whitelist Challenge
+            {{ name }}
         </span>
         <template slot="form">
             <span class="challenge-form__label">
@@ -23,16 +23,20 @@
     import {all, join, map, pipe, split, test, trim} from "ramda";
 
     import ChallengeForm from "./ChallengeForm";
-    import EMailWhitelist from "../../../../model/SurveyBase/Challenge/EMailWhitelist";
+    import EMailListBase from "../../../../model/SurveyBase/Challenge/EMailListBase";
 
     export default {
-        name: "EMailWhitelistForm",
+        name: "EMailListForm",
         components: {
             ChallengeForm
         },
         props: {
             challenge: {
-                type: EMailWhitelist,
+                type: EMailListBase,
+                required: true
+            },
+            name: {
+                type: String,
                 required: true
             }
         },
@@ -61,12 +65,12 @@
                     return;
                 }
 
+                const newChallenge = this.challenge.clone();
+                newChallenge.emails = elems;
+
                 this.$emit(
                     'input',
-                    new EMailWhitelist(
-                        this.challenge.isEnabled,
-                        elems
-                    )
+                    newChallenge
                 );
             }
         }
