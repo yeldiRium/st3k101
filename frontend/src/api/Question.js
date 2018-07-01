@@ -1,14 +1,26 @@
 import Future from "fluture";
-import {assoc, clone, contains, dissoc, has, map, pipe, prop} from "ramda";
+import {
+    assoc,
+    clone,
+    contains,
+    dissoc,
+    has,
+    map,
+    path,
+    pipe,
+    prop,
+    when
+} from "ramda";
 
 import {fetchApi} from "./Util/Request";
 import {extractJson} from "./Util/Response";
-import {parseDimension, parseQuestion} from "./Util/Parse";
+import {parseQuestion} from "./Util/Parse";
 
 import Question, {
     ConcreteQuestion,
     ShadowQuestion
 } from "../model/SurveyBase/Question";
+import renameProp from "./Util/renameProp";
 
 const properties = ["text", "range"];
 
@@ -88,20 +100,17 @@ function fetchQuestionTemplates(language = null) {
  * @cancel
  */
 function updateQuestion(question, language, params) {
-    let parsedParams = clone(params);
-    if (has("range", params)) {
-       parsedParams = dissoc("range", parsedParams);
-       parsedParams = assoc(
-           "range_start",
-           params["range"].start,
-           parsedParams
-       );
-       parsedParams = assoc(
-           "range_end",
-           params["range"].end,
-           parsedParams
-       );
-    }
+    let parsedParams = pipe(
+        renameProp("referenceId", "reference_id"),
+        when(
+            has("range"),
+            pipe(
+                assoc("range_start", path(["range", "start"], params)),
+                assoc("range_end", path(["range", "end"], params)),
+                dissoc("range")
+            )
+        )
+    )(params);
 
     return fetchApi(
         question.href,

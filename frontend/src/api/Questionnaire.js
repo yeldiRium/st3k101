@@ -11,6 +11,7 @@ import {
     ShadowQuestionnaire
 } from "../model/SurveyBase/Questionnaire";
 import {ConcreteDimension} from "../model/SurveyBase/Dimension";
+import renameProp from "./Util/renameProp";
 
 const properties = [
     "name", "description", "isPublic", "allowEmbedded", "xapiTarget"
@@ -182,12 +183,19 @@ function fetchQuestionnaireTemplates(language = null) {
  * @cancel
  */
 function updateQuestionnaire(questionnaire, language, params) {
+    let parsedParams = pipe(
+        renameProp("isPublic", "published"),
+        renameProp("referenceId", "reference_id"),
+        renameProp("xapiTarget", "xapi_target"),
+        renameProp("allowEmbedded", "allow_embedded")
+    )(params);
+
     return fetchApi(
         questionnaire.href,
         {
             method: "PATCH",
             authenticate: true,
-            body: JSON.stringify(params),
+            body: JSON.stringify(parsedParams),
             language
         }
     )

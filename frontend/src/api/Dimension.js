@@ -21,6 +21,7 @@ import {
     ShadowDimension
 } from "../model/SurveyBase/Dimension";
 import {ConcreteQuestion} from "../model/SurveyBase/Question";
+import renameProp from "./Util/renameProp";
 
 const properties = ["name", "randomizeQuestions"];
 
@@ -100,15 +101,10 @@ function fetchDimensionTemplates(language = null) {
  * @cancel
  */
 function updateDimension(dimension, language, params) {
-    let parsedParams = clone(params);
-    if (has("randomizeQuestions"), params) {
-        parsedParams = dissoc("randomizeQuestions", parsedParams);
-        parsedParams = assoc(
-            "randomize_question_order",
-            params["randomizeQuestions"],
-            parsedParams
-        );
-    }
+    let parsedParams = pipe(
+        renameProp("randomizeQuestions", "randomize_question_order"),
+        renameProp("referenceId", "reference_id")
+    )(params);
 
     return fetchApi(
         dimension.href,
