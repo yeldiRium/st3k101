@@ -17,6 +17,7 @@ import {
 } from "../../model/SurveyBase/Question";
 import {Resource} from "../../model/Resource";
 import EMailWhitelist from "../../model/SurveyBase/Challenge/EMailWhitelist";
+import EMailBlacklist from "../../model/SurveyBase/Challenge/EMailBlacklist";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -106,21 +107,36 @@ function parseSmallDataClient({id, href}) {
  */
 function parseChallenges(questionnaire) {
     return [
-        parseEMailWhitelist(questionnaire)
+        parseEMailWhitelist(questionnaire),
+        parseEmailBlacklist(questionnaire)
     ];
 }
 
 /**
  * Parses the EMailWhitelist Challenge.
  *
- * @param {Array<String>} email_whitelist
  * @param {Boolean} email_whitelist_enabled
+ * @param {Array<String>} email_whitelist
  * @returns {EMailWhitelist}
  */
-function parseEMailWhitelist({email_whitelist, email_whitelist_enabled}) {
+function parseEMailWhitelist({email_whitelist_enabled, email_whitelist}) {
     return new EMailWhitelist(
         email_whitelist_enabled,
         email_whitelist
+    );
+}
+
+/**
+ * Parses the EMailBlacklist Challenge.
+ *
+ * @param {Boolean} email_blacklist_enabled
+ * @param {Array<String>} email_blacklist
+ * @returns {EMailBlacklist}
+ */
+function parseEmailBlacklist({email_blacklist_enabled, email_blacklist}) {
+    return new EMailBlacklist(
+        email_blacklist_enabled,
+        email_blacklist
     );
 }
 
@@ -237,7 +253,7 @@ function parseConcreteQuestionnaire({
                                         available_languages,
                                         owned_incoming_references,
                                         incoming_reference_count
-                                  }, whole) {
+                                    }, whole) {
     return new ConcreteQuestionnaire(
         href,
         id,

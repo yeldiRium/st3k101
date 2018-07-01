@@ -2,9 +2,9 @@ import {append, clone, concat, contains, uniq, without} from "ramda";
 
 import EMailListBase from "./EMailListBase";
 
-class EMailWhitelist extends EMailListBase {
+class EMailBlacklist extends EMailListBase {
     get name() {
-        return "EMailWhitelist";
+        return "EMailBlacklist";
     }
 
     /**
@@ -12,20 +12,20 @@ class EMailWhitelist extends EMailListBase {
      * @return {Boolean} true, if the email is contained in the whitelist.
      */
     innerValidate(data) {
-        return contains(data, this.emails);
+        return !contains(data, this.emails);
     }
 
     /**
      * Clones the object.
      *
-     * @returns {EMailWhitelist}
+     * @returns {EMailBlacklist}
      */
     clone() {
-        return new EMailWhitelist(
+        return new EMailBlacklist(
             this.isEnabled,
             clone(this.emails)
         );
     }
 }
 
-export default EMailWhitelist;
+export default EMailBlacklist;
