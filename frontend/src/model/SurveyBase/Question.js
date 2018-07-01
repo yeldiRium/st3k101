@@ -15,6 +15,7 @@ class Question extends SurveyBase {
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {Boolean} template See SurveyBase.
+     * @param {String} referenceId See SurveyBase.
      * @param {string}  text The Question text.
      * @param {Range}   range The range for the Question's answer.
      */
@@ -23,9 +24,10 @@ class Question extends SurveyBase {
                 owners,
                 languageData,
                 template,
+                referenceId,
                 text,
                 range) {
-        super(href, id, owners, languageData, template);
+        super(href, id, owners, languageData, template, referenceId);
 
         this.text = text;
         this.range = range;
@@ -59,6 +61,7 @@ class Question extends SurveyBase {
             [...this._owners],
             this.languageData.clone(),
             this.template,
+            this.referenceId,
             this.text,
             this.range.clone()
         );
@@ -76,6 +79,7 @@ class ConcreteQuestion extends Question {
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {Boolean} template See SurveyBase.
+     * @param {String} referenceId See SurveyBase.
      * @param {string}  text See Question.
      * @param {Range}   range See Question.
      * @param {number}  incomingReferenceCount Number of references to this
@@ -91,6 +95,7 @@ class ConcreteQuestion extends Question {
                 owners,
                 languageData,
                 template,
+                referenceId,
                 text,
                 range,
                 incomingReferenceCount,
@@ -99,7 +104,16 @@ class ConcreteQuestion extends Question {
             throw new Error("ReferenceCount can't be smaller than list of owned references.");
         }
 
-        super(href, id, owners, languageData, template, text, range);
+        super(
+            href,
+            id,
+            owners,
+            languageData,
+            template,
+            referenceId,
+            text,
+            range
+        );
         this.incomingReferenceCount = incomingReferenceCount;
         this.ownedIncomingReferences = ownedIncomingReferences;
     }
@@ -132,6 +146,7 @@ class ConcreteQuestion extends Question {
             [...this._owners],
             this.languageData.clone(),
             this.template,
+            this.referenceId,
             this.text,
             this.range.clone(),
             this.incomingReferenceCount,
@@ -150,6 +165,7 @@ class ShadowQuestion extends Question {
      * @param {String} id See Resource.
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
+     * @param {String} referenceId See SurveyBase.
      * @param {string}  text See Question.
      * @param {Range}   range See Question.
      * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the
@@ -159,10 +175,11 @@ class ShadowQuestion extends Question {
                 id,
                 owners,
                 languageData,
+                referenceId,
                 text,
                 range,
                 referenceTo) {
-        super(href, id, owners, languageData, false, text, range);
+        super(href, id, owners, languageData, false, referencId, text, range);
         this.referenceTo = referenceTo;
     }
 
@@ -183,6 +200,7 @@ class ShadowQuestion extends Question {
             this._id,
             [...this._owners],
             this.languageData.clone(),
+            this.referenceId,
             this.text,
             this.range.clone(),
             this.referenceTo.clone()

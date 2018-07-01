@@ -9,6 +9,7 @@ class Questionnaire extends SurveyBase {
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {Boolean} template See SurveyBase.
+     * @param {String} referenceId See SurveyBase.
      * @param {string} name The Questionnaire's name.
      * @param {string} description A description for the Questionnaire.
      * @param {boolean} isPublic Whether the Questionnaire can be filled out and
@@ -24,13 +25,14 @@ class Questionnaire extends SurveyBase {
                 owners,
                 languageData,
                 template,
+                referenceId,
                 name,
                 description,
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
                 dimensions) {
-        super(href, id, owners, languageData, template);
+        super(href, id, owners, languageData, template, referenceId);
 
         this.name = name;
         this.description = description;
@@ -68,6 +70,7 @@ class Questionnaire extends SurveyBase {
             [...this._owners],
             this.languageData.clone(),
             this.template,
+            this.referenceId,
             this.name,
             this.description,
             this.isPublic,
@@ -85,6 +88,7 @@ class ConcreteQuestionnaire extends Questionnaire {
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
      * @param {Boolean} template See SurveyBase.
+     * @param {String} referenceId See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
      * @param {boolean} isPublic See Questionnaire.
@@ -104,6 +108,7 @@ class ConcreteQuestionnaire extends Questionnaire {
                 owners,
                 languageData,
                 template,
+                referenceId,
                 name,
                 description,
                 isPublic,
@@ -118,6 +123,7 @@ class ConcreteQuestionnaire extends Questionnaire {
             owners,
             languageData,
             template,
+            referenceId,
             name,
             description,
             isPublic,
@@ -158,6 +164,7 @@ class ConcreteQuestionnaire extends Questionnaire {
             [...this._owners],
             this.languageData.clone(),
             this.template,
+            this.referenceId,
             this.name,
             this.description,
             this.isPublic,
@@ -176,6 +183,7 @@ class ShadowQuestionnaire extends Questionnaire {
      * @param {String} id See Resource.
      * @param {Array<Party>} owners See OwnedResource.
      * @param {LanguageData} languageData See SurveyBase.
+     * @param {String} referenceId See SurveyBase.
      * @param {string} name See Questionnaire.
      * @param {string} description See Questionnaire.
      * @param {boolean} isPublic See Questionnaire.
@@ -189,6 +197,7 @@ class ShadowQuestionnaire extends Questionnaire {
                 id,
                 owners,
                 languageData,
+                referenceId,
                 name,
                 description,
                 isPublic,
@@ -202,6 +211,7 @@ class ShadowQuestionnaire extends Questionnaire {
             owners,
             languageData,
             false,
+            referenceId,
             name,
             description,
             isPublic,
@@ -230,6 +240,7 @@ class ShadowQuestionnaire extends Questionnaire {
             this._id,
             [...this._owners],
             this.languageData.clone(),
+            this.referenceId,
             this.name,
             this.description,
             this.isPublic,

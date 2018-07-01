@@ -9,16 +9,19 @@ class SurveyBase extends OwnedResource {
      *  the SurveyBase.
      * @param {Boolean} template Whether the SurveyBase may be used as a
      *  template.
+     * @param {String} referenceId A unified referenceId for the resource.
      */
     constructor(href,
                 id,
                 owners,
                 languageData,
-                template) {
+                template,
+                referenceId) {
         super(href, id, owners);
 
         this.languageData = languageData;
         this.template = template;
+        this.referenceId = referenceId;
     }
 
     /**
@@ -30,7 +33,8 @@ class SurveyBase extends OwnedResource {
             this._id,
             [...this._owners],
             this.languageData.clone(),
-            this.template
+            this.template,
+            this.referenceId
         );
     }
 }

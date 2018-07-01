@@ -115,6 +115,7 @@ function parseQuestionnaire(data) {
  * @param {String} href
  * @param {String} id
  * @param {Array} owners
+ * @param {String} reference_id
  * @param {String} name
  * @param {String} description
  * @param {Array} dimensions
@@ -134,6 +135,7 @@ function parseShadowQuestionnaire({
                                       href,
                                       id,
                                       owners,
+                                      reference_id,
                                       name,
                                       description,
                                       dimensions,
@@ -155,6 +157,7 @@ function parseShadowQuestionnaire({
             original_language,
             available_languages
         }),
+        reference_id,
         name,
         description,
         published,
@@ -171,6 +174,7 @@ function parseShadowQuestionnaire({
  * @param {String} href
  * @param {String} id
  * @param {Array} owners
+ * @param {String} reference_id
  * @param {String} name
  * @param {String} description
  * @param {Array} dimensions
@@ -191,6 +195,7 @@ function parseConcreteQuestionnaire({
                                         href,
                                         id,
                                         owners,
+                                        reference_id,
                                         name,
                                         description,
                                         dimensions,
@@ -215,6 +220,7 @@ function parseConcreteQuestionnaire({
             available_languages
         }),
         template,
+        reference_id,
         name,
         description,
         published,
@@ -246,6 +252,7 @@ function parseDimension(data) {
  * @param {String} href
  * @param {String} id
  * @param {Array} owners
+ * @param {String} reference_id
  * @param {String} name
  * @param {Array} questions
  * @param {Boolean} randomize_question_order
@@ -261,6 +268,7 @@ function parseShadowDimension({
                                   href,
                                   id,
                                   owners,
+                                  reference_id,
                                   name,
                                   questions,
                                   randomize_question_order,
@@ -278,6 +286,7 @@ function parseShadowDimension({
             original_language,
             available_languages
         }),
+        reference_id,
         name,
         map(parseQuestion, questions),
         randomize_question_order,
@@ -291,6 +300,7 @@ function parseShadowDimension({
  * @param {String} href
  * @param {String} id
  * @param {Array} owners
+ * @param {String} reference_id
  * @param {String} name
  * @param {Array} questions
  * @param {Boolean} randomize_question_order
@@ -307,6 +317,7 @@ function parseConcreteDimension({
                                     href,
                                     id,
                                     owners,
+                                    reference_id,
                                     name,
                                     questions,
                                     randomize_question_order,
@@ -327,6 +338,7 @@ function parseConcreteDimension({
             available_languages
         }),
         template,
+        reference_id,
         name,
         map(parseQuestion, questions),
         randomize_question_order,
@@ -355,6 +367,7 @@ function parseQuestion(data) {
  * @param {String} href
  * @param {String} id
  * @param {Array} owners
+ * @param {String} reference_id
  * @param {String} text
  * @param {Number} range_start
  * @param {Number} range_end
@@ -370,6 +383,7 @@ function parseShadowQuestion({
                                  href,
                                  id,
                                  owners,
+                                 reference_id,
                                  text,
                                  range_start,
                                  range_end,
@@ -387,6 +401,7 @@ function parseShadowQuestion({
             original_language,
             available_languages
         }),
+        reference_id,
         text,
         new Range({start: range_start, end: range_end}),
         parseResource(reference_to)
@@ -399,6 +414,7 @@ function parseShadowQuestion({
  * @param {String} href
  * @param {String} id
  * @param {Array} owners
+ * @param {String} reference_id
  * @param {String} text
  * @param {Number} range_start
  * @param {Number} range_end
@@ -415,6 +431,7 @@ function parseConcreteQuestion({
                                    href,
                                    id,
                                    owners,
+                                   reference_id,
                                    text,
                                    range_start,
                                    range_end,
@@ -422,8 +439,8 @@ function parseConcreteQuestion({
                                    current_language,
                                    original_language,
                                    available_languages,
-                                        owned_incoming_references,
-                                        incoming_reference_count
+                                   owned_incoming_references,
+                                   incoming_reference_count
                                }) {
     return new ConcreteQuestion(
         href,
@@ -435,6 +452,7 @@ function parseConcreteQuestion({
             available_languages
         }),
         template,
+        reference_id,
         text,
         new Range({start: range_start, end: range_end}),
         incoming_reference_count,
