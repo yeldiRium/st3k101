@@ -375,24 +375,7 @@ const store = {
                 .chain(result => dispatch(
                     "patchQuestionnaireInStore",
                     {questionnaire: result}
-                ))
-                // TODO: remove this
-                // Patches the questionnaire manually and incredibly stupidly
-                // just so that the app seems to work without the api.
-                .chainRej(error => {
-                    for (const key in params) {
-                        if (!isNil(questionnaire[key])) {
-                            questionnaire[key] = params[key];
-                        }
-                    }
-                    // This dispatch isn't technically necessary, since the
-                    // object is mutated directly above, but it let's us use the
-                    // devtools while playing around without api.
-                    return dispatch(
-                        "patchQuestionnaireInStore",
-                        {questionnaire}
-                    );
-                });
+                ));
         },
         /**
          * Deletes the given Questionnaire via the API and removes it from the
