@@ -116,6 +116,7 @@ const questionnaire1 = new ConcreteQuestionnaire(
     true,
     "xapi target",
     [dimension1, dimension2],
+    [], // TODO: add some challenges
     2,
     []
 );

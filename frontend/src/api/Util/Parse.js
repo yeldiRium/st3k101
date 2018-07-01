@@ -192,6 +192,7 @@ function parseShadowQuestionnaire({
         allow_embedded,
         xapi_target,
         map(parseDimension, dimensions),
+        parseChallenges(whole),
         parseResource(reference_to)
     );
 }
@@ -254,6 +255,7 @@ function parseConcreteQuestionnaire({
         allow_embedded,
         xapi_target,
         map(parseDimension, dimensions),
+        parseChallenges(whole),
         incoming_reference_count,
         map(parseResource, owned_incoming_references)
     );
