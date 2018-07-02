@@ -17,7 +17,6 @@ class DimensionSubmissionSchema(Schema):
 
 
 class SubmissionSchema(Schema):
-    questionnaire_id = fields.Integer()
     data_subject = fields.Nested(DataSubjectSchema, required=True)
     password = fields.String()
     captcha_token = fields.String(required=True)

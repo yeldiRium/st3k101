@@ -28,7 +28,7 @@ class Question(SurveyBase):
     statistic_id = db.Column(db.Integer, db.ForeignKey('question_statistic.id'))
 
     # relationships
-    results = db.relationship(
+    responses = db.relationship(
         'QuestionResponse',
         backref='question',
         lazy=True,
@@ -118,7 +118,7 @@ class Question(SurveyBase):
                                   value=answer_value,
                                   verified=(not needs_verification),
                                   verification_token=verification_token)
-        self.results.append(result)
+        self.responses.append(result)
 
         # replacement business logic for previous results
         if len(earlier_results) == 0:
@@ -129,16 +129,16 @@ class Question(SurveyBase):
             # replace earlier unverified result, or earlier verified
             # result, if new result is already verified
             if not earlier_result.verified or result.verified:
-                self.results.remove(earlier_result)
+                self.responses.remove(earlier_result)
 
         elif len(earlier_results) == 2:
             verified_result = verified_results[0]
             unverified_result = unverified_results[0]
             # cancel pending unverified result
-            self.results.remove(unverified_result)
+            self.responses.remove(unverified_result)
             if result.verified:
                 # replace earlier result
-                self.results.remove(verified_result)
+                self.responses.remove(verified_result)
 
         # TODO: not necessary anymore because answer count is selected on the fly
         return False  # signal that answer count has not changed
@@ -175,7 +175,7 @@ class ConcreteQuestion(Question):
         shadow.statistic = None
         q.statistic = stat
 
-        q.results = shadow.results
+        q.responses = shadow.results
         q.text_translations = shadow.text_translations
         q.owners = shadow.owners
 

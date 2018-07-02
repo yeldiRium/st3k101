@@ -4,4 +4,4 @@ __author__ = "Noah Hummel"
 
 
 class DataSubjectSchema(Schema):
-    email = fields.Email
+    email = fields.Email(required=True)
