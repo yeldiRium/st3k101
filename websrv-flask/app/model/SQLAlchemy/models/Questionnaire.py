@@ -18,7 +18,7 @@ from model.SQLAlchemy.models.QAC.QACModule import QACModule
 from model.SQLAlchemy.models.QAC.QACModules.EMailVerificationQAC import EMailVerificationQAC
 from model.SQLAlchemy.models.QAC.QACModules.TOSQAC import TOSQAC
 from model.SQLAlchemy.models.Question import Question, ShadowQuestion, ConcreteQuestion
-from model.SQLAlchemy.models.QuestionResult import QuestionResult
+from model.SQLAlchemy.models.QuestionResult import QuestionResponse
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
 
 __author__ = "Noah Hummel"
@@ -121,7 +121,7 @@ class Questionnaire(SurveyBase):
         count = 0
         for qg in self.question_groups:
             for q in qg.questions:
-                verified_results = QuestionResult.query.\
+                verified_results = QuestionResponse.query.\
                     filter_by(question=q, verified=True).all()
                 count += len(verified_results)
         n_questions = self.question_count

@@ -7,7 +7,7 @@ from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType, TrackingArg
 from model.SQLAlchemy.models.DataSubject import DataSubject
-from model.SQLAlchemy.models.QuestionResult import QuestionResult
+from model.SQLAlchemy.models.QuestionResult import QuestionResponse
 from model.SQLAlchemy.models.QuestionStatistic import QuestionStatistic
 from model.SQLAlchemy.models.SurveyBase import SurveyBase
 from model.SQLAlchemy import db, MUTABLE_HSTORE, translation_hybrid
@@ -29,11 +29,11 @@ class Question(SurveyBase):
 
     # relationships
     results = db.relationship(
-        'QuestionResult',
+        'QuestionResponse',
         backref='question',
         lazy=True,
         cascade='all, delete-orphan',
-        foreign_keys=[QuestionResult.question_id]
+        foreign_keys=[QuestionResponse.question_id]
     )
     statistic = db.relationship(
         'QuestionStatistic',
@@ -88,8 +88,8 @@ class Question(SurveyBase):
 
     @staticmethod
     def get_results_by_subject(subject: DataSubject):
-        results = QuestionResult.query.filter(
-            QuestionResult.owners.any(id=subject.id)
+        results = QuestionResponse.query.filter(
+            QuestionResponse.owners.any(id=subject.id)
         ).all()
         return results
 
@@ -97,7 +97,7 @@ class Question(SurveyBase):
                             needs_verification: bool=True,
                             verification_token: str="") -> bool:
         """
-        Adds a new QuestionResult to the Question.
+        Adds a new QuestionResponse to the Question.
         :param answer_value: int The value the DataSubject has chosen
         :param subject_email: str The email address of the DataSubject
         :param needs_verification: bool Indicating whether this result need to
@@ -114,10 +114,10 @@ class Question(SurveyBase):
         unverified_results = list(filter(lambda x: not x.verified,
                                          earlier_results))
 
-        result = QuestionResult(question=self, data_subject=subject,
-                                value=answer_value,
-                                verified=(not needs_verification),
-                                verification_token=verification_token)
+        result = QuestionResponse(question=self, data_subject=subject,
+                                  value=answer_value,
+                                  verified=(not needs_verification),
+                                  verification_token=verification_token)
         self.results.append(result)
 
         # replacement business logic for previous results

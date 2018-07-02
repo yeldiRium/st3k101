@@ -4,7 +4,7 @@ from model.SQLAlchemy.models.OwnershipBase import OwnershipBase
 __author__ = "Noah Hummel"
 
 
-class QuestionResult(OwnershipBase):
+class QuestionResponse(OwnershipBase):
     id = db.Column(db.Integer, db.ForeignKey(OwnershipBase.id), primary_key=True)
     value = db.Column(db.SmallInteger, nullable=False)
     verified = db.Column(db.Boolean, default=False, nullable=False)
@@ -14,7 +14,7 @@ class QuestionResult(OwnershipBase):
 
     def verify(self) -> bool:
         """
-        Used to verify a QuestionResult to make it count into the statistic.
+        Used to verify a QuestionResponse to make it count into the statistic.
         :return: bool Indicating whether the answer count for the corresponding
         question increased
         """

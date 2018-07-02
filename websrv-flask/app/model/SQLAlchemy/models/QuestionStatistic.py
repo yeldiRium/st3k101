@@ -3,7 +3,7 @@ from typing import List
 
 from model.SQLAlchemy import db
 from model.SQLAlchemy.models.OwnershipBase import OwnershipBase
-from model.SQLAlchemy.models.QuestionResult import QuestionResult
+from model.SQLAlchemy.models.QuestionResult import QuestionResponse
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -23,7 +23,7 @@ class QuestionStatistic(OwnershipBase):
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
     @staticmethod
-    def median(values: List[QuestionResult]) -> float:
+    def median(values: List[QuestionResponse]) -> float:
         """
         Returns the median value of all QuestionResults
         """
@@ -44,9 +44,9 @@ class QuestionStatistic(OwnershipBase):
         Updates the statistics taking into account all QuestionResults of
         self.question that are verified.
         """
-        results = QuestionResult.query\
+        results = QuestionResponse.query\
                                 .filter_by(question=self.question, verified=True)\
-                                .order_by(QuestionResult.value).all()
+                                .order_by(QuestionResponse.value).all()
         self.smallest = None
         self.biggest = None
 
