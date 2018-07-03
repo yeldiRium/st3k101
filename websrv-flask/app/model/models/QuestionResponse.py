@@ -1,3 +1,4 @@
+from auth.users import current_user
 from model import db
 from model.models.DataSubject import DataSubject
 from model.models.OwnershipBase import OwnershipBase
@@ -17,6 +18,7 @@ class QuestionResponse(OwnershipBase):
         super(QuestionResponse, self).__init__(**kwargs)
         if data_subject is not None:
             self.owners.append(data_subject)
+        self.owners += self.question.owners
 
     def verify(self) -> bool:
         """

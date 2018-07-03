@@ -170,7 +170,11 @@ api.add_resource(
     ResponseListForQuestionResource,
     '/api/questionnaire/<int:questionnaire_id>/dimension/<int:dimension_id>/question/<int:question_id>/response',
     '/api/dimension/<int:dimension_id>/question/<int:question_id>/response',
-    '/api/question/<int:question_id>/response',
+    '/api/question/<int:question_id>/response'
+)
+
+api.add_resource(
+    ResponseResource,
     '/api/response/<int:response_id>'
 )
 
