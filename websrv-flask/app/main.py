@@ -179,6 +179,7 @@ import api.dataclient
 import api.questionnaire
 import api.dimension
 import api.languages
+import api.response
 
 # CLI commands
 import cli

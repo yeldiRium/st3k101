@@ -22,6 +22,7 @@ def update_dirty_statistics() -> int:
 
     return counter
 
+
 def update_all_statistics() -> int:
     """
     Helper method to update all the statistics. 

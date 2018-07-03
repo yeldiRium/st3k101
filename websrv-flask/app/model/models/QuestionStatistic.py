@@ -45,10 +45,11 @@ class QuestionStatistic(OwnershipBase):
         self.question that are verified.
         """
         results = QuestionResponse.query\
-                                .filter_by(question=self.question, verified=True)\
-                                .order_by(QuestionResponse.value).all()
-        self.smallest = None
-        self.biggest = None
+                                  .filter_by(question_id=self.question_id,
+                                             verified=True)\
+                                  .order_by(QuestionResponse.value).all()
+        self.smallest = 0  # setting to 0 here, because column is not nullable
+        self.biggest = 0
 
         for result in results:
             if self.smallest is None or result.value < self.smallest:

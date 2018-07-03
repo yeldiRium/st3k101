@@ -1,4 +1,5 @@
 from model import db
+from model.models.DataSubject import DataSubject
 from model.models.OwnershipBase import OwnershipBase
 
 __author__ = "Noah Hummel"
@@ -11,6 +12,11 @@ class QuestionResponse(OwnershipBase):
     verification_token = db.Column(db.String(32))
 
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+
+    def __init__(self, data_subject: DataSubject=None, **kwargs):
+        super(QuestionResponse, self).__init__(**kwargs)
+        if data_subject is not None:
+            self.owners.append(data_subject)
 
     def verify(self) -> bool:
         """

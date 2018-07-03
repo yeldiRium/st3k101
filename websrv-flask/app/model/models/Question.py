@@ -7,6 +7,7 @@ from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType, TrackingArg
 from model.models.DataSubject import DataSubject
+from model.models.OwnershipBase import query_owned
 from model.models.QuestionResponse import QuestionResponse
 from model.models.QuestionStatistic import QuestionStatistic
 from model.models.SurveyBase import SurveyBase
@@ -75,7 +76,12 @@ class Question(SurveyBase):
 
     @property
     @abstractmethod
-    def range(self) -> int:
+    def range_start(self) -> int:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def range_end(self) -> int:
         raise NotImplementedError
 
     @property
@@ -86,12 +92,9 @@ class Question(SurveyBase):
     def available_languages(self):
         return [BabelLanguage[k] for k in self.text_translations.keys()]
 
-    @staticmethod
-    def get_results_by_subject(subject: DataSubject):
-        results = QuestionResponse.query.filter(
-            QuestionResponse.owners.any(id=subject.id)
-        ).all()
-        return results
+    def get_results_by_subject(self, subject: DataSubject):
+        query = query_owned(DataSubject, subject.id, QuestionResponse)
+        return query.filter(QuestionResponse.question_id == self.id).all()
 
     def add_question_result(self, answer_value: int, subject_email: str,
                             needs_verification: bool=True,

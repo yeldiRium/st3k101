@@ -1,6 +1,7 @@
 import click
 
 from app import app
+from framework import services
 from model import db
 
 
@@ -15,3 +16,10 @@ def initdb():
     click.echo("Done!")
 
 # TODO: first time setup cli command
+
+@app.cli.command()
+def update_statistics():
+    click.echo("Updating all statistics models...")
+    services.update_all_statistics()
+    click.echo("Done!")
+
