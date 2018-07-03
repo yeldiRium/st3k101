@@ -3,8 +3,8 @@ from enum import Enum, auto
 from flask import g
 
 from framework.signals import app_signals
-from model.SQLAlchemy import db
-from model.SQLAlchemy.models.TrackerEntry import PrimitiveTrackerEntry, TranslationTrackerEntry, \
+from model import db
+from model.models.TrackerEntry import PrimitiveTrackerEntry, TranslationTrackerEntry, \
     RelationshipAddedTrackerEntry, RelationshipRemovedTrackerEntry, RelationshipAction, ItemDeletedTrackerEntry
 
 __author__ = "Noah Hummel"

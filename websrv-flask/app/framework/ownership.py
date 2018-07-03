@@ -1,6 +1,6 @@
 from flask import g
 
-from model.SQLAlchemy import db
+from model import db
 
 
 def owned(obj: db.Model) -> bool:

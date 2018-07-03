@@ -1,5 +1,4 @@
 import os
-from typing import Tuple
 
 import argon2
 from flask import g
@@ -7,8 +6,8 @@ from flask import g
 import auth
 from framework.exceptions import UserExistsException, BadCredentialsException, \
     UserNotLoggedInException
-from model.SQLAlchemy import db
-from model.SQLAlchemy.models.DataClient import DataClient
+from model import db
+from model.models.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

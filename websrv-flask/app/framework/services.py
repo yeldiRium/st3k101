@@ -2,7 +2,7 @@
 This file contains methods for maintenance jobs etc.
 """
 
-from model.SQLAlchemy.models.Question import Question
+from model.models.Question import Question
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 

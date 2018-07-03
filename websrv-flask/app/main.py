@@ -7,7 +7,7 @@ from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages, BabelLanguage
-from model.SQLAlchemy.models.DataClient import DataClient
+from model.models.DataClient import DataClient
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -171,14 +171,14 @@ def backend():
 # away.
 
 # Database models
-import model.SQLAlchemy.models
+import model.models
 
-import api.v2.question
-import api.v2.session
-import api.v2.dataclient
-import api.v2.questionnaire
-import api.v2.dimension
-import api.v2.languages
+import api.question
+import api.session
+import api.dataclient
+import api.questionnaire
+import api.dimension
+import api.languages
 
 # CLI commands
 import cli
