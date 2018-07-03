@@ -27,5 +27,6 @@ class QuestionResponse(OwnershipBase):
             question.remove_question_result(vr)
 
         self.verified = True
+        self.verification_token = None
 
         return len(verified_results) == 0  # no previous verified results?

@@ -8,6 +8,8 @@ from api.v2.schema.submission import SubmissionSchema
 from auth.roles import Role, needs_minimum_role
 from auth.users import current_user
 from framework.captcha import validate_captcha
+from model.SQLAlchemy import db
+from model.SQLAlchemy.models.Dimension import Dimension
 from model.SQLAlchemy.models.Question import Question
 from model.SQLAlchemy.models.QuestionResponse import QuestionResponse
 from model.SQLAlchemy.models.Questionnaire import Questionnaire
@@ -16,6 +18,7 @@ from utils.dicts import merge_error_dicts
 from utils.email import validate_email_blacklist, validate_email_whitelist
 
 __author__ = "Noah Hummel"
+
 
 def validate_challenges(questionnaire, data):
     errors = dict()
@@ -39,6 +42,32 @@ def validate_challenges(questionnaire, data):
     return errors
 
 
+def validate_resource_path(
+        questionnaire_id=None,
+        dimension_id=None,
+        question_id=None
+):
+    questionnaire = None
+    dimension = None
+    question = None
+    if questionnaire_id is not None:
+        questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
+    if dimension_id is not None:
+        dimension = Dimension.query.get_or_404(dimension_id)
+    if question_id is not None:
+        question = Question.query.get_or_404(question_id)
+
+    if question is not None and dimension is not None:
+        if question.dimension_id != dimension_id:
+            abort(404)
+    if dimension is not None and questionnaire is not None:
+        if dimension.questionnaire != questionnaire:
+            abort(404)
+    if questionnaire is not None and question is not None:
+        if dimension is None:
+            abort(400)
+    return questionnaire, dimension, question
+
 class ResponseListForQuestionnaireResource(Resource):
     @needs_minimum_role(Role.User)
     def get(self, questionnaire_id: int=None):
@@ -50,7 +79,7 @@ class ResponseListForQuestionnaireResource(Resource):
         for dimension in questionnaire.dimensions:
             for question in dimension.questions:
                 responses += question.responses
-        return schema.dump(responses)
+        return schema.dump(responses).data
 
     def post(self, questionnaire_id: int=None):
         schema = SubmissionSchema()
@@ -88,40 +117,66 @@ class ResponseListForQuestionnaireResource(Resource):
                     data['data_subject']['email'],
                     verification_token=verification_token
                 )
-
+        db.session.commit()
         return {
             'message': 'Submission successful. Please verify by email.'
         }, 200
+
 
 class ResponseListForQuestionResource(Resource):
     @needs_minimum_role(Role.User)
     def get(self, questionnaire_id: int=None, dimension_id: int=None,
             question_id: int=None):
-        pass
+        _, _, question = validate_resource_path(questionnaire_id, dimension_id,
+                                                question_id)
+        if question is None or not question.accessible_by(current_user()):
+            abort(404)
+        schema = QuestionResponseSchema(many=True)
+        return schema.dump(question.responses).data
 
 
 class ResponseResource(Resource):
     @needs_minimum_role(Role.User)
     def get(self, questionnaire_id: int=None, dimension_id: int=None,
             question_id: int=None, response_id: int=None):
-        pass
+        _, _, question = validate_resource_path(questionnaire_id, dimension_id,
+                                                question_id)
+        response = QuestionResponse.query.get_or_404(response_id)
+        if question is not None:
+            if response.question_id != question.id:
+                abort(404)
+        if not response.accessible_by(current_user()):
+            abort(404)
+        return QuestionResponseSchema().dump(response).data
+
+
+class ResponseVerificationResource(Resource):
+    def get(self, verification_token: str=None):
+        response = QuestionResponse.query.filter_by(
+            verification_token=verification_token).first()  # type: QuestionResponse
+        if not response:
+            abort(404)
+        response.verify()
+        db.session.commit()
+        return  # TODO redirect
 
 
 api.add_resource(
     ResponseListForQuestionnaireResource,
     '/api/questionnaire/<int:questionnaire_id>/response'
 )
+
 api.add_resource(
     ResponseListForQuestionResource,
     '/api/questionnaire/<int:questionnaire_id>/dimension/<int:dimension_id>/question/<int:question_id>/response',
     '/api/dimension/<int:dimension_id>/question/<int:question_id>/response',
-    '/api/question/<int:question_id>/response'
+    '/api/question/<int:question_id>/response',
+    '/api/response/<int:response_id>'
 )
+
 api.add_resource(
-    ResponseResource,
-    '/api/questionnaire/<int:questionnaire_id>/dimension/<int:dimension_id>/question/<int:question_id>/response/<int:response_id>',
-    '/api/dimension/<int:dimension_id>/question/<int:question_id>/response/<int:response_id>',
-    '/api/question/<int:question_id>/response/<int:response_id>'
+    ResponseVerificationResource,
+    '/api/response/verify/<verification_token>'
 )
 
 ResourceBroker.add_resource_for(ResponseResource, QuestionResponse, 'response_id')
