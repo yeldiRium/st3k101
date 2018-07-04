@@ -4,7 +4,7 @@ from flask import g
 from marshmallow import fields, missing, post_dump
 
 from api.schema import RESTFulSchema
-from api.schema.dataclient import DataClientSchema
+from api.schema.DataClient import DataClientSchema
 from api.schema.fields import enum_field
 from framework.internationalization.babel_languages import BabelLanguage
 from model.models.SurveyBase import SurveyBase

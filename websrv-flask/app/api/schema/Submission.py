@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-from api.schema.datasubject import DataSubjectSchema
+from api.schema.DataSubject import DataSubjectSchema
 
 __author__ = "Noah Hummel"
 

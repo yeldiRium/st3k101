@@ -1,6 +1,6 @@
 from marshmallow import fields, Schema
 
-from api.schema.survey_base import SurveyBaseSchema
+from api.schema.SurveyBase import SurveyBaseSchema
 from model.models.Question import ShadowQuestion
 
 __author__ = "Noah Hummel"

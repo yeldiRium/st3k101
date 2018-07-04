@@ -3,7 +3,7 @@ import hashlib
 from marshmallow import fields
 
 from api.schema import RESTFulSchema
-from api.schema.question import QuestionSchema
+from api.schema.Question import QuestionSchema
 from model.models.DataSubject import DataSubject
 
 __author__ = "Noah Hummel"

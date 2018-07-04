@@ -173,13 +173,13 @@ def backend():
 # Database models
 import model.models
 
-import api.question
-import api.session
-import api.dataclient
-import api.questionnaire
-import api.dimension
-import api.languages
-import api.response
+import api.Question
+import api.Session
+import api.DataClient
+import api.Questionnaire
+import api.Dimension
+import api.Language
+import api.Response
 
 # CLI commands
 import cli

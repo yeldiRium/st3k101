@@ -1,8 +1,8 @@
 from marshmallow import fields, Schema
 
 from api.schema.fields import HexColor
-from api.schema.question import QuestionSchema
-from api.schema.survey_base import SurveyBaseSchema
+from api.schema.Question import QuestionSchema
+from api.schema.SurveyBase import SurveyBaseSchema
 from model.models.Dimension import ShadowDimension
 
 __author__ = "Noah Hummel"

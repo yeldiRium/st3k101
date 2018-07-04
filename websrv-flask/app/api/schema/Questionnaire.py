@@ -1,8 +1,8 @@
 from marshmallow import fields, Schema
 
-from api.schema.dataclient import DataClientSchema
-from api.schema.dimension import DimensionSchema
-from api.schema.survey_base import SurveyBaseSchema
+from api.schema.DataClient import DataClientSchema
+from api.schema.Dimension import DimensionSchema
+from api.schema.SurveyBase import SurveyBaseSchema
 from model.models.Questionnaire import ShadowQuestionnaire
 
 __author__ = "Noah Hummel"

@@ -3,8 +3,8 @@ from flask_restful import Resource, abort
 
 from api import api
 from framework.dependency_injection import ResourceBroker
-from api.schema.response import QuestionResponseSchema
-from api.schema.submission import SubmissionSchema
+from api.schema.Response import QuestionResponseSchema
+from api.schema.Submission import SubmissionSchema
 from auth.roles import Role, needs_minimum_role
 from auth.users import current_user
 from framework.captcha import validate_captcha

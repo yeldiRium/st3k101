@@ -3,7 +3,7 @@ from flask_restful import Resource, abort
 
 from api import api
 from framework.dependency_injection import ResourceBroker
-from api.schema.dimension import DimensionSchema, ShadowDimensionSchema
+from api.schema.Dimension import DimensionSchema, ShadowDimensionSchema
 from auth.roles import current_has_minimum_role, Role, needs_minimum_role
 from auth.users import current_user
 from model import db

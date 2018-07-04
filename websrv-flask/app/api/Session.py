@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import abort, Resource
 
 from api import api
-from api.schema.session import LoginSchema, SessionSchema
+from api.schema.Session import LoginSchema, SessionSchema
 from auth import users
 from auth.roles import needs_role, Role
 from framework.exceptions import UserNotLoggedInException, BadCredentialsException

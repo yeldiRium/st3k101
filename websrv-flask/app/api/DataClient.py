@@ -3,7 +3,7 @@ from flask_restful import abort, Resource
 
 from api import api
 from framework.dependency_injection import ResourceBroker
-from api.schema.dataclient import DataClientSchema
+from api.schema.DataClient import DataClientSchema
 from auth import users
 from auth.roles import Role, needs_minimum_role, current_has_minimum_role
 from auth.users import current_user
