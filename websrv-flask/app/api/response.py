@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import Resource, abort
 
 from api import api
-from api.dependency_injection import ResourceBroker
+from framework.dependency_injection import ResourceBroker
 from api.schema.response import QuestionResponseSchema
 from api.schema.submission import SubmissionSchema
 from auth.roles import Role, needs_minimum_role
