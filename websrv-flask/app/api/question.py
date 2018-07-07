@@ -161,10 +161,10 @@ class ShadowQuestionResource(Resource):
         if question.shadow:
             abort(403)
 
-        dimension.add_shadow_question(question)
+        shadow_question = dimension.add_shadow_question(question)
         db.session.commit()
 
-        data = QuestionSchema().dump(question).data
+        data = QuestionSchema().dump(shadow_question).data
         return {
             'message': 'Question created.',
             'question': data

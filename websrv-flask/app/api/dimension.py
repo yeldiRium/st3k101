@@ -157,10 +157,11 @@ class ShadowDimensionResource(Resource):
             abort(403)
         if dimension.shadow:
             abort(403)
-        questionnaire.add_shadow_dimension(dimension)
+
+        shadow_dimension = questionnaire.add_shadow_dimension(dimension)
         db.session.commit()
 
-        data = DimensionSchema().dump(dimension).data
+        data = DimensionSchema().dump(shadow_dimension).data
         return {
             'message': 'Dimension created.',
             'dimension': data
