@@ -152,8 +152,6 @@ class ShadowQuestionResource(Resource):
         if questionnaire_id is not None:
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
-        if question.dimension_id != dimension_id:
-            abort(404)
         if not dimension.modifiable_by(current_user()):
             abort(403)
         if dimension.shadow:
