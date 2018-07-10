@@ -152,8 +152,6 @@ class ShadowQuestionResource(Resource):
         if questionnaire_id is not None:
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
-        if question.dimension_id != dimension_id:
-            abort(404)
         if not dimension.modifiable_by(current_user()):
             abort(403)
         if dimension.shadow:
@@ -161,10 +159,10 @@ class ShadowQuestionResource(Resource):
         if question.shadow:
             abort(403)
 
-        dimension.add_shadow_question(question)
+        shadow_question = dimension.add_shadow_question(question)
         db.session.commit()
 
-        data = QuestionSchema().dump(question).data
+        data = QuestionSchema().dump(shadow_question).data
         return {
             'message': 'Question created.',
             'question': data
