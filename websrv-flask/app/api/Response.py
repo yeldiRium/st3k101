@@ -68,6 +68,7 @@ def validate_resource_path(
             abort(400)
     return questionnaire, dimension, question
 
+
 class ResponseListForQuestionnaireResource(Resource):
     @needs_minimum_role(Role.User)
     def get(self, questionnaire_id: int=None):

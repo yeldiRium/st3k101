@@ -16,6 +16,8 @@ def initdb():
     click.echo("Done!")
 
 # TODO: first time setup cli command
+# TODO: register DataClient command
+
 
 @app.cli.command()
 def update_statistics():
