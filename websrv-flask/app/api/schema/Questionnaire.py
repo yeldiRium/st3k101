@@ -25,14 +25,17 @@ class QuestionnaireSchema(SurveyBaseSchema):
     owners = fields.Nested(DataClientSchema(only=("id", "href")), many=True, dump_only=True)
 
     __private__ = [
-        'email_whitelist',
-        'email_blacklist',
-        'password',
-        'email_whitelist_enabled',
-        'email_blacklist_enabled',
-        'password_enabled',
-        'xapi_target',
-        'allow_embedded'
+        *SurveyBaseSchema.get_private(),
+        *[
+            'published',
+            'email_whitelist',
+            'email_blacklist',
+            'password',
+            'email_whitelist_enabled',
+            'email_blacklist_enabled',
+            'xapi_target',
+            'allow_embedded'
+        ]
     ]
 
     def get_is_shadow(self, obj):

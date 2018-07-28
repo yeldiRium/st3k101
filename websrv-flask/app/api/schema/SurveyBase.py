@@ -33,6 +33,16 @@ class SurveyBaseSchema(RESTFulSchema):
         dump_only=True
     )
 
+    __private__ = [
+        'shadow',
+        'template',
+        'reference_id',
+        'incoming_reference_count',
+        'owned_incoming_references',
+        'reference_to',
+        'owners'
+    ]
+
     def get_current_language(self, obj):
         current_language = g._language
         if current_language not in obj.available_languages:
@@ -77,7 +87,8 @@ class SurveyBaseSchema(RESTFulSchema):
 
         def _strip(d):
             for k in self.get_private():
-                del d[k]
+                if k in d:
+                    del d[k]
             return d
 
         if isinstance(original_data, list):

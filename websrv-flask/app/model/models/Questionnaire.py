@@ -50,7 +50,8 @@ class Questionnaire(SurveyBase):
         __('email_blacklist'): TrackingType.Primitive,
         __('email_whitelist'): TrackingType.Primitive,
         __('email_blacklist_enabled'): TrackingType.Primitive,
-        __('email_whitelist_enabled'): TrackingType.Primitive
+        __('email_whitelist_enabled'): TrackingType.Primitive,
+        __('published'): TrackingType.Primitive
     }
 
     def __init__(self, **kwargs):
