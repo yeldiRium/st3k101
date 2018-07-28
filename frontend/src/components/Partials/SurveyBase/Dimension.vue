@@ -39,44 +39,7 @@
              v-if="expanded"
              ref="dropdown"
         >
-            <template>
-                <template v-if="dimension.isConcrete">
-                    <span class="dimension__table-label">
-                        References:
-                    </span>
-                    <ReferenceCounter :object="dimension"
-                    />
-                </template>
-                <template v-else>
-                    <span class="dimension__table-label dimension__table-label--span-2">
-                        <router-link :to="{name: 'ADimension', params: {id: dimension.referenceTo.id}}">Go to template</router-link>
-                    </span>
-                </template>
-            </template>
-
-            <span class="dimension__table-label">
-                Reference ID:
-            </span>
-            <template>
-                <EditableText v-if="dimension.isConcrete"
-                              :value="dimension.referenceId"
-                              @input="updateDimension('referenceId', $event, true)"
-                              :edit-left="true"
-                />
-                <div v-else>
-                    {{ dimension.referenceId }}
-                </div>
-            </template>
-
-            <span class="questionnaire__table-label">
-                Randomize Question order:
-            </span>
-            <Toggle :value="dimension.randomizeQuestions"
-                    :disabled="!isOwnedByCurrentDataClient(dimension)"
-                    @input="updateDimension('randomizeQuestions', $event)"
-            >
-            </Toggle>
-
+            <!-- List of Questions -->
             <div class="dimension__questions">
                 <Question class="question--bordered"
                           v-for="question in dimension.questions"
@@ -87,26 +50,74 @@
                 />
 
             </div>
-        </div>
-        <div class="dimension__buttons"
-             v-if="expanded"
-        >
-            <Button v-if="isEditable(dimension)"
-                    @click="openNewQuestionDialog"
+
+            <!-- Add, Delete Buttons -->
+            <div class="dimension__buttons"
+                 v-if="expanded"
             >
-                Add new Question
-            </Button>
-            <Button v-if="isEditable(dimension)"
-                    @click="openUseQuestionTemplateDialog"
-            >
-                Use Question template
-            </Button>
-            <Button v-if="isDeletable(dimension)"
-                    @click="deleteDimension"
-                    :class="{'button--grey': dimension.isShadow}"
-            >
-                delete
-            </Button>
+                <Button v-if="isEditable(dimension)"
+                        @click="openNewQuestionDialog"
+                >
+                    Add new Question
+                </Button>
+                <Button v-if="isEditable(dimension)"
+                        @click="openUseQuestionTemplateDialog"
+                >
+                    Use Question template
+                </Button>
+                <Button v-if="isDeletable(dimension)"
+                        @click="deleteDimension"
+                        :class="{'button--grey': dimension.isShadow}"
+                >
+                    delete
+                </Button>
+            </div>
+
+            <!-- Preferences -->
+            <Collapsible>
+                <span slot="head">Preferences</span>
+                <div slot="body" class="dimension__preferences">
+                    <template>
+                        <template v-if="dimension.isConcrete">
+                            <span class="dimension__table-label">
+                                References:
+                            </span>
+                            <ReferenceCounter :object="dimension"/>
+                        </template>
+                        <template v-else>
+                            <span class="dimension__table-label dimension__table-label--span-2">
+                                <router-link :to="{name: 'ADimension', params: {id: dimension.referenceTo.id}}">Go to template</router-link>
+                            </span>
+                        </template>
+                    </template>
+
+                    <span class="dimension__table-label">
+                        Reference ID:
+                    </span>
+                    <template>
+                        <EditableText v-if="dimension.isConcrete"
+                                      :value="dimension.referenceId"
+                                      @input="updateDimension('referenceId', $event, true)"
+                                      :edit-left="true"
+                        />
+                        <div v-else>
+                            {{ dimension.referenceId }}
+                        </div>
+                    </template>
+
+                    <span class="questionnaire__table-label">
+                        Randomize Question order:
+                    </span>
+                    <Toggle :value="dimension.randomizeQuestions"
+                            :disabled="!isOwnedByCurrentDataClient(dimension)"
+                            @input="updateDimension('randomizeQuestions', $event)"
+                    >
+                    </Toggle>
+                </div>
+            </Collapsible>
+
+            <!-- Tracker Entries -->
+            <TrackerEntries :surveyBase="dimension"></TrackerEntries>
         </div>
     </div>
 </template>
@@ -125,16 +136,19 @@
     import Toggle from "../Form/ToggleButton";
     import Button from "../Form/Button";
     import EditableText from "../Form/EditableText";
+    import TrackerEntries from "./TrackerEntries";
 
     import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
     import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
+    import Collapsible from "../Collapsible";
 
     export default {
         name: "Dimension",
         extends: SurveyBase,
         components: {
+            Collapsible,
             ListItem,
             Question,
             LanguagePicker,
@@ -142,6 +156,7 @@
             Toggle,
             Button,
             EditableText,
+            TrackerEntries,
             IconLink,
             IconReorder,
             IconExpandLess,
@@ -413,7 +428,7 @@
         }
 
         &__body {
-            padding: 0.5em 2em 0.5em 0;
+            padding: 0.5em 2em 0.5em 2em;
 
             display: grid;
             grid-template-columns: minmax(max-content, 1fr) 5fr;
@@ -423,6 +438,14 @@
             > *:not(.dimension__questions) {
                 text-align: center;
             }
+        }
+
+        &__preferences {
+            display: grid;
+            grid-template-columns: minmax(max-content, 1fr) 5fr;
+            grid-row-gap: 0.5em;
+            align-items: center;
+            text-align: center;
         }
 
         &__table-label {
@@ -440,9 +463,12 @@
             flex-flow: column;
 
             grid-column: 1 / span 2;
+            padding-top: 1em;
+            padding-bottom: 1em;
         }
 
         &__buttons {
+            grid-column: 1 / span 2;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -451,6 +477,8 @@
 
             .button {
                 margin: 0 8px 0 8px;
+                background-color: $primary-light;
+                border: $primary 1px solid;
             }
         }
 
