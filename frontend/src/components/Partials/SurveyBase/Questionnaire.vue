@@ -40,83 +40,6 @@
              v-if="expanded"
              ref="dropdown"
         >
-            <template>
-                <template v-if="questionnaire.isConcrete">
-                    <span class="questionnaire__table-label">
-                        References:
-                    </span>
-                    <ReferenceCounter :object="questionnaire"
-                    />
-                </template>
-                <template v-else>
-                    <span class="questionnaire__table-label questionnaire__table-label--span-2">
-                        <router-link
-                                :to="{name: 'AQuestionnaire', params: {id: questionnaire.referenceTo.id}}">Go to template</router-link>
-                    </span>
-                </template>
-            </template>
-
-            <span class="questionnaire__table-label">
-                Description:
-            </span>
-            <template>
-                <EditableText v-if="questionnaire.isConcrete"
-                              :value="questionnaire.description"
-                              @input="updateQuestionnaire('description', $event, true)"
-                              :text-area="true"
-                              :edit-left="true"
-                />
-                <div v-else>
-                    {{ questionnaire.description }}
-                </div>
-            </template>
-
-            <span class="questionnaire__table-label">
-                XAPI Target:
-            </span>
-            <template>
-                <EditableText v-if="questionnaire.isConcrete"
-                              :value="questionnaire.xapiTarget"
-                              @input="updateQuestionnaire('xapiTarget', $event)"
-                              :edit-left="true"
-                />
-                <div v-else>
-                    {{ questionnaire.xapiTarget }}
-                </div>
-            </template>
-
-            <span class="questionnaire__table-label">
-                Reference ID:
-            </span>
-            <template>
-                <EditableText v-if="questionnaire.isConcrete"
-                              :value="questionnaire.referenceId"
-                              @input="updateQuestionnaire('referenceId', $event, true)"
-                              :edit-left="true"
-                />
-                <div v-else>
-                    {{ questionnaire.referenceId }}
-                </div>
-            </template>
-
-            <span class="questionnaire__table-label">
-                Published:
-            </span>
-            <Toggle :value="questionnaire.isPublic"
-                    :disabled="!isOwnedByCurrentDataClient(questionnaire)"
-                    @input="updateQuestionnaire('isPublic', $event)"
-            >
-            </Toggle>
-
-            <span class="questionnaire__table-label">
-                Allow Embedding:
-            </span>
-            <Toggle :value="questionnaire.allowEmbedded"
-                    :disabled="!isOwnedByCurrentDataClient(questionnaire)"
-                    @input="updateQuestionnaire('allowEmbedded', $event)"
-            >
-            </Toggle>
-
             <div class="questionnaire__dimensions">
                 <Dimension class="dimension--bordered"
                            v-for="dimension in questionnaire.dimensions"
@@ -127,51 +50,126 @@
                 />
             </div>
 
-            <div class="questionnaire__challenges">
-                <div
-                        class="questionnaire__challenge-placeholder"
-                        v-if="!expandChallenges"
-                        @click="toggleExpandChallenges"
+            <div class="questionnaire__buttons"
+                 v-if="expanded"
+            >
+                <Button v-if="isEditable(questionnaire)"
+                        @click="openNewDimensionDialog"
                 >
+                    Add new Dimension
+                </Button>
+                <Button v-if="isEditable(questionnaire)"
+                        @click="openUseDimensionTemplateDialog"
+                >
+                    Use Dimension template
+                </Button>
+                <Button v-if="isDeletable(questionnaire)"
+                        @click="deleteQuestionnaire"
+                        :class="{'button--grey': questionnaire.isShadow}"
+                >
+                    delete
+                </Button>
+            </div>
 
-                    Show Challenges
-                </div>
-                <template v-else>
-                    <div
-                            class="questionnaire__challenge-placeholder"
-                            @click="toggleExpandChallenges"
+            <Collapsible>
+                <span slot="head">preferences</span>
+                <div slot="body"
+                     class="questionnaire__preferences"
+                >
+                    <template>
+                        <template v-if="questionnaire.isConcrete">
+                            <span class="questionnaire__table-label">
+                                References:
+                            </span>
+                            <ReferenceCounter :object="questionnaire"
+                            />
+                        </template>
+                        <template v-else>
+                            <span class="questionnaire__table-label questionnaire__table-label--span-2">
+                                <router-link
+                                        :to="{name: 'AQuestionnaire', params: {id: questionnaire.referenceTo.id}}">Go to template</router-link>
+                            </span>
+                        </template>
+                    </template>
+
+                    <span class="questionnaire__table-label">
+                        Description:
+                    </span>
+                    <template>
+                        <EditableText v-if="questionnaire.isConcrete"
+                                      :value="questionnaire.description"
+                                      @input="updateQuestionnaire('description', $event, true)"
+                                      :text-area="true"
+                                      :edit-left="true"
+                        />
+                        <div v-else>
+                            {{ questionnaire.description }}
+                        </div>
+                    </template>
+
+                    <span class="questionnaire__table-label">
+                        XAPI Target:
+                    </span>
+                    <template>
+                        <EditableText v-if="questionnaire.isConcrete"
+                                      :value="questionnaire.xapiTarget"
+                                      @input="updateQuestionnaire('xapiTarget', $event)"
+                                      :edit-left="true"
+                        />
+                        <div v-else>
+                            {{ questionnaire.xapiTarget }}
+                        </div>
+                    </template>
+
+                    <span class="questionnaire__table-label">
+                        Reference ID:
+                    </span>
+                    <template>
+                        <EditableText v-if="questionnaire.isConcrete"
+                                      :value="questionnaire.referenceId"
+                                      @input="updateQuestionnaire('referenceId', $event, true)"
+                                      :edit-left="true"
+                        />
+                        <div v-else>
+                            {{ questionnaire.referenceId }}
+                        </div>
+                    </template>
+
+                    <span class="questionnaire__table-label">
+                        Published:
+                    </span>
+                    <Toggle :value="questionnaire.isPublic"
+                            :disabled="!isOwnedByCurrentDataClient(questionnaire)"
+                            @input="updateQuestionnaire('isPublic', $event)"
                     >
+                    </Toggle>
 
-                        Hide Challenges
-                    </div>
+                    <span class="questionnaire__table-label">
+                        Allow Embedding:
+                    </span>
+                    <Toggle :value="questionnaire.allowEmbedded"
+                            :disabled="!isOwnedByCurrentDataClient(questionnaire)"
+                            @input="updateQuestionnaire('allowEmbedded', $event)"
+                    >
+                    </Toggle>
+                </div>
+            </Collapsible>
+
+            <Collapsible>
+                <span slot="head">challenges</span>
+                <div slot="body"
+                     class="questionnaire__challnges">
                     <ChooseChallengeForm
                             v-for="challenge in questionnaire.challenges"
                             :key="challenge.name"
                             :challenge="challenge"
                             @input="updateChallenge"
                     />
-                </template>
-            </div>
-        </div>
-        <div class="questionnaire__buttons"
-             v-if="expanded"
-        >
-            <Button v-if="isEditable(questionnaire)"
-                    @click="openNewDimensionDialog"
-            >
-                Add new Dimension
-            </Button>
-            <Button v-if="isEditable(questionnaire)"
-                    @click="openUseDimensionTemplateDialog"
-            >
-                Use Dimension template
-            </Button>
-            <Button v-if="isDeletable(questionnaire)"
-                    @click="deleteQuestionnaire"
-                    :class="{'button--grey': questionnaire.isShadow}"
-            >
-                delete
-            </Button>
+                </div>
+            </Collapsible>
+
+            <TrackerEntries :surveyBase="questionnaire"></TrackerEntries>
+
         </div>
     </div>
 </template>
@@ -191,6 +189,8 @@
     import Toggle from "../Form/ToggleButton";
     import Button from "../Form/Button";
     import ChooseChallengeForm from "./Challenge/ChooseChallengeForm";
+    import Collapsible from "../Collapsible";
+    import TrackerEntries from "./TrackerEntries";
 
     import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
@@ -201,6 +201,7 @@
         name: "Questionnaire",
         extends: SurveyBase,
         components: {
+            Collapsible,
             ListItem,
             Dimension,
             LanguagePicker,
@@ -212,7 +213,8 @@
             IconLink,
             IconReorder,
             IconExpandLess,
-            IconExpandMore
+            IconExpandMore,
+            TrackerEntries
         },
         props: {
             /** @type {Questionnaire} */
@@ -516,7 +518,7 @@
         }
 
         &__body {
-            padding: 0.5em 2em 0.5em 0;
+            padding: 0.5em 2em 0.5em 2em;
 
             display: grid;
             grid-template-columns: minmax(max-content, 1fr) 5fr;
@@ -528,6 +530,19 @@
             }
         }
 
+        &__preferences {
+            display: grid;
+            grid-template-columns: minmax(max-content, 1fr) 5fr;
+            grid-row-gap: 0.5em;
+            align-items: center;
+            text-align: center;
+        }
+
+        &__challenges {
+            display: flex;
+            flex-direction: column;
+        }
+
         &__table-label {
             padding: 0 0.5em 0 0.5em;
 
@@ -536,7 +551,7 @@
             }
         }
 
-        &__dimensions, &__challenges {
+        &__dimensions {
             width: 100%;
 
             display: flex;
@@ -546,6 +561,7 @@
         }
 
         &__buttons {
+            grid-column: 1 / span 2;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -554,6 +570,8 @@
 
             .button {
                 margin: 0 8px 0 8px;
+                background-color: $primary-light;
+                border: $primary 1px solid;
             }
         }
 
