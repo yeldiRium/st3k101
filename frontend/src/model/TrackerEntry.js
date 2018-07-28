@@ -8,10 +8,11 @@ class TrackerEntry {
      * @param {Date} timestamp
      */
     constructor(dataclientEmail,
-                timestamp
+                timestamp,
     ) {
         this._dataclientEmail =  dataclientEmail;
-        this._timestamp = timestamp;
+        this._timestamp = new Date(timestamp);
+        this.type = "TrackerEntry";
     }
 
     /***
@@ -64,6 +65,7 @@ class PropertyUpdatedTrackerEntry extends TrackerEntry {
         this._propertyName = propertyName;
         this._previousValue = previousValue;
         this._newValue = newValue;
+        this.type = "PropertyUpdatedTrackerEntry";
     }
 
     get itemName() {
@@ -71,7 +73,7 @@ class PropertyUpdatedTrackerEntry extends TrackerEntry {
     }
 
     get itemType() {
-        return this._item.type;
+        return this._item.type.replace("Concrete", "");
     }
 
     get itemHref() {
@@ -130,6 +132,7 @@ class TranslatedPropertyUpdatedTrackerEntry
             newValue
             );
         this._language = language;
+        this.type = 'TranslatedPropertyUpdatedTrackerEntry'
     }
 
     get language() {
@@ -162,6 +165,7 @@ class ItemAddedTrackerEntry extends  TrackerEntry {
             type: addedItemType,
             href: addedItemHref
         };
+        this.type = "ItemAddedTrackerEntry";
     }
 
     get parentItemName() {
@@ -169,7 +173,7 @@ class ItemAddedTrackerEntry extends  TrackerEntry {
     }
 
     get parentItemType() {
-        return this._parentItem.type;
+        return this._parentItem.type.replace("Concrete", "");
     }
 
     get parentItemHref() {
@@ -181,11 +185,15 @@ class ItemAddedTrackerEntry extends  TrackerEntry {
     }
 
     get addedItemType() {
-        return this._addedItem.type;
+        return this._addedItem.type.replace("Concrete", "");
     }
 
     get addedItemHref() {
         return this._addedItem.href;
+    }
+
+    get itemHref() {
+        return this._parentItem.href;
     }
 }
 
@@ -204,6 +212,7 @@ class ItemRemovedTrackerEntry extends TrackerEntry {
             href: parentItemHref
         };
         this._removedItemName = removedItemName;
+        this.type = "ItemRemovedTrackerEntry";
     }
 
     get parentItemName() {
@@ -211,7 +220,7 @@ class ItemRemovedTrackerEntry extends TrackerEntry {
     }
 
     get parentItemType() {
-        return this._parentItem.type;
+        return this._parentItem.type.replace("Concrete", "");
     }
 
     get parentItemHref() {
@@ -221,6 +230,10 @@ class ItemRemovedTrackerEntry extends TrackerEntry {
     get removedItemName() {
         return this._removedItemName;
     }
+
+    get itemHref() {
+        return this._parentItem.href;
+    }
 }
 
 class QuestionnaireRemovedTrackerEntry extends TrackerEntry {
@@ -229,7 +242,8 @@ class QuestionnaireRemovedTrackerEntry extends TrackerEntry {
                 questionnaireName
     ) {
         super(dataclientEmail, timestamp);
-        this._questionnaireName = questionnaireName
+        this._questionnaireName = questionnaireName;
+        this.type = "QuestionnaireRemovedTrackerEntry";
     }
 
     get questionnaireName() {
