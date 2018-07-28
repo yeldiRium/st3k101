@@ -3,7 +3,6 @@ from typing import Dict
 
 from flask import g
 
-from auth.users import current_user
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
@@ -11,7 +10,6 @@ from framework.tracker import TrackingType, item_added, item_removed
 from model import db, MUTABLE_HSTORE, translation_hybrid
 from model.models.Question import Question, ConcreteQuestion, ShadowQuestion
 from model.models.SurveyBase import SurveyBase
-from utils import check_color
 
 __author__ = "Noah Hummel"
 
@@ -55,16 +53,6 @@ class Dimension(SurveyBase):
     @property
     @abstractmethod
     def name_translations(self) -> Dict[str, str]:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def color(self) -> str:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def text_color(self) -> str:
         raise NotImplementedError
 
     @property
@@ -118,29 +106,11 @@ class ConcreteDimension(Dimension):
 
     # columns
     reference_id = db.Column(db.String(128))
-    color = db.Column(db.String(7), nullable=False, default='#aeaeae')
-    text_color = db.Column(db.String(7), nullable=False, default='#000000')
     name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
 
     shadow = False
-
-    def set_color(self, color: str):
-        """
-        Setter for QuestionGroup.color, checks if color is valid.
-        :param color: A html-style color hex i.e. #00fa23
-        """
-        check_color(color)
-        self.color = color
-
-    def set_text_color(self, color: str):
-        """
-        Setter for QuestionGroup.text_color, checks if color is valid.
-        :param color: A html-style color hex i.e. #00fa24
-        """
-        check_color(color)
-        self.text_color = color
 
     def __init__(self, name: str, **kwargs):
         self.original_language = g._language
@@ -150,8 +120,6 @@ class ConcreteDimension(Dimension):
     def from_shadow(shadow):
         d = ConcreteDimension("")
         d.name_translations = shadow.name_translations
-        d.color = shadow.color
-        d.text_color = shadow.text_color
         d.randomize_question_order = shadow.randomize_question_order
         d.owners = shadow.owners
         d.reference_id = shadow.reference_id
@@ -210,11 +178,3 @@ class ShadowDimension(Dimension):
     @property
     def name_translations(self) -> Dict[str, str]:
         return self._referenced_object.name_translations
-
-    @property
-    def color(self) -> str:
-        return self._referenced_object.color
-
-    @property
-    def text_color(self) -> str:
-        return self._referenced_object.text_color
