@@ -5,7 +5,7 @@ from flask import g
 
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
-from framework.tracker import TrackingType, TrackingArg
+from framework.tracker import TrackingType
 from model.models.DataSubject import DataSubject
 from model.models.OwnershipBase import query_owned
 from model.models.QuestionResponse import QuestionResponse
@@ -46,18 +46,18 @@ class Question(SurveyBase):
     )
 
     tracker_args = {
-        __('text'): [
-            TrackingType.TranslationHybrid,
-            TrackingArg.Accumulate
-        ],
-        __('range'): [
-            TrackingType.Primitive
-        ],
+        __('text'): TrackingType.TranslationHybrid,
+        __('range_start'): TrackingType.Primitive,
+        __('range_end'): TrackingType.Primitive
     }
 
     def __init__(self, **kwargs):
         super(Question, self).__init__(**kwargs)
         self.statistic = QuestionStatistic()
+
+    @property
+    def name(self) -> str:
+        return self.text
 
     @property
     @abstractmethod

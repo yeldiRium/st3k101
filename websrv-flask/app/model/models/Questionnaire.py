@@ -7,8 +7,7 @@ from auth.users import current_user
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
-from framework.tracker import TrackingType, TrackingArg, relationship_updated, item_deleted
-from model.models.TrackerEntry import RelationshipAction
+from framework.tracker import TrackingType, item_added, item_removed, questionnaire_removed
 from model import db, MUTABLE_HSTORE, translation_hybrid
 from model.models.Dimension import Dimension, ConcreteDimension, ShadowDimension
 from model.models.QuestionResponse import QuestionResponse
@@ -44,18 +43,14 @@ class Questionnaire(SurveyBase):
     )
 
     tracker_args = {
-        __('name'): [
-            TrackingType.TranslationHybrid,
-            TrackingArg.Accumulate
-        ],
-        __('description'): [
-            TrackingType.TranslationHybrid,
-            TrackingArg.Accumulate
-        ],
-        __('randomize_question_order'): [
-            TrackingType.Primitive,
-            TrackingArg.Accumulate
-        ]
+        __('name'): TrackingType.TranslationHybrid,
+        __('description'): TrackingType.TranslationHybrid,
+        __('password_enabled'): TrackingType.Primitive,
+        __('password'): TrackingType.Primitive,
+        __('email_blacklist'): TrackingType.Primitive,
+        __('email_whitelist'): TrackingType.Primitive,
+        __('email_blacklist_enabled'): TrackingType.Primitive,
+        __('email_whitelist_enabled'): TrackingType.Primitive
     }
 
     def __init__(self, **kwargs):
@@ -134,13 +129,7 @@ class Questionnaire(SurveyBase):
             s_dimension.owners = copy.owners
             copy.dimensions.append(s_dimension)
 
-        relationship_updated.send(
-            self,
-            relationship_name=__('Dimension'),
-            action=RelationshipAction.Add,
-            related_object=dimension,
-            person=current_user()
-        )
+        item_added.send(self, added_item=dimension)
 
         return dimension
 
@@ -157,13 +146,7 @@ class Questionnaire(SurveyBase):
             s_dimension.owners = copy.owners
             copy.dimensions.append(s_dimension)
 
-        relationship_updated.send(
-            self,
-            relationship_name=__('Dimension'),
-            action=RelationshipAction.Add,
-            related_object=dimension,
-            person=current_user()
-        )
+        item_added.send(added_item=dimension)
 
         return dimension
 
@@ -180,18 +163,13 @@ class Questionnaire(SurveyBase):
                 if s_dimension.concrete_id == dimension.id:
                     db.session.delete(s_dimension)
 
-        relationship_updated.send(
-            self,
-            relationship_name=__('Dimension'),
-            action=RelationshipAction.Remove,
-            related_object=dimension.name,
-            person=current_user()
-        )
+        item_removed.send(self, removed_item_name=dimension.name)
 
         self.dimensions.remove(dimension)
 
     def delete(self):
-        item_deleted.send(self, person=current_user())
+
+        questionnaire_removed.send(self)
 
         if isinstance(self, ConcreteQuestionnaire):
             # Create concrete questionnaires from all shadow copies of

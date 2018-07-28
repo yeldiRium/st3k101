@@ -180,6 +180,7 @@ import api.Questionnaire
 import api.Dimension
 import api.Language
 import api.Response
+import api.Tracker
 
 # CLI commands
 import cli

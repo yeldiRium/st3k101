@@ -1,25 +1,26 @@
 from datetime import datetime
-from enum import Enum, auto
 
 from flask import g
+from sqlalchemy.orm import backref
 
-from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
 from model import db, MUTABLE_HSTORE
+from model.models.DataClient import DataClient
 from model.models.OwnershipBase import OwnershipBase
 from utils import ellipse
 
-__author__ = "Noah Hummel"
-
-
-class RelationshipAction(Enum):
-    Add = auto()
-    Remove = auto()
-
 
 class TrackerEntry(OwnershipBase):
-    id = db.Column(db.Integer, db.ForeignKey(OwnershipBase.id),
-                   primary_key=True)
+    """
+    Base class for all tracker entries.
+    Stores timestamp of the event and DataClient who
+    triggered the event.
+    """
+    id = db.Column(
+        db.Integer,
+        db.ForeignKey(OwnershipBase.id, ondelete='CASCADE'),
+        primary_key=True
+    )
 
     # polymorphic config
     __tablename__ = 'tracker_entry'
@@ -27,46 +28,61 @@ class TrackerEntry(OwnershipBase):
 
     # columns
     timestamp = db.Column(db.DateTime)
+    dataclient_email = db.Column(db.String(100))
 
-    # foreign keys
-    sender_id = db.Column(db.Integer, db.ForeignKey('survey_base.id', onupdate='CASCADE', ondelete='CASCADE'))
-    person_id = db.Column(db.Integer, db.ForeignKey('person.id', onupdate='CASCADE', ondelete='CASCADE'))
-
-    # relationships
-    sender = db.relationship(
-        'SurveyBase',
-        uselist=False,
-        foreign_keys=[sender_id]
-    )
-
-    person = db.relationship(
-        'Party',
-        uselist=False,
-        foreign_keys=[person_id]
-    )
-
-    def __init__(self, sender, person, **kwargs):
+    def __init__(self, dataclient: DataClient, **kwargs):
         super(TrackerEntry, self).__init__(**kwargs)
-        self.sender = sender
-        self.person = person
         self.timestamp = datetime.now()
+        self.dataclient_email = dataclient.email
 
 
-class PrimitiveTrackerEntry(TrackerEntry):
-    id = db.Column(db.Integer, db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
+class PropertyUpdatedTrackerEntry(TrackerEntry):
+    """
+    Stores the old and new values for a property of a certain
+    survey item. Also stores a href to that item as well as the name of the
+    item.
+    """
+    id = db.Column(db.Integer,
+                   db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
                    primary_key=True)
 
     # polymorphic config
-    __tablename__ = 'primitive_tracker_entry'
+    __tablename__ = 'property_updated_tracker_entry'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
-    _attribute_name = db.Column(db.String(50))
+    # columns
+    item_name = db.Column(db.String(50))
+    property_name = db.Column(db.String(50))
     _values = db.Column(MUTABLE_HSTORE)
 
-    def __init__(self, sender, person, attribute_name, previous_value,
-                 new_value, **kwargs):
-        super(PrimitiveTrackerEntry, self).__init__(sender, person, **kwargs)
-        self._attribute_name = attribute_name
+    # foreign keys
+    item_id = db.Column(
+        db.Integer,
+        db.ForeignKey('survey_base.id', onupdate='CASCADE', ondelete='CASCADE')
+    )
+
+    # relationships
+    item = db.relationship(
+        'SurveyBase',
+        uselist=False,
+        foreign_keys=[item_id],
+        backref=backref('property_updated_tracker_entries', cascade='all, delete')
+    )
+
+    def __init__(
+        self,
+        dataclient: DataClient,
+        item_name: str,
+        item: 'SurveyBase',
+        property_name,
+        previous_value,
+        new_value,
+        **kwargs
+    ):
+        super(PropertyUpdatedTrackerEntry, self).__init__(dataclient, **kwargs)
+        self.item_name = ellipse(item_name, 50)
+        self.item = item
+        self.property_name = ellipse(property_name, 50)
         self._values = {'previous': str(previous_value), 'new': str(new_value)}
 
     @property
@@ -77,94 +93,157 @@ class PrimitiveTrackerEntry(TrackerEntry):
     def new_value(self):
         return self._values['new']
 
-    @property
-    def attribute_name(self):
-        return _(self._attribute_name)
 
-
-class TranslationTrackerEntry(PrimitiveTrackerEntry):
-    id = db.Column(db.Integer, db.ForeignKey(PrimitiveTrackerEntry.id, ondelete='CASCADE'),
-                   primary_key=True)
+class TranslatedPropertyUpdatedTrackerEntry(PropertyUpdatedTrackerEntry):
+    """
+    Same as PropertyUpdatedTrackerEntry but used for columns that have multiple
+    translations. Also stores the language of the updated property.
+    """
+    id = db.Column(
+        db.Integer,
+        db.ForeignKey(PropertyUpdatedTrackerEntry.id, ondelete='CASCADE'),
+        primary_key=True
+    )
 
     # polymorphic config
-    __tablename__ = 'translation_tracker_entry'
+    __tablename__ = 'translated_property_updated_tracker_entry'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # columns
     language = db.Column(db.Enum(BabelLanguage))
 
-    def __init__(self, sender, person, attribute_name, previous_value,
-                 new_value, **kwargs):
-        super(TranslationTrackerEntry, self).__init__(sender, person,
-                                                      attribute_name,
-                                                      previous_value,
-                                                      new_value, **kwargs)
+    def __init__(self, dataclient, item_name, item, property_name,
+                 previous_value, new_value, **kwargs):
+        super(TranslatedPropertyUpdatedTrackerEntry, self).__init__(
+            dataclient,
+            item_name,
+            item,
+            property_name,
+            previous_value,
+            new_value,
+            **kwargs
+        )
         self.language = g._language
 
 
-class RelationshipAddedTrackerEntry(TrackerEntry):
-    id = db.Column(db.Integer, db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
+class ItemAddedTrackerEntry(TrackerEntry):
+    """
+    TrackerEntry that indicates that a new item has been added to a survey.
+    """
+    id = db.Column(db.Integer,
+                   db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
                    primary_key=True)
 
     # polymorphic config
-    __tablename__ = 'relationship_added_tracker_entry'
+    __tablename__ = 'item_added_tracker_entry'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # columns
-    _relationship_name = db.Column(db.String(50))
+    parent_item_name = db.Column(db.String(50))
+    added_item_name = db.Column(db.String(50))
 
     # foreign keys
-    related_object_id = db.Column(db.Integer, db.ForeignKey('survey_base.id', onupdate='CASCADE', ondelete='CASCADE'))
-
-    related_object = db.relationship(
-        'SurveyBase',
-        uselist=False,
-        foreign_keys=[related_object_id]
+    parent_item_id = db.Column(
+        db.Integer,
+        db.ForeignKey('survey_base.id', onupdate='CASCADE', ondelete='CASCADE')
+    )
+    added_item_id = db.Column(
+        db.Integer,
+        db.ForeignKey('survey_base.id', onupdate='CASCADE', ondelete='CASCADE')
     )
 
-    def __init__(self, sender, person, relationship_name, related_object,
-                 **kwargs):
-        super(RelationshipAddedTrackerEntry, self).__init__(sender, person, **kwargs)
-        self._relationship_name = relationship_name
-        self.related_object = related_object
+    # relationships
+    parent_item = db.relationship(
+        'SurveyBase',
+        uselist=False,
+        foreign_keys=[parent_item_id],
+        backref=backref('item_added_parent_tracker_entries', cascade='all, delete')
 
-    @property
-    def relationship_name(self):
-        return _(self._relationship_name)
+    )
+    added_item = db.relationship(
+        'SurveyBase',
+        uselist=False,
+        foreign_keys=[added_item_id],
+        backref=backref('item_added_tracker_entries', cascade='all, delete')
+
+    )
+
+    def __init__(
+        self,
+        dataclient,
+        parent_item_name: str,
+        parent_item: 'SurveyBase',
+        added_item_name: str,
+        added_item: 'SurveyBase',
+        **kwargs
+    ):
+        super(ItemAddedTrackerEntry, self).__init__(dataclient, **kwargs)
+        self.parent_item_name = ellipse(parent_item_name, 50)
+        self.added_item_name = ellipse(added_item_name, 50)
+        self.parent_item = parent_item
+        self.added_item = added_item
 
 
-class RelationshipRemovedTrackerEntry(TrackerEntry):
-    id = db.Column(db.Integer, db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
+class ItemRemovedTrackerEntry(TrackerEntry):
+    """
+    TrackerEntry that indicates that an item has been removed from a survey.
+    """
+    id = db.Column(db.Integer,
+                   db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
                    primary_key=True)
 
     # polymorphic config
-    __tablename__ = 'relationship_removed_tracker_entry'
+    __tablename__ = 'item_removed_tracker_entry'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # columns
-    _relationship_name = db.Column(db.String(50))
+    parent_item_name = db.Column(db.String(50))
+    removed_item_name = db.Column(db.String(50))
 
     # foreign keys
-    related_object_label = db.Column(db.String(50))
+    parent_item_id = db.Column(
+        db.Integer,
+        db.ForeignKey('survey_base.id', onupdate='CASCADE', ondelete='CASCADE')
+    )
 
-    def __init__(self, sender, person, relationship_name, related_object_label,
-                 **kwargs):
-        super(RelationshipRemovedTrackerEntry, self).__init__(sender, person, **kwargs)
-        self._relationship_name = relationship_name
+    # relationships
+    parent_item = db.relationship(
+        'SurveyBase',
+        uselist=False,
+        foreign_keys=[parent_item_id],
+        backref=backref('item_removed_parent_tracker_entries', cascade='all, delete')
 
-        if len(related_object_label) > 50:
-            related_object_label = ellipse(related_object_label, 50)
-        self.related_object_label = related_object_label
+    )
 
-    @property
-    def relationship_name(self):
-        return _(self._relationship_name)
+    def __init__(
+        self,
+        dataclient: DataClient,
+        parent_item_name: str,
+        parent_item: 'SurveyBase',
+        removed_item_name: str,
+        **kwargs
+    ):
+        super(ItemRemovedTrackerEntry, self).__init__(dataclient, **kwargs)
+        self.parent_item_name = ellipse(parent_item_name, 50)
+        self.removed_item_name = ellipse(removed_item_name, 50)
+        self.parent_item = parent_item
 
 
-class ItemDeletedTrackerEntry(TrackerEntry):
-    id = db.Column(db.Integer, db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
+class QuestionnaireRemovedTrackerEntry(TrackerEntry):
+    """
+    TrackerEntry that indicates that a Questionnaire was deleted by it's owner.
+    """
+    id = db.Column(db.Integer,
+                   db.ForeignKey(TrackerEntry.id, ondelete='CASCADE'),
                    primary_key=True)
 
     # polymorphic config
-    __tablename__ = 'questionnaire_deleted_tracker_entry'
+    __tablename__ = 'questionnaire_removed_tracker_entry'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
+
+    # columns
+    questionnaire_name = db.Column(db.String(50))
+
+    def __init__(self, dataclient: DataClient, questionnaire_name: str, **kwargs):
+        super(QuestionnaireRemovedTrackerEntry, self).__init__(dataclient, **kwargs)
+        self.questionnaire_name = ellipse(questionnaire_name, 50)

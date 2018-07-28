@@ -7,8 +7,7 @@ from auth.users import current_user
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
-from framework.tracker import TrackingType, TrackingArg, relationship_updated
-from model.models.TrackerEntry import RelationshipAction
+from framework.tracker import TrackingType, item_added, item_removed
 from model import db, MUTABLE_HSTORE, translation_hybrid
 from model.models.Question import Question, ConcreteQuestion, ShadowQuestion
 from model.models.SurveyBase import SurveyBase
@@ -39,10 +38,8 @@ class Dimension(SurveyBase):
     )
 
     tracker_args = {
-        __('name'): [
-            TrackingType.TranslationHybrid,
-            TrackingArg.Accumulate
-        ]
+        __('name'): TrackingType.TranslationHybrid,
+        __('randomize_question_order'): TrackingType.Primitive
     }
 
     @property
@@ -85,13 +82,7 @@ class Dimension(SurveyBase):
         question = ConcreteQuestion(text, **kwargs)
         self.questions.append(question)
 
-        relationship_updated.send(
-            self,
-            relationship_name=__('Question'),
-            action=RelationshipAction.Add,
-            related_object=question,
-            person=current_user()
-        )
+        item_added.send(self, added_item=question)
 
         return question
 
@@ -103,13 +94,7 @@ class Dimension(SurveyBase):
         question = ShadowQuestion(concrete_question)
         self.questions.append(question)
 
-        relationship_updated.send(
-            self,
-            relationship_name=__('Question'),
-            action=RelationshipAction.Add,
-            related_object=question,
-            person=current_user()
-        )
+        item_added.send(self, added_item=question)
 
         return question
 
@@ -122,13 +107,7 @@ class Dimension(SurveyBase):
         self.questions.remove(question)
         text = question.text
 
-        relationship_updated.send(
-            self,
-            relationship_name=__('Question'),
-            action=RelationshipAction.Remove,
-            related_object=text,
-            person=current_user()
-        )
+        item_removed.send(self, removed_item_name=text)
 
 
 class ConcreteDimension(Dimension):

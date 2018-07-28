@@ -2,8 +2,9 @@ from abc import abstractmethod
 from typing import Dict, List, Union
 
 from auth.users import current_user
+from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
-from framework.tracker import TrackingArg, TrackingType, translation_hybrid_updated, primitive_property_updated
+from framework.tracker import TrackingType, translation_hybrid_updated, property_updated
 from model import db
 from model.models.OwnershipBase import OwnershipBase
 
@@ -50,7 +51,7 @@ class SurveyBase(OwnershipBase):
 
     @property
     @abstractmethod
-    def tracker_args(self) -> Dict[str, List[Union[TrackingType, TrackingArg]]]:
+    def tracker_args(self) -> Dict[str, TrackingType]:
         raise NotImplementedError
 
     def __setattr__(self, key, value):
@@ -67,25 +68,20 @@ class SurveyBase(OwnershipBase):
             previous = None
         object.__setattr__(self, key, value)
 
-        tracker_args = self.tracker_args[key]
-        if TrackingType.Primitive in tracker_args:
-            primitive_property_updated.send(
-                self,
-                key=key,
-                previous_value=previous,
-                new_value=value,
-                person=current_user(),
-                tracker_args=tracker_args
-            )
-        elif TrackingType.TranslationHybrid in tracker_args:
-            translation_hybrid_updated.send(
-                self,
-                key=key,
-                previous_value=previous,
-                new_value=value,
-                person=current_user(),
-                tracker_args=tracker_args
-            )
+        key = _(key)  # translate property name if possible
+
+        signal = None
+        if self.tracker_args[key] == TrackingType.Primitive:
+            signal = property_updated
+        elif self.tracker_args[key] == TrackingType.TranslationHybrid:
+            signal = translation_hybrid_updated
+
+        signal.send(
+            self,
+            property_name=key,
+            previous_value=previous,
+            new_value=value
+        )
 
     def __init__(self, **kwargs):
         super(SurveyBase, self).__init__(**kwargs)
