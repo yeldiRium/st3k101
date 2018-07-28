@@ -64,5 +64,6 @@
 
     * {
         color: $verydark;
+        font-family: "Noto Sans Light", "Arial";
     }
 </style>
