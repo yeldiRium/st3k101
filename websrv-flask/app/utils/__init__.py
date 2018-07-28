@@ -60,6 +60,8 @@ def check_color(color: str) -> None:
 
 
 def ellipse(s, length):
+    if len(s) <= length:
+        return s
     start = length // 2
     end = len(s) - start + 3
     return "{}...{}".format(s[:start], s[end:])
