@@ -44,10 +44,12 @@
     @import "../../../scss/_variables";
 
     .challenge-form {
-        border: 1px solid $primary;
+        border-left: 2px solid $primary;
+        padding-bottom: 8px;
+        margin-bottom: 1em;
 
         &__head {
-            margin-bottom: 0.3em;
+            margin-bottom: 0.4em;
         }
 
         &__body {
