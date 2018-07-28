@@ -19,6 +19,13 @@ import {Resource} from "../../model/Resource";
 import EMailWhitelist from "../../model/SurveyBase/Challenge/EMailWhitelist";
 import EMailBlacklist from "../../model/SurveyBase/Challenge/EMailBlacklist";
 import Password from "../../model/SurveyBase/Challenge/Password";
+import {
+    ItemAddedTrackerEntry,
+    ItemRemovedTrackerEntry,
+    QuestionnaireRemovedTrackerEntry,
+    TranslatedPropertyUpdatedTrackerEntry,
+    PropertyUpdatedTrackerEntry
+} from "../../model/TrackerEntry";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -528,6 +535,119 @@ function parseConcreteQuestion({
     );
 }
 
+function parsePropertyUpdatedTrackerEntry({
+    dataclient_email,
+    timestamp,
+    item_name,
+    item_type,
+    item_href,
+    property_name,
+    previous_value,
+    new_value
+}) {
+    return new PropertyUpdatedTrackerEntry(
+        dataclient_email,
+        timestamp,
+        item_name,
+        item_type,
+        item_href,
+        property_name,
+        previous_value,
+        new_value
+    );
+}
+
+function parseTranslatedPropertyUpdatedTrackerEntry({
+    dataclient_email,
+    timestamp,
+    item_name,
+    item_type,
+    item_href,
+    property_name,
+    previous_value,
+    new_value,
+    language
+}) {
+    return new TranslatedPropertyUpdatedTrackerEntry(
+        dataclient_email,
+        timestamp,
+        item_name,
+        item_type,
+        item_href,
+        property_name,
+        previous_value,
+        new_value,
+        language
+    );
+}
+
+function parseItemAddedTrackeEntry({
+    dataclient_email,
+    timestamp,
+    parent_item_name,
+    parent_item_type,
+    parent_item_href,
+    added_item_name,
+    added_item_type,
+    added_item_href
+}) {
+    return new ItemAddedTrackerEntry(
+        dataclient_email,
+        timestamp,
+        parent_item_name,
+        parent_item_type,
+        parent_item_href,
+        added_item_name,
+        added_item_type,
+        added_item_href
+    );
+}
+
+function parseItemRemovedTrackerEntry({
+    dataclient_email,
+    timestamp,
+    parent_item_name,
+    parent_item_type,
+    parent_item_href,
+    removed_item_name
+}) {
+    return new ItemRemovedTrackerEntry(
+        dataclient_email,
+        timestamp,
+        parent_item_name,
+        parent_item_type,
+        parent_item_href,
+        removed_item_name
+    );
+}
+
+function parseQuestionnaireRemovedTrackerEntry({
+    dataclient_email,
+    timestamp,
+    questionnaire_name
+}) {
+    return new QuestionnaireRemovedTrackerEntry(
+        dataclient_email,
+        timestamp,
+        questionnaire_name
+    );
+}
+
+function parseTrackerEntry(data) {
+    switch (data.type) {
+        case "PropertyUpdatedTrackerEntry":
+            return parsePropertyUpdatedTrackerEntry(data);
+        case "TranslatedPropertyUpdatedTrackerEntry":
+            return parseTranslatedPropertyUpdatedTrackerEntry(data);
+        case "ItemAddedTrackerEntry":
+            return parseItemAddedTrackeEntry(data);
+        case "ItemRemovedTrackerEntry":
+            return parseItemRemovedTrackerEntry(data);
+        case "QuestionnaireRemovedTrackerEntry":
+            return parseQuestionnaireRemovedTrackerEntry(data);
+    }
+}
+
 export {
     parseLanguage,
     parseLanguageData,
@@ -544,5 +664,6 @@ export {
     parseConcreteDimension,
     parseQuestion,
     parseShadowQuestion,
-    parseConcreteQuestion
+    parseConcreteQuestion,
+    parseTrackerEntry
 };
