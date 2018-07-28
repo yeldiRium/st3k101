@@ -9,6 +9,8 @@
             />
         </div>
 
+        <TrackerEntries :all="true" :style="itemStyle"></TrackerEntries>
+
         <div class="my-questionnaires__buttons">
             <Button class="my-questionnaires__add-questionnaire-button"
                     @click="openNewQuestionnaireDialog"
@@ -30,10 +32,12 @@
 
     import Button from "../../Partials/Form/Button";
     import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
+    import TrackerEntries from "../../Partials/SurveyBase/TrackerEntries";
 
     export default {
         name: "MyQuestionnaires",
         components: {
+            TrackerEntries,
             Button,
             Questionnaire
         },
@@ -140,6 +144,8 @@
 </script>
 
 <style lang="scss">
+    @import "../../scss/_variables";
+
     .my-questionnaires {
         display: grid;
         grid-template-columns: 100%;
@@ -164,5 +170,6 @@
             grid-auto-flow: column;
             grid-column-gap: 0.5em;
         }
+
     }
 </style>
