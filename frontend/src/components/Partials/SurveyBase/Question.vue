@@ -80,7 +80,10 @@
                        v-else
                 />
             </template>
+            <TrackerEntries :surveyBase="question"></TrackerEntries>
         </div>
+
+
         <div class="question__buttons"
              v-if="expanded"
         >
@@ -109,6 +112,7 @@
     import Range from "./Config/RangeSVG";
     import Button from "../Form/Button";
     import EditableText from "../Form/EditableText";
+    import TrackerEntries from "./TrackerEntries";
 
     import IconLink from "../../../assets/icons/baseline-link-24px.svg";
     import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
@@ -126,6 +130,7 @@
             Range,
             Button,
             EditableText,
+            TrackerEntries,
             IconLink,
             IconReorder,
             IconExpandMore,
@@ -319,7 +324,7 @@
         }
 
         &__body {
-            padding: 0.5em 2em 0.5em 0;
+            padding: 0.5em 2em 0.5em 2em;
 
             display: grid;
             grid-template-columns: minmax(max-content, 1fr) 5fr;
