@@ -67,7 +67,7 @@
 
 <script>
     import {mapState} from "vuex-fluture";
-    import {findIndex} from "ramda";
+    import {findIndex, equals} from "ramda";
 
     import DimensionForm from "../../Partials/SurveyBase/Submission/DimensionForm";
     import Button from "../../Partials/Form/Button";
@@ -185,10 +185,9 @@
              */
             reconstructState(newQuestionnaire) {
                 const previousState = this.submissionQuestionnaire;
-                const equal = (q) => (e) => e.id === q.id;
                 for (let prevDimension of previousState.dimensions) {
                     let dimensionIndex = findIndex(
-                        equal(prevDimension),
+                        equals(prevDimension),
                         newQuestionnaire.dimensions
                     );
                     if (dimensionIndex < 0) {
@@ -197,7 +196,7 @@
                     let newDimension = newQuestionnaire.dimensions[dimensionIndex];
                     for (let prevQuestion of prevDimension.questions) {
                         let questionIndex = findIndex(
-                            equal(prevQuestion),
+                            equals(prevQuestion),
                             newDimension.questions
                         );
                         if (questionIndex < 0) {

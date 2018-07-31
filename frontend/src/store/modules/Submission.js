@@ -1,6 +1,6 @@
 import {Future} from "fluture";
 
-import {filter, find, isNil} from "ramda";
+import {complement, equals, filter, find, isNil} from "ramda";
 
 import {fetchQuestionnaireForSubmissionById} from "../../api/Questionnaire";
 
@@ -44,9 +44,8 @@ const store = {
     },
     mutations: {
         patchSubmissionQuestionnaireInStore(state, {questionnaire}) {
-            let unequal = (q) => (e) => e.id !== q.id;
             state.submissionQuestionnaires = filter(
-                unequal(questionnaire),
+                complement(equals(questionnaire)),
                 state.submissionQuestionnaires
             );
             state.submissionQuestionnaires.push(questionnaire.clone());
@@ -56,4 +55,4 @@ const store = {
 
 export default store;
 
-export { store };
+export {store};

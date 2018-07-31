@@ -41,6 +41,14 @@ class SubmissionQuestionnaire {
             map(clone, this.dimensions)
         );
     }
+
+    /**
+     * @param {SubmissionQuestionnaire} otherSubmissionQuestionnaire
+     * @returns {boolean} true, if both have the same id
+     */
+    equals(otherSubmissionQuestionnaire) {
+        return this.id === otherSubmissionQuestionnaire.id;
+    }
 }
 
 export default SubmissionQuestionnaire;
