@@ -3,7 +3,7 @@ import {contains, map, path, pipe, prop, without} from "ramda";
 
 import {extractJson} from "./Util/Response";
 import {fetchApi} from "./Util/Request";
-import {parseDimension, parseQuestionnaire} from "./Util/Parse";
+import {parseDimension, parseQuestionnaire, parseSubmissionQuestionnaire} from "./Util/Parse";
 import {updateDimension} from "./Dimension";
 
 import {
@@ -145,6 +145,23 @@ function fetchQuestionnaire(href, language = null) {
  */
 function fetchQuestionnaireById(id, language = null) {
     return fetchQuestionnaire(`/api/questionnaire/${id}`, language);
+}
+
+/**
+ *
+ * @param id
+ * @param language
+ * @returns {Future}
+ */
+function fetchQuestionnaireForSubmissionById(id, language = null) {
+    return fetchApi(
+        `/api/questionnaire/${id}`,
+        {
+            authenticate: false,
+            language
+        }
+        ).chain(extractJson)
+        .map(parseSubmissionQuestionnaire);
 }
 
 /**
@@ -413,6 +430,7 @@ export {
     fetchQuestionnaire,
     fetchQuestionnaireById,
     fetchQuestionnaireTemplates,
+    fetchQuestionnaireForSubmissionById,
     updateQuestionnaire,
     deleteQuestionnaire,
     addConcreteDimension,

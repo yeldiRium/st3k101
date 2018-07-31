@@ -26,6 +26,9 @@ import {
     TranslatedPropertyUpdatedTrackerEntry,
     PropertyUpdatedTrackerEntry
 } from "../../model/TrackerEntry";
+import SubmissionQuestionnaire from "../../model/Submission/SubmissionQuestionnaire";
+import SubmissionDimension from "../../model/Submission/SubmissionDimension";
+import SubmissionQuestion from "../../model/Submission/SubmissionQuestion";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -648,6 +651,81 @@ function parseTrackerEntry(data) {
     }
 }
 
+function parseSubmissionQuestion({
+    id,
+    href,
+    text,
+    range_start,
+    range_end,
+    current_language,
+    original_language,
+    available_languages
+}) {
+    return new SubmissionQuestion(
+        id,
+        href,
+        text,
+        new Range({
+            start: range_start,
+            end: range_end
+        }),
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        })
+    );
+}
+
+function parseSubmissionDimension({
+    id,
+    href,
+    name,
+    randomize_question_order,
+    current_language,
+    original_language,
+    available_languages,
+    questions
+}) {
+    return new SubmissionDimension(
+        id,
+        href,
+        name,
+        randomize_question_order,
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        map(parseSubmissionQuestion, questions)
+    );
+}
+
+function parseSubmissionQuestionnaire({
+    id,
+    href,
+    name,
+    description,
+    password_enabled,
+    dimensions,
+    current_language,
+    original_language,
+    available_languages
+}){
+    return new SubmissionQuestionnaire(
+        id,
+        href,
+        name,
+        description,
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        password_enabled,
+        map(parseSubmissionDimension, dimensions)
+    );
+}
 export {
     parseLanguage,
     parseLanguageData,
@@ -665,5 +743,6 @@ export {
     parseQuestion,
     parseShadowQuestion,
     parseConcreteQuestion,
-    parseTrackerEntry
+    parseTrackerEntry,
+    parseSubmissionQuestionnaire
 };
