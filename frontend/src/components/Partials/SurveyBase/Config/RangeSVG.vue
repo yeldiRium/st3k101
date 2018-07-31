@@ -289,9 +289,17 @@
     .range-svg {
         width: 100%;
 
-        &__middle-line, &__number-line, &__selector-line {
-            stroke: $verydark;
+        &__middle-line {
+            stroke: $slightlydark;
+        }
+
+        &__number-line {
+            stroke: $slightlydark;
             stroke-width: 2px;
+        }
+
+        &__selector-line {
+            stroke: $primary;
         }
 
         &__number-line.range-svg--hover {

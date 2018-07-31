@@ -1,7 +1,7 @@
 <template>
     <!-- menubar with languagepicker-->
     <!-- content -->
-        <router-view/>
+       <router-view :key="$route.fullPath"/>
     <!-- end content -->
 </template>
 
