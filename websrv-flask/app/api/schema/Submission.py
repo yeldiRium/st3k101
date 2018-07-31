@@ -6,8 +6,8 @@ __author__ = "Noah Hummel"
 
 
 class QuestionSubmissionSchema(Schema):
-    id = fields.Integer()
-    value = fields.Integer()
+    id = fields.Integer(required=True)
+    value = fields.Integer(required=True)
 
 
 class DimensionSubmissionSchema(Schema):
