@@ -17,7 +17,8 @@ import {
 import {store as questionnaires} from "./modules/Questionnaires";
 import {store as dimensions} from "./modules/Dimensions";
 import {store as questions} from "./modules/Questions";
-import {store as trackerEntries} from "./modules/TrackerEntries"
+import {store as trackerEntries} from "./modules/TrackerEntries";
+import {store as submission} from "./modules/Submission";
 
 Vue.use(Vuex);
 
@@ -45,7 +46,8 @@ const store = new Vuex.Store({
         questionnaires,
         dimensions,
         questions,
-        trackerEntries
+        trackerEntries,
+        submission
     }
 });
 
