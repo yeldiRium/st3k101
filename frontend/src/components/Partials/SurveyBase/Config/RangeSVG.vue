@@ -90,7 +90,7 @@
 </template>
 
 <script>
-    import {concat, contains, forEach} from "ramda";
+    import {isNil, contains, forEach} from "ramda";
 
     import Range from "../../../../model/SurveyBase/Config/Range";
 
@@ -112,22 +112,21 @@
              * Irrelevant, if preview is true.
              */
             startSelector: {
-                type: Number,
-                default: 0
+                type: Number
             }
         },
         data() {
             return {
-                selector: 0,
+                selector: this.range.start,
                 // In %
                 width: 80
             }
         },
         created() {
-            if (contains(this.startSelector, this.range.numbers)) {
-                this.selector = this.startSelector;
-            } else {
-                this.selector = this.range.start;
+            if (!isNil(this.startSelector)) {
+                if (contains(this.startSelector, this.range.numbers)) {
+                    this.selector = this.startSelector;
+                }
             }
         },
         computed: {
