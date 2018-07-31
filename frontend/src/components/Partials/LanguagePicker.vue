@@ -5,7 +5,7 @@
              ref="currentLanguage"
              @click="openLanguageMenu"
         >
-            {{toUpper(languageData.currentLanguage.shortName)}}
+            {{currentLanguageLabel}}
         </div>
 
         <div class="language-picker__language-menu elevation-24"
@@ -38,6 +38,7 @@
 
             <div class="language-picker__heading"
                  v-if="filteredUnusedLanguages.length > 0"
+                 v-show="!hideUnused"
             >
                 Unused languages
             </div>
@@ -46,6 +47,7 @@
                  v-for="language in filteredUnusedLanguages"
                  :key="language.shortName"
                  @click="chooseLanguage(language, false)"
+                 v-show="!hideUnused"
             >
                 <span class="language-picker__short-name">
                     {{ toUpper(language.shortName) }}
@@ -70,7 +72,8 @@
         split,
         test,
         toUpper,
-        without
+        without,
+        isNil
     } from "ramda";
     import {mapState} from "vuex-fluture";
 
@@ -88,11 +91,21 @@
             /** @type {LanguageData} */
             languageData: {
                 type: LanguageData
+            },
+            hideUnused: {
+                type: Boolean,
+            },
+            useLongNames: {
+                type: Boolean
             }
         },
         computed: {
             ...mapState("language", ["languages"]),
             ...mapState("global", ["window"]),
+            currentLanguageLabel() {
+                let lang = this.languageData.currentLanguage;
+                return this.useLongNames? lang.longName : toUpper(lang.shortName);
+            },
             menuStyle() {
                 // Establish a dependency and force update on property change.
                 this.recomputeHack;
@@ -178,9 +191,9 @@
                     list
                 );
             },
-            onKeyUp() {
+            onKeyUp(event) {
                 // Enter key was pressed
-                if (event.which == 27) {
+                if (event.which === 27) {
                     this.closeLanguageMenu();
                 }
             },
