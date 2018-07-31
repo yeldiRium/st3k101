@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource, abort
 
 from api import api
+from api.schema.Question import QuestionSchema
 from framework.dependency_injection import ResourceBroker
 from api.schema.Response import QuestionResponseSchema
 from api.schema.Submission import SubmissionSchema
@@ -93,11 +94,13 @@ class ResponseListForQuestionnaireResource(Resource):
         challenge_errors = validate_challenges(questionnaire, data)
         if challenge_errors:
             return {
-               'message': 'Some challenges could not be completed.',
+                'message': 'Some challenges could not be completed.',
                 'errors': merge_error_dicts(errors, challenge_errors)
             }, 403
 
         verification_token = generate_verification_token()
+
+        all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
 
         for dimension_data in data['dimensions']:
             dimension = next((d for d in questionnaire.dimensions
@@ -118,6 +121,15 @@ class ResponseListForQuestionnaireResource(Resource):
                     data['data_subject']['email'],
                     verification_token=verification_token
                 )
+                all_questions.remove(question_data['id'])
+
+        if all_questions:
+            db.session.rollback()
+            return {
+                'message': 'Missing questions.',
+                'missing': list(all_questions)
+            }, 400
+
         db.session.commit()
         return {
             'message': 'Submission successful. Please verify by email.'
