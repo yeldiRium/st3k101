@@ -2,72 +2,68 @@
     <div class="submission"
          :style="itemStyle"
     >
-        <div v-if="submissionQuestionnaire !== null"
-             class="submission__questionnaire"
-        >
-            <span class="submission__questionnaire__header">
-                <span>{{ submissionQuestionnaire.name }}</span>
-                <LanguagePicker
-                        :language-data="submissionQuestionnaire.languageData"
-                        :hideUnused="true"
-                        :useLongNames="true"
-                        @choose-language="changeLanguage"
+        <span class="submission__questionnaire__header">
+            <span>{{ submissionQuestionnaire.name }}</span>
+            <LanguagePicker
+                    :language-data="submissionQuestionnaire.languageData"
+                    :hideUnused="true"
+                    :useLongNames="true"
+                    @choose-language="changeLanguage"
+            />
+        </span>
+        <div class="submission__questionnaire__body">
+            <div class="submission__questionnaire__description"
+                 v-if="submissionQuestionnaire.description.length > 0"
+            >
+                {{submissionQuestionnaire.description}}
+            </div>
+
+            <div class="submission__questionnaire__dimension-head">
+                <div class="submission__questionnaire__dimension-head__item"
+                     v-for="dimension in submissionQuestionnaire.dimensions"
+                     @click.prevent="selectedDimensionId = dimension.id"
+                     v-bind:class="{'submission__questionnaire__dimension-head__item-selected': selectedDimensionId === dimension.id}"
+                >
+                    {{ dimension.name }}
+                </div>
+            </div>
+            <div class="submission__questionnaire__body__dimension">
+                <DimensionForm
+                        v-for="dimension in submissionQuestionnaire.dimensions"
+                        v-show="selectedDimensionId === dimension.id"
+                        :dimension="dimension"
+                        :key="dimension.href"
+                        @response-change="updateResponseValue($event)"
                 />
-            </span>
-            <div class="submission__questionnaire__body">
-                <div class="submission__questionnaire__description"
-                     v-if="submissionQuestionnaire.description.length > 0"
-                >
-                    {{submissionQuestionnaire.description}}
-                </div>
-
-                <div class="submission__questionnaire__dimension-head">
-                    <div class="submission__questionnaire__dimension-head__item"
-                         v-for="dimension in submissionQuestionnaire.dimensions"
-                         @click.prevent="selectedDimensionId = dimension.id"
-                         v-bind:class="{'submission__questionnaire__dimension-head__item-selected': selectedDimensionId === dimension.id}"
-                    >
-                        {{ dimension.name }}
-                    </div>
-                </div>
-                <div class="submission__questionnaire__body__dimension">
-                    <DimensionForm
-                            v-for="dimension in submissionQuestionnaire.dimensions"
-                            v-show="selectedDimensionId === dimension.id"
-                            :dimension="dimension"
-                            :key="dimension.href"
-                            @response-change="updateResponseValue($event)"
-                    />
-                </div>
             </div>
-            <div class="submission__footer">
-                <label>
-                    <span>Email Address</span>
-                    <input type="email"
-                           v-model="inputData.email"
-                    />
-                </label>
+        </div>
+        <div class="submission__footer">
+            <label>
+                <span>Email Address</span>
+                <input type="email"
+                       v-model="inputData.email"
+                />
+            </label>
 
-                <label v-if="submissionQuestionnaire.passwordEnabled">
-                    <span>Password</span>
-                    <input type="password"
-                           v-model="inputData.password">
-                </label>
+            <label v-if="submissionQuestionnaire.passwordEnabled">
+                <span>Password</span>
+                <input type="password"
+                       v-model="inputData.password">
+            </label>
 
-                <Button @click="submit"
-                        :class="{'button--grey': !isReadyToSubmit}"
-                >
-                    <span v-if="isReadyToSubmit">Submit</span>
-                    <span v-else>Please complete the survey to submit.</span>
-                </Button>
-            </div>
+            <Button @click="submit"
+                    :class="{'button--grey': !isReadyToSubmit}"
+            >
+                <span v-if="isReadyToSubmit">Submit</span>
+                <span v-else>Please complete the survey to submit.</span>
+            </Button>
         </div>
     </div>
 </template>
 
 <script>
     import {mapState} from "vuex-fluture";
-    import {findIndex, equals} from "ramda";
+    import {equals, findIndex} from "ramda";
 
     import DimensionForm from "../../Partials/SurveyBase/Submission/DimensionForm";
     import Button from "../../Partials/Form/Button";
@@ -224,7 +220,14 @@
         },
         created() {
             this.loadQuestionnaire().fork(
-                this.$handleApiError,
+                error => {
+                    if (error.name === "NotFoundError") {
+                        this.$router.push({
+                            name: "PublicBase"
+                        });
+                    }
+                    this.$handleApiError(error);
+                },
                 questionnaire => {
                     this.submissionQuestionnaire = questionnaire;
                     if (questionnaire.dimensions.length > 0) {
