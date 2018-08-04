@@ -2,7 +2,7 @@
     <div class="submission"
          :style="itemStyle"
     >
-        <span class="submission__questionnaire__header">
+        <span class="submission__header">
             <span>{{ submissionQuestionnaire.name }}</span>
             <LanguagePicker
                     :language-data="submissionQuestionnaire.languageData"
@@ -11,23 +11,23 @@
                     @choose-language="changeLanguage"
             />
         </span>
-        <div class="submission__questionnaire__body">
-            <div class="submission__questionnaire__description"
+        <div class="submission__body">
+            <div class="submission__description"
                  v-if="submissionQuestionnaire.description.length > 0"
             >
                 {{submissionQuestionnaire.description}}
             </div>
 
-            <div class="submission__questionnaire__dimension-head">
-                <div class="submission__questionnaire__dimension-head__item"
+            <div class="submission__dimension-tabs">
+                <div class="submission__dimension-item"
                      v-for="dimension in submissionQuestionnaire.dimensions"
                      @click.prevent="selectedDimensionId = dimension.id"
-                     v-bind:class="{'submission__questionnaire__dimension-head__item-selected': selectedDimensionId === dimension.id}"
+                     v-bind:class="{'submission__dimension-item--selected': selectedDimensionId === dimension.id}"
                 >
                     {{ dimension.name }}
                 </div>
             </div>
-            <div class="submission__questionnaire__body__dimension">
+            <div class="submission__dimension-body">
                 <DimensionForm
                         v-for="dimension in submissionQuestionnaire.dimensions"
                         v-show="selectedDimensionId === dimension.id"
@@ -48,14 +48,19 @@
             <label v-if="submissionQuestionnaire.passwordEnabled">
                 <span>Password</span>
                 <input type="password"
-                       v-model="inputData.password">
+                       v-model="inputData.password"
+                >
             </label>
 
             <Button @click="submit"
                     :class="{'button--grey': !isReadyToSubmit}"
             >
-                <span v-if="isReadyToSubmit">Submit</span>
-                <span v-else>Please complete the survey to submit.</span>
+                <span v-if="isReadyToSubmit">
+                    Submit
+                </span>
+                <span v-else>
+                    Please complete the survey to submit.
+                </span>
             </Button>
         </div>
     </div>
@@ -247,49 +252,47 @@
         margin-right: auto;
         margin-top: 2em;
 
-        &__questionnaire {
-            &__header {
-                display: flex;
+        &__header {
+            display: flex;
+            background-color: $primary-light;
+            justify-content: space-between;
+            padding: 1em;
+            align-items: center;
+        }
+
+        &__description {
+            margin-bottom: 2em;
+        }
+
+        &__body {
+            padding: 1em;
+            border: $primary-light 1px solid;
+        }
+
+        &__dimension-tabs {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        &__dimension-item {
+            display: block;
+            border: $slightlylight 1px solid;
+            background-color: $lighter;
+            padding-left: 1em;
+            padding-right: 1em;
+            flex-grow: 1;
+            word-break: break-word;
+
+            &--selected {
                 background-color: $primary-light;
-                justify-content: space-between;
-                padding: 1em;
-                align-items: center;
-            }
-
-            &__description {
-                margin-bottom: 2em;
-            }
-
-            &__body {
-                padding: 1em;
                 border: $primary-light 1px solid;
-
-                &__dimension {
-                    border: $primary-light 1px solid;
-                    padding: 1em;
-                }
             }
+        }
 
-            &__dimension-head {
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-
-                &__item {
-                    display: block;
-                    border: $slightlylight 1px solid;
-                    background-color: $lighter;
-                    padding-left: 1em;
-                    padding-right: 1em;
-                    flex-grow: 1;
-                    word-break: break-word;
-
-                    &-selected {
-                        background-color: $primary-light;
-                        border: $primary-light 1px solid;
-                    }
-                }
-            }
+        &__dimension-body {
+            border: $primary-light 1px solid;
+            padding: 1em;
         }
 
         &__footer {
