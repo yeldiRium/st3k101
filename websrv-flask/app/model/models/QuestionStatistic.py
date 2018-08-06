@@ -21,6 +21,11 @@ class QuestionStatistic(OwnershipBase):
 
     # foreign keys
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    question = db.relationship(
+        'Question',
+        back_populates='statistic',
+        foreign_keys=[question_id]
+    )
 
     @staticmethod
     def median(values: List[QuestionResponse]) -> float:

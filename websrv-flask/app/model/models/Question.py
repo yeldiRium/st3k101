@@ -26,7 +26,6 @@ class Question(SurveyBase):
 
     # foreign keys
     dimension_id = db.Column(db.Integer, db.ForeignKey('dimension.id'))
-    statistic_id = db.Column(db.Integer, db.ForeignKey('question_statistic.id'))
 
     # relationships
     responses = db.relationship(
@@ -39,9 +38,9 @@ class Question(SurveyBase):
     statistic = db.relationship(
         'QuestionStatistic',
         uselist=False,
-        backref='question',
+        back_populates='question',
         cascade='all, delete-orphan',
-        foreign_keys=[statistic_id],
+        foreign_keys=[QuestionStatistic.question_id],
         single_parent=True
     )
 
