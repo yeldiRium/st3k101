@@ -181,6 +181,7 @@ import api.Dimension
 import api.Language
 import api.Response
 import api.Tracker
+import api.QuestionStatistic
 
 # CLI commands
 import cli
