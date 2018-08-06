@@ -28,11 +28,11 @@ class QuestionStatistic(OwnershipBase):
     )
 
     @staticmethod
-    def median(values: List[QuestionResponse]) -> float:
+    def calculate_median(values: List[QuestionResponse]) -> float:
         """
         Returns the median value of all QuestionResults
         """
-        list.sort(values, key=lambda x: x.answer_value)
+        list.sort(values, key=lambda x: x.value)
         n = len(values)
 
         if n == 0:
@@ -64,10 +64,10 @@ class QuestionStatistic(OwnershipBase):
 
         self.n = n = len(results)
 
-        self.q2 = self.median(results)
+        self.q2 = self.calculate_median(results)
         if n % 2 == 0:
-            self.q1 = self.median(results[:n // 2])
-            self.q3 = self.median(results[n // 2:])
+            self.q1 = self.calculate_median(results[:n // 2])
+            self.q3 = self.calculate_median(results[n // 2:])
 
         if n % 4 == 1:
             if n == 1:
