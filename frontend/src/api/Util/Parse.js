@@ -29,6 +29,7 @@ import {
 import SubmissionQuestionnaire from "../../model/Submission/SubmissionQuestionnaire";
 import SubmissionDimension from "../../model/Submission/SubmissionDimension";
 import SubmissionQuestion from "../../model/Submission/SubmissionQuestion";
+import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -538,6 +539,19 @@ function parseConcreteQuestion({
     );
 }
 
+/**
+ * Parses the common API representation of a PropertyUpdatedTrackerEntry.
+ *
+ * @param dataclient_email {String}
+ * @param timestamp {Date}
+ * @param item_name {String}
+ * @param item_type {String}
+ * @param item_href {String}
+ * @param property_name {String}
+ * @param previous_value {String}
+ * @param new_value {String}
+ * @returns {PropertyUpdatedTrackerEntry}
+ */
 function parsePropertyUpdatedTrackerEntry({
     dataclient_email,
     timestamp,
@@ -560,6 +574,20 @@ function parsePropertyUpdatedTrackerEntry({
     );
 }
 
+/**
+ * Parses the common API representation of a TranslatedPropertyUpdatedTrackerEntry.
+ *
+ * @param dataclient_email {String}
+ * @param timestamp {Date}
+ * @param item_name {String}
+ * @param item_type {String}
+ * @param item_href {String}
+ * @param property_name {String}
+ * @param previous_value {String}
+ * @param new_value {String}
+ * @param language {Language}
+ * @returns {TranslatedPropertyUpdatedTrackerEntry}
+ */
 function parseTranslatedPropertyUpdatedTrackerEntry({
     dataclient_email,
     timestamp,
@@ -584,6 +612,18 @@ function parseTranslatedPropertyUpdatedTrackerEntry({
     );
 }
 
+/**
+ * Parses the common API representation of an ItemAddedTrackerEntry.
+ * @param dataclient_email {String}
+ * @param timestamp {Date}
+ * @param parent_item_name {String}
+ * @param parent_item_type {String}
+ * @param parent_item_href {String}
+ * @param added_item_name {String}
+ * @param added_item_type {String}
+ * @param added_item_href {String}
+ * @returns {ItemAddedTrackerEntry}
+ */
 function parseItemAddedTrackeEntry({
     dataclient_email,
     timestamp,
@@ -606,6 +646,16 @@ function parseItemAddedTrackeEntry({
     );
 }
 
+/**
+ * Parses the common API representation of an ItemRemovedTrackerEntry.
+ * @param dataclient_email {String}
+ * @param timestamp {Date}
+ * @param parent_item_name {String}
+ * @param parent_item_type {String}
+ * @param parent_item_href {String}
+ * @param removed_item_name {String}
+ * @returns {ItemRemovedTrackerEntry}
+ */
 function parseItemRemovedTrackerEntry({
     dataclient_email,
     timestamp,
@@ -624,6 +674,13 @@ function parseItemRemovedTrackerEntry({
     );
 }
 
+/**
+ * Parses the common API representation of a QuestionnaireRemovedTrackerEntry.
+ * @param dataclient_email {String}
+ * @param timestamp {Date}
+ * @param questionnaire_name {String}
+ * @returns {QuestionnaireRemovedTrackerEntry}
+ */
 function parseQuestionnaireRemovedTrackerEntry({
     dataclient_email,
     timestamp,
@@ -636,6 +693,11 @@ function parseQuestionnaireRemovedTrackerEntry({
     );
 }
 
+/**
+ * Parses the common API representations of all kinds of TrackerEntries.
+ * @param data {Object}
+ * @returns {*}
+ */
 function parseTrackerEntry(data) {
     switch (data.type) {
         case "PropertyUpdatedTrackerEntry":
@@ -651,6 +713,20 @@ function parseTrackerEntry(data) {
     }
 }
 
+/**
+ * Parses a single Question of the common API representation of a
+ * SubmissionQuestionnaire.
+ *
+ * @param id {Integer}
+ * @param href {String}
+ * @param text {String}
+ * @param range_start {Integer}
+ * @param range_end {Integer}
+ * @param current_language {Language}
+ * @param original_language {Language}
+ * @param available_languages {Array<Language>}
+ * @returns {SubmissionQuestion}
+ */
 function parseSubmissionQuestion({
     id,
     href,
@@ -677,6 +753,20 @@ function parseSubmissionQuestion({
     );
 }
 
+/**
+ * Parses a single Dimension of the common API representation of a
+ * SubmissionQuestionnaire.
+ *
+ * @param id {Integer}
+ * @param href {String}
+ * @param name {String}
+ * @param randomize_question_order {Boolean}
+ * @param current_language {Language}
+ * @param original_language {Language}
+ * @param available_languages {Array<Language>}
+ * @param questions {Array<Object>}
+ * @returns {SubmissionDimension}
+ */
 function parseSubmissionDimension({
     id,
     href,
@@ -701,6 +791,20 @@ function parseSubmissionDimension({
     );
 }
 
+/**
+ * Parses the common API representation of a SubmissionQuestionnaire.
+ *
+ * @param id {Integer}
+ * @param href {String}
+ * @param name {String}
+ * @param description {String}
+ * @param password_enabled {Boolean}
+ * @param dimensions {Array<Object>}
+ * @param current_language {Language}
+ * @param original_language {Language}
+ * @param available_languages {Array<Language>}
+ * @returns {SubmissionQuestionnaire}
+ */
 function parseSubmissionQuestionnaire({
     id,
     href,
@@ -726,6 +830,51 @@ function parseSubmissionQuestionnaire({
         map(parseSubmissionDimension, dimensions)
     );
 }
+
+/**
+ * Parses the common API representation of a QuestionStatistic.
+ *
+ * @param question_id {Integer}
+ * @param question_href {String}
+ * @param question_text {String}
+ * @param question_range_start {Integer}
+ * @param question_range_end {Integer}
+ * @param n {Integer}
+ * @param biggest {Integer}
+ * @param smallest {Integer}
+ * @param q1 {Number}
+ * @param q2 {Number}
+ * @param q3 {Number}
+ * @returns {QuestionStatistic}
+ */
+function parseQuestionStatistic({
+    question_id,
+    question_href,
+    question_text,
+    question_range_start,
+    question_range_end,
+    n,
+    biggest,
+    smallest,
+    q1,
+    q2,
+    q3
+}) {
+    return new QuestionStatistic(
+        question_id,
+        question_href,
+        question_text,
+        question_range_start,
+        question_range_end,
+        n,
+        biggest,
+        smallest,
+        q1,
+        q2,
+        q3
+    );
+}
+
 export {
     parseLanguage,
     parseLanguageData,
@@ -744,5 +893,6 @@ export {
     parseShadowQuestion,
     parseConcreteQuestion,
     parseTrackerEntry,
-    parseSubmissionQuestionnaire
+    parseSubmissionQuestionnaire,
+    parseQuestionStatistic
 };
