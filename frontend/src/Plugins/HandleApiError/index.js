@@ -67,7 +67,7 @@ const Plugin = {
                     Vue.prototype.$notify({
                         type: "warning",
                         title: "Maybe something went wrong",
-                        text: "We're not soure though. If you experience any issues, go fuck yourself."
+                        text: "We're not sure though. If you experience any issues, go fuck yourself."
                     });
             }
         }
