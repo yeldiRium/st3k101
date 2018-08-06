@@ -19,6 +19,7 @@ import {store as dimensions} from "./modules/Dimensions";
 import {store as questions} from "./modules/Questions";
 import {store as trackerEntries} from "./modules/TrackerEntries";
 import {store as submission} from "./modules/Submission";
+import {store as statistics} from "./modules/Statistics";
 
 Vue.use(Vuex);
 
@@ -47,7 +48,8 @@ const store = new Vuex.Store({
         dimensions,
         questions,
         trackerEntries,
-        submission
+        submission,
+        statistics
     }
 });
 
