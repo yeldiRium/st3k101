@@ -23,5 +23,5 @@ def initdb():
 def update_statistics():
     click.echo("Updating all statistics models...")
     services.update_all_statistics()
+    db.session.commit()
     click.echo("Done!")
-
