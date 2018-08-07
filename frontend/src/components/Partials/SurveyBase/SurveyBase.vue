@@ -18,11 +18,6 @@
             deletable: {
                 type: Boolean,
                 default: true
-            },
-            /** @type boolean */
-            draggable: {
-                type: Boolean,
-                default: true
             }
         },
         computed: {
