@@ -64,43 +64,50 @@
     @import "../scss/variables";
 
     .collapsible {
+        grid-column: 1 / span 2;
 
-      grid-column: 1 / span 2;
-
-      display: flex;
-      flex-flow: column;
-
-      background-color: $primary-light;
-      border: 1px solid $primary;
-      width: 100%;
-
-      &__header {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background-color: $primary-light;
+        flex-flow: column;
 
+        border: 1px solid $primary;
+        width: 100%;
 
-        &__label {
-          margin-left: 1em;
+        &--no-border {
+            border: 0;
         }
-      }
 
-      &__body {
-        padding: 1em;
-        border-top: $primary 1px solid;
-      }
+        &--border-top {
+            border-top: $primary 1px solid;
+        }
 
-      &__buttons {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-right: 1em;
-      }
+        &--primary-light {
+            background: $primary-light;
+        }
+
+        &__header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &__label {
+                margin-left: 1em;
+            }
+        }
+
+        &__body {
+            padding: 1em;
+            border-top: $primary 1px solid;
+        }
+
+        &__buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-right: 1em;
+        }
 
         &__content {
             grid-column: 1 / span 2;
         }
-
     }
 </style>
