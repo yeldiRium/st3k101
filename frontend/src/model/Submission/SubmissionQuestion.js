@@ -22,6 +22,14 @@ class SubmissionQuestion {
             this.languageData
         );
     }
+
+    /**
+     * @param {SubmissionQuestion} otherSubmissionQuestion
+     * @returns {boolean} true, if both have the same id
+     */
+    equals(otherSubmissionQuestion) {
+        return this.id === otherSubmissionQuestion.id;
+    }
 }
 
 export default SubmissionQuestion;

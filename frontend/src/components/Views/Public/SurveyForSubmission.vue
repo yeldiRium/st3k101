@@ -67,7 +67,7 @@
 
 <script>
     import {mapState} from "vuex-fluture";
-    import {findIndex} from "ramda";
+    import {findIndex, equals} from "ramda";
 
     import DimensionForm from "../../Partials/SurveyBase/Submission/DimensionForm";
     import Button from "../../Partials/Form/Button";
@@ -81,7 +81,7 @@
             DimensionForm,
             LanguagePicker
         },
-        data () {
+        data() {
             return {
                 submissionQuestionnaire: null,
                 inputData: {
@@ -110,13 +110,13 @@
                 if (this.inputData.email.length < 6) {
                     return false; // a@b.de ==> 6 chars
                 }
-                if (this.inputData.email.indexOf("@") < 1) {
+                if (this.inputData.email.includes("@") === false) {
                     return false;
                 }
-                if (this.submissionQuestionnaire.passwordEnabled) {
-                    if (this.inputData.password.length < 1) {
-                        return false;
-                    }
+                if (this.submissionQuestionnaire.passwordEnabled
+                    && this.inputData.password.length < 1
+                ) {
+                    return false;
                 }
                 for (let dimension of this.submissionQuestionnaire.dimensions) {
                     for (let question of dimension.questions) {
@@ -129,9 +129,10 @@
             }
         },
         methods: {
-            /***
+            /**
              * Loads SubmissionQuestionnaire into vuex store and returns
              * Future of result.
+             *
              * @param {Language} language
              * @returns {Future}
              */
@@ -142,11 +143,13 @@
                         {
                             id: this.questionnaireId,
                             language: language
-                        })
-                )
+                        }
+                    )
+                );
             },
-            /***
+            /**
              * Updates response value for given questionId in component state.
+             *
              * @param {Integer} questionId
              * @param {Integer} value
              */
@@ -159,38 +162,32 @@
                     }
                 }
             },
-            /***
+            /**
              * Reloads SubmissionQuestionnaire in given language.
              * Updates component state to keep answers.
-             * @param language
+             *
+             * @param {Language} language
              */
             changeLanguage(language) {
                 this.loadQuestionnaire(language).fork(
-                    error => {
-                        this.$notify({
-                            type: "error",
-                            title: "Server error",
-                            text: "An error occurred while loading the survey."
-                        });
-                        console.log(error);
-                    },
+                    this.$handleApiError,
                     questionnaire => {
                         this.submissionQuestionnaire = this.reconstructState(questionnaire);
                     }
                 );
             },
-            /***
+            /**
              * Copies over answer values from current component state to
              * newQuestionnaire.
+             *
              * @param {SubmissionQuestionnaire} newQuestionnaire
              * @returns {SubmissionQuestionnaire}
              */
             reconstructState(newQuestionnaire) {
-                let previousState = this.submissionQuestionnaire;
-                let equal = (q) => (e) => e.id === q.id;
+                const previousState = this.submissionQuestionnaire;
                 for (let prevDimension of previousState.dimensions) {
                     let dimensionIndex = findIndex(
-                        equal(prevDimension),
+                        equals(prevDimension),
                         newQuestionnaire.dimensions
                     );
                     if (dimensionIndex < 0) {
@@ -199,7 +196,7 @@
                     let newDimension = newQuestionnaire.dimensions[dimensionIndex];
                     for (let prevQuestion of prevDimension.questions) {
                         let questionIndex = findIndex(
-                            equal(prevQuestion),
+                            equals(prevQuestion),
                             newDimension.questions
                         );
                         if (questionIndex < 0) {
@@ -210,7 +207,7 @@
                 }
                 return newQuestionnaire;
             },
-            /***
+            /**
              * Submits response values to API.
              */
             submit() {
@@ -220,30 +217,14 @@
                 this.$load(
                     submitResponse(this.submissionQuestionnaire, this.inputData)
                 ).fork(
-                    rej => {
-                        this.$notify({
-                            type: "error",
-                            title: "Server error",
-                            text: "An error occurred while submitting the survey. If the problem persists, try refreshing the site."
-                        });
-                        console.log(rej);
-                    },
-                    res => {
-                        console.log(res);
-                    }
+                    this.$handleApiError,
+                    console.log
                 );
             },
         },
         created() {
             this.loadQuestionnaire().fork(
-                error => {
-                    this.$notify({
-                        type: "error",
-                        title: "Server error",
-                        text: "An error occurred while loading the survey.  Please make sure you've entered the correct url."
-                    });
-                    console.log(error);
-                },
+                this.$handleApiError,
                 questionnaire => {
                     this.submissionQuestionnaire = questionnaire;
                     if (questionnaire.dimensions.length > 0) {
@@ -259,13 +240,11 @@
     @import "../../scss/variables";
 
     .submission {
-
         margin-left: auto;
         margin-right: auto;
         margin-top: 2em;
 
         &__questionnaire {
-
             &__header {
                 display: flex;
                 background-color: $primary-light;
@@ -327,7 +306,6 @@
                 }
             }
         }
-
 
     }
 </style>

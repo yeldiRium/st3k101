@@ -35,6 +35,14 @@ class SubmissionDimension {
             map(clone, this.questions)
         );
     }
+
+    /**
+     * @param {SubmissionDimension} otherSubmissionDimension
+     * @returns {boolean} true, if both have the same id
+     */
+    equals(otherSubmissionDimension) {
+        return this.id === otherSubmissionDimension.id;
+    }
 }
 
 export default SubmissionDimension;
