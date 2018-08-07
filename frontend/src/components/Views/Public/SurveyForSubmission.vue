@@ -24,7 +24,7 @@
                      @click.prevent="selectedDimensionId = dimension.id"
                      v-bind:class="{'submission__dimension-item--selected': selectedDimensionId === dimension.id}"
                 >
-                    {{ dimension.name }}
+                    {{ dimensionLabel(dimension) }}
                 </div>
             </div>
             <div class="submission__dimension-body">
@@ -127,18 +127,6 @@
                     }
                 }
                 return true;
-            },
-            dimensionLabel() {
-                return (dimension) => {
-                    let counter = this.getNumberOfIncompleteQuestions(dimension);
-                    let indicator = "";
-                    if (counter > 0) {
-                        indicator = " |  🤔 " + counter.toString();
-                    } else {
-                        indicator = " |  ✔️";
-                    }
-                    return dimension.name + indicator;
-                }
             }
         },
         methods: {
@@ -248,6 +236,16 @@
                     console.log
                 );
             },
+            dimensionLabel(dimension) {
+                let counter = this.getNumberOfIncompleteQuestions(dimension);
+                let indicator = "";
+                if (counter > 0) {
+                    indicator = " |  🤔 " + counter.toString();
+                } else {
+                    indicator = " |  ✔️";
+                }
+                return dimension.name + indicator;
+            }
         },
         created() {
             this.loadQuestionnaire().fork(
