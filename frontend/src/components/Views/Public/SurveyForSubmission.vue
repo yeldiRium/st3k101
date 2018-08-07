@@ -1,6 +1,7 @@
 <template>
     <div class="submission"
          :style="itemStyle"
+         v-if="submissionQuestionnaire !== null"
     >
         <span class="submission__header">
             <span>{{ submissionQuestionnaire.name }}</span>
