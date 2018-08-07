@@ -36,7 +36,7 @@
                 />
             </g>
 
-            <g class="range-svg__selector">
+            <g v-if="selector > -1" class="range-svg__selector">
                 <line :x1="`${numberX(selector)}%`"
                       :y1="`${selectorLineY1}%`"
                       :x2="`${numberX(selector)}%`"
@@ -117,7 +117,7 @@
         },
         data() {
             return {
-                selector: this.range.start,
+                selector: -1,
                 // In %
                 width: 80
             }
