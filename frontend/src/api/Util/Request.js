@@ -78,7 +78,7 @@ function fetchApi(path,
                       authenticate = false,
                       language = null
                   }) {
-    if (authenticate && !store.getters["session/isLoggedIn"]) {
+    if (authenticate && store.getters["session/sessionToken"] === null) {
         return Future.reject(
             new ForbiddenError("User not logged in.")
         );

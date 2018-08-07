@@ -20,7 +20,7 @@ const store = {
     },
     getters: {
         isLoggedIn(state) {
-            return state.sessionToken !== null;
+            return state.dataClient !== null;
         },
         sessionToken(state) {
             return state.sessionToken;
@@ -108,10 +108,10 @@ const store = {
                 context.commit("startSession", {sessionToken});
                 resolve();
             })
-            // Set the session cookie after starting the session
-                .chain(() => context.dispatch("updateSessionCookie"))
                 // retrieve the now logged in DataClient
-                .chain(() => context.dispatch("fetchCurrentDataClient"));
+                .chain(() => context.dispatch("fetchCurrentDataClient"))
+                // Set the session cookie after starting the session
+                .chain(() => context.dispatch("updateSessionCookie"));
         },
         /**
          * Ends the Session on the server and on the client.
@@ -147,8 +147,8 @@ const store = {
          */
         updateSessionCookie(context) {
             return Future((reject, resolve) => {
-                if (context.getters["isLoggedIn"]) {
-                    const sessionToken = context.getters["sessionToken"];
+                const sessionToken = context.getters["sessionToken"];
+                if (sessionToken !== null) {
                     // TODO: set cookie to secure mode, once efla supports https
                     const expires = new Date();
                     expires.setDate(expires.getMinutes() + 20);
