@@ -27,7 +27,7 @@
                          @click.prevent="selectedDimensionId = dimension.id"
                          v-bind:class="{'submission__questionnaire__dimension-head__item-selected': selectedDimensionId === dimension.id}"
                     >
-                        {{ dimension.name }}
+                        {{ dimensionLabel(dimension) }}
                     </div>
                 </div>
                 <div class="submission__questionnaire__body__dimension">
@@ -126,9 +126,35 @@
                     }
                 }
                 return true;
+            },
+            dimensionLabel() {
+                return (dimension) => {
+                    let counter = this.getNumberOfIncompleteQuestions(dimension);
+                    let indicator = "";
+                    if (counter > 0) {
+                        indicator = " |  🤔 " + counter.toString();
+                    } else {
+                        indicator = " |  ✔️";
+                    }
+                    return dimension.name + indicator;
+                }
             }
         },
         methods: {
+            getNumberOfIncompleteQuestions(dimension) {
+                let counter = 0;
+                for (let iDimension of this.submissionQuestionnaire.dimensions) {
+                    if (dimension.id !== iDimension.id) {
+                        continue;
+                    }
+                    for (let question of dimension.questions) {
+                        if (question.value < 0) {
+                            counter++;
+                        }
+                    }
+                }
+                return counter;
+            },
             /**
              * Loads SubmissionQuestionnaire into vuex store and returns
              * Future of result.
@@ -150,7 +176,7 @@
             /**
              * Updates response value for given questionId in component state.
              *
-             * @param {Integer} questionId
+             * @param {String} questionId
              * @param {Integer} value
              */
             updateResponseValue({questionId, value}) {
