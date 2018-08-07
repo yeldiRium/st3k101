@@ -142,11 +142,9 @@
             }
 
             &__general-info {
-                //padding: 1em;
-                width: 100%;
-                border-bottom: $primary-light 1px dotted;
-                padding: 1em auto 1em auto;
-
+                width: 80vw;
+                padding-top: 1em;
+                margin: auto;
             }
 
             &__body {
