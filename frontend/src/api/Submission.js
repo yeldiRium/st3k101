@@ -24,10 +24,10 @@ function submitResponse(submissionQuestionnaire, {email, password}) {
         captcha_token: "IAmNotARobot",  // TODO
         dimensions: dimensions
     };
-    let api_endpoint = (submissionQuestionnaire.href + "/response")
+    let apiEndpoint = (submissionQuestionnaire.href + "/response")
         .replace("//", "/");
     return fetchApi(
-        api_endpoint,
+        apiEndpoint,
         {
             authenticate: false,
             method: "POST",

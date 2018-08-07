@@ -28,7 +28,6 @@
 
 <script>
     import {mapGetters, mapState} from "vuex-fluture";
-    import {without} from "ramda";
 
     import Button from "../../Partials/Form/Button";
     import Questionnaire from "../../Partials/SurveyBase/Questionnaire";

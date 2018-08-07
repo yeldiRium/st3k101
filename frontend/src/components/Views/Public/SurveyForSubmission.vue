@@ -232,7 +232,7 @@
                         console.log(res);
                     }
                 );
-            }
+            },
         },
         created() {
             this.loadQuestionnaire().fork(
@@ -300,7 +300,7 @@
                     padding-left: 1em;
                     padding-right: 1em;
                     flex-grow: 1;
-                    word-break: break-word;
+                    word-break: unset;
 
                     &-selected {
                         background-color: $primary-light;
