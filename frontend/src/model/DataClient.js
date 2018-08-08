@@ -7,15 +7,18 @@ class DataClient extends Party {
      * @param {String} id See Resource.
      * @param {String} email
      * @param {Language} language
+     * @param {Array<Roles>} roles
      */
     constructor(href,
                 id,
                 email,
-                language
+                language,
+                roles
     ) {
         super(href, id);
         this._email = email;
         this._language = language;
+        this._roles = roles;
     }
 
     /**
@@ -47,6 +50,21 @@ class DataClient extends Party {
     }
 
     /**
+     *
+     * @returns {Array<Roles>}
+     */
+    get roles() {
+        return this._roles;
+    }
+
+    /**
+     * @param {Array<Roles>} roles
+     */
+    set roles(roles) {
+        this._roles = roles;
+    }
+
+    /**
      * @returns {DataClient}
      */
     clone() {
@@ -54,7 +72,8 @@ class DataClient extends Party {
             this._href,
             this._id,
             this._email,
-            this._language
+            this._language,
+            this._roles
         );
     }
 }

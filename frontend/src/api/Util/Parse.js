@@ -75,6 +75,16 @@ function parseResource({href, id}) {
 }
 
 /**
+ * Parses an array of DataClient Roles.
+ *
+ * @param {Array<Object>} roles
+ * @returns {Array<Roles>}
+ */
+function parseRoles(roles) {
+    return map(prop("value"), roles);
+}
+
+/**
  * Parses the common API representation of a DataClient into a DataClient in-
  * stance.
  *
@@ -82,14 +92,16 @@ function parseResource({href, id}) {
  * @param {Number} id
  * @param {String} href
  * @param {Object} language
+ * @param {Array<Object>} roles
  * @return {DataClient}
  */
-function parseDataClient({email, id, href, language}) {
+function parseDataClient({email, id, href, language, roles}) {
     return new DataClient(
         href,
         id,
         email,
-        parseLanguage(language)
+        parseLanguage(language),
+        parseRoles(roles)
     );
 }
 
@@ -105,7 +117,8 @@ function parseSmallDataClient({id, href}) {
         href,
         id,
         "",
-        null
+        null,
+        []
     );
 }
 
