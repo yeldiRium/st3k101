@@ -164,6 +164,13 @@ class Questionnaire(SurveyBase):
                 if s_dimension.concrete_id == dimension.id:
                     db.session.delete(s_dimension)
 
+        # TODO: doing optimistic delete of shadows here,
+        # maybe this is not the right behaviour and we should
+        # create concrete copies of the deleted dimension here
+
+        for question in dimension.questions:
+            dimension.remove_question(question)
+
         item_removed.send(self, removed_item_name=dimension.name)
 
         self.dimensions.remove(dimension)
