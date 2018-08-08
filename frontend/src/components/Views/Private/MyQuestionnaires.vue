@@ -9,7 +9,7 @@
             />
         </div>
 
-        <TrackerEntries :all="true" :style="itemStyle"></TrackerEntries>
+        <TrackerEntries :all="true" :style="itemStyle" class="collapsible--primary-light"></TrackerEntries>
 
         <div class="my-questionnaires__buttons">
             <Button class="my-questionnaires__add-questionnaire-button"
