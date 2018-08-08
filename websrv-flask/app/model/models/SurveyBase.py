@@ -168,6 +168,6 @@ class SurveyBase(OwnershipBase):
         name = self.name_translations[self.original_language.name]
         name_sane = utils.unicode_to_xml_friendly_ascii(name)
         if len(name_sane) > 15:
-            name_sane = name_sane[:15].replace(" ", "-")
+            name_sane = name_sane[:15]
         random_chars = os.urandom(5).hex()
-        return (name_sane + "-" + random_chars).replace("--", "-")
+        return (name_sane + "-" + random_chars).replace(" ", "-")
