@@ -9,11 +9,6 @@
                   :disabled="!isEditable(question)"
                   @input="updateQuestion('text', $event, true)"
         >
-            <router-link :to="{name: 'AQuestion', params: {id: question.id}}">
-                <IconLink class="list-item__icon"
-                          v-if="showLink"
-                />
-            </router-link>
             <template>
                 <IconExpandLess class="list-item__icon"
                                 v-if="expanded"
@@ -28,9 +23,6 @@
                             :language-data="question.languageData"
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
-            />
-            <IconReorder class="list-item__icon"
-                         v-if="draggable"
             />
         </ListItem>
 
@@ -114,8 +106,6 @@
     import EditableText from "../Form/EditableText";
     import TrackerEntries from "./TrackerEntries";
 
-    import IconLink from "../../../assets/icons/baseline-link-24px.svg";
-    import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
 
@@ -131,8 +121,6 @@
             Button,
             EditableText,
             TrackerEntries,
-            IconLink,
-            IconReorder,
             IconExpandMore,
             IconExpandLess
         },
@@ -145,10 +133,6 @@
             initiallyExpanded: {
                 type: Boolean,
                 default: false
-            },
-            showLink: {
-                type: Boolean,
-                default: true
             }
         },
         data() {

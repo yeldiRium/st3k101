@@ -10,12 +10,13 @@
                   :disabled="!isEditable(questionnaire)"
                   @input="updateQuestionnaire('name', $event, true)"
         >
-            <router-link
-                    :to="{name: 'AQuestionnaire', params: {id: questionnaire.id}}">
+            <a :href="$router.resolve({name: 'SurveyForSubmission', params: {id: questionnaire.id}}).href"
+               target="_blank"
+            >
                 <IconLink class="list-item__icon"
                           v-if="showLink"
                 />
-            </router-link>
+            </a>
             <template>
                 <IconExpandLess class="list-item__icon"
                                 v-if="expanded"
@@ -30,9 +31,6 @@
                             :language-data="questionnaire.languageData"
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
-            />
-            <IconReorder class="list-item__icon"
-                         v-if="draggable"
             />
         </ListItem>
 

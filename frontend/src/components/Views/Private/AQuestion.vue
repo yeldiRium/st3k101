@@ -6,7 +6,6 @@
                   :deletable="false"
                   :style="itemStyle"
                   :initiallyExpanded="true"
-                  :showLink="false"
                   @updated="reloadQuestion"
         />
     </div>

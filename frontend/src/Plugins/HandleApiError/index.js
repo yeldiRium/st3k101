@@ -63,6 +63,13 @@ const Plugin = {
                         text: error.message
                     });
                     break;
+                case "NotFoundError":
+                    Vue.prototype.$notify({
+                        type: "warn",
+                        title: "Page not found",
+                        text: "The page you were trying to access could not be found."
+                    });
+                    break;
                 default:
                     Vue.prototype.$notify({
                         type: "warning",

@@ -1,73 +1,75 @@
 <template>
     <div class="submission"
          :style="itemStyle"
+         v-if="submissionQuestionnaire !== null"
     >
-        <div v-if="submissionQuestionnaire !== null"
-             class="submission__questionnaire"
-        >
-            <span class="submission__questionnaire__header">
-                <span>{{ submissionQuestionnaire.name }}</span>
-                <LanguagePicker
-                        :language-data="submissionQuestionnaire.languageData"
-                        :hideUnused="true"
-                        :useLongNames="true"
-                        @choose-language="changeLanguage"
+        <span class="submission__header">
+            <span>{{ submissionQuestionnaire.name }}</span>
+            <LanguagePicker
+                    :language-data="submissionQuestionnaire.languageData"
+                    :hideUnused="true"
+                    :useLongNames="true"
+                    @choose-language="changeLanguage"
+            />
+        </span>
+        <div class="submission__body">
+            <div class="submission__description"
+                 v-if="submissionQuestionnaire.description.length > 0"
+            >
+                {{submissionQuestionnaire.description}}
+            </div>
+
+            <div class="submission__dimension-tabs">
+                <div class="submission__dimension-item"
+                     v-for="dimension in submissionQuestionnaire.dimensions"
+                     @click.prevent="selectedDimensionId = dimension.id"
+                     v-bind:class="{'submission__dimension-item--selected': selectedDimensionId === dimension.id}"
+                >
+                    {{ dimensionLabel(dimension) }}
+                </div>
+            </div>
+            <div class="submission__dimension-body">
+                <DimensionForm
+                        v-for="dimension in submissionQuestionnaire.dimensions"
+                        v-show="selectedDimensionId === dimension.id"
+                        :dimension="dimension"
+                        :key="dimension.href"
+                        @response-change="updateResponseValue($event)"
                 />
-            </span>
-            <div class="submission__questionnaire__body">
-                <div class="submission__questionnaire__description"
-                     v-if="submissionQuestionnaire.description.length > 0"
-                >
-                    {{submissionQuestionnaire.description}}
-                </div>
-
-                <div class="submission__questionnaire__dimension-head">
-                    <div class="submission__questionnaire__dimension-head__item"
-                         v-for="dimension in submissionQuestionnaire.dimensions"
-                         @click.prevent="selectedDimensionId = dimension.id"
-                         v-bind:class="{'submission__questionnaire__dimension-head__item-selected': selectedDimensionId === dimension.id}"
-                    >
-                        {{ dimensionLabel(dimension) }}
-                    </div>
-                </div>
-                <div class="submission__questionnaire__body__dimension">
-                    <DimensionForm
-                            v-for="dimension in submissionQuestionnaire.dimensions"
-                            v-show="selectedDimensionId === dimension.id"
-                            :dimension="dimension"
-                            :key="dimension.href"
-                            @response-change="updateResponseValue($event)"
-                    />
-                </div>
             </div>
-            <div class="submission__footer">
-                <label>
-                    <span>Email Address</span>
-                    <input type="email"
-                           v-model="inputData.email"
-                    />
-                </label>
+        </div>
+        <div class="submission__footer">
+            <label>
+                <span>Email Address</span>
+                <input type="email"
+                       v-model="inputData.email"
+                />
+            </label>
 
-                <label v-if="submissionQuestionnaire.passwordEnabled">
-                    <span>Password</span>
-                    <input type="password"
-                           v-model="inputData.password">
-                </label>
-
-                <Button @click="submit"
-                        :class="{'button--grey': !isReadyToSubmit}"
+            <label v-if="submissionQuestionnaire.passwordEnabled">
+                <span>Password</span>
+                <input type="password"
+                       v-model="inputData.password"
                 >
-                    <span v-if="isReadyToSubmit">Submit</span>
-                    <span v-else>Please complete the survey to submit.</span>
-                </Button>
-            </div>
+            </label>
+
+            <Button @click="submit"
+                    :class="{'button--grey': !isReadyToSubmit}"
+            >
+                <span v-if="isReadyToSubmit">
+                    Submit
+                </span>
+                <span v-else>
+                    Please complete the survey to submit.
+                </span>
+            </Button>
         </div>
     </div>
 </template>
 
 <script>
     import {mapState} from "vuex-fluture";
-    import {findIndex, equals} from "ramda";
+    import {equals, findIndex} from "ramda";
 
     import DimensionForm from "../../Partials/SurveyBase/Submission/DimensionForm";
     import Button from "../../Partials/Form/Button";
@@ -126,18 +128,6 @@
                     }
                 }
                 return true;
-            },
-            dimensionLabel() {
-                return (dimension) => {
-                    let counter = this.getNumberOfIncompleteQuestions(dimension);
-                    let indicator = "";
-                    if (counter > 0) {
-                        indicator = " |  🤔 " + counter.toString();
-                    } else {
-                        indicator = " |  ✔️";
-                    }
-                    return dimension.name + indicator;
-                }
             }
         },
         methods: {
@@ -247,10 +237,27 @@
                     console.log
                 );
             },
+            dimensionLabel(dimension) {
+                let counter = this.getNumberOfIncompleteQuestions(dimension);
+                let indicator = "";
+                if (counter > 0) {
+                    indicator = " |  🤔 " + counter.toString();
+                } else {
+                    indicator = " |  ✔️";
+                }
+                return dimension.name + indicator;
+            }
         },
         created() {
             this.loadQuestionnaire().fork(
-                this.$handleApiError,
+                error => {
+                    if (error.name === "NotFoundError") {
+                        this.$router.push({
+                            name: "PublicBase"
+                        });
+                    }
+                    this.$handleApiError(error);
+                },
                 questionnaire => {
                     this.submissionQuestionnaire = questionnaire;
                     if (questionnaire.dimensions.length > 0) {
@@ -270,49 +277,47 @@
         margin-right: auto;
         margin-top: 2em;
 
-        &__questionnaire {
-            &__header {
-                display: flex;
+        &__header {
+            display: flex;
+            background-color: $primary-light;
+            justify-content: space-between;
+            padding: 1em;
+            align-items: center;
+        }
+
+        &__description {
+            margin-bottom: 2em;
+        }
+
+        &__body {
+            padding: 1em;
+            border: $primary-light 1px solid;
+        }
+
+        &__dimension-tabs {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        &__dimension-item {
+            display: block;
+            border: $slightlylight 1px solid;
+            background-color: $lighter;
+            padding-left: 1em;
+            padding-right: 1em;
+            flex-grow: 1;
+            word-break: unset;
+
+            &--selected {
                 background-color: $primary-light;
-                justify-content: space-between;
-                padding: 1em;
-                align-items: center;
-            }
-
-            &__description {
-                margin-bottom: 2em;
-            }
-
-            &__body {
-                padding: 1em;
                 border: $primary-light 1px solid;
-
-                &__dimension {
-                    border: $primary-light 1px solid;
-                    padding: 1em;
-                }
             }
+        }
 
-            &__dimension-head {
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-
-                &__item {
-                    display: block;
-                    border: $slightlylight 1px solid;
-                    background-color: $lighter;
-                    padding-left: 1em;
-                    padding-right: 1em;
-                    flex-grow: 1;
-                    word-break: unset;
-
-                    &-selected {
-                        background-color: $primary-light;
-                        border: $primary-light 1px solid;
-                    }
-                }
-            }
+        &__dimension-body {
+            border: $primary-light 1px solid;
+            padding: 1em;
         }
 
         &__footer {
@@ -332,6 +337,5 @@
                 }
             }
         }
-
     }
 </style>
