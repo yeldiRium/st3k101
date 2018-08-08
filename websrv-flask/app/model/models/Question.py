@@ -59,9 +59,8 @@ class Question(SurveyBase):
         return self.text
 
     @property
-    @abstractmethod
-    def reference_id(self) -> str:
-        raise NotImplementedError
+    def name_translations(self) -> Dict[str, str]:
+        return self.text_translations
 
     @property
     @abstractmethod
@@ -152,7 +151,6 @@ class ConcreteQuestion(Question):
     __tablename__ = 'concrete_question'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
-    reference_id = db.Column(db.String(128))
     range_start = db.Column(db.SmallInteger, default=0, nullable=False)
     range_end = db.Column(db.SmallInteger, default=10, nullable=False)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)

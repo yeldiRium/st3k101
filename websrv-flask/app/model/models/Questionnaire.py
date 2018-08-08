@@ -191,7 +191,6 @@ class ConcreteQuestionnaire(Questionnaire):
     __tablename__ = 'concrete_questionnaire'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
-    reference_id = db.Column(db.String(128))
     name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
     description_translations = db.Column(MUTABLE_HSTORE)

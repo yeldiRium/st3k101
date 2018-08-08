@@ -42,11 +42,6 @@ class Dimension(SurveyBase):
 
     @property
     @abstractmethod
-    def reference_id(self) -> str:
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
     def name(self) -> str:
         raise NotImplementedError
 
@@ -105,7 +100,6 @@ class ConcreteDimension(Dimension):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # columns
-    reference_id = db.Column(db.String(128))
     name_translations = db.Column(MUTABLE_HSTORE)
     name = translation_hybrid(name_translations)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)

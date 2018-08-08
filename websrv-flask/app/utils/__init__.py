@@ -65,3 +65,7 @@ def ellipse(s, length):
     start = length // 2
     end = len(s) - start + 3
     return "{}...{}".format(s[:start], s[end:])
+
+
+def unicode_to_xml_friendly_ascii(string: str) -> str:
+    return string.encode('ascii', 'xmlcharrefreplace').decode()
