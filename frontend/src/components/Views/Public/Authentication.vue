@@ -46,7 +46,7 @@
 
             <div class="authentication__buttons">
                 <Button :offset="3"
-                        @click.prevent="login"
+                        @action="login"
                 >
                     Login
                 </Button>
@@ -55,7 +55,7 @@
             <div class="authentication__bottom-link">
                 <Button class="button--grey"
                         :offset="3"
-                        @click.prevent="isLogin = false"
+                        @action="setIsLogin(false)"
                 >
                     Not registered yet? Create an account.
                 </Button>
@@ -122,7 +122,7 @@
 
             <div class="authentication__buttons">
                 <Button :offset="3"
-                        @click.prevent="register"
+                        @action="register"
                 >
                     Register
                 </Button>
@@ -131,7 +131,7 @@
             <div class="authentication__bottom-link">
                 <Button class="button--grey"
                         :offset="3"
-                        @click.prevent="isLogin = true"
+                        @action="setIsLogin(true)"
                 >
                     Already have an account? Log in.
                 </Button>
@@ -204,6 +204,9 @@
             }
         },
         methods: {
+            setIsLogin(newValue) {
+                this.isLogin = newValue;
+            },
             clearErrors() {
                 this.errors.login = [];
                 this.errors.email = [];

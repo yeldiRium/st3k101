@@ -80,7 +80,7 @@
              v-if="expanded"
         >
             <Button v-if="isDeletable(question)"
-                    @click="deleteQuestion"
+                    @action="deleteQuestion"
                     :class="{'button--grey': question.isShadow}"
             >
                 delete

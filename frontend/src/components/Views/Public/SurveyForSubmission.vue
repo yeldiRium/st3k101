@@ -53,7 +53,7 @@
                 >
             </label>
 
-            <Button @click="submit"
+            <Button @action="submit"
                     :class="{'button--grey': !isReadyToSubmit}"
             >
                 <span v-if="isReadyToSubmit">

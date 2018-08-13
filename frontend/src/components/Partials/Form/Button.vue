@@ -3,9 +3,11 @@
          ref="button"
          :class="classes"
          v-on="$listeners"
-         @click="rippleAnimation"
+         @click="action"
+         @keyup.enter="action"
          @mouseover="raise"
          @mouseleave="lower"
+         tabindex="0"
     >
         <div class="button__content">
             <slot></slot>
@@ -78,6 +80,21 @@
         },
         methods: {
             /**
+             * Executes the action associated with the Button.
+             * Is often triggered by an event and thus takes one as parameter.
+             *
+             * @param {Event} event
+             */
+            action(event) {
+                if(this.ripple !== false) {
+                    this.rippleAnimation(event);
+                }
+
+                if ("action" in this.$listeners) {
+                    this.$listeners.action();
+                }
+            },
+            /**
              * Raises the button elevation offset to the predefined offset.
              */
             raise() {
@@ -95,16 +112,20 @@
              * @param event
              */
             rippleAnimation(event) {
-                if(this.ripple === false) {
+                // Can only ripple, if the event's target has a bounding box.
+                if (typeof event.target.getBoundingClientRect !== "function") {
                     return;
                 }
 
                 const timing = 0.75;
                 const tl = new TimelineMax();
-                const x = event.offsetX;
-                const y = event.offsetY;
-                const w = event.target.offsetWidth;
-                const h = event.target.offsetHeight;
+
+                const buttonBoundingBox = event.target.getBoundingClientRect();
+                const w = buttonBoundingBox.width;
+                const h = buttonBoundingBox.height;
+                const x = ("offsetX" in event) ? event.offsetX : (w / 2);
+                const y = ("offsetY" in event) ? event.offsetY : (h / 2);
+
                 const offsetX = Math.abs((w / 2) - x);
                 const offsetY = Math.abs((h / 2) - y);
                 const deltaX = (w / 2) + offsetX;
@@ -135,6 +156,7 @@
 
     $button-color: $primary-light;
     $button-ripple-color: $primary;
+    $button-focus-color: $secondary;
 
     .button {
         -webkit-border-radius: 3px;
@@ -146,6 +168,10 @@
         display: grid;
         grid-template-areas: "content";
         grid-template-columns: fit-content(0px);
+
+        &:focus {
+            border-color: $button-focus-color;
+        }
 
         &__content {
             grid-area: content;
@@ -173,6 +199,10 @@
 
         &--grey {
             background-color: $slightlylight;
+
+            &:focus {
+                border-color: $slightlydark;
+            }
 
             .button__ripple-circle {
                 fill: $slightlydark;

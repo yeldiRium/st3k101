@@ -13,12 +13,12 @@
 
         <div class="my-questionnaires__buttons">
             <Button class="my-questionnaires__add-questionnaire-button"
-                    @click="openNewQuestionnaireDialog"
+                    @action="openNewQuestionnaireDialog"
             >
                 Add new Questionnaire
             </Button>
             <Button class="my-questionnaires__use-template-button"
-                    @click="openUseQuestionnaireTemplateDialog"
+                    @action="openUseQuestionnaireTemplateDialog"
             >
                 Use Questionnaire template
             </Button>

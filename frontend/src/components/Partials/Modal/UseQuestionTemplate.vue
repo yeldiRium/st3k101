@@ -10,7 +10,7 @@
             <Button
                     v-for="question in questionTemplates"
                     :key="question.id"
-                    @click="use(question)"
+                    @action="use(question)"
             >
                 {{ question.name }}
             </Button>
@@ -19,7 +19,7 @@
             >
                 Keine Templates gefunden!
             </span>
-            <Button @click="cancel">
+            <Button @action="cancel">
                 Cancel
             </Button>
         </div>

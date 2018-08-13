@@ -1,6 +1,6 @@
 <template>
     <div class="account">
-        <Button @click="logout">
+        <Button @action="logout">
             Logout
         </Button>
     </div>

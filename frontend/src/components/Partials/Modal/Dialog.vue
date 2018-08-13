@@ -16,7 +16,7 @@
                 <Button class="modal-dialog__button"
                         v-for="button in buttons"
                         :key="button.text"
-                        @click="handle(button)"
+                        @action="handle(button)"
                 >
                     {{ button.text }}
                 </Button>

@@ -48,17 +48,17 @@
                  v-if="expanded"
             >
                 <Button v-if="isEditable(dimension)"
-                        @click="openNewQuestionDialog"
+                        @action="openNewQuestionDialog"
                 >
                     Add new Question
                 </Button>
                 <Button v-if="isEditable(dimension)"
-                        @click="openUseQuestionTemplateDialog"
+                        @action="openUseQuestionTemplateDialog"
                 >
                     Use Question template
                 </Button>
                 <Button v-if="isDeletable(dimension)"
-                        @click="deleteDimension"
+                        @action="deleteDimension"
                         :class="{'button--grey': dimension.isShadow}"
                 >
                     delete
