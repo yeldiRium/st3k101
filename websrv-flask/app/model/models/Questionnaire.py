@@ -62,6 +62,7 @@ class Questionnaire(SurveyBase):
         self.password_enabled = False
         self.email_blacklist_enabled = False
         self.email_whitelist_enabled = False
+        self.xapi_target = g._config['XAPI_DEFAULT_TARGET']
 
     @property
     @abstractmethod
