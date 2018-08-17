@@ -35,6 +35,7 @@
                             There are no answers for this dimension yet.
                         </div>
                         <TrackerEntries :surveyBase="dimension"
+                                        :recurse="true"
                                         class="collapsible--no-border collapsible--border-top"
                         ></TrackerEntries>
                         <!--TrackerEntries v-for="question in dimension"
@@ -81,7 +82,7 @@
                 if (this.statisticsByDimension(dimension).length !== dimension.questions.length) {
                     return false;
                 }
-                return dimension.questions.length >= 1;  // TODO: show empty graph if no data available yet instead of not showing graph at all
+                return dimension.questions.length >= 1;
 
             },
             statisticsByDimension(dimension) {

@@ -21,6 +21,7 @@
     import TrackerEntry from "./TrackerEntry";
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
+    import * as R from "ramda";
 
     export default {
         name: "TrackerEntries",
@@ -30,15 +31,41 @@
             IconExpandMore,
             TrackerEntry
         },
+        props: {
+            surveyBase: {
+                type: SurveyBase
+            },
+            all: {
+                type: Boolean
+            },
+            recurse: {
+                type: Boolean,
+                default: false
+            }
+        },
         computed: {
             ...mapGetters("trackerEntries", ["myTrackerEntries"]),
             trackerEntriesByItemHref() {
                 if (this.all) {
                     return this.myTrackerEntries
                 }
-                return this.myTrackerEntries.filter(
+                let ownTrackerEntries = this.myTrackerEntries.filter(
                     e =>  e.itemHref === this.surveyBase.href,
                 );
+
+                if (!this.recurse) {
+                    return ownTrackerEntries;
+                }
+
+                let childrenTrackerEntries = R.flatten(
+                    R.map(
+                        child => this.myTrackerEntries.filter(
+                            entry => entry.itemHref === child.href
+                        ),
+                        this.surveyBase.getAllChildren()
+                    )
+                );
+                return ownTrackerEntries.concat(childrenTrackerEntries).reverse();
             }
         },
         watch: {
@@ -54,21 +81,13 @@
         created() {
             this.loadTrackerEntries();
         },
-        props: {
-            surveyBase: {
-                type: SurveyBase
-            },
-            all: {
-                type: Boolean
-            }
-        },
         methods: {
             toggleTrackerEntriesExpanded() {
                 this.trackerEntriesExpanded = !this.trackerEntriesExpanded;
             },
             loadTrackerEntries() {
                 let future = null;
-                if (this.all) {
+                if (this.all || this.recurse) {
                     future = this.$load(
                         this.$store.dispatch(
                             "trackerEntries/loadMyTrackerEntries"

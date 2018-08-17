@@ -1,4 +1,5 @@
 import OwnedResource from "../OwnedResource";
+import * as R from "ramda";
 
 class SurveyBase extends OwnedResource {
     /**
@@ -35,6 +36,28 @@ class SurveyBase extends OwnedResource {
             this.languageData.clone(),
             this.template,
             this.referenceId
+        );
+    }
+
+    /**
+     * Recurse through object hierarchy and collect all SurveyBases
+     * along the way. For a Questionnaire, this will return all
+     * dimensions and all questions. For a dimension, this will
+     * return all questions, for a question, this will return [].
+     *
+     * @returns {Array<SurveyBase>}
+     */
+    getAllChildren() {
+        let ownChildren = [];
+        if (this.hasOwnProperty("dimensions")) {
+            ownChildren = this.dimensions;
+        } else if (this.hasOwnProperty("questions")) {
+            ownChildren = this.questions;
+        }
+        return ownChildren.concat(
+            R.flatten(
+                R.map((sb => sb.getAllChildren()), ownChildren)
+            )
         );
     }
 }
