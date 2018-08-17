@@ -8,6 +8,9 @@
                   :trackerEntry="trackerEntry"
                           :all="all"
             />
+            <span v-if="trackerEntriesByItemHref.length === 0">
+                There are no changes yet.
+            </span>
         </div>
     </Collapsible>
 </template>
