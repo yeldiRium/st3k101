@@ -40,16 +40,19 @@ function createConcreteQuestionnaire(language,
                                      description,
                                      isPublic,
                                      allowEmbedded,
-                                     xapiTarget = "") {
+                                     xapiTarget = null) {
     const creationData = {
         name,
         description
     };
-    const patchData = {
-        published: isPublic,
+    let patchData = {
+        "published": isPublic,
         "allow_embedded": allowEmbedded,
-        "xapi_target": xapiTarget
     };
+    if (xapiTarget !== null) {
+        patchData["xapi_target"] = xapiTarget;
+    }
+
     // First create the ConcreteQuestionnaire with initial data
     return fetchApi(
         "/api/dataclient/concrete_questionnaire",

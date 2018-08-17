@@ -237,7 +237,7 @@ const store = {
                 description,
                 isPublic,
                 allowEmbedded,
-                xapiTarget
+                xapiTarget === "" ? null : xapiTarget
             )
                 .chain(
                     questionnaire => dispatch(

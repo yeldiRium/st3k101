@@ -36,7 +36,10 @@
                     </template>
                 </Toggle>
 
-                <input v-model="xapiTarget"/>
+                <label>
+                    xAPI target
+                    <input v-model="xapiTarget"/>
+                </label>
             </template>
         </CreateResource>
     </modal>
@@ -63,7 +66,7 @@
                 description: "Questionnaire description",
                 isPublic: false,
                 allowEmbedded: false,
-                xapiTarget: "xapi target"
+                xapiTarget: ""
             }
         },
         computed: {
