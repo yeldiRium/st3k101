@@ -164,9 +164,17 @@ class SurveyBase(OwnershipBase):
         return super(SurveyBase, self).accessible_by(party)
 
     def generate_reference_id(self) -> str:
-        name = self.name_translations[self.original_language.name]
-        name_sane = utils.unicode_to_xml_friendly_ascii(name)
-        if len(name_sane) > 15:
-            name_sane = name_sane[:15]
-        random_chars = os.urandom(5).hex()
-        return (name_sane + "-" + random_chars).replace(" ", "-")
+        while True:
+            name = self.name_translations[self.original_language.name]
+            name_sane = utils.unicode_to_xml_friendly_ascii(name)
+            if len(name_sane) > 15:
+                name_sane = name_sane[:15]
+            random_chars = os.urandom(5).hex()
+            reference_id = (name_sane + "-" + random_chars).replace(" ", "-")
+
+            # check if reference_id is unique
+            others = SurveyBase.query.filter_by(_reference_id=reference_id).all()
+            if not others:
+                break
+
+        return reference_id
