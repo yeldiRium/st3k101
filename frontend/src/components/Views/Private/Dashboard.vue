@@ -29,6 +29,11 @@
                                     :truncateAfter="16"
                                     v-if="showGraphFor(dimension)"
                         />
+                        <div v-else
+                             class="chart-placeholder"
+                        >
+                            There are no answers for this dimension yet.
+                        </div>
                         <TrackerEntries :surveyBase="dimension"
                                         class="collapsible--no-border collapsible--border-top"
                         ></TrackerEntries>
@@ -185,5 +190,11 @@
         .dashboard__dimension__chart {
             width: 38vw;
         }
+    }
+
+    .chart-placeholder {
+        text-align: center;
+        background-color: $lighter;
+        padding: 2em 0 2em 0;
     }
 </style>
