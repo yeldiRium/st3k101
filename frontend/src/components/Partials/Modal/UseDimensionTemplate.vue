@@ -10,7 +10,7 @@
             <Button
                     v-for="dimension in dimensionTemplates"
                     :key="dimension.id"
-                    @click="use(dimension)"
+                    @action="use(dimension)"
             >
                 {{ dimension.name }}
             </Button>
@@ -19,7 +19,7 @@
             >
                 Keine Templates gefunden!
             </span>
-            <Button @click="cancel">
+            <Button @action="cancel">
                 Cancel
             </Button>
         </div>

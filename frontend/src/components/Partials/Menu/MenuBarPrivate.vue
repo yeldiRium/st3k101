@@ -2,20 +2,31 @@
     <nav class="menu-bar-private elevation-8">
         <ul class="menu-bar-private__navigation">
             <li>
-                <router-link to="/private/dashboard"
-                             class="menu-bar-private__link">
+                <router-link
+                        to="/private/dashboard"
+                        class="menu-bar-private__link"
+                        tabindex="0"
+                >
                     <dashboard-icon class="menu-bar-private__icon"
                                     :style="iconStyle"/>
                 </router-link>
             </li>
             <li>
-                <router-link to="/private/questionnaires"
-                             class="menu-bar-private__link">
-                    <list-icon class="menu-bar-private__icon" :style="iconStyle"/>
+                <router-link
+                        to="/private/questionnaires"
+                        class="menu-bar-private__link"
+                        tabindex="0"
+                >
+                    <list-icon class="menu-bar-private__icon"
+                               :style="iconStyle"/>
                 </router-link>
             </li>
             <li>
-                <router-link to="/private/account" class="menu-bar-private__link">
+                <router-link
+                        to="/private/account"
+                        class="menu-bar-private__link"
+                        tabindex="0"
+                >
                     <identity-icon class="menu-bar-private__icon"
                                    :style="iconStyle"/>
                 </router-link>
@@ -27,9 +38,11 @@
 <script>
     import {mapState} from "vuex-fluture";
 
-    import DashboardIcon from "../../../assets/icons/baseline-dashboard-24px.svg";
+    import DashboardIcon
+        from "../../../assets/icons/baseline-dashboard-24px.svg";
     import ListIcon from "../../../assets/icons/baseline-list-24px.svg";
-    import IdentityIcon from "../../../assets/icons/baseline-perm_identity-24px.svg";
+    import IdentityIcon
+        from "../../../assets/icons/baseline-perm_identity-24px.svg";
 
     export default {
         name: "MenuBarPrivate",

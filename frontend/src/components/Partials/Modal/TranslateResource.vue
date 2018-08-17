@@ -11,14 +11,14 @@
             <template v-if="defaultButtons">
                 <div class="modal-translate-resource__button">
                     <Button :offset="4"
-                            @click="cancel"
+                            @action="cancel"
                     >
                         Cancel
                     </Button>
                 </div>
                 <div class="modal-translate-resource__button">
                     <Button :offset="4"
-                            @click="translate"
+                            @action="translate"
                     >
                         Add translation
                     </Button>
