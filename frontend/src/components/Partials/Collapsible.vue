@@ -1,7 +1,10 @@
 <template>
-    <div class="collapsible">
+    <div class="collapsible"
+    >
 
-        <div class="collapsible__header">
+        <div class="collapsible__header"
+            v-on:click="toggleExpanded"
+        >
 
             <span v-if="expanded"
                   class="collapsible__header__label"
@@ -19,11 +22,9 @@
             <div class="collapsible__buttons">
                 <IconExpandLess class="list-item__icon"
                                 v-if="expanded"
-                                @click.native="toggleExpanded"
                 />
                 <IconExpandMore class="list-item__icon"
                                 v-else
-                                @click.native="toggleExpanded"
                 />
             </div>
         </div>
