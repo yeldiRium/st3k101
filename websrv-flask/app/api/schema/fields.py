@@ -5,11 +5,12 @@ from utils import check_color
 __author__ = "Noah Hummel"
 
 
-def enum_field(some_enum, **kwargs):
+def is_in_enum(v, some_enum):
+    return any((v['item_id'] == i.name and v['value'] == i.value)
+               for i in some_enum)
 
-    def is_in_enum(v):
-        return any((v['item_id'] == i.name and v['value'] == i.value)
-                   for i in some_enum)
+
+def enum_field(some_enum, **kwargs):
 
     class EnumFieldClosure(fields.Field):
         def _serialize(self, value, attr, obj):
@@ -20,7 +21,7 @@ def enum_field(some_enum, **kwargs):
         def _deserialize(self, value, attr, data):
             if 'item_id' not in value or 'value' not in value:
                 raise ValidationError('Invalid enumerator format.')
-            if not is_in_enum(value):
+            if not is_in_enum(value, some_enum):
                 raise ValidationError('{} is not a valid {}.'.format(value, some_enum.__name__))
             return some_enum[value['item_id']]
 
