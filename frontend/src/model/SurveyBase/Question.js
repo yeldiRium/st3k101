@@ -179,7 +179,7 @@ class ShadowQuestion extends Question {
                 text,
                 range,
                 referenceTo) {
-        super(href, id, owners, languageData, false, referencId, text, range);
+        super(href, id, owners, languageData, false, referenceId, text, range);
         this.referenceTo = referenceTo;
     }
 
