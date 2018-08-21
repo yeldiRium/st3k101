@@ -5,8 +5,13 @@ const Roles = Object.freeze({
     "User": 30
 });
 
+function isAtLeast(dataClient, role) {
+    return Math.min(...dataClient.roles) <= role;
+}
+
 export default Roles;
 
 export {
-    Roles
+    Roles,
+    isAtLeast
 };
