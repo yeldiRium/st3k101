@@ -302,7 +302,7 @@ function addShadowDimension(questionnaire, dimension) {
         {
             method: "POST",
             authenticate: true,
-            body: {id: questionnaire.id}
+            body: JSON.stringify({id: dimension.id})
         }
     )
         .chain(extractJson)
