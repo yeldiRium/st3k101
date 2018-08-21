@@ -297,7 +297,20 @@
                 );
             },
             useQuestionTemplate({question}) {
-                console.log(question);
+                this.$load(
+                    this.$store.dispatch(
+                        "dimensions/addShadowQuestion",
+                        {
+                            dimension: this.dimension,
+                            concreteQuestion: question
+                        }
+                    )
+                ).fork(
+                    this.$handleApiError,
+                    () => {
+                        this.$emit("updated");
+                    }
+                );
             },
             openNewQuestionDialog() {
                 if (!this.isEditable(this.dimension)) {
