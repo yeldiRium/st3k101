@@ -38,6 +38,10 @@ class SurveyBase(OwnershipBase):
 
     @property
     def reference_id(self) -> str:
+        # set initial reference_id if name already present
+        if not self._reference_id:
+            if self.name is not None and len(self.name) > 0:
+                self._reference_id = self.generate_reference_id()
         return self._reference_id
 
     @reference_id.setter
@@ -138,10 +142,6 @@ class SurveyBase(OwnershipBase):
     def __init__(self, **kwargs):
         super(SurveyBase, self).__init__(**kwargs)
         self.owners.append(current_user())
-        # set initial reference_id if name already present
-        if not self._reference_id:
-            if self.name is not None and len(self.name) > 0:
-                self._reference_id = self.generate_reference_id()
 
     def accessible_by(self, party: "Party") -> bool:
         """
