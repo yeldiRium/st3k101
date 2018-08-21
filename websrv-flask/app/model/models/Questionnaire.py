@@ -90,6 +90,11 @@ class Questionnaire(SurveyBase):
         raise NotImplementedError
 
     @property
+    @abstractmethod
+    def shadow(self) -> bool:
+        raise NotImplementedError
+
+    @property
     def question_count(self) -> int:
         """
         :return: The number of questions associated with the Questionnaire.

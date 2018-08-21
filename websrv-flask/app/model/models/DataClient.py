@@ -35,8 +35,9 @@ class DataClient(Party):
         if 'language' not in kwargs:
             self.language = g._language
         self._roles = [Role.User.value]
-        self.verified = False
-        self.verification_token = os.urandom(64).hex()
+        if 'verified' not in kwargs:
+            self.verified = False
+            self.verification_token = os.urandom(64).hex()
 
     @property
     def roles(self):
