@@ -197,8 +197,62 @@ function parsePasswordChallenge({password_enabled, password}) {
 function parseQuestionnaire(data) {
     if (prop("shadow", data) === true) {
         return parseShadowQuestionnaire(data, data);
+    } else if (!data.hasOwnProperty("owners")) {
+        return parseTemplateQuestionnaire(data);
     }
     return parseConcreteQuestionnaire(data, data);
+}
+
+/**
+ * Parses the common API representation of a Questionnaire that is a template
+ * and is not owned by the current user. In this case, some information will
+ * be stripped by the API and we need to replace it with default values here.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @param {String} reference_id
+ * @param {String} name
+ * @param {String} description
+ * @param {Array<Dimension>} dimensions
+ * @param {Boolean} template
+ * @param {Language} current_language
+ * @param {Language} original_language
+ * @param {Array<Language>} available_languages
+ * @returns {ConcreteQuestionnaire}
+ */
+function parseTemplateQuestionnaire({
+                                        href,
+                                        id,
+                                        reference_id,
+                                        name,
+                                        description,
+                                        dimensions,
+                                        template,
+                                        current_language,
+                                        original_language,
+                                        available_languages
+                                    }) {
+    return new ConcreteQuestionnaire(
+        href,
+        id,
+        [],  // owners
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        template,
+        reference_id,
+        name,
+        description,
+        false,  // published
+        false,  // allow_embedded
+        "",  // xapi_target
+        map(parseDimension, dimensions),
+        [],  // challenges
+        0,  // incoming_reference_count
+        [],  // owned_incoming_references
+    );
 }
 
 /**
@@ -334,8 +388,59 @@ function parseConcreteQuestionnaire({
 function parseDimension(data) {
     if (prop("shadow", data) === true) {
         return parseShadowDimension(data);
+    } else if (!data.hasOwnProperty("owners")) {
+        console.log("Template");
+        return parseTemplateDimension(data);
     }
     return parseConcreteDimension(data);
+}
+
+/**
+ * Parses the common API representation of a Dimension that is a template
+ * and is not owned by the current user. In this case, some information will
+ * be stripped by the API and we need to replace it with default values here.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @param {String} reference_id
+ * @param {String} name
+ * @param {Array<Question>} questions
+ * @param {Boolean} randomize_question_order
+ * @param {Boolean} template
+ * @param {Language} current_language
+ * @param {Language} original_language
+ * @param {Array<Language>} available_languages
+ * @returns {ConcreteDimension}
+ */
+function parseTemplateDimension({
+                                    href,
+                                    id,
+                                    reference_id,
+                                    name,
+                                    questions,
+                                    randomize_question_order,
+                                    template,
+                                    current_language,
+                                    original_language,
+                                    available_languages
+                                }) {
+    return new ConcreteDimension(
+        href,
+        id,
+        [],  // owners
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        template,
+        reference_id,
+        name,
+        map(parseQuestion, questions),
+        randomize_question_order,
+        0,  // incoming_reference_count
+        []  // owned_incoming_references
+    );
 }
 
 /**
@@ -449,8 +554,57 @@ function parseConcreteDimension({
 function parseQuestion(data) {
     if (prop("shadow", data) === true) {
         return parseShadowQuestion(data);
+    } else if (!data.hasOwnProperty("owners")) {
+        return parseTemplateQuestion(data);
     }
     return parseConcreteQuestion(data);
+}
+
+/**
+ * Parses the common API representation of a Question that is a template
+ * and is not owned by the current user. In this case, some information will
+ * be stripped by the API and we need to replace it with default values here.
+ *
+ * @param {String} href
+ * @param {String} id
+ * @param {String} reference_id
+ * @param {String} text
+ * @param {Integer} range_start
+ * @param {Integer} range_end
+ * @param {Boolean} template
+ * @param {Language} current_language
+ * @param {Language} original_language
+ * @param {Array<Language>} available_languages
+ * @returns {ConcreteQuestion}
+ */
+function parseTemplateQuestion({
+                                   href,
+                                   id,
+                                   reference_id,
+                                   text,
+                                   range_start,
+                                   range_end,
+                                   template,
+                                   current_language,
+                                   original_language,
+                                   available_languages
+                               }) {
+    return new ConcreteQuestion(
+        href,
+        id,
+        [],  // owners
+        parseLanguageData({
+            current_language,
+            original_language,
+            available_languages
+        }),
+        template,
+        reference_id,
+        text,
+        new Range({start: range_start, end: range_end}),
+        0,  // incoming reference count
+        []  // owned incoming references
+    );
 }
 
 /**
