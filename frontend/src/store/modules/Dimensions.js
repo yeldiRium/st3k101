@@ -90,7 +90,7 @@ const store = {
             for (const dimension of dimensions) {
                 dimension.dimensions = map(
                     rootGetters["questions/questionById"],
-                    dimension.dimensions
+                    dimension.questions
                 );
             }
             return dimensions;
