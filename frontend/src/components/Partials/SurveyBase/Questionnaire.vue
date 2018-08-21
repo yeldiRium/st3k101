@@ -381,7 +381,20 @@
                 );
             },
             useDimensionTemplate({dimension}) {
-                console.log(dimension);
+                this.$load(
+                    this.$store.dispatch(
+                        "questionnaires/addShadowDimension",
+                        {
+                            questionnaire: this.questionnaire,
+                            concreteDimension: dimension
+                        }
+                    )
+                ).fork(
+                    this.$handleApiError,
+                    () => {
+                        this.emit("updated");
+                    }
+                );
             },
             openNewDimensionDialog() {
                 if (!this.isEditable(this.questionnaire)) {
