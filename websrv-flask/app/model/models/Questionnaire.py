@@ -90,10 +90,6 @@ class Questionnaire(SurveyBase):
         raise NotImplementedError
 
     @property
-    def available_languages(self):
-        return [BabelLanguage[k] for k in self.name_translations.keys()]
-
-    @property
     def question_count(self) -> int:
         """
         :return: The number of questions associated with the Questionnaire.
@@ -247,8 +243,8 @@ class ShadowQuestionnaire(Questionnaire):
     shadow = True
 
     def __init__(self, questionnaire, **kwargs):
-        super(ShadowQuestionnaire, self).__init__(**kwargs)
         self._referenced_object = questionnaire
+        super(ShadowQuestionnaire, self).__init__(**kwargs)
 
         for dimension in questionnaire.dimensions:
             if not isinstance(dimension, ConcreteDimension):

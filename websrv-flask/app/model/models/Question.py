@@ -86,10 +86,6 @@ class Question(SurveyBase):
     def original_language(self) -> str:
         return self.dimension.original_language
 
-    @property
-    def available_languages(self):
-        return [BabelLanguage[k] for k in self.text_translations.keys()]
-
     def get_results_by_subject(self, subject: DataSubject):
         query = query_owned(DataSubject, subject.id, QuestionResponse)
         return query.filter(QuestionResponse.question_id == self.id).all()
@@ -197,8 +193,8 @@ class ShadowQuestion(Question):
     shadow = True
 
     def __init__(self, question, **kwargs):
-        super(ShadowQuestion, self).__init__(**kwargs)
         self._referenced_object = question
+        super(ShadowQuestion, self).__init__(**kwargs)
 
     @property
     def concrete_id(self):

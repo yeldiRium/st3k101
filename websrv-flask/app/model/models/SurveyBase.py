@@ -45,18 +45,14 @@ class SurveyBase(OwnershipBase):
         self._reference_id = utils.unicode_to_xml_friendly_ascii(value)
 
     @property
+    def available_languages(self):
+        return [BabelLanguage[k] for k in self.name_translations.keys()]
+
+    @property
     @abstractmethod
     def original_language(self) -> BabelLanguage:
         """
         :return: The original BabelLanguage self was created in.
-        """
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def available_languages(self) -> List[BabelLanguage]:
-        """
-        :return: A list of all BabelLanguages self was translated to.
         """
         raise NotImplementedError
 

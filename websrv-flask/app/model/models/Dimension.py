@@ -54,10 +54,6 @@ class Dimension(SurveyBase):
     def original_language(self) -> str:
         return self.questionnaire.original_language
 
-    @property
-    def available_languages(self):
-        return [BabelLanguage[k] for k in self.name_translations.keys()]
-
     def new_question(self, text: str, **kwargs) -> ConcreteQuestion:
         if not isinstance(self, ConcreteDimension):
             raise BusinessRuleViolation("Can't modify shadow instances!")
@@ -140,8 +136,8 @@ class ShadowDimension(Dimension):
     shadow = True
 
     def __init__(self, dimension, **kwargs):
-        super(ShadowDimension, self).__init__(**kwargs)
         self._referenced_object = dimension
+        super(ShadowDimension, self).__init__(**kwargs)
 
         for question in dimension.questions:
             if not isinstance(question, ConcreteQuestion):
