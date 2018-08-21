@@ -83,16 +83,29 @@
                     @action="deleteQuestion"
                     :class="{'button--grey': question.isShadow}"
             >
-                delete
+                Delete
+            </Button>
+            <Button v-if="isMakeTemplateButtonShown && !question.template"
+                    @action="toggleIsTemplate"
+            >
+                Publish as template
+            </Button>
+            <Button v-if="isMakeTemplateButtonShown && question.template"
+                    @action="toggleIsTemplate"
+            >
+                Retract template
             </Button>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapGetters} from "vuex-fluture";
+
     import {assoc} from "ramda";
 
     import {Question} from "../../../model/SurveyBase/Question";
+    import {Roles, isAtLeast} from "../../../model/Roles";
 
     import {setRange, setText} from "../../../api/Question";
 
@@ -145,6 +158,10 @@
             this.expanded = this.initiallyExpanded;
         },
         computed: {
+            ...mapGetters("session", ["dataClient"]),
+            isMakeTemplateButtonShown() {
+                return isAtLeast(this.dataClient, Roles.Contributor) && this.isEditable(this.question);
+            },
             /**
              * CSS Classes for Question container div.
              */
@@ -281,6 +298,40 @@
                         ]
                     }
                 )
+            },
+            /**
+             * Publishes / Retracts this question as a template.
+             * TODO: prompt dataclient when there are still incoming
+             * references
+             * TODO: what is the correct behaviour in aforementioned
+             * case?
+             */
+            toggleIsTemplate() {
+                if (!this.isEditable(this.question)) {
+                        return;  // can't publish other people's content
+                }
+
+                let template = !this.question.template;
+
+                const cancel = this.$load(
+                    this.$store.dispatch(
+                        "questions/updateQuestion",
+                        {
+                            question: this.question,
+                            params: {
+                                template
+                            }
+                        }
+                    ).chain(question => this.$store.dispatch(
+                                "questions/fetchQuestion",
+                                {href: question.href, language}
+                            ))
+                    ).fork(
+                        this.$handleApiError,
+                        () => {
+                            this.$emit("updated");
+                        }
+                    );
             }
         }
     }
