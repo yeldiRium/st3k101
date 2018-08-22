@@ -149,7 +149,7 @@ class Questionnaire(SurveyBase):
             s_dimension.owners = copy.owners
             copy.dimensions.append(s_dimension)
 
-        item_added.send(added_item=dimension)
+        item_added.send(self, added_item=dimension)
 
         return dimension
 
