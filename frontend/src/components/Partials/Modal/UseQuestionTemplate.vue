@@ -12,7 +12,7 @@
                     :key="question.id"
                     @action="use(question)"
             >
-                {{ question.name }}
+                {{ question.text }}
             </Button>
             <span
                     v-if="questionTemplates.length === 0"
