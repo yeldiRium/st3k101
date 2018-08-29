@@ -6,6 +6,7 @@ from flask import g
 import auth
 from framework.exceptions import UserExistsException, BadCredentialsException, \
     UserNotLoggedInException
+from framework.signals import SIG_LOGGED_IN
 from model import db
 from model.models.DataClient import DataClient
 
@@ -58,6 +59,7 @@ def login(email: str, password: str) -> str:
         session_token = os.urandom(g._config['AUTH_SESSION_TOKEN_LENGTH']).hex()
         success = auth.new_session(session_token, client.id)
 
+    SIG_LOGGED_IN.send(client)
     return session_token
 
 

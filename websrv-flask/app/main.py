@@ -185,3 +185,6 @@ import api.QuestionStatistic
 
 # CLI commands
 import cli
+
+# signal handling
+import framework.xapi.signals
