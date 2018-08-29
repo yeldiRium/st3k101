@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from XApiItem import XApiItem
+from framework.xapi.XApiItem import XApiItem
 
 
 class XApiResult(XApiItem):

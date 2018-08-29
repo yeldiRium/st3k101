@@ -10,3 +10,4 @@ blinker
 flask_restful
 marshmallow
 requests
+maxminddb-geolite2

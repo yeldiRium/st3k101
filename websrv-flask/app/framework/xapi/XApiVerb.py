@@ -1,7 +1,7 @@
 import json
 
-from XApiItem import XApiItem
-from XApiVerbs import XApiVerbs
+from framework.xapi.XApiItem import XApiItem
+from framework.xapi.XApiVerbs import XApiVerbs
 
 class XApiVerb(XApiItem):
     

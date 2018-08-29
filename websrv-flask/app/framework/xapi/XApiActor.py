@@ -2,7 +2,7 @@ from abc import abstractmethod
 from hashlib import sha1
 import json
 
-from XApiItem import XApiItem
+from framework.xapi.XApiItem import XApiItem
 
 
 class XApiActor(XApiItem):

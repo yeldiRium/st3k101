@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
-from XApiItem import XApiItem
-from XApiActivities import XApiActivities
-from XApiActor import XApiActor
+from framework.xapi.XApiItem import XApiItem
+from framework.xapi.XApiActivities import XApiActivities
+from framework.xapi.XApiActor import XApiActor
 
 
 class XApiObject(XApiItem):
@@ -36,7 +36,7 @@ class XApiActivityObject(XApiObject):
     def get_id(self) -> str:
         return self.__id
     
-    def get_name(self) -> str:
+    def get_name(self) -> dict:
         return self.__name
 
     def get_activity_type(self) -> str:
