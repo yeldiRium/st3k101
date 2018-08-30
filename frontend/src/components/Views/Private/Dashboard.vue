@@ -69,6 +69,8 @@
                return (questionnaire) => {
                    if (questionnaire.dimensions.length < 1) {
                        return 0;
+                   } else if (questionnaire.dimensions[0].questions.length < 1) {
+                       return 0;
                    }
                    return this.statisticsByDimension(questionnaire.dimensions[0])[0].n;
                };
