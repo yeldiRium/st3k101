@@ -4,15 +4,15 @@ import {map} from "ramda";
 import {parseTrackerEntry} from "./Util/Parse";
 
 
-function fetchMyTrackerEntries() {
-    return fetchApi("/api/tracker", {authenticate: true})
+function fetchMyTrackerEntries(authenticationToken) {
+    return fetchApi("/api/tracker", {authenticationToken})
         .chain(extractJson)
         .map(map(parseTrackerEntry));
 }
 
-function fetchTrackerEntriesByItemHref(href) {
+function fetchTrackerEntriesByItemHref(authenticationToken, href) {
     let url = href.concat("/tracker").replace("//", "/");
-    return fetchApi(url, {authenticate: true})
+    return fetchApi(url, {authenticationToken})
         .chain(extractJson)
         .map(map(parseTrackerEntry));
 }

@@ -1,7 +1,9 @@
 import {filter} from "ramda";
 import Future from "fluture";
-import {fetchMyTrackerEntries, fetchTrackerEntriesByItemHref} from "../../api/TrackerEntry";
-import * as R from "ramda";
+import {
+    fetchMyTrackerEntries,
+    fetchTrackerEntriesByItemHref
+} from "../../api/TrackerEntry";
 
 const store = {
     namespaced: true,
@@ -25,21 +27,27 @@ const store = {
         },
     },
     actions: {
-        loadMyTrackerEntries({dispatch, commit}) {
-           return fetchMyTrackerEntries()
-               .chain(trackerEntries =>
+        loadMyTrackerEntries({dispatch, commit, rootGetters}) {
+            return fetchMyTrackerEntries(rootGetters["session/sessionToken"])
+                .chain(trackerEntries =>
                     Future((reject, resolve) => {
                             commit("replaceTrackerEntries", {trackerEntries});
                             resolve(trackerEntries);
                         }
                     )
-               );
+                );
         },
-        loadTrackerEntriesForItemHref({dispatch, commit}, href) {
-            return fetchTrackerEntriesByItemHref(href)
+        loadTrackerEntriesForItemHref({dispatch, commit, rootGetters}, href) {
+            return fetchTrackerEntriesByItemHref(
+                rootGetters["session/sessionToken"],
+                href
+            )
                 .chain(trackerEntries =>
                     Future((reject, resolve) => {
-                        commit("replaceTrackerEntriesForItem", {trackerEntries, href})
+                        commit("replaceTrackerEntriesForItem", {
+                            trackerEntries,
+                            href
+                        });
                         resolve(trackerEntries);
                     })
                 );
@@ -47,7 +55,7 @@ const store = {
     },
     mutations: {
         replaceTrackerEntries(state, {trackerEntries}) {
-            state.myTrackerEntries =  trackerEntries;
+            state.myTrackerEntries = trackerEntries;
         },
         replaceTrackerEntriesForItem(state, {trackerEntries, href}) {
             state.myTrackerEntries = state.myTrackerEntries.filter(
