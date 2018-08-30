@@ -54,4 +54,4 @@ services:
       - 80:80
     environment:
       - NODE_ENV=production
-    command: bash -c "npm run build && npm install -g http-server && http-server -a 0.0.0.0 -p 80 ./dist"
+    command: bash -c "npm run build && node -r esm index.js"

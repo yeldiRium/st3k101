@@ -17,6 +17,9 @@
   },
   "dependencies": {
     "abortcontroller-polyfill": "^1.1.8",
+    "body-parser": "^1.18.3",
+    "esm": "^3.0.80",
+    "express": "^4.16.3",
     "jquery": "^3.3.1",
     "svg-icon-inline-loader": "^3.1.0",
     "v-click-outside": "^1.0.4",
