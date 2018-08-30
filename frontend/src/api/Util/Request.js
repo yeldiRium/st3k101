@@ -4,8 +4,6 @@ import Future from "fluture";
 import {buildApiUrl} from "./Path";
 import {categorizeResponse} from "./Response";
 
-import store from "../../store";
-
 /**
  * Build headers from a given authentication token.
  *
@@ -16,25 +14,6 @@ function buildAuthenticationHeaders(authenticationToken = "") {
     if (authenticationToken !== "") {
         return {
             Authorization: `Bearer ${authenticationToken}`
-        };
-    } else {
-        return {};
-    }
-}
-
-/**
- * Read the current sessionToken from the vuex store and build authentication
- * headers from it.
- *
- * @param {Boolean} authenticate
- * @returns {Object}
- */
-function getAuthenticationHeaders(authenticate = true) {
-    const sessionToken = store.getters["session/sessionToken"];
-
-    if (authenticate) {
-        return {
-            Authorization: `Bearer ${sessionToken}`
         };
     } else {
         return {};
@@ -76,7 +55,6 @@ const defaultHeaders = {
  * @param {String} method
  * @param {String} body
  * @param {Object<String>} headers
- * @param {Boolean} authenticate Deprecated
  * @param {String} authenticationToken
  * @param {Language} language
  *
@@ -91,20 +69,17 @@ function fetchApi(path,
                       method = "GET",
                       body = "",
                       headers = {},
-                      authenticate = false, // TODO: remove parameter
                       authenticationToken = "",
                       language = null
                   }) {
-    let result = Future((reject, resolve) => {
+    return Future((reject, resolve) => {
         const controller = new AbortController();
         const signal = controller.signal;
 
         const useHeaders = {
             ...defaultHeaders,
             ...headers,
-            ...buildAuthenticationHeaders(authenticationToken),
-            // TODO: remove this
-            ...getAuthenticationHeaders(authenticate)
+            ...buildAuthenticationHeaders(authenticationToken)
         };
 
         const fetchParams = {
@@ -124,16 +99,6 @@ function fetchApi(path,
         return controller.abort;
     })
         .chain(categorizeResponse);
-
-    // TODO: remove authenticate
-    if (authenticationToken !== "" || authenticate) {
-        return result.chain(
-            response => store.dispatch("session/updateSessionCookie")
-                .map(() => response)
-        );
-    } else {
-        return result;
-    }
 }
 
 export {
