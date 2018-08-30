@@ -8,7 +8,7 @@ function fetchQuestionStatistic(authenticationToken, href = null) {
     return fetchApi(
         apiEndpoint,
         {
-            authenticate: true
+            authenticationToken
         })
         .chain(extractJson)
         .map(parseQuestionStatistic);

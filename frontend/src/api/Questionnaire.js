@@ -307,6 +307,7 @@ function addConcreteDimension(authenticationToken, questionnaire, name, randomiz
  * The ConcreteDimension also has to be uptadet or reloaded, so that its new
  * reference appears.
  *
+ * @param authenticationToken
  * @param {ConcreteQuestionnaire} questionnaire
  * @param {ConcreteDimension} dimension
  *
@@ -315,12 +316,12 @@ function addConcreteDimension(authenticationToken, questionnaire, name, randomiz
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addShadowDimension(questionnaire, dimension) {
+function addShadowDimension(authenticationToken, questionnaire, dimension) {
     return fetchApi(
         questionnaire.href + "/shadow_dimension",
         {
             method: "POST",
-            authenticate: true,
+            authenticationToken,
             body: JSON.stringify({id: dimension.id})
         }
     )
@@ -334,6 +335,7 @@ function addShadowDimension(questionnaire, dimension) {
  * The ConcreteQuestionnaire has to be updated or reloaded afterwards to reflect
  * the changes.
  *
+ * @param authenticationToken
  * @param {ConcreteQuestionnaire} questionnaire
  * @param {Dimension} dimension
  *
@@ -342,13 +344,13 @@ function addShadowDimension(questionnaire, dimension) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function removeDimension(questionnaire, dimension) {
+function removeDimension(authenticationToken, questionnaire, dimension) {
     if (contains(dimension, questionnaire.dimensions)) {
         return fetchApi(
             dimension.href,
             {
                 method: "DELETE",
-                authenticate: true
+                authenticationToken
             }
         )
             .map(() => true);

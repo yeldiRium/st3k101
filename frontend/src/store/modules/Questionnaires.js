@@ -580,34 +580,40 @@ const store = {
                 );
             }
 
-            return addShadowDimension(questionnaire, concreteDimension).chain(shadowDimension => {
-                commit("addDimensionToQuestionnaire", {
-                    questionnaire,
-                    dimension: shadowDimension
-                });
-                return dispatch(
-                    "dimensions/patchDimensionInStore",
-                    {dimension: concreteDimension},
-                    {root: true}
-                )
-                // Reload original ConcreteDimension to have an accurate
-                // reference count
-                    .chain(() => dispatch(
-                        "dimensions/fetchDimension",
-                        {
-                            href: concreteDimension.href,
-                            language: concreteDimension.languageData.currentLanguage
-                        }
-                    ))
-                    // still resolve to the new ShadowDimension
-                    .map(() => shadowDimension);
-            })
+            return addShadowDimension(
+                rootGetters["session/sessionToken"],
+                questionnaire,
+                concreteDimension
+            )
+                .chain(shadowDimension => {
+                    commit("addDimensionToQuestionnaire", {
+                        questionnaire,
+                        dimension: shadowDimension
+                    });
+                    return dispatch(
+                        "dimensions/patchDimensionInStore",
+                        {dimension: concreteDimension},
+                        {root: true}
+                    )
+                    // Reload original ConcreteDimension to have an accurate
+                    // reference count
+                        .chain(() => dispatch(
+                            "dimensions/fetchDimension",
+                            {
+                                href: concreteDimension.href,
+                                language: concreteDimension.languageData.currentLanguage
+                            }
+                        ))
+                        // still resolve to the new ShadowDimension
+                        .map(() => shadowDimension);
+                })
         },
         /**
          * Removes a Dimension from a ConcreteQuestionnaire.
          *
          * @param commit
          * @param dispatch
+         * @param rootGetters
          * @param {ConcreteQuestionnaire} questionnaire
          * @param {Dimension} dimension
          *
@@ -616,7 +622,10 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        removeDimension({commit, dispatch}, {questionnaire, dimension}) {
+        removeDimension(
+            {commit, dispatch, rootGetters},
+            {questionnaire, dimension}
+        ) {
             if (questionnaire.isShadow) {
                 return Future.reject(
                     new ValidationError(
@@ -626,7 +635,11 @@ const store = {
                 );
             }
 
-            return removeDimension(questionnaire, dimension)
+            return removeDimension(
+                rootGetters["session/sessionToken"],
+                questionnaire,
+                dimension
+            )
                 .chain(() => {
                     commit(
                         "removeDimensionFromQuestionnaire",
