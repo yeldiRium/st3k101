@@ -67,10 +67,10 @@
             ...mapGetters("statistics", ["statisticByQuestionHref"]),
             submissionCount() {
                return (questionnaire) => {
-                   for (let dimension of questionnaire.dimensions) {
-                       return this.statisticsByDimension(dimension).length;
+                   if (questionnaire.dimensions.length < 1) {
+                       return 0;
                    }
-                   return 0;
+                   return this.statisticsByDimension(questionnaire.dimensions[0])[0].n;
                };
             },
         },
@@ -79,11 +79,10 @@
         },
         methods: {
             showGraphFor(dimension) {
-                if (this.statisticsByDimension(dimension).length !== dimension.questions.length) {
+                if (dimension.questions.length < 1) {
                     return false;
                 }
-                return dimension.questions.length >= 1;
-
+                return this.statisticsByDimension(dimension)[0].n > 0;
             },
             statisticsByDimension(dimension) {
                 return reject(
