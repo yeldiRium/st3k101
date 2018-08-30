@@ -95,6 +95,7 @@ const store = {
          * At least one of href and id must be provided.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {String} href
          * @param id
          * @param {Language} language
@@ -104,7 +105,8 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestion({dispatch}, {href = null, id = null, language = null}) {
+        fetchQuestion({dispatch, rootGetters}, {href = null, id = null, language = null}) {
+            const authenticationToken = rootGetters["session/sessionToken"];
             let future;
             if (isNil(href) && isNil(id)) {
                 return Future.reject(
@@ -112,9 +114,13 @@ const store = {
                 );
             }
             if (!isNil(href)) {
-                future = fetchQuestion(href, language);
+                future = fetchQuestion(authenticationToken, href, language);
             } else {
-                future = fetchQuestionById(id, language);
+                future = fetchQuestionById(
+                    authenticationToken,
+                    id,
+                    language
+                );
             }
             return future
                 .chain(question => dispatch(
@@ -126,6 +132,7 @@ const store = {
          * Fetches a list of all available template Questions.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Language} language on optional language in which the list should be
          *  retrieved
          * @returns {Future}
@@ -133,8 +140,11 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestionTemplates({dispatch}, {language = null}) {
-            return fetchQuestionTemplates(language)
+        fetchQuestionTemplates({dispatch, rootGetters}, {language = null}) {
+            return fetchQuestionTemplates(
+                rootGetters["session/sessionToken"],
+                language
+            )
                 .chain(templates => {
                     const patchTemplateFutures = [];
                     for (const template of templates) {
@@ -152,6 +162,7 @@ const store = {
          * language or the Questions current language.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Question} question
          * @param {Language} language
          * @param {Object} params
@@ -161,12 +172,17 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        updateQuestion({dispatch}, {question, language = null, params}) {
+        updateQuestion({dispatch, rootGetters}, {question, language = null, params}) {
             const correctLanguage = isNil(language)
                 ? question.languageData.currentLanguage
                 : language;
 
-            return updateQuestion(question, correctLanguage, params)
+            return updateQuestion(
+                rootGetters["session/sessionToken"],
+                question,
+                correctLanguage,
+                params
+            )
                 .chain(result =>
                     dispatch("patchQuestionInStore", {question: result})
                 );

@@ -152,6 +152,7 @@ function addConcreteQuestion(authenticationToken, dimension, text, range) {
         .chain(extractJson)
         .map(pipe(prop("question"), parseQuestion))
         .chain(question => updateQuestion(
+            authenticationToken,
             question,
             dimension.languageData.currentLanguage,
             {range}
