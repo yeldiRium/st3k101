@@ -3,7 +3,7 @@ import {extractJson} from "./Util/Response";
 import {parseQuestionStatistic} from "./Util/Parse";
 
 
-function fetchQuestionStatistic({href = null}) {
+function fetchQuestionStatistic(authenticationToken, href = null) {
     let apiEndpoint = (href + "/statistic").replace("//", "/");
     return fetchApi(
         apiEndpoint,

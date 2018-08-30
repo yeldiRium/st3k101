@@ -36,12 +36,15 @@ const store = {
          * Fetches the QuestionStatistic object for a given question
          * via the api and stores it.
          *
-         * @param dispatch
          * @param commit
+         * @param rootGetters
          * @param question {Question}
          */
-        fetchQuestionStatistic({dispatch, commit}, {question}) {
-            return fetchQuestionStatistic({href: question.href})
+        fetchQuestionStatistic({commit, rootGetters}, {question}) {
+            return fetchQuestionStatistic(
+                rootGetters["session/sessionToken"],
+                question.href
+            )
                 .chain(statistic => {
                         commit(
                             "patchQuestionStatisticInStore",
