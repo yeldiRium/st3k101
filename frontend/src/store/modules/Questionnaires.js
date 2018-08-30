@@ -223,7 +223,7 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        createConcreteQuestionnaire({dispatch}, {
+        createConcreteQuestionnaire({dispatch, rootGetters}, {
             language,
             name,
             description,
@@ -232,6 +232,7 @@ const store = {
             xapiTarget
         }) {
             return createConcreteQuestionnaire(
+                rootGetters["session/sessionToken"],
                 language,
                 name,
                 description,
@@ -257,8 +258,10 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        createShadowQuestionnaire({dispatch}, {concreteQuestionnaire}) {
-            return createShadowQuestionnaire(concreteQuestionnaire)
+        createShadowQuestionnaire({dispatch, rootGetters}, {concreteQuestionnaire}) {
+            return createShadowQuestionnaire(
+                rootGetters["session/sessionToken"],
+                concreteQuestionnaire)
                 .chain(
                     shadowQuestionnaire => dispatch(
                         "patchQuestionnaireInStore",
@@ -280,7 +283,10 @@ const store = {
         loadMyQuestionnaires({dispatch, rootGetters}) {
             const dataClient = rootGetters["session/dataClient"];
 
-            return fetchMyQuestionnaires(dataClient.language)
+            return fetchMyQuestionnaires(
+                rootGetters["session/sessionToken"],
+                dataClient.language
+            )
                 .chain(questionnaires => {
                     const patchQuestionnaireFutures = [];
                     for (const questionnaire of questionnaires) {
@@ -303,6 +309,7 @@ const store = {
          * At least one of href and id must be provided.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {String} href
          * @param {String} id
          * @param {Language} language
@@ -312,7 +319,10 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestionnaire({dispatch}, {href = null, id = null, language = null}) {
+        fetchQuestionnaire(
+            {dispatch, rootGetters},
+            {href = null, id = null, language = null}
+        ) {
             let future;
             if (isNil(href) && isNil(id)) {
                 return Future.reject(
@@ -320,9 +330,17 @@ const store = {
                 );
             }
             if (!isNil(href)) {
-                future = fetchQuestionnaire(href, language);
+                future = fetchQuestionnaire(
+                    authenticationToken,
+                    href,
+                    language
+                );
             } else {
-                future = fetchQuestionnaireById(id, language);
+                future = fetchQuestionnaireById(
+                    rootGetters["session/sessionToken"],
+                    id,
+                    language
+                );
             }
             return future
                 .chain(questionnaire => dispatch(
@@ -334,6 +352,7 @@ const store = {
          * Fetches a list of all available template Questionnaires.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Language} language on optional language in which the list should be
          *  retrieved
          * @returns {Future}
@@ -341,8 +360,11 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchQuestionnaireTemplates({dispatch}, {language = null}) {
-            return fetchQuestionnaireTemplates(language)
+        fetchQuestionnaireTemplates({dispatch, rootGetters}, {language = null}) {
+            return fetchQuestionnaireTemplates(
+                rootGetters["session/sessionToken"],
+                language
+            )
                 .chain(templates => {
                     const patchTemplateFutures = [];
                     for (const template of templates) {
@@ -360,6 +382,7 @@ const store = {
          * language or the Questionnaires current language.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Questionnaire} questionnaire
          * @param {Language} language
          * @param {Object} params
@@ -369,12 +392,20 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        updateQuestionnaire({dispatch}, {questionnaire, language = null, params}) {
+        updateQuestionnaire(
+            {dispatch, rootGetters},
+            {questionnaire, language = null, params}
+        ) {
             const correctLanguage = isNil(language)
                 ? questionnaire.languageData.currentLanguage
                 : language;
 
-            return apiUpdateQuestionnaire(questionnaire, correctLanguage, params)
+            return apiUpdateQuestionnaire(
+                rootGetters["session/sessionToken"],
+                questionnaire,
+                correctLanguage,
+                params
+            )
                 .chain(result => dispatch(
                     "patchQuestionnaireInStore",
                     {questionnaire: result}
@@ -387,6 +418,7 @@ const store = {
          * TODO: set via API
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Questionnaire} questionnaire
          * @param {Challenge} challenge
          *
@@ -395,7 +427,10 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        updateChallengeOnQuestionnaire({dispatch}, {questionnaire, challenge}) {
+        updateChallengeOnQuestionnaire(
+            {dispatch, rootGetters},
+            {questionnaire, challenge}
+        ) {
             let data = {};
 
             switch (challenge.name) {
@@ -418,6 +453,7 @@ const store = {
             }
 
             return apiUpdateQuestionnaire(
+                rootGetters["session/sessionToken"],
                 questionnaire,
                 questionnaire.languageData.currentLanguage,
                 data
@@ -432,6 +468,7 @@ const store = {
          * store.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Questionnaire} questionnaire
          *
          * @return {Future}
@@ -439,8 +476,11 @@ const store = {
          * @reject see API
          * @cancel
          */
-        deleteQuestionnaire({dispatch}, {questionnaire}) {
-            return deleteQuestionnaire(questionnaire)
+        deleteQuestionnaire({dispatch, rootGetters}, {questionnaire}) {
+            return deleteQuestionnaire(
+                rootGetters["session/sessionToken"],
+                questionnaire
+            )
                 .chain(() => dispatch(
                     "removeQuestionnaireFromStore",
                     {questionnaire}

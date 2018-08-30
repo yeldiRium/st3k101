@@ -10,8 +10,15 @@ const store = {
         submissionQuestionnaires: [],
     },
     actions: {
-        fetchSubmissionQuestionnaireById({commit}, {id, language}) {
-            return fetchQuestionnaireForSubmissionById(id, language)
+        fetchSubmissionQuestionnaireById(
+            {commit, rootGetters},
+            {id, language}
+        ) {
+            return fetchQuestionnaireForSubmissionById(
+                rootGetters["session/sessionToken"],
+                id,
+                language
+            )
                 .chain(questionnaire => {
                     commit("patchSubmissionQuestionnaireInStore", {questionnaire});
                     return Future.of(questionnaire);

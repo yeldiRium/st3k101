@@ -3,7 +3,11 @@ import {contains, map, path, pipe, prop, without} from "ramda";
 
 import {extractJson} from "./Util/Response";
 import {fetchApi} from "./Util/Request";
-import {parseDimension, parseQuestionnaire, parseSubmissionQuestionnaire} from "./Util/Parse";
+import {
+    parseDimension,
+    parseQuestionnaire,
+    parseSubmissionQuestionnaire
+} from "./Util/Parse";
 import {updateDimension} from "./Dimension";
 
 import {
@@ -24,6 +28,7 @@ const concreteProperties = [
 /**
  * Create a new ConcreteQuestionnaire.
  *
+ * @param authenticationToken
  * @param {Language} language
  * @param {String} name
  * @param {String} description
@@ -35,7 +40,8 @@ const concreteProperties = [
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function createConcreteQuestionnaire(language,
+function createConcreteQuestionnaire(authenticationToken,
+                                     language,
                                      name,
                                      description,
                                      isPublic,
@@ -58,7 +64,7 @@ function createConcreteQuestionnaire(language,
         "/api/dataclient/concrete_questionnaire",
         {
             method: "POST",
-            authenticate: true,
+            authenticationToken,
             body: JSON.stringify(creationData),
             language
         }
@@ -67,7 +73,7 @@ function createConcreteQuestionnaire(language,
         .map(pipe(prop("questionnaire"), parseQuestionnaire))
         // Then update it with the rest of the data
         .chain(questionnaire => updateQuestionnaire(
-            questionnaire, language, patchData
+            authenticationToken, questionnaire, language, patchData
         ));
 }
 
@@ -77,21 +83,22 @@ function createConcreteQuestionnaire(language,
  * Since this creates a new reference to the given Questionnaire, it should be
  * updated or reloaded afterwards.
  *
+ * @param authenticationToken
  * @param {ConcreteQuestionnaire} questionnaire
  * @return {Future}
  * @resolve {ShadowQuestionnaire}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function createShadowQuestionnaire(questionnaire) {
+function createShadowQuestionnaire(authenticationToken, questionnaire) {
     return fetchApi(
         "/api/dataclient/shadow_questionnaire",
         {
             method: "POST",
+            authenticationToken,
             body: JSON.stringify({
                 id: questionnaire.id
-            }),
-            authenticate: true
+            })
         }
     )
         .chain(extractJson)
@@ -102,14 +109,15 @@ function createShadowQuestionnaire(questionnaire) {
  * Fetches the Questionnaires belonging to the authorized DataClient in the gi-
  * ven language.
  *
+ * @param authenticationToken
  * @param {Language} language
  * @returns {Future}
  * @resolve {Array<Questionnaire>}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchMyQuestionnaires(language) {
-    return fetchApi("/api/dataclient/questionnaire", {authenticate: true})
+function fetchMyQuestionnaires(authenticationToken, language) {
+    return fetchApi("/api/dataclient/questionnaire", {authenticationToken})
         .chain(extractJson)
         .map(map(parseQuestionnaire));
 }
@@ -117,6 +125,7 @@ function fetchMyQuestionnaires(language) {
 /**
  * Fetches a Questionnaire by a given href in the given language.
  *
+ * @param authenticationToken
  * @param {String} href
  * @param {Language} language
  *
@@ -125,12 +134,12 @@ function fetchMyQuestionnaires(language) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchQuestionnaire(href, language = null) {
+function fetchQuestionnaire(authenticationToken, href, language = null) {
     return fetchApi(
         href,
         {
             language,
-            authenticate: true
+            authenticationToken,
         })
         .chain(extractJson)
         .map(parseQuestionnaire);
@@ -139,6 +148,7 @@ function fetchQuestionnaire(href, language = null) {
 /**
  * Fetches a Questionnaire by a given id and build its href.
  *
+ * @param authenticationToken
  * @param {String} id
  * @param {Language} language
  * @returns {Future}
@@ -146,30 +156,35 @@ function fetchQuestionnaire(href, language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchQuestionnaireById(id, language = null) {
-    return fetchQuestionnaire(`/api/questionnaire/${id}`, language);
+function fetchQuestionnaireById(authenticationToken, id, language = null) {
+    return fetchQuestionnaire(authenticationToken, `/api/questionnaire/${id}`, language);
 }
 
 /**
- *
+ * @param authenticationToken
  * @param id
  * @param language
  * @returns {Future}
  */
-function fetchQuestionnaireForSubmissionById(id, language = null) {
+function fetchQuestionnaireForSubmissionById(
+    authenticationToken,
+    id,
+    language = null
+) {
     return fetchApi(
         `/api/questionnaire/${id}`,
         {
-            authenticate: false,
+            authenticationToken,
             language
         }
-        ).chain(extractJson)
+    ).chain(extractJson)
         .map(parseSubmissionQuestionnaire);
 }
 
 /**
  * Fetches a list of all available template Questionnaires.
  *
+ * @param authenticationToken
  * @param {Language} language on optional language in which the list should be
  *  retrieved
  * @returns {Future}
@@ -177,11 +192,11 @@ function fetchQuestionnaireForSubmissionById(id, language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchQuestionnaireTemplates(language = null) {
+function fetchQuestionnaireTemplates(authenticationToken, language = null) {
     return fetchApi(
         "/api/questionnaire/template",
         {
-            authenticate: true,
+            authenticationToken,
             language
         }
     )
@@ -193,6 +208,7 @@ function fetchQuestionnaireTemplates(language = null) {
  * Updates the Questionnaire's fields. If a field is translatable, it is set
  * in the given language.
  *
+ * @param authenticationToken
  * @param {Questionnaire} questionnaire
  * @param {Language} language
  * @param {Object} params
@@ -202,7 +218,7 @@ function fetchQuestionnaireTemplates(language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function updateQuestionnaire(questionnaire, language, params) {
+function updateQuestionnaire(authenticationToken, questionnaire, language, params) {
     let parsedParams = pipe(
         renameProp("isPublic", "published"),
         renameProp("referenceId", "reference_id"),
@@ -214,7 +230,7 @@ function updateQuestionnaire(questionnaire, language, params) {
         questionnaire.href,
         {
             method: "PATCH",
-            authenticate: true,
+            authenticationToken,
             body: JSON.stringify(parsedParams),
             language
         }
@@ -226,18 +242,19 @@ function updateQuestionnaire(questionnaire, language, params) {
 /**
  * Delete the Questionnaire and all appended Dimensions.
  *
+ * @param authenticationToken
  * @param {Questionnaire} questionnaire
  * @return {Future}
  * @resolve {Boolean} with true
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function deleteQuestionnaire(questionnaire) {
+function deleteQuestionnaire(authenticationToken, questionnaire) {
     return fetchApi(
         questionnaire.href,
         {
             method: "DELETE",
-            authenticate: true
+            authenticationToken
         }
     )
         .map(() => true);
@@ -350,13 +367,17 @@ function removeDimension(questionnaire, dimension) {
  * If this rejects, then some questionnaires might be populated and some might
  * still be Resources. The exact state will have to be tested.
  *
+ * @param authenticationToken
  * @param {ConcreteQuestionnaire} concreteQuestionnaire
  * @return {Future}
  * @resolve {Array<ShadowQuestionnaire>}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateOwnedIncomingReferences(concreteQuestionnaire) {
+function populateOwnedIncomingReferences(
+    authenticationToken,
+    concreteQuestionnaire
+) {
     const resolvedShadowQuestionnaireFutures = [];
 
     // Use basic for loop to easily replace values.
@@ -367,6 +388,7 @@ function populateOwnedIncomingReferences(concreteQuestionnaire) {
 
         if (instanceOf(reference, Resource)) {
             const shadowQuestionnaireFuture = fetchQuestionnaire(
+                authenticationToken,
                 reference.href,
                 concreteQuestionnaire.languageData.currentLanguage
             )
@@ -389,15 +411,17 @@ function populateOwnedIncomingReferences(concreteQuestionnaire) {
  *
  * Accesses the API to load the Questionnaire.
  *
+ * @param authenticationToken
  * @param {ShadowQuestionnaire} shadowQuestionnaire
  * @return {Future}
  * @resolve {ConcreteQuestionnaire}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateReferenceTo(shadowQuestionnaire) {
+function populateReferenceTo(authenticationToken, shadowQuestionnaire) {
     if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
         return fetchQuestionnaire(
+            authenticationToken,
             shadowQuestionnaire.referenceTo.href,
             shadowQuestionnaire.languageData.currentLanguage
         )
@@ -413,18 +437,25 @@ function populateReferenceTo(shadowQuestionnaire) {
  * Based on the type of the given Questionnaire this either populates its inco-
  * ming references or its referenceTo field.
  *
+ * @param authenticationToken
  * @param {Questionnaire} questionnaire
  * @return {Future}
  * @resolve {Array<ShadowQuestionnaire>|ConcreteQuestionnaire}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateQuestionnaire(questionnaire) {
+function populateQuestionnaire(authenticationToken, questionnaire) {
     if (instanceOf(questionnaire, ShadowQuestionnaire)) {
-        return populateReferenceTo(questionnaire);
+        return populateReferenceTo(
+            authenticationToken,
+            questionnaire
+        );
     }
     if (instanceOf(questionnaire, ConcreteQuestionnaire)) {
-        return populateOwnedIncomingReferences(questionnaire);
+        return populateOwnedIncomingReferences(
+            authenticationToken,
+            questionnaire
+        );
     }
 }
 
