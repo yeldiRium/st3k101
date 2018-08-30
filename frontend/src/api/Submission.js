@@ -29,7 +29,6 @@ function submitResponse(submissionQuestionnaire, {email, password}) {
     return fetchApi(
         apiEndpoint,
         {
-            authenticate: false,
             method: "POST",
             body: JSON.stringify(payload)
         }
