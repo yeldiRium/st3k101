@@ -250,6 +250,7 @@ function deleteQuestionnaire(questionnaire) {
  * The Questionnaire has to be updated or reloaded afterwards, so that the Di-
  * mension appears.
  *
+ * @param {String} authenticationToken
  * @param {ConcreteQuestionnaire} questionnaire
  * @param {String} name
  * @param {Boolean} randomizeQuestions
@@ -259,12 +260,12 @@ function deleteQuestionnaire(questionnaire) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addConcreteDimension(questionnaire, name, randomizeQuestions) {
+function addConcreteDimension(authenticationToken, questionnaire, name, randomizeQuestions) {
     return fetchApi(
         questionnaire.href + "/concrete_dimension",
         {
             method: "POST",
-            authenticate: true,
+            authenticationToken,
             body: JSON.stringify({name}),
             language: questionnaire.languageData.currentLanguage
         }
@@ -273,6 +274,7 @@ function addConcreteDimension(questionnaire, name, randomizeQuestions) {
         .map(pipe(prop("dimension"), parseDimension))
         // Update dimension with non-initial parameters after creation
         .chain(dimension => updateDimension(
+            authenticationToken,
             dimension,
             questionnaire.languageData.currentLanguage,
             {randomizeQuestions}

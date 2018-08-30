@@ -176,6 +176,7 @@ const store = {
          * At least one of href and id must be provided.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {String} href
          * @param id
          * @param {Language} language
@@ -185,7 +186,8 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchDimension({dispatch}, {href = null, id = null, language = null}) {
+        fetchDimension({dispatch, rootGetters}, {href = null, id = null, language = null}) {
+            const authenticationToken = rootGetters["session/sessionToken"];
             let future;
             if (isNil(href) && isNil(id)) {
                 return Future.reject(
@@ -193,9 +195,9 @@ const store = {
                 );
             }
             if (!isNil(href)) {
-                future = fetchDimension(href, language);
+                future = fetchDimension(authenticationToken, href, language);
             } else {
-                future = fetchDimensionById(id, language);
+                future = fetchDimensionById(authenticationToken, id, language);
             }
             return future
                 .chain(dimension => dispatch(
@@ -207,6 +209,7 @@ const store = {
          * Fetches a list of all available template Dimensions.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Language} language on optional language in which the list should be
          *  retrieved
          * @returns {Future}
@@ -214,8 +217,11 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        fetchDimensionTemplates({dispatch}, {language = null}) {
-            return fetchDimensionTemplates(language)
+        fetchDimensionTemplates({dispatch, rootGetters}, {language = null}) {
+            return fetchDimensionTemplates(
+                rootGetters["session/sessionToken"],
+                language
+            )
                 .chain(templates => {
                     const patchTemplateFutures = [];
                     for (const template of templates) {
@@ -233,6 +239,7 @@ const store = {
          * language or the Dimensions current language.
          *
          * @param dispatch
+         * @param rootGetters
          * @param {Dimension} dimension
          * @param {Language} language
          * @param {Object} params
@@ -242,12 +249,17 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        updateDimension({dispatch}, {dimension, language = null, params}) {
+        updateDimension({dispatch, rootGetters}, {dimension, language = null, params}) {
             const correctLanguage = isNil(language)
                 ? dimension.languageData.currentLanguage
                 : language;
 
-            return updateDimension(dimension, correctLanguage, params)
+            return updateDimension(
+                rootGetters["session/sessionToken"],
+                dimension,
+                correctLanguage,
+                params
+            )
                 .chain(result => dispatch("patchDimensionInStore", {dimension: result}));
         },
         /**
@@ -279,20 +291,26 @@ const store = {
                 );
             }
 
-            return addConcreteQuestion(dimension, text, range).chain(concreteQuestion => {
-                commit(
-                    "addQuestionToDimension",
-                    {
-                        dimension,
-                        question: concreteQuestion
-                    }
-                );
-                return dispatch(
-                    "questions/patchQuestionInStore",
-                    {question: concreteQuestion},
-                    {root: true}
-                );
-            })
+            return addConcreteQuestion(
+                rootGetters["session/sessionToken"],
+                dimension,
+                text,
+                range
+            )
+                .chain(concreteQuestion => {
+                    commit(
+                        "addQuestionToDimension",
+                        {
+                            dimension,
+                            question: concreteQuestion
+                        }
+                    );
+                    return dispatch(
+                        "questions/patchQuestionInStore",
+                        {question: concreteQuestion},
+                        {root: true}
+                    );
+                });
         },
         /**
          * Add a new ShadowQuestion to the ConcreteDimension referencing
@@ -331,34 +349,40 @@ const store = {
                 );
             }
 
-            return addShadowQuestion(dimension, concreteQuestion).chain(shadowQuestion => {
-                commit("addQuestionToDimension", {
-                    dimension,
-                    question: shadowQuestion
-                });
-                return dispatch(
-                    "questions/patchQuestionInStore",
-                    {question: shadowQuestion},
-                    {root: true}
-                )
-                // Reload the ConcreteQuestion to increase the reference count
-                    .chain(() => dispatch(
-                        "questions/fetchQuestion",
-                        {
-                            href: concreteQuestion.href,
-                            language: concreteQuestion.languageData.currentLanguage
-                        },
+            return addShadowQuestion(
+                rootGetters["session/sessionToken"],
+                dimension,
+                concreteQuestion
+            )
+                .chain(shadowQuestion => {
+                    commit("addQuestionToDimension", {
+                        dimension,
+                        question: shadowQuestion
+                    });
+                    return dispatch(
+                        "questions/patchQuestionInStore",
+                        {question: shadowQuestion},
                         {root: true}
-                    ))
-                    // but still resolve to the ShadowQuestion
-                    .map(() => shadowQuestion);
-            })
+                    )
+                    // Reload the ConcreteQuestion to increase the reference count
+                        .chain(() => dispatch(
+                            "questions/fetchQuestion",
+                            {
+                                href: concreteQuestion.href,
+                                language: concreteQuestion.languageData.currentLanguage
+                            },
+                            {root: true}
+                        ))
+                        // but still resolve to the ShadowQuestion
+                        .map(() => shadowQuestion);
+                });
         },
         /**
          * Removes a Question from a ConcreteDimension.
          *
          * @param commit
          * @param dispatch
+         * @param rootGetters
          * @param {ConcreteDimension} dimension
          * @param {Question} question
          *
@@ -367,7 +391,7 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        removeQuestion({commit, dispatch}, {dimension, question}) {
+        removeQuestion({commit, dispatch, rootGetters}, {dimension, question}) {
             if (dimension.isShadow) {
                 return Future.reject(
                     new ValidationError(
@@ -377,7 +401,11 @@ const store = {
                 );
             }
 
-            return removeQuestion(dimension, question)
+            return removeQuestion(
+                rootGetters["session/sessionToken"],
+                dimension,
+                question
+            )
                 .chain(() => {
                     commit(
                         "removeQuestionFromDimension",

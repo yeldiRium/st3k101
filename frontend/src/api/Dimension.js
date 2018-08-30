@@ -30,6 +30,7 @@ const concreteProperties = ["name"];
 /**
  * Fetches a Dimension by a given href in the given language.
  *
+ * @param {String} authenticationToken
  * @param {String} href
  * @param {Language} language
  *
@@ -38,11 +39,11 @@ const concreteProperties = ["name"];
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchDimension(href, language = null) {
+function fetchDimension(authenticationToken, href, language = null) {
     return fetchApi(
         href,
         {
-            authenticate: true,
+            authenticationToken,
             language
         }
     )
@@ -53,6 +54,7 @@ function fetchDimension(href, language = null) {
 /**
  * Fetches a Dimension by building its href from its id in the given language.
  *
+ * @param {String} authenticationToken
  * @param {String} id
  * @param {Language} language
  *
@@ -61,13 +63,14 @@ function fetchDimension(href, language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchDimensionById(id, language = null) {
-    return fetchDimension(`/api/dimension/${id}`, language);
+function fetchDimensionById(authenticationToken, id, language = null) {
+    return fetchDimension(authenticationToken, `/api/dimension/${id}`, language);
 }
 
 /**
  * Fetches a list of all available template Dimensions.
  *
+ * @param {String} authenticationToken
  * @param {Language} language on optional language in which the list should be
  *  retrieved
  * @returns {Future}
@@ -75,11 +78,11 @@ function fetchDimensionById(id, language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function fetchDimensionTemplates(language = null) {
+function fetchDimensionTemplates(authenticationToken, language = null) {
     return fetchApi(
         "/api/dimension/template",
         {
-            authenticate: true,
+            authenticationToken,
             language
         }
     )
@@ -91,6 +94,7 @@ function fetchDimensionTemplates(language = null) {
  * Updates the Dimension's fields. If a field is translatable, it is set
  * in the given language.
  *
+ * @param {String} authenticationToken
  * @param {Dimension} dimension
  * @param {Language} language
  * @param {Object} params
@@ -100,7 +104,7 @@ function fetchDimensionTemplates(language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function updateDimension(dimension, language, params) {
+function updateDimension(authenticationToken, dimension, language, params) {
     let parsedParams = pipe(
         renameProp("randomizeQuestions", "randomize_question_order"),
         renameProp("referenceId", "reference_id")
@@ -110,7 +114,7 @@ function updateDimension(dimension, language, params) {
         dimension.href,
         {
             method: "PATCH",
-            authenticate: true,
+            authenticationToken,
             body: JSON.stringify(parsedParams),
             language
         }
@@ -126,6 +130,7 @@ function updateDimension(dimension, language, params) {
  * The Dimension has to be updated or reloaded afterwards, so that the
  * new Question appears.
  *
+ * @param {String} authenticationToken
  * @param {ConcreteDimension} dimension
  * @param {String} text
  * @param {Range} range
@@ -134,12 +139,12 @@ function updateDimension(dimension, language, params) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addConcreteQuestion(dimension, text, range) {
+function addConcreteQuestion(authenticationToken, dimension, text, range) {
     return fetchApi(
         dimension.href + "/concrete_question",
         {
             method: "POST",
-            authenticate: true,
+            authenticationToken,
             body: JSON.stringify({text}),
             language: dimension.languageData.currentLanguage
         }
@@ -163,6 +168,7 @@ function addConcreteQuestion(dimension, text, range) {
  * The ConcreteQuestion must be updated or reloaded afterwards to reflect the
  * increase in references
  *
+ * @param {String} authenticationToken
  * @param {ConcreteDimension} dimension
  * @param {ConcreteQuestion} question
  * @return {Future}
@@ -170,12 +176,12 @@ function addConcreteQuestion(dimension, text, range) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addShadowQuestion(dimension, question) {
+function addShadowQuestion(authenticationToken, dimension, question) {
     return fetchApi(
         dimension.href + "/shadow_question",
         {
             method: "POST",
-            authenticate: true,
+            authenticationToken,
             body: JSON.stringify({id: question.id})
         }
     )
@@ -189,6 +195,7 @@ function addShadowQuestion(dimension, question) {
  * The ConcreteDimension has to be updated or reloaded afterwards to reflect
  * the changes.
  *
+ * @param {String} authenticationToken
  * @param {ConcreteDimension} dimension
  * @param {Question} question
  * @return {Future}
@@ -196,13 +203,13 @@ function addShadowQuestion(dimension, question) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function removeQuestion(dimension, question) {
+function removeQuestion(authenticationToken, dimension, question) {
     if (contains(question, dimension.questions)) {
         return fetchApi(
             question.href,
             {
                 method: "DELETE",
-                authenticate: true
+                authenticationToken
             }
         )
             .map(() => true);
@@ -220,13 +227,14 @@ function removeQuestion(dimension, question) {
  * If this rejects, then some dimensions might be populated and some might still
  * be Resources. The exact state will have to be tested.
  *
+ * @param {String} authenticationToken
  * @param {ConcreteDimension} concreteDimension
  * @return {Future}
  * @resolve {Array<ShadowDimension>}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateOwnedIncomingReferences(concreteDimension) {
+function populateOwnedIncomingReferences(authenticationToken, concreteDimension) {
     const resolvedShadowDimensionFutures = [];
 
     // Use basic for loop to easily replace values.
@@ -235,6 +243,7 @@ function populateOwnedIncomingReferences(concreteDimension) {
 
         if (instanceOf(reference, Resource)) {
             const shadowDimensionFuture = fetchDimension(
+                authenticationToken,
                 reference.href,
                 concreteDimension.languageData.currentLanguage
             )
@@ -257,15 +266,17 @@ function populateOwnedIncomingReferences(concreteDimension) {
  *
  * Accesses the API to load the Dimension.
  *
+ * @param {String} authenticationToken
  * @param {ShadowDimension} shadowDimension
  * @return {Future}
  * @resolve {ConcreteDimension}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateReferenceTo(shadowDimension) {
+function populateReferenceTo(authenticationToken, shadowDimension) {
     if (instanceOf(shadowDimension.referenceTo, Resource)) {
         return fetchDimension(
+            authenticationToken,
             shadowDimension.referenceTo.href,
             shadowDimension.languageData.currentLanguage
         )
@@ -281,18 +292,19 @@ function populateReferenceTo(shadowDimension) {
  * Based on the type of the given Dimension this either populates its incoming
  * references or its referenceTo field.
  *
+ * @param {String} authenticationToken
  * @param {Dimension} dimension
  * @return {Future}
  * @resolve {Array<ShadowDimension>|ConcreteDimension}
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateDimension(dimension) {
+function populateDimension(authenticationToken, dimension) {
     if (instanceOf(dimension, ShadowDimension)) {
-        return populateReferenceTo(dimension);
+        return populateReferenceTo(authenticationToken, dimension);
     }
     if (instanceOf(dimension, ConcreteDimension)) {
-        return populateOwnedIncomingReferences(dimension);
+        return populateOwnedIncomingReferences(authenticationToken, dimension);
     }
 }
 
@@ -303,8 +315,5 @@ export {
     updateDimension,
     addConcreteQuestion,
     addShadowQuestion,
-    removeQuestion,
-    populateOwnedIncomingReferences,
-    populateReferenceTo,
-    populateDimension
+    removeQuestion
 };

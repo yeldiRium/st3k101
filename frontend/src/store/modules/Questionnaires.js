@@ -485,7 +485,12 @@ const store = {
                 );
             }
 
-            return addConcreteDimension(questionnaire, name, randomizeQuestions)
+            return addConcreteDimension(
+                rootGetters["session/sessionToken"],
+                questionnaire,
+                name,
+                randomizeQuestions
+            )
                 .chain(concreteDimension => {
                     commit("addDimensionToQuestionnaire", {
                         questionnaire,
