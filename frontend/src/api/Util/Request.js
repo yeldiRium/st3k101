@@ -3,9 +3,24 @@ import Future from "fluture";
 
 import {buildApiUrl} from "./Path";
 import {categorizeResponse} from "./Response";
-import {ForbiddenError} from "../Errors";
 
 import store from "../../store";
+
+/**
+ * Build headers from a given authentication token.
+ *
+ * @param {String} authenticationToken
+ * @returns {Object}
+ */
+function buildAuthenticationHeaders(authenticationToken = "") {
+    if (authenticationToken !== "") {
+        return {
+            Authorization: `Bearer ${sessionToken}`
+        };
+    } else {
+        return {};
+    }
+}
 
 /**
  * Read the current sessionToken from the vuex store and build authentication
@@ -62,6 +77,7 @@ const defaultHeaders = {
  * @param {String} body
  * @param {Object<String>} headers
  * @param {Boolean} authenticate
+ * @param {String} authenticationToken Deprecated
  * @param {Language} language
  *
  * @return {Future}
@@ -75,15 +91,10 @@ function fetchApi(path,
                       method = "GET",
                       body = "",
                       headers = {},
-                      authenticate = false,
+                      authenticate = false, // TODO: remove parameter
+                      authenticationKey: authenticationToken = "",
                       language = null
                   }) {
-    if (authenticate && store.getters["session/sessionToken"] === null) {
-        return Future.reject(
-            new ForbiddenError("User not logged in.")
-        );
-    }
-
     let result = Future((reject, resolve) => {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -91,6 +102,8 @@ function fetchApi(path,
         const useHeaders = {
             ...defaultHeaders,
             ...headers,
+            ...buildAuthenticationHeaders(authenticationToken),
+            // TODO: remove this
             ...getAuthenticationHeaders(authenticate)
         };
 
@@ -112,7 +125,8 @@ function fetchApi(path,
     })
         .chain(categorizeResponse);
 
-    if (authenticate) {
+    // TODO: remove authenticate
+    if (authenticationKey !== "" || authenticate) {
         return result.chain(
             response => store.dispatch("session/updateSessionCookie")
                 .map(() => response)
