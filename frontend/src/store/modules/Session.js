@@ -122,18 +122,18 @@ const store = {
          * @reject {TypeError|ApiError}
          * @cancel
          */
-        endSession(context) {
-            return endSession()
+        endSession({commit, getters}) {
+            return endSession(getters["sessionToken"])
                 .chain(() => {
-                    context.commit("endSession");
+                    commit("endSession");
                     removeItem("sessionToken");
                     return Future.of(true);
                 });
         },
-        fetchCurrentDataClient(context) {
-            return getCurrentDataClient()
+        fetchCurrentDataClient({commit, getters}) {
+            return getCurrentDataClient(getters["sessionToken"])
                 .chain(dataClient => {
-                    context.commit("setDataClient", {dataClient});
+                    commit("setDataClient", {dataClient});
                     return Future.of(dataClient);
                 });
         },

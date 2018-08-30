@@ -15,7 +15,7 @@ import store from "../../store";
 function buildAuthenticationHeaders(authenticationToken = "") {
     if (authenticationToken !== "") {
         return {
-            Authorization: `Bearer ${sessionToken}`
+            Authorization: `Bearer ${authenticationToken}`
         };
     } else {
         return {};
@@ -76,8 +76,8 @@ const defaultHeaders = {
  * @param {String} method
  * @param {String} body
  * @param {Object<String>} headers
- * @param {Boolean} authenticate
- * @param {String} authenticationToken Deprecated
+ * @param {Boolean} authenticate Deprecated
+ * @param {String} authenticationToken
  * @param {Language} language
  *
  * @return {Future}
@@ -92,7 +92,7 @@ function fetchApi(path,
                       body = "",
                       headers = {},
                       authenticate = false, // TODO: remove parameter
-                      authenticationKey: authenticationToken = "",
+                      authenticationToken = "",
                       language = null
                   }) {
     let result = Future((reject, resolve) => {
@@ -126,7 +126,7 @@ function fetchApi(path,
         .chain(categorizeResponse);
 
     // TODO: remove authenticate
-    if (authenticationKey !== "" || authenticate) {
+    if (authenticationToken !== "" || authenticate) {
         return result.chain(
             response => store.dispatch("session/updateSessionCookie")
                 .map(() => response)
