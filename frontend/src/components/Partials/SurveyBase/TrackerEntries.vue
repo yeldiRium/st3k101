@@ -4,7 +4,7 @@
         <div slot="body"
              class="tracker-entries">
             <TrackerEntry v-for="trackerEntry in trackerEntriesByItemHref"
-                  :key="trackerEntry.timestamp.getTime().toString().concat('_te')"
+                  :key="trackerEntry.toString()"
                   :trackerEntry="trackerEntry"
                           :all="all"
             />
