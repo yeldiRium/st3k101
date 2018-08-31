@@ -156,22 +156,20 @@ class Questionnaire(SurveyBase):
     def remove_dimension(self, dimension):
         if not isinstance(self, ConcreteQuestionnaire):
             raise BusinessRuleViolation("Can't modify shadow instances!")
-
         if dimension not in self.dimensions:
             raise KeyError("Question not in Dimension.")
-        for copy in [*self.copies, self]:
-            for s_dimension in copy.dimensions:
-                if not isinstance(s_dimension, ShadowDimension):
-                    continue
-                if s_dimension.concrete_id == dimension.id:
-                    db.session.delete(s_dimension)
 
-        # TODO: doing optimistic delete of shadows here,
-        # maybe this is not the right behaviour and we should
-        # create concrete copies of the deleted dimension here
-
-        for question in dimension.questions:
-            dimension.remove_question(question)
+        copies = []
+        if dimension.shadow:
+            for questionnaire_copy in self.copies:
+                copies += list(filter(
+                    lambda d: d.concrete_id == dimension.concrete_id if d.shadow else False,
+                    questionnaire_copy.dimensions
+                ))
+        else:
+            copies = dimension.copies
+        for copy in copies:
+            db.session.delete(copy)
 
         item_removed.send(self, removed_item_name=dimension.name)
 

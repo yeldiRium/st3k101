@@ -51,7 +51,12 @@ class Dimension(SurveyBase):
         raise NotImplementedError
 
     @property
-    def original_language(self) -> str:
+    @abstractmethod
+    def shadow(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    def original_language(self) -> BabelLanguage:
         return self.questionnaire.original_language
 
     def new_question(self, text: str, **kwargs) -> ConcreteQuestion:
@@ -80,13 +85,24 @@ class Dimension(SurveyBase):
     def remove_question(self, question):
         if not isinstance(self, ConcreteDimension):
             raise BusinessRuleViolation("Can't modify shadow instances!")
-
         if question not in self.questions:
             raise KeyError("Question not in Dimension.")
-        self.questions.remove(question)
-        text = question.text
 
-        item_removed.send(self, removed_item_name=text)
+        copies = []
+        if question.shadow:
+            for dimension_copy in self.copies:
+                copies += list(filter(
+                    lambda q: q.concrete_id == question.concrete_id if q.shadow else False,
+                    dimension_copy.questions
+                ))
+        else:
+            copies = question.copies
+        for copy in copies:
+            db.session.delete(copy)
+
+        item_removed.send(self, removed_item_name=question.text)
+
+        self.questions.remove(question)
 
 
 class ConcreteDimension(Dimension):
@@ -108,7 +124,7 @@ class ConcreteDimension(Dimension):
 
     @staticmethod
     def from_shadow(shadow):
-        d = ConcreteDimension("")
+        d = ConcreteDimension("")  # FIXME: this is not preserving shadow.original_langugae
         d.name_translations = shadow.name_translations
         d.randomize_question_order = shadow.randomize_question_order
         d.owners = shadow.owners
