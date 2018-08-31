@@ -34,13 +34,21 @@
         },
         created() {
             this.$load(
-                this.$store.dispatch(
-                    "trackerEntries/loadMyTrackerEntries"
-                )
+                this.loadMyQuestionnaires()
+                    .chain(this.loadMyTrackerEntries)
             ).fork(
                 this.$handleApiError,
                 () => {}
             );
+        },
+        methods: {
+            loadMyQuestionnaires() {
+                return this.$store.dispatch("questionnaires/loadMyQuestionnaires");
+            },
+
+            loadMyTrackerEntries() {
+                return this.$store.dispatch("trackerEntries/loadMyTrackerEntries");
+            }
         }
     };
 </script>

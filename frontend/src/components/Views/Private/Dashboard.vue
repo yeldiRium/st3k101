@@ -99,14 +99,11 @@
                 );
             },
             loadData() {
-                return this.$load(
-                    this.$store.dispatch("questionnaires/loadMyQuestionnaires")
-                        .chain(this.loadStatistics)
-                ).fork(
+                this.loadStatistics().fork(
                     this.$handleApiError,
                     () => {
                     }
-                )
+                );
             },
             loadStatistics() {
                 let futures = [];
