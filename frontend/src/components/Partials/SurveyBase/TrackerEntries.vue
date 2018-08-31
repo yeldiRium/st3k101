@@ -44,6 +44,10 @@
             recurse: {
                 type: Boolean,
                 default: false
+            },
+            loadData: {
+                type: Boolean,
+                default: false
             }
         },
         computed: {
@@ -82,7 +86,9 @@
             }
         },
         created() {
-            this.loadTrackerEntries();
+            if (this.loadData) {
+                this.loadTrackerEntries();
+            }
         },
         methods: {
             toggleTrackerEntriesExpanded() {

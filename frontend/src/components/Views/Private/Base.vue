@@ -31,6 +31,16 @@
         },
         computed: {
             ...mapGetters("session", ["isLoggedIn"])
+        },
+        created() {
+            this.$load(
+                this.$store.dispatch(
+                    "trackerEntries/loadMyTrackerEntries"
+                )
+            ).fork(
+                this.$handleApiError,
+                () => {}
+            );
         }
     };
 </script>
