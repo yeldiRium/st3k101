@@ -60,6 +60,17 @@ class SurveyBase extends OwnedResource {
             )
         );
     }
+
+    /***
+     * Indicates whether a Concrete SurveyBase is a template or a real Concrete.
+     * Templates do not include all fields present in Concrete instances,
+     * this flag can be used to determine if all fields are present or not.
+     *
+     * @returns {boolean|Boolean}
+     */
+    get isReadonlyTemplate() {
+        return this.owners.length === 0 && this.template;
+    }
 }
 
 export default SurveyBase;
