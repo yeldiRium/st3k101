@@ -148,15 +148,14 @@ class Question(SurveyBase):
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def original_language(self) -> BabelLanguage:
         """
         The language self was originally created in.
         Whenever a non-available translation is requested, this language is used.
         :return: BabelLanguage
         """
-        if self.shadow:
-            return self._referenced_object.original_language
-        return self.dimension.original_language
+        raise NotImplementedError
 
     # TODO: refactor: get_responses_by_subject
     def get_results_by_subject(self, subject: DataSubject) -> List[QuestionResponse]:
@@ -253,6 +252,7 @@ class ConcreteQuestion(Question):
         q = ConcreteQuestion("")  # FIXME: this is not preserving shadow.original_language !
         q.dirty = shadow.dirty
         q.reference_id = shadow.reference_id
+        q.original_language = shadow.original_language
 
         stat = shadow.statistic
         shadow.statistic = None
@@ -261,6 +261,8 @@ class ConcreteQuestion(Question):
         q.responses = shadow.responses
         q.text_translations = shadow.text_translations
         q.owners = shadow.owners
+        q.range_start = shadow.range_start
+        q.range_end = shadow.range_end
 
         return q
 
@@ -290,6 +292,10 @@ class ShadowQuestion(Question):
     @property
     def concrete(self):
         return self._referenced_object
+
+    @property
+    def original_language(self) -> BabelLanguage:
+        return self._referenced_object.original_language
 
     @property
     def reference_id(self):
