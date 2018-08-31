@@ -392,7 +392,7 @@
                 ).fork(
                     this.$handleApiError,
                     () => {
-                        this.emit("updated");
+                        this.$emit("updated");
                     }
                 );
             },

@@ -389,7 +389,6 @@ function parseDimension(data) {
     if (prop("shadow", data) === true) {
         return parseShadowDimension(data);
     } else if (!data.hasOwnProperty("owners")) {
-        console.log("Template");
         return parseTemplateDimension(data);
     }
     return parseConcreteDimension(data);
