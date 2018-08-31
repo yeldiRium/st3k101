@@ -72,12 +72,12 @@
                         this.surveyBase.getAllChildren()
                     )
                 );
-                return ownTrackerEntries.concat(childrenTrackerEntries).reverse();
+                return ownTrackerEntries.concat(childrenTrackerEntries);
             }
         },
         watch: {
             surveyBase(oldValue, newValue) {
-                this.loadTrackerEntries();
+                this.loadTrackerEntries();  // TODO: this causes lots of updates
             }
         },
         data() {
