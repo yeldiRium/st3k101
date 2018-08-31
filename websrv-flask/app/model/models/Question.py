@@ -258,7 +258,7 @@ class ConcreteQuestion(Question):
         shadow.statistic = None
         q.statistic = stat
 
-        q.responses = shadow.results
+        q.responses = shadow.responses
         q.text_translations = shadow.text_translations
         q.owners = shadow.owners
 
