@@ -40,9 +40,6 @@
             Button,
             Questionnaire
         },
-        created() {
-            this.loadQuestionnaires();
-        },
         computed: {
             ...mapState("session", ["dataClient"]),
             ...mapGetters("questionnaires", ["myQuestionnaires"]),
@@ -65,15 +62,6 @@
              * API;
              * Close the loading... modal
              */
-            loadQuestionnaires() {
-                this.$load(
-                    this.$store.dispatch("questionnaires/loadMyQuestionnaires")
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                    }
-                )
-            },
             openUseQuestionnaireTemplateDialog() {
                 this.$modal.show(
                     "modal-use-questionnaire-template",

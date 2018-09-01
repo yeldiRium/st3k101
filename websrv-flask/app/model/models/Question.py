@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Dict
+from typing import Dict, List
 
 from flask import g
 
@@ -17,6 +17,11 @@ __author__ = "Noah Hummel"
 
 
 class Question(SurveyBase):
+    """
+    Base class for Shadow- and ConcreteQuestions.
+    Not to be instantiated directly, use ConcreteQuestion to create a new
+    Question, or ShadowQuestion to create a copy of a ConcreteQuestion.
+    """
     id = db.Column(db.Integer, db.ForeignKey(SurveyBase.id), primary_key=True)
 
     __tablename__ = 'question'
@@ -56,37 +61,110 @@ class Question(SurveyBase):
 
     @property
     def name(self) -> str:
+        """
+        Inherited from SurveyBase.
+        A name for this Question. For Questions, this is the same as Question.text.
+
+        This property is internationalized, translations are stored in
+        Question.name_translations.
+        :return: str
+        """
         return self.text
 
     @property
     def name_translations(self) -> Dict[str, str]:
+        """
+        Inherited from SurveyBase.
+        All translations of Question.name. This is the same as Question.text_translations.
+
+        Translations are stored as
+            {
+                "de": "Eine deutsche Übersetzung.",
+                "en": "An english translation."
+            }
+        For available languages, see framework/internationalization/babel_languages
+        :return: Dict[str, str]
+        """
         return self.text_translations
 
     @property
     @abstractmethod
+    def shadow(self) -> bool:
+        """
+        Inherited from SurveyBase.
+        Whether self is a Shadow instance. If this is false, self is a Concrete instance.
+        :return: bool
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
     def text(self) -> str:
+        """
+        The Question text.
+
+        This property is internationalized, translations are stored in
+        Question.text_translations.
+        :return:
+        """
         raise NotImplementedError
 
     @property
     @abstractmethod
     def text_translations(self) -> Dict[str, str]:
+        """
+        All translations of Question.text.
+
+        Translations are stored as
+            {
+                "de": "Eine deutsche Übersetzung.",
+                "en": "An english translation."
+            }
+        For available languages, see framework/internationalization/babel_languages
+        :return: Dict[str, str]
+        """
         raise NotImplementedError
 
     @property
     @abstractmethod
     def range_start(self) -> int:
+        """
+        The lower bound of the answer scale.
+
+        range_start must always be lesser than range_end.
+        :return: int
+        """
         raise NotImplementedError
 
     @property
     @abstractmethod
     def range_end(self) -> int:
+        """
+        The upper bound of the answer scale.
+
+        range_end must always be greater than range_start.
+        :return: int
+        """
         raise NotImplementedError
 
     @property
-    def original_language(self) -> str:
-        return self.dimension.original_language
+    @abstractmethod
+    def original_language(self) -> BabelLanguage:
+        """
+        The language self was originally created in.
+        Whenever a non-available translation is requested, this language is used.
+        :return: BabelLanguage
+        """
+        raise NotImplementedError
 
-    def get_results_by_subject(self, subject: DataSubject):
+    # TODO: refactor: get_responses_by_subject
+    def get_results_by_subject(self, subject: DataSubject) -> List[QuestionResponse]:
+        """
+        Returns a list of all QuestionResponses for for this Question which were
+        submitted by a specific DataSubject.
+        :param subject: DataSubject
+        :return: List[QuestionResponse]
+        """
         query = query_owned(DataSubject, subject.id, QuestionResponse)
         return query.filter(QuestionResponse.question_id == self.id).all()
 
@@ -163,17 +241,28 @@ class ConcreteQuestion(Question):
 
     @staticmethod
     def from_shadow(shadow):
-        q = ConcreteQuestion("")
+        """
+        Factory method for ConcreteQuestion.
+        Creates a new ConcreteQuestion with contents
+        :param shadow:
+        :return:
+        """
+
+        # TODO: WTF? why are we stealing the statistic from the shadow here?
+        q = ConcreteQuestion("")  # FIXME: this is not preserving shadow.original_language !
         q.dirty = shadow.dirty
         q.reference_id = shadow.reference_id
+        q.original_language = shadow.original_language
 
         stat = shadow.statistic
         shadow.statistic = None
         q.statistic = stat
 
-        q.responses = shadow.results
+        q.responses = shadow.responses
         q.text_translations = shadow.text_translations
         q.owners = shadow.owners
+        q.range_start = shadow.range_start
+        q.range_end = shadow.range_end
 
         return q
 
@@ -203,6 +292,10 @@ class ShadowQuestion(Question):
     @property
     def concrete(self):
         return self._referenced_object
+
+    @property
+    def original_language(self) -> BabelLanguage:
+        return self._referenced_object.original_language
 
     @property
     def reference_id(self):

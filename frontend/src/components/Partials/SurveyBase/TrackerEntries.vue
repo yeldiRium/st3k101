@@ -4,7 +4,7 @@
         <div slot="body"
              class="tracker-entries">
             <TrackerEntry v-for="trackerEntry in trackerEntriesByItemHref"
-                  :key="trackerEntry.timestamp.getTime().toString().concat('_te')"
+                  :key="trackerEntry.toString()"
                   :trackerEntry="trackerEntry"
                           :all="all"
             />
@@ -44,6 +44,10 @@
             recurse: {
                 type: Boolean,
                 default: false
+            },
+            loadData: {
+                type: Boolean,
+                default: false
             }
         },
         computed: {
@@ -68,12 +72,12 @@
                         this.surveyBase.getAllChildren()
                     )
                 );
-                return ownTrackerEntries.concat(childrenTrackerEntries).reverse();
+                return ownTrackerEntries.concat(childrenTrackerEntries);
             }
         },
         watch: {
             surveyBase(oldValue, newValue) {
-                this.loadTrackerEntries();
+                this.loadTrackerEntries();  // TODO: this causes lots of updates
             }
         },
         data() {
@@ -82,7 +86,9 @@
             }
         },
         created() {
-            this.loadTrackerEntries();
+            if (this.loadData) {
+                this.loadTrackerEntries();
+            }
         },
         methods: {
             toggleTrackerEntriesExpanded() {

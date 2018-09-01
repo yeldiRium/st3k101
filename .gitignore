@@ -11,6 +11,9 @@ __pycache__/
 *.njsproj
 *.sln
 
+# Database
+postgres/data
+
 # Websrv-flask Frontend
 node_modules
 .sass-cache

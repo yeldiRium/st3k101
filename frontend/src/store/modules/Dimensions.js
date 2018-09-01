@@ -443,8 +443,10 @@ const store = {
             state.dimensions = map(
                 iDimension => {
                     if (normalizedDimension.identifiesWith(iDimension)) {
-                        existingDimensionWasReplaced = true;
-                        return normalizedDimension;
+                        if (!normalizedDimension.isReadonlyTemplate || iDimension.isReadonlyTemplate) {
+                            existingDimensionWasReplaced = true;
+                            return normalizedDimension;
+                        }
                     }
                     return iDimension;
                 },

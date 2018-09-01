@@ -592,7 +592,7 @@ const store = {
                     });
                     return dispatch(
                         "dimensions/patchDimensionInStore",
-                        {dimension: concreteDimension},
+                        {dimension: shadowDimension},
                         {root: true}
                     )
                     // Reload original ConcreteDimension to have an accurate
@@ -676,8 +676,10 @@ const store = {
             state.questionnaires = map(
                 iQuestionnaire => {
                     if (questionnaire.identifiesWith(iQuestionnaire)) {
-                        existingQuestionnaireWasReplaced = true;
-                        return questionnaire;
+                        if (!questionnaire.isReadonlyTemplate || iQuestionnaire.isReadonlyTemplate) {
+                            existingQuestionnaireWasReplaced = true;
+                            return questionnaire;
+                        }
                     }
                     return iQuestionnaire;
                 },

@@ -3,7 +3,7 @@ import {isNil, find, clone, reject, equals} from "ramda";
 import {Future} from "fluture";
 
 import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
-import {fetchQuestionStatistic} from "../../api/Statistic";
+import {fetchQuestionStatistic, fetchQuestionStatisticsByQuestionnaire} from "../../api/Statistic";
 
 const store = {
     namespaced: true,
@@ -54,6 +54,18 @@ const store = {
                     }
                 );
         },
+        fetchQuestionStatisticsForQuestionnaire({dispatch, commit}, {questionnaire}) {
+           return fetchQuestionStatisticsByQuestionnaire(questionnaire)
+               .chain(statistics => {
+                   for (let statistic of statistics) {
+                       commit(
+                           "patchQuestionStatisticInStore",
+                           {statistic}
+                       )
+                   }
+                   return Future.of(statistics);
+               });
+        }
     },
     mutations: {
         /**
