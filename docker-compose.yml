@@ -19,7 +19,7 @@ services:
       - 8080:8080
 
   memcached:
-    build: ./memcached
+    image: memcached:1.5-alpine
     restart: always
 
   websrv-flask:
