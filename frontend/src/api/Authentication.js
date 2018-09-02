@@ -1,6 +1,6 @@
 import Future from "fluture";
 import {prop} from "ramda";
-import {checkStatus, extractJson} from "./Util/Response";
+import {extractJson} from "./Util/Response";
 import {parseDataClient} from "./Util/Parse";
 import {fetchApi} from "./Util/Request";
 
