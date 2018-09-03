@@ -61,7 +61,17 @@
                         @action="deleteDimension"
                         :class="{'button--grey': dimension.isShadow}"
                 >
-                    delete
+                    Delete
+                </Button>
+                <Button v-if="isMakeTemplateButtonShown && !dimension.template"
+                        @action="toggleIsTemplate"
+                >
+                    Publish as template
+                </Button>
+                <Button v-if="isMakeTemplateButtonShown && dimension.template"
+                        @action="toggleIsTemplate"
+                >
+                    Retract template
                 </Button>
             </div>
 
@@ -133,6 +143,7 @@
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
     import Collapsible from "../Collapsible";
+    import Roles, {isAtLeast} from "../../../model/Roles";
 
     export default {
         name: "Dimension",
@@ -173,6 +184,9 @@
         },
         computed: {
             ...mapState("session", ["dataClient"]),
+            isMakeTemplateButtonShown() {
+                return isAtLeast(this.dataClient, Roles.Contributor) && this.isEditable(this.dimension);
+            },
             classes() {
                 return {
                     "dimension--disabled": !this.isEditable(this.dimension)
@@ -252,7 +266,7 @@
                     )
                         .chain(dimension => this.$store.dispatch(
                             "dimensions/fetchDimension",
-                            {href: dimension.href, language}
+                            {href: dimension.href}
                         ))
                 ).fork(
                     this.$handleApiError,
@@ -391,6 +405,40 @@
                         ]
                     }
                 )
+            },
+            /**
+             * Publishes / Retracts this dimension as a template.
+             * TODO: prompt dataclient when there are still incoming
+             * references
+             * TODO: what is the correct behaviour in aforementioned
+             * case?
+             */
+            toggleIsTemplate() {
+                if (!this.isEditable(this.dimension)) {
+                        return;  // can't publish other people's content
+                }
+
+                let template = !this.dimension.template;
+
+                const cancel = this.$load(
+                    this.$store.dispatch(
+                        "dimensions/updateDimension",
+                        {
+                            dimension: this.dimension,
+                            params: {
+                                template
+                            }
+                        }
+                    ).chain(dimension => this.$store.dispatch(
+                                "dimensions/fetchDimension",
+                                {href: dimension.href, language}
+                            ))
+                    ).fork(
+                        this.$handleApiError,
+                        () => {
+                            this.$emit("updated");
+                        }
+                    );
             }
         },
         created() {

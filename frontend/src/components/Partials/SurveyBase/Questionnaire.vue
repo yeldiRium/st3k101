@@ -65,7 +65,17 @@
                         @action="deleteQuestionnaire"
                         :class="{'button--grey': questionnaire.isShadow}"
                 >
-                    delete
+                    Delete
+                </Button>
+                <Button v-if="isMakeTemplateButtonShown && !questionnaire.template"
+                        @action="toggleIsTemplate"
+                >
+                    Publish as template
+                </Button>
+                <Button v-if="isMakeTemplateButtonShown && questionnaire.template"
+                        @action="toggleIsTemplate"
+                >
+                    Retract template
                 </Button>
             </div>
 
@@ -194,6 +204,8 @@
     import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
     import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
     import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
+    import {isAtLeast} from "../../../model/Roles";
+    import Roles from "../../../model/Roles";
 
     export default {
         name: "Questionnaire",
@@ -261,6 +273,9 @@
                     )
                 );
                 return `Contains ${this.questionnaire.dimensions.length} dimensions and ${questionCount} questions.`;
+            },
+            isMakeTemplateButtonShown() {
+                return isAtLeast(this.dataClient, Roles.Contributor) && this.isEditable(this.questionnaire);
             }
         },
         methods: {
@@ -495,6 +510,40 @@
                         this.$emit("updated");
                     }
                 );
+            },
+            /**
+             * Publishes / Retracts this dimension as a template.
+             * TODO: prompt dataclient when there are still incoming
+             * references
+             * TODO: what is the correct behaviour in aforementioned
+             * case?
+             */
+            toggleIsTemplate() {
+                if (!this.isEditable(this.questionnaire)) {
+                        return;  // can't publish other people's content
+                }
+
+                let template = !this.questionnaire.template;
+
+                const cancel = this.$load(
+                    this.$store.dispatch(
+                        "questionnaires/updateQuestionnaire",
+                        {
+                            questionnaire: this.questionnaire,
+                            params: {
+                                template
+                            }
+                        }
+                    ).chain(questionnaire => this.$store.dispatch(
+                                "questionnaires/fetchQuestionnaire",
+                                {href: questionnaire.href}
+                            ))
+                    ).fork(
+                        this.$handleApiError,
+                        () => {
+                            this.$emit("updated");
+                        }
+                    );
             }
         },
         created() {
