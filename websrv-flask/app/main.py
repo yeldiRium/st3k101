@@ -162,26 +162,6 @@ def inject_languages():
     return dict(language=language)
 
 
-# Landing Page
-@app.route("/", methods=["GET"])
-def home():
-    """
-    Home route
-    """
-    return render_template("home_index.html")
-
-
-# Dashboard / Backend for DataClients
-@app.route("/be/", methods=["GET"])
-def backend():
-    """
-    Dashboard for users
-    """
-    if not g._current_user:
-        return render_template("home_index.html", not_logged_in=True)
-    return render_template("backend.html")
-
-
 # Leave the following imports in place, even if your IDE tries to optimize them
 # away.
 
