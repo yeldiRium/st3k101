@@ -3,7 +3,7 @@ from flask_restful import Resource, abort
 from api import api
 from api.Response import validate_resource_path
 from api.schema.QuestionStatistic import QuestionStatisticSchema
-from auth.users import current_user
+from auth.session import current_user
 from model.models.Questionnaire import Questionnaire
 
 __author__ = "Noah Hummel"

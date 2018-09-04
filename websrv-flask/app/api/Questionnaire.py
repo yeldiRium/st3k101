@@ -5,7 +5,7 @@ from api import api
 from framework.dependency_injection import ResourceBroker
 from api.schema.Questionnaire import QuestionnaireSchema, ShadowQuestionnaireSchema
 from auth.roles import needs_minimum_role, Role, current_has_minimum_role
-from auth.users import current_user
+from auth.session import current_user
 from model import db
 from model.models.DataClient import DataClient
 from model.models.OwnershipBase import query_owned

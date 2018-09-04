@@ -2,12 +2,16 @@ from flask import render_template, g, request, make_response, abort
 from werkzeug.wrappers import Response
 
 import auth
+import auth.session
 from app import app as original_app
+from auth.users import PartyTypes
 from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages, BabelLanguage
 from model.models.DataClient import DataClient
+from model.models.DataSubject import DataSubject
+from utils import debug_print
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -31,13 +35,24 @@ def before_request():
     if auth_string and auth_string.startswith('Bearer'):
         try:
             session_token = auth_string.split()[1]
-            if auth.validate_activity(session_token):
-                g._current_user = DataClient.query.get(auth.who_is(session_token))
+            if auth.session.validate_activity(session_token):
+                session_record = auth.session.get_session_record(session_token)
+                assert session_record['type'] in PartyTypes
+
+                if session_record['type'] == PartyTypes.DataClient:
+                    g._current_user = DataClient.query.get(auth.session.who_is(session_token))  # FIXME: might not be a DataClient!
+                elif session_record['type'] == PartyTypes.DataSubject:
+                    g._current_user = DataSubject.query.get(auth.session.who_is(session_token))
+
                 if g._current_user:
                     g._current_session_token = session_token
-                import sys
-                print("Logged in as {}".format(g._current_user), file=sys.stderr)
-        except: pass
+
+                debug_print("Logged in as {}".format(g._current_user))
+            else:
+                debug_print("Session did not validate: {}".format(session_token))
+
+        except Exception as err:
+            debug_print("Error during auth: {}".format(err))
 
     # Setting the locale for the current request
     g._language = BabelLanguage[g._config[
@@ -49,7 +64,7 @@ def before_request():
         g._language = BabelLanguage[http_locale.lower()]
 
     # if user is logged in, set locale based on user prefs, override HTTP header
-    if g._current_user:
+    if g._current_user:  # FIXME: only present in DataClient
         g._language = g._current_user.language
 
     # we also hand out a cookie the first time a locale is set and just

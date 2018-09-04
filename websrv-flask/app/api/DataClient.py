@@ -1,12 +1,14 @@
 from flask import request
 from flask_restful import abort, Resource
 
+import auth.dataclient
+import auth.session
 from api import api
 from framework.dependency_injection import ResourceBroker
 from api.schema.DataClient import DataClientSchema
 from auth import users
 from auth.roles import Role, needs_minimum_role, current_has_minimum_role
-from auth.users import current_user
+from auth.session import current_user
 from framework.exceptions import UserExistsException
 from model import db
 from model.models.DataClient import DataClient
@@ -32,7 +34,7 @@ class CurrentDataClientResource(Resource):
             }, 400
 
         try:
-            dataclient = users.register(data['email'], data['password'])
+            dataclient = auth.dataclient.register(data['email'], data['password'])
         except UserExistsException:
             return {
                 'message': 'DataClient not created. Some errors occurred.',
@@ -88,7 +90,7 @@ class CurrentDataClientResource(Resource):
         dataclient_data = DataClientSchema().dump(current_user()).data
         db.session.delete(current_user())
         db.session.commit()
-        users.logout()
+        auth.session.logout()
         return {
             'message': 'DataClient removed',
             'data_client': dataclient_data

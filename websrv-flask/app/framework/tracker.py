@@ -2,7 +2,7 @@ from enum import Enum, auto
 
 from flask import g
 
-from auth.users import current_user
+from auth.session import current_user
 from framework.signals import app_signals
 from model import db
 from model.models.TrackerEntry import PropertyUpdatedTrackerEntry, TranslatedPropertyUpdatedTrackerEntry, \

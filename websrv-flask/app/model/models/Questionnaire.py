@@ -3,7 +3,7 @@ from typing import Dict
 
 from flask import g
 
-from auth.users import current_user
+from auth.session import current_user
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage

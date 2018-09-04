@@ -6,7 +6,7 @@ from framework.dependency_injection import ResourceBroker
 from api.schema.Response import QuestionResponseSchema
 from api.schema.Submission import SubmissionSchema
 from auth.roles import Role, needs_minimum_role
-from auth.users import current_user
+from auth.session import current_user
 from framework.captcha import validate_captcha
 from model import db
 from model.models.Dimension import Dimension
