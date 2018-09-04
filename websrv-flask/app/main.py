@@ -40,11 +40,11 @@ def before_request():
                 assert session_record['type'] in PartyTypes
 
                 if session_record['type'] == PartyTypes.DataClient:
-                    g._current_user = DataClient.query.get(auth.session.who_is(session_token))  # FIXME: might not be a DataClient!
+                    g._current_user = DataClient.query.get(auth.session.who_is(session_token))
                 elif session_record['type'] == PartyTypes.DataSubject:
                     g._current_user = DataSubject.query.get(auth.session.who_is(session_token))
 
-                if g._current_user:
+                if g._current_user:  # is user logged in?
                     g._current_session_token = session_token
 
                 debug_print("Logged in as {}".format(g._current_user))
@@ -63,8 +63,8 @@ def before_request():
     if http_locale is not None:  # match available locales against HTTP header
         g._language = BabelLanguage[http_locale.lower()]
 
-    # if user is logged in, set locale based on user prefs, override HTTP header
-    if g._current_user:  # FIXME: only present in DataClient
+    # if user is logged in and a DataClient, set locale based on user prefs, override HTTP header
+    if g._current_user and isinstance(g._current_user, DataClient):
         g._language = g._current_user.language
 
     # we also hand out a cookie the first time a locale is set and just
@@ -95,7 +95,7 @@ def after_request(response: Response):
     """
     # hacky scheduling
     for job in laziness.LAZY_JOBS:
-        job()
+        job()  # TODO: remove
 
     # set the locale as cookie, keeps locale constant for a period of time
     if request.args.get('locale'):
@@ -123,7 +123,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: L'Error
     """
-    return "Nisch da", 404  # render_template("home_404.html"), 404
+    return "Nisch da", 404  # render_template("home_404.html"), 404 TODO: make nice
 
 
 @app.errorhandler(500)
