@@ -3,7 +3,7 @@ from flask_restful import Resource, abort
 from api import api
 from api.schema.TrackerEntry import serialize_mixed_list, TRACKER_ENTRY_MAPPING
 from auth.roles import needs_minimum_role, Role
-from auth.users import current_user
+from auth.session import current_user
 from model.models.DataClient import DataClient
 from model.models.Dimension import Dimension
 from model.models.OwnershipBase import query_owned

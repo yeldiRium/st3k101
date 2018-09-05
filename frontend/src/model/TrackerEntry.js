@@ -29,6 +29,10 @@ class TrackerEntry {
     get timestamp() {
         return this._timestamp;
     }
+
+    toString() {
+        return `[${this.type} ${this.timestamp.getTime().toString()}]`;
+    }
 }
 
 /***
@@ -91,6 +95,10 @@ class PropertyUpdatedTrackerEntry extends TrackerEntry {
     get newValue() {
         return this._newValue;
     }
+
+    toString() {
+        return `[${this.type} ${this.timestamp.getTime().toString()} ${this.itemHref} ${this.propertyName}]`;
+    }
 }
 
 /**
@@ -137,6 +145,10 @@ class TranslatedPropertyUpdatedTrackerEntry
 
     get language() {
         return this._language;
+    }
+
+    toString() {
+        return `[${this.type} ${this.timestamp.getTime().toString()} ${this.itemHref} ${this.propertyName} ${this.language}]`;
     }
 }
 
@@ -195,6 +207,10 @@ class ItemAddedTrackerEntry extends  TrackerEntry {
     get itemHref() {
         return this._parentItem.href;
     }
+
+    toString() {
+        return `[${this.type} ${this.timestamp.getTime().toString()} ${this.parentItemHref} ${this.addedItemHref}]`;
+    }
 }
 
 class ItemRemovedTrackerEntry extends TrackerEntry {
@@ -234,6 +250,10 @@ class ItemRemovedTrackerEntry extends TrackerEntry {
     get itemHref() {
         return this._parentItem.href;
     }
+
+    toString() {
+        return `[${this.type} ${this.timestamp.getTime().toString()} ${this.parentItemHref} ${this.itemHref}]`;
+    }
 }
 
 class QuestionnaireRemovedTrackerEntry extends TrackerEntry {
@@ -248,6 +268,10 @@ class QuestionnaireRemovedTrackerEntry extends TrackerEntry {
 
     get questionnaireName() {
         return this._questionnaireName;
+    }
+
+    toString() {
+        return `[${this.type} ${this.timestamp.getTime().toString()} ${this.questionnaireName}]`;
     }
 }
 

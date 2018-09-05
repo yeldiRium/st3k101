@@ -187,8 +187,10 @@ const store = {
             state.questions = map(
                 iQuestion => {
                     if (question.identifiesWith(iQuestion)) {
-                        existingQuestionWasReplaced = true;
-                        return question;
+                        if (!question.isReadonlyTemplate || iQuestion.isReadonlyTemplate) {
+                            existingQuestionWasReplaced = true;
+                            return question;
+                        }
                     }
                     return iQuestion;
                 },

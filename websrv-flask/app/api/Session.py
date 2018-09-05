@@ -1,9 +1,10 @@
 from flask import request
 from flask_restful import abort, Resource
 
+import auth.dataclient
+import auth.session
 from api import api
 from api.schema.Session import LoginSchema, SessionSchema
-from auth import users
 from auth.roles import needs_role, Role
 from framework.exceptions import UserNotLoggedInException, BadCredentialsException
 
@@ -23,7 +24,7 @@ class SessionResource(Resource):
             return errors, 400
 
         try:
-            session_token = users.login(data['email'], data['password'])
+            session_token = auth.dataclient.login(data['email'], data['password'])
             return SessionSchema().dump({'session_token': session_token}).data
         except BadCredentialsException:
             abort(404, message='User not found.')
@@ -35,7 +36,7 @@ class SessionResource(Resource):
         :return:
         """
         try:
-            users.logout()
+            auth.session.logout()
         except UserNotLoggedInException:
             # This should never happen
             abort(500, message='Hell froze over')

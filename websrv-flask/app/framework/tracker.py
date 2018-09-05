@@ -2,12 +2,22 @@ from enum import Enum, auto
 
 from flask import g
 
-from auth.users import current_user
-from framework.signals import property_updated, translation_hybrid_updated, item_added, item_removed, \
+from framework.signals import (
+    property_updated,
+    translation_hybrid_updated,
+    item_added,
+    item_removed,
     questionnaire_removed
+)
+from model.models.TrackerEntry import (
+    PropertyUpdatedTrackerEntry,
+    TranslatedPropertyUpdatedTrackerEntry,
+    ItemAddedTrackerEntry,
+    ItemRemovedTrackerEntry,
+    QuestionnaireRemovedTrackerEntry
+)
+from auth.session import current_user
 from model import db
-from model.models.TrackerEntry import PropertyUpdatedTrackerEntry, TranslatedPropertyUpdatedTrackerEntry, \
-    ItemAddedTrackerEntry, ItemRemovedTrackerEntry, QuestionnaireRemovedTrackerEntry
 
 __author__ = "Noah Hummel"
 

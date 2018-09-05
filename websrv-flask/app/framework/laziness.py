@@ -25,4 +25,4 @@ def lazy_update_statistics() -> None:
 
 
 # a list of all functions that should be run on every request
-LAZY_JOBS = [lazy_update_statistics]
+LAZY_JOBS = []  # [lazy_update_statistics]

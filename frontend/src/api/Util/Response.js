@@ -79,8 +79,6 @@ const extractJsonPlusLanguage = function (response) {
 
 export {
     categorizeResponse,
-    checkStatus,
     extractJson,
-    extractJsonAndReject,
     extractJsonPlusLanguage
 };

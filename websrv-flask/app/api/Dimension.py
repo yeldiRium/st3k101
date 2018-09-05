@@ -5,7 +5,7 @@ from api import api
 from framework.dependency_injection import ResourceBroker
 from api.schema.Dimension import DimensionSchema, ShadowDimensionSchema
 from auth.roles import current_has_minimum_role, Role, needs_minimum_role
-from auth.users import current_user
+from auth.session import current_user
 from model import db
 from model.models.Dimension import Dimension, ShadowDimension
 from model.models.Questionnaire import Questionnaire

@@ -68,7 +68,12 @@
             submissionCount() {
                return (questionnaire) => {
                    for (let dimension of questionnaire.dimensions) {
-                       return this.statisticsByDimension(dimension).length;
+                       for (let question of dimension.questions) {
+                           let statistic = this.statisticByQuestionHref(question.href);
+                           if (!isNil(statistic)) {
+                               return statistic.n;
+                           }
+                       }
                    }
                    return 0;
                };
@@ -79,11 +84,10 @@
         },
         methods: {
             showGraphFor(dimension) {
-                if (this.statisticsByDimension(dimension).length !== dimension.questions.length) {
+                if (dimension.questions.length < 1) {
                     return false;
                 }
-                return dimension.questions.length >= 1;
-
+                return this.submissionCount > 0;
             },
             statisticsByDimension(dimension) {
                 return reject(
@@ -95,25 +99,18 @@
                 );
             },
             loadData() {
-                return this.$load(
-                    this.$store.dispatch("questionnaires/loadMyQuestionnaires")
-                        .chain(this.loadStatistics)
-                ).fork(
+                this.loadStatistics().fork(
                     this.$handleApiError,
                     () => {
                     }
-                )
+                );
             },
             loadStatistics() {
                 let futures = [];
                 for (let questionnaire of this.myQuestionnaires) {
-                    for (let dimension of questionnaire.dimensions) {
-                        for (let question of dimension.questions) {
-                            futures.push(
-                                this.$store.dispatch("statistics/fetchQuestionStatistic", {question})
-                            );
-                        }
-                    }
+                    futures.push(
+                        this.$store.dispatch("statistics/fetchQuestionStatisticsForQuestionnaire", {questionnaire})
+                    );
                 }
                 return Future.parallel(Infinity, futures);
             }

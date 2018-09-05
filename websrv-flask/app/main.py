@@ -2,12 +2,16 @@ from flask import render_template, g, request, make_response, abort
 from werkzeug.wrappers import Response
 
 import auth
+import auth.session
 from app import app as original_app
+from auth.users import PartyTypes
 from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages, BabelLanguage
 from model.models.DataClient import DataClient
+from model.models.DataSubject import DataSubject
+from utils import debug_print
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -31,13 +35,24 @@ def before_request():
     if auth_string and auth_string.startswith('Bearer'):
         try:
             session_token = auth_string.split()[1]
-            if auth.validate_activity(session_token):
-                g._current_user = DataClient.query.get(auth.who_is(session_token))
-                if g._current_user:
+            if auth.session.validate_activity(session_token):
+                session_record = auth.session.get_session_record(session_token)
+                assert session_record['type'] in PartyTypes
+
+                if session_record['type'] == PartyTypes.DataClient:
+                    g._current_user = DataClient.query.get(auth.session.who_is(session_token))
+                elif session_record['type'] == PartyTypes.DataSubject:
+                    g._current_user = DataSubject.query.get(auth.session.who_is(session_token))
+
+                if g._current_user:  # is user logged in?
                     g._current_session_token = session_token
-                import sys
-                print("Logged in as {}".format(g._current_user), file=sys.stderr)
-        except: pass
+
+                debug_print("Logged in as {}".format(g._current_user))
+            else:
+                debug_print("Session did not validate: {}".format(session_token))
+
+        except Exception as err:
+            debug_print("Error during auth: {}".format(err))
 
     # Setting the locale for the current request
     g._language = BabelLanguage[g._config[
@@ -48,8 +63,8 @@ def before_request():
     if http_locale is not None:  # match available locales against HTTP header
         g._language = BabelLanguage[http_locale.lower()]
 
-    # if user is logged in, set locale based on user prefs, override HTTP header
-    if g._current_user:
+    # if user is logged in and a DataClient, set locale based on user prefs, override HTTP header
+    if g._current_user and isinstance(g._current_user, DataClient):
         g._language = g._current_user.language
 
     # we also hand out a cookie the first time a locale is set and just
@@ -80,7 +95,7 @@ def after_request(response: Response):
     """
     # hacky scheduling
     for job in laziness.LAZY_JOBS:
-        job()
+        job()  # TODO: remove
 
     # set the locale as cookie, keeps locale constant for a period of time
     if request.args.get('locale'):
@@ -108,7 +123,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: L'Error
     """
-    return "Nisch da", 404  # render_template("home_404.html"), 404
+    return "Nisch da", 404  # render_template("home_404.html"), 404 TODO: make nice
 
 
 @app.errorhandler(500)
@@ -145,26 +160,6 @@ def inject_languages():
         "languages": list_sorted_by_long_name()
     }
     return dict(language=language)
-
-
-# Landing Page
-@app.route("/", methods=["GET"])
-def home():
-    """
-    Home route
-    """
-    return render_template("home_index.html")
-
-
-# Dashboard / Backend for DataClients
-@app.route("/be/", methods=["GET"])
-def backend():
-    """
-    Dashboard for users
-    """
-    if not g._current_user:
-        return render_template("home_index.html", not_logged_in=True)
-    return render_template("backend.html")
 
 
 # Leave the following imports in place, even if your IDE tries to optimize them

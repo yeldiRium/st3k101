@@ -69,3 +69,9 @@ def ellipse(s, length):
 
 def unicode_to_xml_friendly_ascii(string: str) -> str:
     return string.encode('ascii', 'xmlcharrefreplace').decode()
+
+
+def debug_print(message: str):
+    if g._config['DEBUG']:
+        import sys
+        print(message, file=sys.stderr)

@@ -13,14 +13,15 @@ class Role(IntEnum):
     Admin = 10
     Contributor = 20
     User = 30
+    Unprivileged = 40
 
 
-def fulfills_role(data_client, *roles: List[Union[Role, Tuple[Role]]]):
+def fulfills_role(party, *roles: List[Union[Role, Tuple[Role]]]):
     access_allowed = True
-    if not data_client:
+    if not party:
         return False
 
-    user_roles = data_client.roles
+    user_roles = party.roles
     for role in roles:
         if isinstance(role, Role):
             access_allowed &= (role in user_roles)

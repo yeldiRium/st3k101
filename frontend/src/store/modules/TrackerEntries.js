@@ -11,7 +11,7 @@ const store = {
     getters: {
         myTrackerEntries(state) {
             return state.myTrackerEntries.sort(
-                (a, b) => a.timestamp - b.timestamp
+                (a, b) => b.timestamp - a.timestamp
             );
         },
         trackerEntriesByItemHref(state) {
