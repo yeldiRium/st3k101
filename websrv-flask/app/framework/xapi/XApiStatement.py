@@ -1,3 +1,7 @@
+from datetime import datetime
+
+import uuid
+
 from framework.xapi.XApiItem import XApiItem
 from framework.xapi.XApiActor import XApiActor
 from framework.xapi.XApiVerb import XApiVerb
@@ -15,6 +19,7 @@ class XApiStatement(XApiItem):
         xapi_result: XApiResult=None,
         xapi_context: XApiContext=None
     ):
+        self.__id = uuid.uuid4()
         self.__actor = xapi_actor
         self.__verb = xapi_verb
         self.__object = xapi_object
@@ -38,8 +43,8 @@ class XApiStatement(XApiItem):
 
     def as_dict(self) -> dict:
         me = {
-            # "timestamp": datetime.now().isoformat(), TODO: manage this by XApiPublisher
-            "id": "FIXME: generate unique IDs",  # FIXME: manage this by XApiPublisher
+            "timestamp": datetime.now().isoformat(),
+            "id": str(self.__id),
             "actor": self.get_actor().as_dict(),
             "verb": self.get_verb().as_dict(),
             "object": self.get_object().as_dict()
