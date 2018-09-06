@@ -78,14 +78,14 @@ class XApiSurveyContext(XApiContext):
                     XApiActivityObject(
                         XApiActivities.Dimension,
                         ResourceBroker.url_for(self.__question.dimension),
-                        self.__question.dimension.name
+                        self.__question.dimension.name_translations
                     )
                 ],
                 "grouping": [
                     XApiActivityObject(
                         XApiActivities.Questionnaire,
                         ResourceBroker.url_for(self.__question.dimension.questionnaire),
-                        self.__question.dimension.questionnaire.name
+                        self.__question.dimension.questionnaire.name_translations
                     )
                 ]
             },
