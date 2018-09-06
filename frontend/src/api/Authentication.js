@@ -1,8 +1,9 @@
 import Future from "fluture";
-import {prop} from "ramda";
+import {ifElse, pipe, prop} from "ramda";
 import {extractJson} from "./Util/Response";
 import {parseDataClient} from "./Util/Parse";
 import {fetchApi} from "./Util/Request";
+import {InternalServerError} from "./Errors";
 
 /**
  * Register a new DataClient.
@@ -83,9 +84,91 @@ function getCurrentDataClient(authenticationToken) {
         .map(parseDataClient);
 }
 
+/**
+ * Prepares the backend for an LTI launch by validating if the launch is valid
+ * and provisioning an user account if it doesn't exist yet.
+ * @param consumerKey {String}
+ * @param userId {String}
+ * @param questionnaireId {String}
+ * @param context_id {String}
+ * @param context_label {String}
+ * @param context_title {String}
+ * @param launch_presentation_locale {String}
+ * @param launch_presentation_return_url {String}
+ * @param lis_person_contact_email_primary {String}
+ * @param lis_person_name_family {String}
+ * @param lis_person_name_full {String}
+ * @param lis_person_name_given {String}
+ * @param resource_link_description {String}
+ * @param resource_link_title {String}
+ * @param tool_consumer_info_product_family_code {String}
+ * @param tool_consumer_info_version {String}
+ * @param tool_consumer_instance_description {String}
+ * @param tool_consumer_instance_guid {String}
+ * @resolves {String} {String}
+ * @rejects {ApiError|TypeError}
+ */
+function requestLtiSession(
+    consumerKey,
+    userId,
+    questionnaireId,
+    {
+        context_id=null,
+        context_label=null,
+        context_title=null,
+        launch_presentation_locale=null,
+        launch_presentation_return_url=null,
+        lis_person_contact_email_primary=null,
+        lis_person_name_family=null,
+        lis_person_name_full=null,
+        lis_person_name_given=null,
+        resource_link_description=null,
+        resource_link_title=null,
+        tool_consumer_info_product_family_code=null,
+        tool_consumer_info_version=null,
+        tool_consumer_instance_description=null,
+        tool_consumer_instance_guid=null
+    }) {
+
+    return fetchApi(`/api/questionnaire/${questionnaireId}/lti`, {
+        method: "POST",
+        body: json.stringify({
+            context_id: context_id,
+            context_label: context_label,
+            context_title: context_title,
+            launch_presentation_locale: launch_presentation_locale,
+            launch_presentation_return_url: launch_presentation_return_url,
+            lis_person_contact_email_primary: lis_person_contact_email_primary,
+            lis_person_name_family: lis_person_name_family,
+            lis_person_name_full: lis_person_name_full,
+            lis_person_name_given: lis_person_name_given,
+            resource_link_description: resource_link_description,
+            resource_link_title: resource_link_title,
+            tool_consumer_info_product_family_code: tool_consumer_info_product_family_code,
+            tool_consumer_info_version: tool_consumer_info_version,
+            tool_consumer_instance_description: tool_consumer_instance_description,
+            tool_consumer_instance_guid: tool_consumer_instance_guid
+        })
+    })
+        .chain(extractJson)
+        .chain(
+            ifElse(
+                has("sessionToken"),
+                pipe(
+                    prop("sessionToken"),
+                    Future.of
+                ),
+                () => Future.reject(
+                    new InternalServerError("Session token wasn't returned, although no error message was given.")
+                )
+            )
+        );
+}
+
 export {
     register,
     requestSession,
     endSession,
-    getCurrentDataClient
+    getCurrentDataClient,
+    requestLtiSession
 };
