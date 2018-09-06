@@ -70,6 +70,16 @@ class ConflictError extends ApiError {
 }
 
 /**
+ * 500
+ */
+class InternalServerError extends ApiError {
+    constructor(s) {
+        super(s);
+        this.name = "InternalServerError";
+    }
+}
+
+/**
  * Default
  */
 class UnknownError extends ApiError {
@@ -86,5 +96,6 @@ export {
     ForbiddenError,
     BadRequestError,
     ConflictError,
+    InternalServerError,
     UnknownError
 };

@@ -5,7 +5,7 @@ import {
     BadRequestError,
     ConflictError,
     NotFoundError,
-    UnknownError, AuthorizationError
+    UnknownError, AuthorizationError, InternalServerError
 } from "../Errors";
 
 /**
@@ -41,6 +41,8 @@ function categorizeResponse(response) {
                 .chain(data =>
                     Future.reject(new ConflictError("Conflicting data.", data))
                 );
+        case 500:
+            return Future.reject(new InternalServerError("Internal server error."));
         default:
             return Future.tryP(() => response.json())
                 .chain(data =>
