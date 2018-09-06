@@ -1,8 +1,11 @@
 __author__ = "Noah Hummel"
 
 
+from typing import List
+
 from model import db
 from model.models.Party import Party
+from auth.roles import Role
 
 
 class DataSubject(Party):
@@ -13,7 +16,10 @@ class DataSubject(Party):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     email = db.Column(db.String(120), nullable=False)
-    confirmation_token = db.Column(db.String(32))
+
+    @property
+    def roles(self) -> List[Role]:
+        return [Role.Unprivileged]
 
     @staticmethod
     def get_or_create(email: str) -> "DataSubject":

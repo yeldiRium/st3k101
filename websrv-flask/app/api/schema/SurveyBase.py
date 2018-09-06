@@ -8,7 +8,7 @@ from api.schema.DataClient import DataClientSchema
 from api.schema.fields import enum_field
 from framework.internationalization.babel_languages import BabelLanguage
 from model.models.SurveyBase import SurveyBase
-from auth.users import current_user
+from auth.session import current_user
 
 __author__ = "Noah Hummel"
 

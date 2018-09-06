@@ -1,4 +1,4 @@
-from auth.users import current_user
+from auth.session import current_user
 from model import db
 from model.models.DataSubject import DataSubject
 from model.models.OwnershipBase import OwnershipBase

@@ -324,7 +324,7 @@
                         }
                     ).chain(question => this.$store.dispatch(
                                 "questions/fetchQuestion",
-                                {href: question.href, language}
+                                {href: question.href}
                             ))
                     ).fork(
                         this.$handleApiError,

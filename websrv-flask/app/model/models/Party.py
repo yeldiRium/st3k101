@@ -1,5 +1,9 @@
+from abc import abstractmethod
+from typing import List
+
 from model import db
 from model.models.OwnershipBase import ownership_table
+from auth.roles import Role
 
 
 class Party(db.Model):
@@ -15,3 +19,8 @@ class Party(db.Model):
 
     owned_objects = db.relationship('OwnershipBase', back_populates='owners',
                                     secondary=ownership_table)
+
+    @property
+    @abstractmethod
+    def roles(self) -> List[Role]:
+        raise NotImplementedError

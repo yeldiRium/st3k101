@@ -3,7 +3,7 @@ from abc import abstractmethod
 from typing import Dict, List
 
 import utils
-from auth.users import current_user
+from auth.session import current_user
 from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType, translation_hybrid_updated, property_updated
