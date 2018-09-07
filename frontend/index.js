@@ -7,13 +7,15 @@
  */
 
 import express from "express";
-import bodyParser from "body-parser";
+
 
 import embeddedAuthenticationMiddleware from "./src/express/embeddedAuthenticationMiddleware";
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(express.urlencoded({
+    extended: true
+}));
 
 app.use(embeddedAuthenticationMiddleware);
 
