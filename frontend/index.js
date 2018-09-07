@@ -8,6 +8,7 @@
 
 import express from "express";
 
+import config from "expressConfig";
 
 import embeddedAuthenticationMiddleware from "./src/express/embeddedAuthenticationMiddleware";
 
@@ -17,7 +18,10 @@ app.use(express.urlencoded({
     extended: true
 }));
 
-app.use(embeddedAuthenticationMiddleware);
+app.post(
+    /\/survey\/:questionnaireId\/lti?(\/dashboard)/,
+    embeddedAuthenticationMiddleware(config.frontendPath)
+);
 
 app.use(express.static("dist"));
 
