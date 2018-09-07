@@ -1,6 +1,8 @@
 class ApiError extends Error {
     constructor(s) {
         super(s);
+        this.status = -1;
+        this.name = "ApiError";
     }
 }
 
