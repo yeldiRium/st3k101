@@ -1,31 +1,58 @@
+import Future from "fluture";
 import R from "ramda";
 
-import {getCurrentDataClient} from "../api/Authentication";
+/**
+ * Keys of required parameters.
+ * Can't process embedded authentication if any of these is not present.
+ *
+ * @type {Array}
+ */
+const requiredParameters = [];
 
 /**
+ * @param {Object}
+ * @return {Boolean} true, if the object contains all required keys.
+ */
+const hasAllRequiredParameters = R.allPass(
+    R.map(
+        R.has,
+        requiredParameters
+    )
+);
+
+/**
+ * @param frontendPath Path to the frontend files.
  * @param req Express request.
  * @param res Express response.
  * @param next Callback for next middleware.
  */
-const embeddedAuthenticationMiddleware = function (req, res, next) {
-    // No key given, no access granted.
-    if (req.method === "POST" && R.has("key", req.body)) {
-        const key = req.body.key;
+const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
+    console.log("starting middleware");
+    if (!hasAllRequiredParameters(req.body)) {
+        res.status(666);
+        return res.send("Get fucked")
+    }
 
-        return getCurrentDataClient(key).fork(
+    const frontendParams = {};
+
+    return Future.node(done => fs.readFile(`${frontendPath}/index.html`, done))
+        .map(R.replace(
+            "/*LaunchParameterPlaceholderDontRemovePlox*/",
+            `var launchParameters = ${JSON.stringify(frontendParams)};`
+        ))
+        .fork(
             error => {
-                console.error(error);
+                // TODO: add status codes to error classes
+                // res.status()
+                res.send(error.message);
                 next();
             },
-            /** @type {DataClient} */
-            dataClient => {
-                // A successful request means that the key is valid.
-                // TODO: set cookie with key for the frontend.
+            processedHtml => {
+                res.status(200);
+                res.send(processedHtml);
                 next();
             }
         );
-    }
-    next();
 };
 
 export default embeddedAuthenticationMiddleware;
