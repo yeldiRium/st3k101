@@ -22,7 +22,7 @@ import {
     removeQuestion,
     updateDimension
 } from "../../api/Dimension";
-import {BadRequestError} from "../../api/Errors";
+import {BadRequestError, ValidationError} from "../../api/Errors";
 
 const store = {
     namespaced: true,

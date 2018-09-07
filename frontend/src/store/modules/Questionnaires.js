@@ -36,7 +36,7 @@ import {
     removeDimension,
     updateQuestionnaire as apiUpdateQuestionnaire
 } from "../../api/Questionnaire";
-import {BadRequestError} from "../../api/Errors";
+import {BadRequestError, ValidationError} from "../../api/Errors";
 
 const store = {
     namespaced: true,
