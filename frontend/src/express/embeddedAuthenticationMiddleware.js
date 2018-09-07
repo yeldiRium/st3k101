@@ -41,9 +41,9 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
             `var launchParameters = ${JSON.stringify(frontendParams)};`
         ))
         .fork(
+            /** @type {ApiError|TypeError} */
             error => {
-                // TODO: add status codes to error classes
-                // res.status()
+                res.status(error.status);
                 res.send(error.message);
                 next();
             },
