@@ -3,8 +3,9 @@ This file contains all the setup logic for the flask.app.
 Wherever the app instance is needed (db, api), it is imported from here. 
 """
 from logging.handlers import SMTPHandler
-from flask import Flask, logging, g
+from flask import Flask, g
 from flask_babel import Babel
+import logging
 
 __author__ = "Noah Hummel"
 
