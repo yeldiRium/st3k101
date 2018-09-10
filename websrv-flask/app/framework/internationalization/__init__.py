@@ -1,6 +1,6 @@
 from typing import Tuple, List
 
-from flask.ext.babel import gettext
+from flask_babel import gettext
 from .babel_languages import babel_languages
 
 __author__ = "Noah Hummel, Hannes Leutloff"
