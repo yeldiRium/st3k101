@@ -1,0 +1,89 @@
+Survey Tool TODO
+
+* Design
+** What to do about DataSubject Accounts of the same person that were created from different sources (LTI/Standalone)
+   
+   | Data               | Standalone Registration | LTI Registration |
+   |--------------------+-------------------------+------------------|
+   | lti_user_id        | No                      | Yes              |
+   | email              | Yes                     | Maybe            |
+   | person_name_full   | No                      | Maybe            |
+   | person_name_given  | No                      | Maybe            |
+   | person_name_family | No                      | Maybe            |
+
+   None of the data that is always present -> same person using LTI and Standalone
+   may have 2 DataSubject Accounts
+
+   Should we merge those 2 Acocunts at some point?
+   Consider following case:
+   
+   DataSubject A completes Survey with email address B
+   DataSubject A completes Survey via LTI with email address B
+   => Accounts are merged at some point
+   DataSubject A completes Survey via LTi with email address C
+   => DataSubject A's email address is updated to email address C
+   DataSubject A wants to use email address B for authenticating
+   => DataSubject A is rejected, because their email address was updated silently
+
+   Therefore we should not try to merge these user Accounts.
+   
+** Should survey be reachable in standalone mode when embedding is activated?
+   
+   Toggle standalone and embedded availability seperately
+
+
+* TODO Backend
+** TODO [#B] CLI
+*** TODO [#B] First time setup wizard
+**** DONE Create DataClient command
+**** DONE Import questionnaires from JSON command
+**** TODO [#B] Tie it all up into a single command  
+     that has user friendly step-by-step guide
+** TODO [#B] API
+*** TODO [#B] /api/response 
+**** TODO [#B] POST
+***** TODO [#B] Recalculate statistics on every new submission
+      Also need to add this to /api/response/<token>/verify
+***** TODO [#B] Update to recognize DataSubject session
+***** TODO [#C] Integrate ReCaptchav3
+*** TODO [#C] /api/personal_data
+    Endpoint that returns all data belonging to the currently logged in User
+** TODO [#B] Model
+*** TODO [#B] Questionnaire
+**** TODO [#B] ADD flag: allow_standalone
+     If allow_standalone is True, Survey displays normally to all users when published.
+     If allow_standaline is False, Survey only displays (without submission button) to owning DataClient
+
+**** TODO [#B] ADD flag: completed
+     If completed is True, survey will be visible by all users, but submission is disabled
+     If completed is False, visibility of the survey is managed by published flag
+**** TODO [#C] ADD datetime: survey_begin
+     Datetime at which survey should become published
+**** TODO [#C] ADD datetime: survey_end
+     Datetime at which survey should become completed
+** TODO [#B] xAPI
+*** TODO [#B] Detect known survey scales and publish xAPI Statements for them according to known scoring mechanism
+*** TODO [#B] Make emitting xAPI statements for every Question optional per Questionnaire
+*** TODO [#B] Emit missing xAPI signals
+** TODO [#C] Utility
+*** TODO [#C] Create registry of known survey items
+**** TODO [#C] Talk to Ioana about survey items that should be included
+
+
+* TODO Frontend
+** TODO [#A] LTI Middleware
+*** TODO [#A] Parse LTI requrest from ExpressJS
+*** TODO [#A] Test DataSubject login route
+*** TODO [#A] Embed DataSubject Session into Frontend
+** TODO [#B] Submission View
+*** TODO [#B] Respect Questionnaire.allow_standalone
+*** TODO [#B] Respect Questionnaire.completed
+*** TODO [#B] GDPR consent modal before submission view
+*** TODO [#C] "Thank You"-Page after submission
+*** TODO [#C] Integrate ReCaptchav3
+** TODO [#C] Dashboard
+*** TODO [#C] MSLQ sepcific visualisation
+** TODO [#C] Account view
+*** TODO [#C] Make user data editable
+    
+    
