@@ -5,9 +5,22 @@ import R from "ramda";
  * Keys of required parameters.
  * Can't process embedded authentication if any of these is not present.
  *
- * @type {Array}
+ * @type {Object}
  */
-const requiredParameters = [];
+const requiredParameters = {
+    "lti_message_type": "basic-lti-launch-request",
+    "lti_version": "LTI-1p0",
+    "oauth_consumer_key": null,
+    "oauth_callback": "about:blank",
+    "oauth_nonce": null,
+    "oauth_signature": null,
+    "oauth_signature_method": "HMAC-SHA1",
+    "oauth_timestamp": null,
+    "oauth_version": "1.0",
+    "resource_link_id": null,
+    "roles": null,
+    "user_id": null
+};
 
 /**
  * @param {Object}
@@ -16,7 +29,18 @@ const requiredParameters = [];
 const hasAllRequiredParameters = R.allPass(
     R.map(
         R.has,
-        requiredParameters
+        Object.keys(requiredParameters)
+    )
+);
+
+
+const hasValidParameters = R.allPass(
+    R.map(
+        (key, value) => requiredParameters[key] === value,
+        R.filter(
+            (_, value) => !R.isNil(value),
+            Object.entries(requiredParameters)
+        )
     )
 );
 
@@ -28,9 +52,9 @@ const hasAllRequiredParameters = R.allPass(
  */
 const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
     console.log("starting middleware");
-    if (!hasAllRequiredParameters(req.body)) {
-        res.status(666);
-        return res.send("Get fucked")
+    if (!hasAllRequiredParameters(req.body) || !hasValidParameters(req.body)) {
+        res.status(400);
+        return res.send("Not a valid LTI launch request.");
     }
 
     const frontendParams = {};
