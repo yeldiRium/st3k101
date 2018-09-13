@@ -12,6 +12,7 @@ class ValidationError extends ApiError {
     constructor(s, payload) {
         super(s);
         this.name = "ValidationError";
+        this.status =
         this.payload = payload;
     }
 }
@@ -97,5 +98,6 @@ export {
     BadRequestError,
     ConflictError,
     InternalServerError,
-    UnknownError
+    UnknownError,
+    ValidationError
 };

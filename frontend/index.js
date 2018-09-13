@@ -7,15 +7,21 @@
  */
 
 import express from "express";
-import bodyParser from "body-parser";
+
+import config from "expressConfig";
 
 import embeddedAuthenticationMiddleware from "./src/express/embeddedAuthenticationMiddleware";
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(express.urlencoded({
+    extended: true
+}));
 
-app.use(embeddedAuthenticationMiddleware);
+app.post(
+    /\/survey\/:questionnaireId\/lti?(\/dashboard)/,
+    embeddedAuthenticationMiddleware(config.frontendPath)
+);
 
 app.use(express.static("dist"));
 
