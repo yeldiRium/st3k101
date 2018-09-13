@@ -1,0 +1,73 @@
+* ST3K101 Backend Container
+** Development Setup
+   Requires:
+   - docker >=18.06
+   - docker-compose >=1.22
+   - python >=3.7
+
+   Install python dependencies.
+   It is recommended to do so in a
+   [[https://docs.python.org/3/library/venv.html][virtual environment]].
+   #+BEGIN_SRC bash
+     pip install -r /app/requirements.
+   #+END_SRC
+
+   Build docker container.
+   #+BEGIN_SRC bash
+     docker-compose build
+   #+END_SRC
+
+   Run postgres container in background.
+   #+BEGIN_SRC bash
+     docker-compoes up -d postgres
+   #+END_SRC
+
+   Wait a few seconds for postgres to start. Then start
+   websrv-flask. This will start a memcached container
+   in the background.
+   #+BEGIN_SRC bash
+     docker-compose up websrv-flask
+   #+END_SRC
+
+   Optionally start adminer for a gui for postgres.
+   #+BEGIN_SRC bash
+     docker-compose up -d adminer
+   #+END_SRC
+** Building
+   =docker_registry= must be of the form =hostname[:port]= and is required to
+   tag and push the container to/with the correct registry.
+
+   Build the container.
+    #+BEGIN_SRC bash
+      ./../build.sh build <docker_registry>
+    #+END_SRC
+
+    Run tests (currently none).
+    #+BEGIN_SRC bash
+      ./../build.sh test
+    #+END_SRC
+
+    Publish the container to docker registry.
+    #+BEGIN_SRC bash
+      ./../build.sh publish <docker_registry>
+    #+END_SRC
+
+    Or you can do all of the above in one step.
+    #+BEGIN_SRC bash
+      ./../build.sh run <docker_registry>
+    #+END_SRC
+** Configuration
+*** Ports
+    - 80
+*** Environment
+**** Postgres
+     Needs someparameters for user and db creation.
+     - POSTGRES_PASSWORD
+     - POSTGRES_USER
+     - POSTGRES_DB
+
+     Needs a volume of some kind mounted to =/var/lib/postgresql/data=, so that
+     database content is persisted.
+**** TODO parameterize dependencies
+     Domain names of postgres and memcached should be set via environment
+     variables.

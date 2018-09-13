@@ -1,0 +1,57 @@
+* ST3K101 Frontend Container
+** Development Setup
+   Requires:
+   - node.js >=9
+   - a running and reachable websrv-flask container
+
+   Install dependencies locally.
+   #+BEGIN_SRC bash
+     npm install
+   #+END_SRC
+
+   Build docker container.
+   #+BEGIN_SRC bash
+     docker-compose build
+   #+END_SRC
+
+   Serve with hot reload at localhost:8080.
+   #+BEGIN_SRC bash
+     docker-compose up frontend-dev
+   #+END_SRC
+
+   Serve production-like with minification and express server.
+   #+BEGIN_SRC bash
+     docker-compose up frontend-prod
+   #+END_SRC
+** Building
+   =docker_registry= must be of the form =hostname[:port]= and is required to
+   tag and push the container to/with the correct registry.
+
+   Build the container.
+    #+BEGIN_SRC bash
+      ./../build.sh build <docker_registry>
+    #+END_SRC
+
+    Run tests (currently none).
+    #+BEGIN_SRC bash
+      ./../build.sh test
+    #+END_SRC
+
+    Publish the container to docker registry.
+    #+BEGIN_SRC bash
+      ./../build.sh publish <docker_registry>
+    #+END_SRC
+
+    Or you can do all of the above in one step.
+    #+BEGIN_SRC bash
+      ./../build.sh run <docker_registry>
+    #+END_SRC
+** Configuration
+*** Ports
+    -  80
+*** Environment
+    - NODE_ENV
+      Tells node, whether it is running in =development=, =testing= or
+      =production= mode.
+**** TODO parameterize dependency
+     Domain name for websrv-flask should be set via environment variables.
