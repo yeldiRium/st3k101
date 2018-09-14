@@ -1,3 +1,5 @@
+import os
+
 from abc import abstractmethod
 from typing import Dict
 
@@ -24,7 +26,8 @@ class Questionnaire(SurveyBase):
 
     published = db.Column(db.Boolean, nullable=False, default=False)
     allow_embedded = db.Column(db.Boolean, nullable=False, default=False)
-    xapi_target = db.Column(db.String(512))
+    lti_consumer_key = db.Column(db.String(512))
+    xapi_target = db.Column(db.String(128))
 
     # challenge data
     email_whitelist = db.Column(db.ARRAY(db.String))
@@ -63,6 +66,7 @@ class Questionnaire(SurveyBase):
         self.email_blacklist_enabled = False
         self.email_whitelist_enabled = False
         self.xapi_target = g._config['XAPI_DEFAULT_TARGET']
+        self.lti_consumer_key = os.urandom(32).hex()
 
     @property
     @abstractmethod

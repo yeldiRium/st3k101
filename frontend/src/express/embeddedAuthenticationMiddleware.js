@@ -1,5 +1,6 @@
 import Future from "fluture";
 import R from "ramda";
+import {requestLtiSession} from "../api/Authentication";
 
 /**
  * Keys of required parameters.
@@ -57,25 +58,32 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
         return res.send("Not a valid LTI launch request.");
     }
 
-    const frontendParams = {};
-
-    return Future.node(done => fs.readFile(`${frontendPath}/index.html`, done))
-        .map(R.replace(
-            "/*LaunchParameterPlaceholderDontRemovePlox*/",
-            `var launchParameters = ${JSON.stringify(frontendParams)};`
-        ))
-        .fork(
-            error => {
-                // TODO: add status codes to error classes
-                // res.status()
-                res.send(error.message);
-                next();
-            },
-            processedHtml => {
-                res.status(200);
-                res.send(processedHtml);
-                next();
-            }
+    // TODO: start session with backend
+    let cancel = requestLtiSession(
+        req.body.oauth_consumer_key,
+        req.body.user_id,
+        req.params.questionnaireId,
+        req.body
+    ).chain(
+        res => Future.node(done => fs.readFile(`${frontendPath}/index.html`, done))
+            .map(
+                R.replace(
+                    "/*LaunchParameterPlaceholderDontRemovePlox*/",
+                    `var ltiSessionToken = ${JSON.stringify(res)};`
+                )
+            )
+    ).fork(
+        error => {
+            // TODO: add status codes to error classes
+            res.status(400);
+            res.send(error.message);
+            next();
+        },
+        processedHtml => {
+            res.status(200);
+            res.send(processedHtml);
+            next();
+        }
         );
 };
 
