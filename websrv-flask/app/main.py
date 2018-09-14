@@ -61,6 +61,8 @@ def before_request():
             debug_print("Error during auth: {}".format(err))
             abort(401)
 
+    # return to language handling after auth, because language may be determined
+    # by user preference.
     # check HTTP accept-language
     http_locale = request.accept_languages.best_match(babel_languages.keys())
     if http_locale is not None:  # match available locales against HTTP header
@@ -76,9 +78,7 @@ def before_request():
 
     # Allow frontend to override locale set by browser or user.
     # This is needed to show locales to the user, even if the locale doesn't
-    # match the above settings. Otherwise, a german user wouldn't be able to see
-    # a french survey, even if they spoke french. The frontend may prompt the
-    # user if they want to see a locale that they mightn't understand.
+    # match the above settings.
     requested_locale = request.args.get('locale')
     if requested_locale is not None:
         try:
