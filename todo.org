@@ -33,13 +33,13 @@ Survey Tool TODO
 
 
 * TODO Backend
-** TODO [#B] CLI
+** TODO [#C] CLI
 *** TODO [#B] First time setup wizard
 **** DONE Create DataClient command
 **** DONE Import questionnaires from JSON command
 **** TODO [#B] Tie it all up into a single command  
      that has user friendly step-by-step guide
-** TODO [#B] API
+** TODO [#C] API
 *** DONE Consistent status responses
     
     | Case                                                         | Status |
@@ -61,7 +61,7 @@ Survey Tool TODO
      If allow_standalone is True, Survey displays normally to all users when published.
      If allow_standaline is False, Survey only displays (without submission button) to owning DataClient
 
-**** TODO [#B] ADD flag: completed
+**** TODO [#B] ADD flag: concluded
      If completed is True, survey will be visible by all users, but submission is disabled
      If completed is False, visibility of the survey is managed by published flag
 **** TODO [#C] ADD datetime: survey_begin
