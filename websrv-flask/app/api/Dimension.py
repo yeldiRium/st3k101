@@ -20,7 +20,7 @@ class DimensionResource(Resource):
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
         if not dimension.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         return DimensionSchema().dump(dimension).data
 
     @needs_minimum_role(Role.User)
@@ -30,7 +30,7 @@ class DimensionResource(Resource):
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
         if not dimension.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not dimension.modifiable_by(current_user()):
             abort(403)
 
@@ -77,7 +77,7 @@ class DimensionResource(Resource):
         else:
             questionnaire = dimension.questionnaire
         if not dimension.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not dimension.modifiable_by(current_user()):
             abort(403)
         data = DimensionSchema().dump(dimension).data
@@ -105,7 +105,7 @@ class ConcreteDimensionResource(Resource):
 
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not questionnaire.modifiable_by(current_user()):
             abort(403)
         if questionnaire.shadow:
@@ -150,7 +150,7 @@ class ShadowDimensionResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         dimension = Dimension.query.get_or_404(data['id'])
         if not questionnaire.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not questionnaire.modifiable_by(current_user()):
             abort(403)
         if questionnaire.shadow:
@@ -173,7 +173,7 @@ class DimensionListResource(Resource):
     def get(self, questionnaire_id=None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         schema = DimensionSchema(many=True)
         return schema.dump(questionnaire.dimensions).data
 

@@ -166,9 +166,7 @@ class DataClientResource(Resource):
 
 class DataClientVerificationResource(Resource):
     def get(self, token: str=None):
-        dataclient = DataClient.query.filter_by(verification_token=token).first()
-        if dataclient is None:
-            abort(404)
+        dataclient = DataClient.query.filter_by(verification_token=token).get_or_404()
         dataclient.verified = True
         dataclient.verification_token = None
         db.session.commit()

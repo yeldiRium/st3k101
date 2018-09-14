@@ -40,7 +40,7 @@ class QuestionnaireTrackerResource(Resource):
     def get(self, questionnaire_id: int=None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         tracker_entries = tracker_entries_for_survey_base(questionnaire)
         return serialize_mixed_list(tracker_entries, TRACKER_ENTRY_MAPPING)
 
@@ -53,7 +53,7 @@ class DimensionTrackerResource(Resource):
             if questionnaire_id != dimension.questionnaire_id:
                 abort(404)
         if not dimension.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         tracker_entries = tracker_entries_for_survey_base(dimension)
         return serialize_mixed_list(tracker_entries, TRACKER_ENTRY_MAPPING)
 
@@ -70,7 +70,7 @@ class QuestionTrackerResource(Resource):
             if questionnaire_id != question.dimension.questionnaire_id:
                 abort(404)
         if not question.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         tracker_entries = tracker_entries_for_survey_base(question)
         return serialize_mixed_list(tracker_entries, TRACKER_ENTRY_MAPPING)
 

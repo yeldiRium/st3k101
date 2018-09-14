@@ -31,7 +31,7 @@ class QuestionResource(Resource):
         question = self.get_question_or_404(questionnaire_id, dimension_id,
                                             question_id)
         if not question.accessible_by(current_user()):
-            abort(404)
+            abort(403)
 
         return QuestionSchema().dump(question).data
 
@@ -40,7 +40,7 @@ class QuestionResource(Resource):
         question = self.get_question_or_404(questionnaire_id, dimension_id,
                                             question_id)
         if not question.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not question.modifiable_by(current_user()):
             abort(403)
 
@@ -80,7 +80,7 @@ class QuestionResource(Resource):
     def delete(self, **kwargs):
         question = self.get_question_or_404(**kwargs)
         if not question.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not question.modifiable_by(current_user()):
             abort(403)
         data = QuestionSchema().dump(question).data
@@ -111,7 +111,7 @@ class ConcreteQuestionResource(Resource):
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
         if not dimension.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not dimension.modifiable_by(current_user()):
             abort(403)
         if dimension.shadow:
@@ -148,7 +148,7 @@ class ShadowQuestionResource(Resource):
         question = Question.query.get_or_404(data['id'])
 
         if not dimension.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if questionnaire_id is not None:
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)
@@ -174,7 +174,7 @@ class QuestionListResource(Resource):
     def get(self, questionnaire_id: int=None, dimension_id: int=None):
         dimension = Dimension.query.get_or_404(dimension_id)
         if not dimension.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if questionnaire_id is not None:
             if dimension.questionnaire_id != questionnaire_id:
                 abort(404)

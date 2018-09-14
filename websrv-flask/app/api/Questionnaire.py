@@ -21,14 +21,14 @@ class QuestionnaireResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
             if not questionnaire.published:
-                abort(404)
+                abort(403)
         return schema.dump(questionnaire).data
 
     @needs_minimum_role(Role.User)
     def patch(self, questionnaire_id=None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.modifiable_by(current_user()):
-            abort(404)
+            abort(403)
 
         schema = QuestionnaireSchema(partial=True)
         data, errors = schema.load(request.json)
@@ -69,7 +69,7 @@ class QuestionnaireResource(Resource):
     def delete(self, questionnaire_id=None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if not questionnaire.modifiable_by(current_user()):
             abort(403)
         data = QuestionnaireSchema().dump(questionnaire).data
@@ -154,7 +154,7 @@ class ShadowQuestionnaireResource(Resource):
 
         questionnaire = Questionnaire.query.get_or_404(data['id'])
         if not questionnaire.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         if questionnaire.shadow:
             abort(403)
         shadow_questionnaire = ShadowQuestionnaire(questionnaire)

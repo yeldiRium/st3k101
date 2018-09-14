@@ -40,6 +40,13 @@ Survey Tool TODO
 **** TODO [#B] Tie it all up into a single command  
      that has user friendly step-by-step guide
 ** TODO [#B] API
+*** DONE Consistent status responses
+    
+    | Case                                                         | Status |
+    |--------------------------------------------------------------+--------|
+    | session token present, does not validate                     |    401 |
+    | session token present, does validate, insufficient privilege |    403 |
+
 *** TODO [#B] /api/response 
 **** TODO [#B] POST
 ***** TODO [#B] Recalculate statistics on every new submission
@@ -71,7 +78,10 @@ Survey Tool TODO
 
 
 * TODO Frontend
-** TODO [#A] LTI Middleware
+** TODO [#B] UX
+*** Add Tooltips to option fields 
+    Describing what the option does
+** TODO [#B] LTI Middleware
 *** TODO [#A] Parse LTI requrest from ExpressJS
 *** TODO [#A] Test DataSubject login route
 *** TODO [#A] Embed DataSubject Session into Frontend

@@ -74,7 +74,7 @@ class ResponseListForQuestionnaireResource(Resource):
     def get(self, questionnaire_id: int=None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         schema = QuestionResponseSchema(many=True)
         responses = []
         for dimension in questionnaire.dimensions:
@@ -141,8 +141,10 @@ class ResponseListForQuestionResource(Resource):
             question_id: int=None):
         _, _, question = validate_resource_path(questionnaire_id, dimension_id,
                                                 question_id)
-        if question is None or not question.accessible_by(current_user()):
+        if question is None:
             abort(404)
+        if not question.accessible_by(current_user()):
+            abort(403)
         schema = QuestionResponseSchema(many=True)
         return schema.dump(question.responses).data
 
@@ -158,7 +160,7 @@ class ResponseResource(Resource):
             if response.question_id != question.id:
                 abort(404)
         if not response.accessible_by(current_user()):
-            abort(404)
+            abort(403)
         return QuestionResponseSchema().dump(response).data
 
 
