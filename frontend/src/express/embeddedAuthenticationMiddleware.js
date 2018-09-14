@@ -73,9 +73,9 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
                 )
             )
     ).fork(
+        /** @type {ApiError} */
         error => {
-            // TODO: add status codes to error classes
-            res.status(400);
+            res.status(error.status);
             res.send(error.message);
             next();
         },
@@ -84,7 +84,7 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
             res.send(processedHtml);
             next();
         }
-        );
+    );
 };
 
 export default embeddedAuthenticationMiddleware;
