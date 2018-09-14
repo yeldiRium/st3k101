@@ -1,6 +1,8 @@
 class ApiError extends Error {
     constructor(s) {
         super(s);
+        this.status = -1;
+        this.name = "ApiError";
     }
 }
 
@@ -12,70 +14,57 @@ class ValidationError extends ApiError {
     constructor(s, payload) {
         super(s);
         this.name = "ValidationError";
-        this.status =
         this.payload = payload;
     }
 }
 
-/**
- * 400
- */
 class BadRequestError extends ApiError {
     constructor(s, payload) {
         super(s);
         this.name = "BadRequestError";
+        this.status = 400;
         this.payload = payload;
     }
 }
 
-/**
- * 401
- */
 class AuthorizationError extends ApiError {
     constructor(s, payload) {
         super(s);
         this.name = "AuthorizationError";
+        this.status = 401;
         this.payload = payload;
     }
 }
 
-/**
- * 403
- */
 class ForbiddenError extends ApiError {
     constructor(s) {
         super(s);
+        this.status = 403;
         this.name = "ForbiddenError";
     }
 }
 
-/**
- * 404
- */
 class NotFoundError extends ApiError {
     constructor(s) {
         super(s);
+        this.status = 404;
         this.name = "NotFoundError";
     }
 }
 
-/**
- * 409
- */
 class ConflictError extends ApiError {
     constructor(s, payload) {
         super(s);
+        this.status = 409;
         this.name = "ConflictError";
         this.payload = payload;
     }
 }
 
-/**
- * 500
- */
 class InternalServerError extends ApiError {
     constructor(s) {
         super(s);
+        this.status = 500;
         this.name = "InternalServerError";
     }
 }
