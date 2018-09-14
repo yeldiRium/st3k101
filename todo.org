@@ -52,21 +52,22 @@ Survey Tool TODO
 ***** TODO [#B] Recalculate statistics on every new submission
       Also need to add this to /api/response/<token>/verify
 ***** TODO [#B] Update to recognize DataSubject session
+***** TODO [#B] Reject submission when launched standalone but allow_standalone is False
 ***** TODO [#C] Integrate ReCaptchav3
 *** TODO [#C] /api/personal_data
     Endpoint that returns all data belonging to the currently logged in User
-** TODO [#B] Model
-*** TODO [#B] Questionnaire
-**** TODO [#B] ADD flag: allow_standalone
+** DONE [#B] Model
+*** DONE [#B] Questionnaire
+**** DONE [#B] ADD flag: allow_standalone
      If allow_standalone is True, Survey displays normally to all users when published.
      If allow_standaline is False, Survey only displays (without submission button) to owning DataClient
 
-**** TODO [#B] ADD flag: concluded
+**** DONE [#B] ADD flag: concluded
      If completed is True, survey will be visible by all users, but submission is disabled
      If completed is False, visibility of the survey is managed by published flag
-**** TODO [#C] ADD datetime: survey_begin
+**** DONE [#C] ADD datetime: survey_begin
      Datetime at which survey should become published
-**** TODO [#C] ADD datetime: survey_end
+**** DONE [#C] ADD datetime: survey_end
      Datetime at which survey should become completed
 ** TODO [#B] xAPI
 *** TODO [#B] Detect known survey scales and publish xAPI Statements for them according to known scoring mechanism
@@ -76,11 +77,15 @@ Survey Tool TODO
 *** TODO [#C] Create registry of known survey items
 **** TODO [#C] Talk to Ioana about survey items that should be included
 
+*** TODO [#A] Mock Email sending for testing purposes
+
 
 * TODO Frontend
 ** TODO [#B] UX
 *** Add Tooltips to option fields 
     Describing what the option does
+*** Add parent name to templates
+    
 ** TODO [#B] LTI Middleware
 *** TODO [#A] Parse LTI requrest from ExpressJS
 *** TODO [#A] Test DataSubject login route
@@ -93,6 +98,15 @@ Survey Tool TODO
 *** TODO [#C] Integrate ReCaptchav3
 ** TODO [#C] Dashboard
 *** TODO [#C] MSLQ sepcific visualisation
+** TODO [#A] Editor
+*** TODO [#A] Modal on Retract template
+    To choose whether to delete shadows or make concrete
+*** TODO [#A] Integrate allow_standalone flag
+*** TODO [#A] Integrate concluded flag
+*** TODO [#A] Integrate begins
+    [[https://flatpickr.js.org]]
+*** TODO [#A] Integrate ends
+    [[https://flatpickr.js.org]]
 ** TODO [#C] Account view
 *** TODO [#C] Make user data editable
     
