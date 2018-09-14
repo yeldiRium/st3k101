@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   postgres:
-    image: localhost:5000/uc/efla-postgres:latest
+    build: postgres
     restart: always
     environment:
       - POSTGRES_PASSWORD=kksrk0vv3zigez6
@@ -23,7 +23,7 @@ services:
     restart: always
 
   websrv-flask:
-    image: localhost:5000/uc/efla-websrv-flask:latest
+    build: websrv-flask
     restart: always
     ports:
       - 1337:80
@@ -34,7 +34,7 @@ services:
       - ./websrv-flask/app:/app
 
   frontend-dev:
-    image: localhost:5000/uc/efla-frontend:latest
+    build: frontend
     volumes:
       - ./frontend/src:/usr/app/src:rw
       - ./frontend/static:/usr/app/static:rw
@@ -45,7 +45,7 @@ services:
     command: npm run dev
 
   frontend-prod:
-    build: ./frontend
+    build: frontend
     ports:
       - 80:80
     environment:
