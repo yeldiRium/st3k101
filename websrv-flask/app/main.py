@@ -50,11 +50,11 @@ def before_request():
                 debug_print("Logged in as {}".format(g._current_user))
             else:
                 debug_print("Session did not validate: {}".format(session_token))
-                return 401
+                abort(401)
 
         except Exception as err:
             debug_print("Error during auth: {}".format(err))
-            return 401
+            abort(401)
 
     # Setting the locale for the current request
     g._language = BabelLanguage[g._config[
