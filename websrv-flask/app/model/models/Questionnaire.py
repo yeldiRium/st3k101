@@ -24,18 +24,27 @@ class Questionnaire(SurveyBase):
     __tablename__ = 'questionnaire'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
+    # survey lifecycle related
     published = db.Column(db.Boolean, nullable=False, default=False)
+    concluded = db.Column(db.Boolean, nullable=False, default=False)
+    begins = db.Column(db.DateTime, nullable=True, default=None)
+    ends = db.Column(db.DateTime, nullable=True, default=None)
+
+    # embedding related
     allow_embedded = db.Column(db.Boolean, nullable=False, default=False)
+    allow_standalone = db.Column(db.Boolean, nullable=False, default=True)
     lti_consumer_key = db.Column(db.String(512))
+
+    # xapi related
     xapi_target = db.Column(db.String(128))
 
     # challenge data
     email_whitelist = db.Column(db.ARRAY(db.String))
-    email_whitelist_enabled = db.Column(db.Boolean)
+    email_whitelist_enabled = db.Column(db.Boolean, nullable=False, default=False)
     email_blacklist = db.Column(db.ARRAY(db.String))
-    email_blacklist_enabled = db.Column(db.Boolean)
+    email_blacklist_enabled = db.Column(db.Boolean, nullable=False, default=False)
     password = db.Column(db.String(64))
-    password_enabled = db.Column(db.Boolean)
+    password_enabled = db.Column(db.Boolean, nullable=False, default=False)
 
     # relationships
     dimensions = db.relationship(
@@ -62,9 +71,6 @@ class Questionnaire(SurveyBase):
         self.password = ''
         self.email_blacklist = []
         self.email_whitelist = []
-        self.password_enabled = False
-        self.email_blacklist_enabled = False
-        self.email_whitelist_enabled = False
         self.xapi_target = g._config['XAPI_DEFAULT_TARGET']
         self.lti_consumer_key = os.urandom(32).hex()
 
