@@ -54,8 +54,11 @@ const store = {
                     }
                 );
         },
-        fetchQuestionStatisticsForQuestionnaire({dispatch, commit}, {questionnaire}) {
-           return fetchQuestionStatisticsByQuestionnaire(questionnaire)
+        fetchQuestionStatisticsForQuestionnaire({commit, rootGetters}, {questionnaire}) {
+           return fetchQuestionStatisticsByQuestionnaire(
+               rootGetters["session/sessionToken"],
+               questionnaire.href
+           )
                .chain(statistics => {
                    for (let statistic of statistics) {
                        commit(

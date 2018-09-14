@@ -16,12 +16,12 @@ function fetchQuestionStatistic(authenticationToken, href = null) {
         .map(parseQuestionStatistic);
 }
 
-function fetchQuestionStatisticsByQuestionnaire({href = null}) {
+function fetchQuestionStatisticsByQuestionnaire(authenticationToken, href = null) {
     let apiEndpoint = (href + "/statistics").replace("//", "/");
     return fetchApi(
         apiEndpoint,
         {
-            authenticate: true
+            authenticationToken
         })
         .chain(extractJson)
         .chain(statistics => {
