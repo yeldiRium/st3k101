@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import os
 
 from abc import abstractmethod
@@ -27,6 +29,7 @@ class Questionnaire(SurveyBase):
     # survey lifecycle related
     published = db.Column(db.Boolean, nullable=False, default=False)
     concluded = db.Column(db.Boolean, nullable=False, default=False)
+    scheduled = db.Column(db.Boolean, nullable=False, default=False)
     begins = db.Column(db.DateTime, nullable=True, default=None)
     ends = db.Column(db.DateTime, nullable=True, default=None)
 
@@ -201,6 +204,18 @@ class Questionnaire(SurveyBase):
 
         db.session.delete(self)
 
+    def apply_scheduling(self):
+        """
+        Checks whether self is scheduled to begin and end at a certain time,
+        then updates the published and concluded state accordingly.
+        """
+        if self.scheduled:
+            now = datetime.now()
+            if self.begins < now < self.ends:
+                self.published = True
+                self.concluded = False
+            elif self.ends < now:
+                self.concluded = True
 
 class ConcreteQuestionnaire(Questionnaire):
     id = db.Column(db.Integer, db.ForeignKey(Questionnaire.id), primary_key=True)

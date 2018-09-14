@@ -85,11 +85,20 @@ class ResponseListForQuestionnaireResource(Resource):
     def post(self, questionnaire_id: int=None):
         schema = SubmissionSchema()
         data, errors = schema.load(request.json)
+        questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
+
+        # survey lifecycle check
+        questionnaire.apply_scheduling()
+        if not questionnaire.published:
+            abort(403)
+        if questionnaire.concluded:
+            abort(403, message="The survey has already concluded.")
+
+        # captcha and challenges
         if not validate_captcha(data['captcha_token']):
             return {
                 'message': 'CAPTCHA confidence score too low. Please try again.'
             }, 403
-        questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         challenge_errors = validate_challenges(questionnaire, data)
         if challenge_errors:
             return {

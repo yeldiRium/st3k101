@@ -18,6 +18,7 @@ class QuestionnaireSchema(SurveyBaseSchema):
 
     published = fields.Boolean()
     concluded = fields.Boolean()
+    scheduled = fields.Boolean()
     begins = fields.DateTime()
     ends = fields.DateTime()
 
