@@ -16,6 +16,7 @@ class DataSubject(Party):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     email = db.Column(db.String(120), nullable=False)
+    lti_user_id = db.Column(db.String(256))
 
     @property
     def roles(self) -> List[Role]:

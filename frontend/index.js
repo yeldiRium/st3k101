@@ -19,7 +19,7 @@ app.use(express.urlencoded({
 }));
 
 app.post(
-    /\/survey\/:questionnaireId\/lti?(\/dashboard)/,
+    /\/survey\/:questionnaireId\/lti?(\/dashboard)/, // FIXME: dashboard scrapped
     embeddedAuthenticationMiddleware(config.frontendPath)
 );
 
