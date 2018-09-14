@@ -28,6 +28,11 @@ def before_request():
     """
     g._config = app.config  # g is always reachable, app might not be
 
+    # Setting the locale for the current request
+    g._language = BabelLanguage[
+        g._config["BABEL_DEFAULT_LOCALE"]
+    ]  # use default locale if all fails
+
     # parse bearer token auth
     g._current_user = None
     g._current_session_token = None
@@ -55,10 +60,6 @@ def before_request():
         except Exception as err:
             debug_print("Error during auth: {}".format(err))
             abort(401)
-
-    # Setting the locale for the current request
-    g._language = BabelLanguage[g._config[
-        "BABEL_DEFAULT_LOCALE"]]  # use default locale if all fails
 
     # check HTTP accept-language
     http_locale = request.accept_languages.best_match(babel_languages.keys())
