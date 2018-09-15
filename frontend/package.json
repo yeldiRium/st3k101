@@ -7,9 +7,6 @@
   ],
   "private": true,
   "scripts": {
-    "start": "npm run dev",
-    "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
-    "test": "npm run unit",
     "build": "NODE_ENV=production gulp build",
     "dev": "NODE_ENV=development gulp dev"
   },
