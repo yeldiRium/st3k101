@@ -8,7 +8,7 @@
 
 import express from "express";
 
-import config from "./expressConfig";
+import config from "./config/expressConfig";
 
 import embeddedAuthenticationMiddleware from "./src/express/embeddedAuthenticationMiddleware";
 
