@@ -1,8 +1,10 @@
-Survey Tool TODO
+#+TITLE: Survey Tool TODO
+#+AUTHOR: Noah Hummel, Hannes Leutlof
+#+EMAIL: stangedev@posteo.net, hannes.leutloff@aol.de
 
 * Design
 ** What to do about DataSubject Accounts of the same person that were created from different sources (LTI/Standalone)
-   
+
    | Data               | Standalone Registration | LTI Registration |
    |--------------------+-------------------------+------------------|
    | lti_user_id        | No                      | Yes              |
@@ -16,7 +18,7 @@ Survey Tool TODO
 
    Should we merge those 2 Acocunts at some point?
    Consider following case:
-   
+
    DataSubject A completes Survey with email address B
    DataSubject A completes Survey via LTI with email address B
    => Accounts are merged at some point
@@ -26,28 +28,22 @@ Survey Tool TODO
    => DataSubject A is rejected, because their email address was updated silently
 
    Therefore we should not try to merge these user Accounts.
-   
 ** Should survey be reachable in standalone mode when embedding is activated?
-   
    Toggle standalone and embedded availability seperately
-
-
 * TODO Backend
 ** TODO [#C] CLI
 *** TODO [#B] First time setup wizard
 **** DONE Create DataClient command
 **** DONE Import questionnaires from JSON command
-**** TODO [#B] Tie it all up into a single command  
+**** TODO [#B] Tie it all up into a single command
      that has user friendly step-by-step guide
 ** TODO [#C] API
 *** DONE Consistent status responses
-    
     | Case                                                         | Status |
     |--------------------------------------------------------------+--------|
     | session token present, does not validate                     |    401 |
     | session token present, does validate, insufficient privilege |    403 |
-
-*** TODO [#B] /api/response 
+*** TODO [#B] /api/response
 **** TODO [#B] POST
 ***** TODO [#B] Recalculate statistics on every new submission
       Also need to add this to /api/response/<token>/verify
@@ -61,7 +57,6 @@ Survey Tool TODO
 **** DONE [#B] ADD flag: allow_standalone
      If allow_standalone is True, Survey displays normally to all users when published.
      If allow_standaline is False, Survey only displays (without submission button) to owning DataClient
-
 **** DONE [#B] ADD flag: concluded
      If completed is True, survey will be visible by all users, but submission is disabled
      If completed is False, visibility of the survey is managed by published flag
@@ -76,16 +71,12 @@ Survey Tool TODO
 ** TODO [#C] Utility
 *** TODO [#C] Create registry of known survey items
 **** TODO [#C] Talk to Ioana about survey items that should be included
-
 *** TODO [#A] Mock Email sending for testing purposes
-
-
 * TODO Frontend
 ** TODO [#B] UX
-*** Add Tooltips to option fields 
+*** Add Tooltips to option fields
     Describing what the option does
 *** Add parent name to templates
-    
 ** TODO [#B] LTI Middleware
 *** TODO [#A] Parse LTI requrest from ExpressJS
 *** TODO [#A] Test DataSubject login route
@@ -109,5 +100,3 @@ Survey Tool TODO
     [[https://flatpickr.js.org]]
 ** TODO [#C] Account view
 *** TODO [#C] Make user data editable
-    
-    
