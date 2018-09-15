@@ -14,15 +14,17 @@
      docker-compose build
    #+END_SRC
 
-   Serve with hot reload at localhost:8080.
+   Serve at localhost:80.
    #+BEGIN_SRC bash
-     docker-compose up frontend-dev
+     docker-compose up frontend
    #+END_SRC
 
-   Serve production-like with minification and express server.
+   If you want to rebuild every time you change something, run
    #+BEGIN_SRC bash
-     docker-compose up frontend-prod
+     npm run dev
    #+END_SRC
+   locally. This will watch the project and rebuild on change.
+   However, you still have to reload the browser every time.
 ** Building
    =docker_registry= must be of the form =hostname[:port]= and is required to
    tag and push the container to/with the correct registry.
