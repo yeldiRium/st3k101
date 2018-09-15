@@ -33,21 +33,12 @@ services:
     volumes:
       - ./websrv-flask/app:/app
 
-  frontend-dev:
+  frontend:
     build: frontend
     volumes:
       - ./frontend:/usr/app:rw
     ports:
       - 80:80
-    environment:
-      - NODE_ENV=development
-
-  frontend-prod:
-    build: frontend
-    ports:
-      - 80:80
-    environment:
-      - NODE_ENV=production
 
 volumes:
   postgres:
