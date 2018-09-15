@@ -9,7 +9,7 @@ gulp.task("cleanDist", done => {
 });
 
 gulp.task("build", ["cleanDist"], done => {
-    const webpackConfig = require('./build/webpack.prod.conf');
+    const webpackConfig = require('./webpack/webpack.prod.conf');
     webpack(webpackConfig, (err, stats) => {
         if (err) throw err;
         process.stdout.write(stats.toString({
@@ -36,14 +36,17 @@ gulp.task("build", ["cleanDist"], done => {
 });
 
 gulp.task("dev", ["cleanDist"], done => {
-    const webpackConfig = require('./build/webpack.dev.conf');
-    console.log("Webpack will run in watch mode now. To exit, interrupt the process (e.g. ctrl+c).");
+    const webpackConfig = require('./webpack/webpack.dev.conf');
+    console.log(
+        "Webpack will run in watch mode now.\n" +
+        "To exit, interrupt the process (e.g. ctrl+c)."
+    );
     webpack(webpackConfig, (err, stats) => {
         if (err) throw err;
         process.stdout.write(stats.toString({
             colors: true,
             modules: false,
-            children: false, // If you are using ts-loader, setting this to true will make TypeScript errors show up during build.
+            children: false,
             chunks: false,
             chunkModules: false
         }) + '\n\n');
