@@ -15,11 +15,9 @@ module.exports = {
         app: './src/main.js'
     },
     output: {
-        path: config.build.assetsRoot,
+        path: config.build.distPath,
         filename: '[name].js',
-        publicPath: process.env.NODE_ENV === 'production'
-            ? config.build.assetsPublicPath
-            : config.dev.assetsPublicPath
+        publicPath: config.build.distPublicPath
     },
     resolve: {
         extensions: ['.js', '.vue', '.json'],

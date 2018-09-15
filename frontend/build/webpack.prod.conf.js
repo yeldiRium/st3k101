@@ -11,9 +11,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const env = process.env.NODE_ENV === 'testing'
-  ? require('../config/test.env')
-  : require('../config/prod.env');
+const env = require('../config/prod.env');
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -25,7 +23,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
-    path: config.build.assetsRoot,
+    path: config.build.distPath,
     filename: utils.assetsPath('js/[name].[chunkhash].js'),
     chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
   },
@@ -116,7 +114,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, '../static'),
-        to: config.build.assetsSubDirectory,
+        to: config.build.distAssetsPath,
         ignore: ['.*']
       }
     ])

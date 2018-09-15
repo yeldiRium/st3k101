@@ -30,7 +30,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             rewrites: [
                 {
                     from: /.*/,
-                    to: path.posix.join(config.dev.assetsPublicPath, 'index.html')
+                    to: path.posix.join(config.dev.distPublicPath, 'index.html')
                 },
             ],
         },
@@ -43,8 +43,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         overlay: config.dev.errorOverlay
             ? {warnings: false, errors: true}
             : false,
-        publicPath: config.dev.assetsPublicPath,
-        proxy: config.dev.proxyTable,
+        publicPath: config.dev.distPublicPath,
         quiet: true, // necessary for FriendlyErrorsPlugin
         watchOptions: {
             poll: config.dev.poll,
@@ -67,7 +66,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         new CopyWebpackPlugin([
             {
                 from: path.resolve(__dirname, '../static'),
-                to: config.dev.assetsSubDirectory,
+                to: config.dev.distAssetsPath,
                 ignore: ['.*']
             }
         ])
