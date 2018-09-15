@@ -7,11 +7,11 @@
   ],
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --host 0.0.0.0",
     "start": "npm run dev",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "test": "npm run unit",
-    "build": "node build/build.js"
+    "build": "NODE_ENV=production gulp build",
+    "dev": "NODE_ENV=development gulp dev"
   },
   "dependencies": {
     "esm": "^3.0.80",

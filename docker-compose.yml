@@ -36,13 +36,11 @@ services:
   frontend-dev:
     build: frontend
     volumes:
-      - ./frontend/src:/usr/app/src:rw
-      - ./frontend/static:/usr/app/static:rw
+      - ./frontend:/usr/app:rw
     ports:
       - 80:80
     environment:
       - NODE_ENV=development
-    command: npm run dev
 
   frontend-prod:
     build: frontend
