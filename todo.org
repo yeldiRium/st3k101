@@ -77,6 +77,12 @@
 *** Add Tooltips to option fields
     Describing what the option does
 *** Add parent name to templates
+*** Add labels to range_start range_end
+    Internationalized and configurable
+
+    i.e. range_start "Strongly Disagree" range_end "Strongly Agree"
+*** Add step labels to range picker
+*** Add next button to submission view
 ** TODO [#B] LTI Middleware
 *** TODO [#A] Parse LTI requrest from ExpressJS
 *** TODO [#A] Test DataSubject login route
@@ -100,3 +106,9 @@
     [[https://flatpickr.js.org]]
 ** TODO [#C] Account view
 *** TODO [#C] Make user data editable
+    
+
+* Enhancement
+** Language picker before submission view
+** Control questions
+** Reports via email

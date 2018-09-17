@@ -38,8 +38,14 @@ const Plugin = {
                         text: "An unknown error has occured. Please try again. If this problem persists, start crying."
                     });
                     break;
-                case "AuthorizationError":
                 case "ForbiddenError":
+                    Vue.prototype.$notify({
+                        type: "error",
+                        title: "Forbidden",
+                        text: "Some request was rejected. Check your logs."
+                    });
+                    break;
+                case "AuthorizationError":
                     store.commit("session/endSession");
                     router.push({name: "Authentication"});
                     console.log(this);
