@@ -38,10 +38,6 @@
                                         :recurse="true"
                                         class="collapsible--no-border collapsible--border-top"
                         ></TrackerEntries>
-                        <!--TrackerEntries v-for="question in dimension"
-                                :surveyBase="question"></TrackerEntries
-                                TODO: make trackerentries accept list of surveybases
-                                -->
                     </div>
                 </div>
             </div>
