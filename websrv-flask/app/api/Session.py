@@ -2,8 +2,10 @@ from flask import request
 from flask_restful import abort, Resource
 
 import auth.dataclient
+import auth.datasubject
 import auth.session
 from api import api
+from api.schema.LtiRequestSchema import LtiRequestSchema
 from api.schema.Session import LoginSchema, SessionSchema
 from auth.roles import needs_role, Role
 from framework.exceptions import UserNotLoggedInException, BadCredentialsException
@@ -48,7 +50,7 @@ class SessionResource(Resource):
 class LtiSessionResource(Resource):
     def post(self, questionnaire_id: int=None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
-        schema = LtiRequestSchema()  # FIXME: implement this
+        schema = LtiRequestSchema()
         data, errors = schema.load(request.json)
         if errors:
             return errors, 400
@@ -59,19 +61,14 @@ class LtiSessionResource(Resource):
         if questionnaire.lti_consumer_key != data['oauth_consumer_key']:
             abort(403, message='Invalid consumer key.')
 
-        # use user_id as placeholder for email_address
+        subject = DataSubject.get_or_create(lti_user_id=data['user_id'])
         if 'lis_person_contact_email_primary' in data:
-            email = data['lis_person_contact_email_primary']
-        else:
-            email = data['user_id']
+            subject.email = data['lis_person_contact_email_primary']
 
-        # get previously existing accounts for this DataSubject
-        subject_by_mail = DataSubject.query.filter_by(email=email).first()
-        subject_by_id = DataSubject.query.filter_by(lti_user_id=data['user_id']).first()
+        session_token = auth.datasubject.new_lti_session(subject.lti_user_id)
 
-        # FIXME: choose right account and start session
-        return {"sessionToken": "1337"}
-
+        if session_token is not None:
+            return {"sessionToken": session_token}
 
 
 api.add_resource(SessionResource, '/api/session', endpoint='session')

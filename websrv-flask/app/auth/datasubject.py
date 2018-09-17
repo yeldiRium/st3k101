@@ -60,3 +60,11 @@ def complete_auth_request(email: str, token: str) -> Optional[str]:
     cancel_auth_request(email)
 
     return session.new(subject.id, PartyTypes.DataSubject)
+
+
+def new_lti_session(lti_user_id: str) -> Optional[str]:
+    subject = DataSubject.query.filter_by(lti_user_id=lti_user_id).first()
+    if subject is None:
+        return None
+
+    return session.new(subject.id, PartyTypes.DataSubject)
