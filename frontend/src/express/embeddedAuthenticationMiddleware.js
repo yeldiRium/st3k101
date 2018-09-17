@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 import Future from "fluture";
 import R from "ramda";
 import {requestLtiSession} from "../api/Authentication";
@@ -63,9 +65,9 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
         req.params.questionnaireId,
         req.body
     )
-
         .chain(
             res => Future.node(done => fs.readFile(`${frontendPath}/index.html`, done))
+                .chain(res => Future.of(res.toString()))
                 .map(
                     R.replace(
                         "/*LaunchParameterPlaceholderDontRemovePlox*/",
