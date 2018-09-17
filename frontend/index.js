@@ -20,8 +20,10 @@ app.use(express.urlencoded({
     extended: true
 }));
 
+app.use(express.json());
+
 app.post(
-    /\/survey\/:questionnaireId\/lti?(\/dashboard)/, // FIXME: dashboard scrapped
+    '/survey/:questionnaireId/lti',
     embeddedAuthenticationMiddleware(config.frontendPath)
 );
 

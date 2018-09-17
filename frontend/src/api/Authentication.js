@@ -1,5 +1,5 @@
 import Future from "fluture";
-import {ifElse, pipe, prop} from "ramda";
+import R from "ramda";
 import {extractJson} from "./Util/Response";
 import {parseDataClient} from "./Util/Parse";
 import {fetchApi} from "./Util/Request";
@@ -46,7 +46,7 @@ function requestSession(email, password) {
         })
     })
         .chain(extractJson)
-        .map(prop("session_token"));
+        .map(R.prop("session_token"));
 }
 
 /**
@@ -130,9 +130,10 @@ function requestLtiSession(
         tool_consumer_instance_guid=null
     }) {
 
-    return fetchApi(`/api/questionnaire/${questionnaireId}/lti`, {
+    // TODO: make hard-coded path configurable
+    return fetchApi(`http://websrv-flask/api/questionnaire/${questionnaireId}/lti`, {
         method: "POST",
-        body: json.stringify({
+        body: JSON.stringify({
             context_id: context_id,
             context_label: context_label,
             context_title: context_title,
@@ -152,10 +153,10 @@ function requestLtiSession(
     })
         .chain(extractJson)
         .chain(
-            ifElse(
-                has("sessionToken"),
-                pipe(
-                    prop("sessionToken"),
+            R.ifElse(
+                R.has("sessionToken"),
+                R.pipe(
+                    R.prop("sessionToken"),
                     Future.of
                 ),
                 () => Future.reject(

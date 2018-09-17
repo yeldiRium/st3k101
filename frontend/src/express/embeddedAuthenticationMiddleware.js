@@ -52,39 +52,41 @@ const hasValidParameters = R.allPass(
  * @param next Callback for next middleware.
  */
 const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
-    console.log("starting middleware");
     if (!hasAllRequiredParameters(req.body) || !hasValidParameters(req.body)) {
         res.status(400);
         return res.send("Not a valid LTI launch request.");
     }
 
-    // TODO: start session with backend
     let cancel = requestLtiSession(
         req.body.oauth_consumer_key,
         req.body.user_id,
         req.params.questionnaireId,
         req.body
-    ).chain(
-        res => Future.node(done => fs.readFile(`${frontendPath}/index.html`, done))
-            .map(
-                R.replace(
-                    "/*LaunchParameterPlaceholderDontRemovePlox*/",
-                    `var ltiSessionToken = ${JSON.stringify(res)};`
+    )
+
+        .chain(
+            res => Future.node(done => fs.readFile(`${frontendPath}/index.html`, done))
+                .map(
+                    R.replace(
+                        "/*LaunchParameterPlaceholderDontRemovePlox*/",
+                        `var ltiSessionToken = ${JSON.stringify(res)};`
+                    )
                 )
-            )
-    ).fork(
+        )
+        .fork(
         /** @type {ApiError} */
-        error => {
-            res.status(error.status);
-            res.send(error.message);
-            next();
-        },
-        processedHtml => {
-            res.status(200);
-            res.send(processedHtml);
-            next();
-        }
-    );
+            error => {
+                let status = (error.status >= 100 && error.status < 600)? error.status : 500;
+                res.status(status);
+                res.send(error.message);
+                next();
+            },
+            processedHtml => {
+                res.status(200);
+                res.send(processedHtml);
+                next();
+            }
+        );
 };
 
 export default embeddedAuthenticationMiddleware;

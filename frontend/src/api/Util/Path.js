@@ -1,6 +1,10 @@
 import config from "../../config";
 import {isNil, test} from "ramda";
 
+
+const isAbsolutePath = path => test(/^(https?:\/\/[^\s:\/]+(:\d{0,5})?)(\S+)$/, path);
+
+
 /**
  * Returns a url to the API.
  *
@@ -9,13 +13,17 @@ import {isNil, test} from "ramda";
  * @returns {string}
  */
 function buildApiUrl(relativePath, language = null) {
+    let absolutePath = relativePath;
+    if (!isAbsolutePath(relativePath)) {
+        absolutePath = config.apiURL + relativePath;
+    }
     if (isNil(language)) {
-        return config.apiURL + relativePath;
+        return absolutePath;
     } else {
-        if (test(/\?/, relativePath)) {
-            return config.apiURL + relativePath + `&locale=${language.shortName}`;
+        if (test(/\?/, absolutePath)) {
+            return absolutePath + `&locale=${language.shortName}`;
         } else {
-            return config.apiURL + relativePath + `?locale=${language.shortName}`;
+            return absolutePath + relativePath + `?locale=${language.shortName}`;
         }
     }
 }
