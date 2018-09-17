@@ -55,25 +55,23 @@ const store = {
                 );
         },
         fetchQuestionStatisticsForQuestionnaire({commit, rootGetters}, {questionnaire}) {
-           return fetchQuestionStatisticsByQuestionnaire(
+            return fetchQuestionStatisticsByQuestionnaire(
                rootGetters["session/sessionToken"],
                questionnaire.href
-           )
-               .chain(statistics => {
-                   for (let statistic of statistics) {
-                       commit(
-                           "patchQuestionStatisticInStore",
-                           {statistic}
-                       )
-                   }
-                   return Future.of(statistics);
-               });
+            )
+                .chain(statistics => {
+                    commit("patchQuestionStatisticsInStore", {statistics});
+                    return Future.of(statistics);
+                });
         }
     },
     mutations: {
         /**
          * Update currently stored representation of statistic in store
          * with provided value.
+         *
+         * Warning: Runs in O(n) time where n is the number of Questions
+         * owned by the current DataClient. Use sparingly.
          *
          * @param state
          * @param statistic {QuestionStatistic}
@@ -83,6 +81,26 @@ const store = {
                 equals(statistic),
                 state.questionStatistics
             ).concat([statistic]);
+        },
+        /**
+         * Update all currently stored representations of statistics in store
+         * with the statistics provided.
+         *
+         * Runs in O(n) time where n is the number of Questions owned by the
+         * current DataClient.
+         *
+         * @param store
+         * @param statistics {Array<QuestionStatistic>}
+         */
+        patchQuestionStatisticsInStore(state, {statistics}) {
+            let uniqueStatistics = {};
+            for (let storedStatistic of state.questionStatistics) {
+                uniqueStatistics[storedStatistic.id] = storedStatistic;
+            }
+            for (let fetchedStatistic of statistics) {
+                uniqueStatistics[fetchedStatistic.id] = fetchedStatistic;
+            }
+            state.questionStatistics = Object.values(uniqueStatistics);
         }
     }
 };
