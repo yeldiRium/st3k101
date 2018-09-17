@@ -2,11 +2,13 @@
  * ExpressJS server for frontend.
  *
  * This server's purpose is mostly to statically serve the frontend files.
- * However it also handles post requests for an embedded launch and sets authen-
- * tication cookies.
+ * However it also handles post requests for an embedded launch and configures
+ * the frontend to already include a session token.
  */
 
 import express from "express";
+global.fetch = require('node-fetch');
+require('abortcontroller-polyfill/dist/polyfill-patch-fetch');
 
 import config from "./config/expressConfig";
 
