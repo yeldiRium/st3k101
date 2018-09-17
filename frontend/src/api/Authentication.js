@@ -129,11 +129,11 @@ function requestLtiSession(
         tool_consumer_instance_description=null,
         tool_consumer_instance_guid=null
     }) {
-
-    // TODO: make hard-coded path configurable
-    return fetchApi(`http://websrv-flask/api/questionnaire/${questionnaireId}/lti`, {
-        method: "POST",
-        body: JSON.stringify({
+    let body = R.filter(
+        R.complement(R.isNil),
+        {
+            user_id: userId,
+            oauth_consumer_key: consumerKey,
             context_id: context_id,
             context_label: context_label,
             context_title: context_title,
@@ -149,7 +149,11 @@ function requestLtiSession(
             tool_consumer_info_version: tool_consumer_info_version,
             tool_consumer_instance_description: tool_consumer_instance_description,
             tool_consumer_instance_guid: tool_consumer_instance_guid
-        })
+        });
+    // TODO: make hard-coded path configurable
+    return fetchApi(`http://websrv-flask/api/questionnaire/${questionnaireId}/lti`, {
+        method: "POST",
+        body: JSON.stringify(body)
     })
         .chain(extractJson)
         .chain(
