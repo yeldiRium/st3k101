@@ -1,5 +1,5 @@
 import Future from "fluture";
-import R from "ramda";
+import * as R from "ramda";
 import {extractJson} from "./Util/Response";
 import {parseDataClient} from "./Util/Parse";
 import {fetchApi} from "./Util/Request";
