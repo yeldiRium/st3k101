@@ -1,5 +1,7 @@
 from typing import Any
 
+import re
+
 from flask import request, make_response, jsonify, Response
 
 __author__ = "Noah Hummel, Hannes Leutloff"
@@ -12,7 +14,12 @@ def get_client_ip() -> str:
     checking the X-Forwarded-For http header attribute which is set by nginx.
     :return: str The client's IP
     """
-    return request.headers.get('X-Forwarded-For', request.remote_addr)
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr).upper()
+    ipv4_mapped_ipv6 = re.compile(r"^::FFFF:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$")
+    matches = ipv4_mapped_ipv6.match(ip)
+    if matches is not None:
+        return matches[1]  # ipv4 part of the ipv4 mapped ipv6 address
+    return ip
 
 
 def classname(o: object) -> str:
