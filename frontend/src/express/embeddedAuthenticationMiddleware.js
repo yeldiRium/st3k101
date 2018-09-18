@@ -61,10 +61,13 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
     let ltiLaunchParameters = {
         questionnaireId: req.params.questionnaireId
     };
+    // TODO: will this sit behind a proxy? If yes, use X-Forwarded-For
+    const clientIp = req.connection.remoteAddress;
     let cancel = requestLtiSession(
         req.body.oauth_consumer_key,
         req.body.user_id,
         req.params.questionnaireId,
+        clientIp,
         req.body
     )
         .chain(

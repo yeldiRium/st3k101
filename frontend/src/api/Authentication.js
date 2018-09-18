@@ -112,6 +112,7 @@ function requestLtiSession(
     consumerKey,
     userId,
     questionnaireId,
+    clientIp,
     {
         context_id=null,
         context_label=null,
@@ -153,6 +154,9 @@ function requestLtiSession(
     // TODO: make hard-coded path configurable
     return fetchApi(`http://websrv-flask/api/questionnaire/${questionnaireId}/lti`, {
         method: "POST",
+        headers: {
+            "X-Forwarded-For": clientIp
+        },
         body: JSON.stringify(body)
     })
         .chain(extractJson)
