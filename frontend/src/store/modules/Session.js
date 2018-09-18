@@ -201,7 +201,7 @@ const store = {
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    if (typeof ltiSessionToken !== undefined) {  // Embedded launch
+    if (typeof ltiSessionToken !== 'undefined') {  // Embedded launch
         return rootStore.dispatch(
             `${namespace}/startDatasubjectSession`,
             {sessionToken: ltiSessionToken}

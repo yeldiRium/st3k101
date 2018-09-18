@@ -58,7 +58,9 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
         res.status(400);
         return res.send("Not a valid LTI launch request.");
     }
-
+    let ltiLaunchParameters = {
+        questionnaireId: req.params.questionnaireId
+    };
     let cancel = requestLtiSession(
         req.body.oauth_consumer_key,
         req.body.user_id,
@@ -70,8 +72,9 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
                 .chain(res => Future.of(res.toString()))
                 .map(
                     R.replace(
-                        "/*LaunchParameterPlaceholderDontRemovePlox*/",
-                        `var ltiSessionToken = ${JSON.stringify(res)};`
+                        "var ltiSessionToken = undefined;",
+                        `var ltiSessionToken = ${JSON.stringify(res)};
+                        var ltiLaunchParameters = ${JSON.stringify(ltiLaunchParameters)};`
                     )
                 )
         )

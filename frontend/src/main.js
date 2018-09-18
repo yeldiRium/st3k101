@@ -39,7 +39,7 @@ initializeStore().fork(
             template: "<App/>"
         });
 
-        if (typeof ltiSessionToken !== undefined) {
+        if (typeof ltiSessionToken !== 'undefined') {
              router.push("/embedded");
         }
     }
