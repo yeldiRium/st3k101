@@ -23,7 +23,7 @@ function buildApiUrl(relativePath, language = null) {
         if (test(/\?/, absolutePath)) {
             return absolutePath + `&locale=${language.shortName}`;
         } else {
-            return absolutePath + relativePath + `?locale=${language.shortName}`;
+            return absolutePath + `?locale=${language.shortName}`;
         }
     }
 }
