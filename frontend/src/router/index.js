@@ -3,6 +3,7 @@ import Router from "vue-router";
 
 import PublicBase from "../components/Views/Public/Base";
 import SurveyForSubmission from "../components/Views/Public/SurveyForSubmission";
+import EmbeddedSurveyForSubmission from "../components/Views/Embedded/EmbeddedSurveyForSubmission"
 import Authentication from "../components/Views/Public/Authentication";
 
 import PrivateBase from "../components/Views/Private/Base";
@@ -34,6 +35,11 @@ export default new Router({
                     component: Authentication
                 }
             ]
+        },
+        {
+            path: "/embedded",
+            name: "Embedded",
+            component: EmbeddedSurveyForSubmission
         },
         {
             path: "/private",

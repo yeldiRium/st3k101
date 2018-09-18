@@ -38,5 +38,9 @@ initializeStore().fork(
             components: {App},
             template: "<App/>"
         });
+
+        if (typeof ltiSessionToken !== undefined) {
+             router.push("/embedded");
+        }
     }
 );
