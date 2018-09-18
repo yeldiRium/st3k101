@@ -68,7 +68,7 @@ class LtiSessionResource(Resource):
         session_token = auth.datasubject.new_lti_session(subject.lti_user_id)
 
         if session_token is not None:
-            return {"sessionToken": session_token}
+            return SessionSchema().dump({"session_token": session_token}).data
 
 
 api.add_resource(SessionResource, '/api/session', endpoint='session')

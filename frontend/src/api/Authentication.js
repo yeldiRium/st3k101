@@ -158,9 +158,9 @@ function requestLtiSession(
         .chain(extractJson)
         .chain(
             R.ifElse(
-                R.has("sessionToken"),
+                R.has("session_token"),
                 R.pipe(
-                    R.prop("sessionToken"),
+                    R.prop("session_token"),
                     Future.of
                 ),
                 () => Future.reject(
