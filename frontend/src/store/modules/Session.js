@@ -158,6 +158,18 @@ const store = {
                 }
                 reject("Not logged in; Can't update session cookie.");
             });
+        },
+        /**
+         * Starts a session as a Datasubject and sets the session token.
+         * @param commit
+         * @param getters
+         * @param sessionToken
+         */
+        startDatasubjectSession({commit}, {sessionToken}) {
+            return Future((reject, resolve) => {
+                commit("startSession", {sessionToken});
+                resolve();
+            })
         }
     },
     mutations: {
@@ -189,10 +201,17 @@ const store = {
  * @cancel doesn't exist.
  */
 const initialize = function (rootStore, namespace) {
-    return rootStore.dispatch(`${namespace}/resumeSessionFromCookie`)
-    // Chain rejection to resolving future, so that the initialization process
-    // succeeds either way.
-        .chainRej(() => Future.of("No session resumed."));
+    if (typeof ltiSessionToken !== undefined) {  // Embedded launch
+        return rootStore.dispatch(
+            `${namespace}/startDatasubjectSession`,
+            {sessionToken: ltiSessionToken}
+            );
+    } else {  // Standalone launch
+        return rootStore.dispatch(`${namespace}/resumeSessionFromCookie`)
+        // Chain rejection to resolving future, so that the initialization process
+        // succeeds either way.
+            .chainRej(() => Future.of("No session resumed."));
+    }
 };
 
 export default store;
