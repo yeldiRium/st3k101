@@ -9,6 +9,7 @@ from auth.roles import Role, needs_minimum_role
 from auth.session import current_user
 from framework.captcha import validate_captcha
 from model import db
+from model.models.DataSubject import DataSubject
 from model.models.Dimension import Dimension
 from model.models.Question import Question
 from model.models.QuestionResponse import QuestionResponse
@@ -107,6 +108,7 @@ class ResponseListForQuestionnaireResource(Resource):
             }, 403
 
         verification_token = generate_verification_token()
+        data_subject = DataSubject.get_or_create(data['data_subject']['email'])
 
         all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
 
@@ -124,11 +126,8 @@ class ResponseListForQuestionnaireResource(Resource):
                     return {
                         'message': 'Questionnaire has no question with id {}'.format(question_data['id'])
                     }, 400
-                question.add_question_result(
-                    question_data['value'],
-                    data['data_subject']['email'],
-                    verification_token=verification_token
-                )
+                question.add_question_result(question_data['value'], data_subject,
+                                             verification_token=verification_token)
                 all_questions.remove(question_data['id'])
 
         if all_questions:

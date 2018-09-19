@@ -168,13 +168,13 @@ class Question(SurveyBase):
         query = query_owned(DataSubject, subject.id, QuestionResponse)
         return query.filter(QuestionResponse.question_id == self.id).all()
 
-    def add_question_result(self, answer_value: int, subject_email: str,
+    def add_question_result(self, answer_value: int, data_subject: DataSubject,
                             needs_verification: bool=True,
                             verification_token: str="") -> bool:
         """
         Adds a new QuestionResponse to the Question.
         :param answer_value: int The value the DataSubject has chosen
-        :param subject_email: str The email address of the DataSubject
+        :param data_subject: DataSubject The DataSubject who submitted
         :param needs_verification: bool Indicating whether this result need to
                                         be verified
         :param verification_token: str The verification token to be used when
@@ -183,13 +183,12 @@ class Question(SurveyBase):
         """
         self.dirty = True  # FIXME: might not actually be dirty yet
 
-        subject = DataSubject.get_or_create(subject_email)
-        earlier_results = self.get_results_by_subject(subject)
+        earlier_results = self.get_results_by_subject(data_subject)
         verified_results = list(filter(lambda x: x.verified, earlier_results))
         unverified_results = list(filter(lambda x: not x.verified,
                                          earlier_results))
 
-        result = QuestionResponse(question=self, data_subject=subject,
+        result = QuestionResponse(question=self, data_subject=data_subject,
                                   value=answer_value,
                                   verified=(not needs_verification),
                                   verification_token=verification_token)
