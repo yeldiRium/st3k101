@@ -1,4 +1,5 @@
-<form action="http://localhost/survey/1/lti" method="post" target="output_frame">
+<body>
+    <form action="http://localhost/survey/1/lti" method="post" target="output_frame">
 	<input type="hidden" name="oauth_version" value="1.0"/>
 	<input type="hidden" name="oauth_nonce" value="c8350c0e47782d16d2fa48b2090c1d8f"/>
 	<input type="hidden" name="oauth_timestamp" value="1251600739"/>
@@ -22,5 +23,8 @@
 	<input type="hidden" name="oauth_signature" value="TPFPK4u3NwmtLt0nDMP1G1zG30U="/>
 	<input type="submit" name="basiclti_submit" value="Launch Endpoint with BasicLTI Data"/>
 </form>
-<iframe name="output_frame" src="" id="output_frame" width="400" height="300">
-</iframe>  
+<iframe name="output_frame" id="output_frame" style="height: 400px; width: 600px;
+          resize: both;
+          overflow: hidden;">
+</iframe>
+</body>
