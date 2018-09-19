@@ -183,6 +183,57 @@ class ResponseVerificationResource(Resource):
         return  # TODO redirect
 
 
+class LtiResponseResource(Resource):
+    @needs_minimum_role(Role.Unprivileged)
+    def post(self, questionnaire_id: int=None):
+        schema = SubmissionSchema(exclude=["data_subject"])  # TODO: implement
+        data, errors = schema.load(request.json)
+        questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
+
+        # survey lifecycle check
+        questionnaire.apply_scheduling()
+        if not questionnaire.published:
+            abort(403, message="Survey was not published yet.")
+        if not questionnaire.allow_embedded:
+            abort(403)
+        if questionnaire.concluded():
+            abort(403, message="Survey has concluded.")
+
+        all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
+
+        for dimension_data in data['dimensions']:
+            dimension = next((d for d in questionnaire.dimensions
+                              if d.id == dimension_data['id']), None)
+            if not dimension:
+                return {
+                    'message': 'Questionnaire has no dimension with id {}'.format(dimension_data['id'])
+                }, 400
+            for question_data in dimension_data['questions']:
+                question = next((q for q in dimension.questions
+                                 if q.id == question_data['id']), None)  # type: Question
+                if not question:
+                    return {
+                        'message': 'Questionnaire has no question with id {}'.format(question_data['id'])
+                    }, 400
+                question.add_question_result(
+                    question_data['value'],
+                    current_user(),
+                    needs_verification=False
+                )
+                all_questions.remove(question_data['id'])
+
+        if all_questions:
+            db.session.rollback()
+            return {
+                'message': 'Missing questions.',
+                'missing': list(all_questions)
+            }, 400
+
+        db.session.commit()
+        return {
+            'message': 'Submission successful.'
+        }, 200
+
 api.add_resource(
     ResponseListForQuestionnaireResource,
     '/api/questionnaire/<int:questionnaire_id>/response'
@@ -203,6 +254,11 @@ api.add_resource(
 api.add_resource(
     ResponseVerificationResource,
     '/api/response/verify/<verification_token>'
+)
+
+api.add_resource(
+    LtiResponseResource,
+    '/api/questionnaire/<int:questionnaire_id>/lti/response'
 )
 
 ResourceBroker.add_resource_for(ResponseResource, QuestionResponse, 'response_id')
