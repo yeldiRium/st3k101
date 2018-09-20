@@ -1,5 +1,4 @@
 import SurveyBase from "./SurveyBase";
-import Question from "./Question";
 import {clone, map} from "ramda";
 
 class Questionnaire extends SurveyBase {
@@ -16,7 +15,8 @@ class Questionnaire extends SurveyBase {
      *  submitted.
      * @param {boolean} allowEmbedded Whether the Questionnaire can be used in
      *  embedded mode in alternate frontends.
-     * @param {string} xapiTarget TODO: find out, what this means exactly
+     * @param {string} xapiTarget
+     * @param ltiConsumerKey {String} Shared secret for embedding & lti launch
      * @param {Array<Dimension>} dimensions The Questionnaire's child dimen-
      *  sions.
      * @param {Array<Challenge>} challenges A list of Challenges
@@ -32,6 +32,7 @@ class Questionnaire extends SurveyBase {
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
+                ltiConsumerKey,
                 dimensions,
                 challenges) {
         super(href, id, owners, languageData, template, referenceId);
@@ -41,6 +42,7 @@ class Questionnaire extends SurveyBase {
         this.isPublic = isPublic;
         this.allowEmbedded = allowEmbedded;
         this.xapiTarget = xapiTarget;
+        this.ltiConsumerKey = ltiConsumerKey;
         this.dimensions = dimensions;
         this.challenges = challenges;
     }
@@ -70,7 +72,7 @@ class Questionnaire extends SurveyBase {
         return new Questionnaire(
             this._href,
             this._id,
-            [...this._owners],
+            this._owners,
             this.languageData.clone(),
             this.template,
             this.referenceId,
@@ -79,6 +81,7 @@ class Questionnaire extends SurveyBase {
             this.isPublic,
             this.allowEmbedded,
             this.xapiTarget,
+            this.ltiConsumerKey,
             map(clone, this.dimensions),
             map(clone, this.challenges)
         );
@@ -98,6 +101,7 @@ class ConcreteQuestionnaire extends Questionnaire {
      * @param {boolean} isPublic See Questionnaire.
      * @param {boolean} allowEmbedded See Questionnaire.
      * @param {string} xapiTarget See Questionnaire.
+     * @param ltiConsumerKey {String} See Questionnaire.
      * @param {Array<Dimension>} dimensions See Questionnaire.
      * @param {Array<Challenge>} challenges A list of Challenges
      * @param {number}  incomingReferenceCount Number of references to this
@@ -119,6 +123,7 @@ class ConcreteQuestionnaire extends Questionnaire {
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
+                ltiConsumerKey,
                 dimensions,
                 challenges,
                 incomingReferenceCount,
@@ -135,6 +140,7 @@ class ConcreteQuestionnaire extends Questionnaire {
             isPublic,
             allowEmbedded,
             xapiTarget,
+            ltiConsumerKey,
             dimensions,
             challenges
         );
@@ -168,7 +174,7 @@ class ConcreteQuestionnaire extends Questionnaire {
         return new ConcreteQuestionnaire(
             this._href,
             this._id,
-            [...this._owners],
+            this._owners,
             this.languageData.clone(),
             this.template,
             this.referenceId,
@@ -177,6 +183,7 @@ class ConcreteQuestionnaire extends Questionnaire {
             this.isPublic,
             this.allowEmbedded,
             this.xapiTarget,
+            this.ltiConsumerKey,
             map(clone, this.dimensions),
             map(clone, this.challenges),
             this.incomingReferenceCount,
@@ -197,6 +204,7 @@ class ShadowQuestionnaire extends Questionnaire {
      * @param {boolean} isPublic See Questionnaire.
      * @param {boolean} allowEmbedded See Questionnaire.
      * @param {string} xapiTarget See Questionnaire.
+     * @param ltiConsumerKey {String} See Questionnaire.
      * @param {Array<Dimension>} dimensions See Questionnaire.
      * @param {Array<Challenge>} challenges A list of Challenges
      * @param {Resource|ConcreteQuestionnaire} referenceTo Href or instance of the re-
@@ -212,6 +220,7 @@ class ShadowQuestionnaire extends Questionnaire {
                 isPublic,
                 allowEmbedded,
                 xapiTarget,
+                ltiConsumerKey,
                 dimensions,
                 challenges,
                 referenceTo) {
@@ -227,6 +236,7 @@ class ShadowQuestionnaire extends Questionnaire {
             isPublic,
             allowEmbedded,
             xapiTarget,
+            ltiConsumerKey,
             dimensions,
             challenges
         );
@@ -257,6 +267,7 @@ class ShadowQuestionnaire extends Questionnaire {
             this.isPublic,
             this.allowEmbedded,
             this.xapiTarget,
+            this.ltiConsumerKey,
             map(clone, this.dimensions),
             map(clone, this.challenges),
             this.referenceTo.clone()

@@ -235,7 +235,7 @@ function parseTemplateQuestionnaire({
     return new ConcreteQuestionnaire(
         href,
         id,
-        [],  // owners
+        [],
         parseLanguageData({
             current_language,
             original_language,
@@ -245,13 +245,14 @@ function parseTemplateQuestionnaire({
         reference_id,
         name,
         description,
-        false,  // published
-        false,  // allow_embedded
-        "",  // xapi_target
+        false,
+        false,
+        "",
+        "",
         map(parseDimension, dimensions),
-        [],  // challenges
-        0,  // incoming_reference_count
-        [],  // owned_incoming_references
+        [],
+        0,
+        []
     );
 }
 
@@ -308,6 +309,7 @@ function parseShadowQuestionnaire({
         published,
         allow_embedded,
         xapi_target,
+        "",
         map(parseDimension, dimensions),
         parseChallenges(whole),
         parseResource(reference_to)
@@ -371,6 +373,7 @@ function parseConcreteQuestionnaire({
         published,
         allow_embedded,
         xapi_target,
+        "",
         map(parseDimension, dimensions),
         parseChallenges(whole),
         incoming_reference_count,
