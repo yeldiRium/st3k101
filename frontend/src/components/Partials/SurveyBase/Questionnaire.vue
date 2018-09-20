@@ -164,9 +164,23 @@
             </Collapsible>
 
             <Collapsible>
+                <span slot="head">embedding</span>
+                <div slot="body" class="questionnaire__preferences">
+                    <span class="questionnaire__table-label">
+                        URL
+                    </span>
+                    <span>{{`${questionnaire.href}/lti`}}</span>
+
+                    <span class="questionnaire__table-label">
+                        Key
+                    </span>
+                    <span>{{questionnaire.ltiConsumerKey}}</span>
+                </div>
+            </Collapsible>
+
+            <Collapsible>
                 <span slot="head">challenges</span>
-                <div slot="body"
-                     class="questionnaire__challnges">
+                <div slot="body">
                     <ChooseChallengeForm
                             v-for="challenge in questionnaire.challenges"
                             :key="challenge.name"
@@ -596,11 +610,6 @@
             grid-row-gap: 0.5em;
             align-items: center;
             text-align: center;
-        }
-
-        &__challenges {
-            display: flex;
-            flex-direction: column;
         }
 
         &__table-label {
