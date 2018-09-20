@@ -4,27 +4,16 @@ pipelines:
   branches:
     develop:
       - step:
-          name: build images
+          name: build develop branch
+          deployment: production
           services:
             - docker
           script:
             # build the images
             - ./build.sh build $DOCKER_USER
-      - step:
-          name: test images
-          deployment: test
-          services:
-            - docker
-          script:
-           # test the images locally
-           - ./build.sh test
-      - step:
-          name: publish images
-          deployment: production
-          services:
-            - docker
-          script:
+            # test the images
+            - ./build.sh test
             # log into docker hub
             - docker login --username $DOCKER_USER --password $DOCKER_PASSWORD
-            # push the new Docker images to the Docker registry
+            # push the images to docker hub
             - ./build.sh publish $DOCKER_USER
