@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 dockerfile=$1
 folder=$(dirname $dockerfile)
 service=$(basename $folder)

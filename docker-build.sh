@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 dockerfile=$1
 dockeruser=$2
 registry=$3
