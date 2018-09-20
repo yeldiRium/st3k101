@@ -196,7 +196,7 @@ class LtiResponseResource(Resource):
             abort(403, message="Survey was not published yet.")
         if not questionnaire.allow_embedded:
             abort(403)
-        if questionnaire.concluded():
+        if questionnaire.concluded:
             abort(403, message="Survey has concluded.")
 
         all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
