@@ -1,12 +1,14 @@
-FROM node:9
-
+FROM node:alpine
 WORKDIR /usr/app
-COPY . /usr/app/
-
-RUN npm install
-RUN npm run build
 
 EXPOSE 443
 EXPOSE 80
 
 CMD ["node", "-r", "esm", "index.js"]
+
+COPY ./package.json /usr/app
+COPY ./package-lock.json /usr/app
+RUN npm ci
+
+COPY . /usr/app/
+RUN npm run build
