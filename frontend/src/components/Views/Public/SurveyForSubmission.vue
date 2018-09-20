@@ -234,7 +234,7 @@
                     submitResponse(this.submissionQuestionnaire, this.inputData)
                 ).fork(
                     this.$handleApiError,
-                    console.log
+                    console.log  // TODO: thank you page
                 );
             },
             dimensionLabel(dimension) {
