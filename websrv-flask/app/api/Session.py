@@ -9,6 +9,7 @@ from api.schema.LtiRequestSchema import LtiRequestSchema
 from api.schema.Session import LoginSchema, SessionSchema
 from auth.roles import needs_role, Role
 from framework.exceptions import UserNotLoggedInException, BadCredentialsException
+from model import db
 from model.models.DataSubject import DataSubject
 from model.models.Questionnaire import Questionnaire
 
@@ -68,6 +69,7 @@ class LtiSessionResource(Resource):
         session_token = auth.datasubject.new_lti_session(subject.lti_user_id)
 
         if session_token is not None:
+            db.session.commit()
             return SessionSchema().dump({"session_token": session_token}).data
 
 
