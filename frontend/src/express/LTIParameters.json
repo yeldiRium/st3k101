@@ -28,6 +28,7 @@
     "tool_consumer_info_product_family_code": null,
     "tool_consumer_info_version": null,
     "tool_consumer_instance_description": null,
-    "tool_consumer_instance_guid": null
+    "tool_consumer_instance_guid": null,
+    "ext_user_username": null
   }
 }
