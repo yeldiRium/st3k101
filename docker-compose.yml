@@ -1,7 +1,6 @@
 version: '3.1'
 
 services:
-
   postgres:
     build: postgres
     restart: always
@@ -25,8 +24,6 @@ services:
   websrv-flask:
     build: websrv-flask
     restart: always
-    ports:
-      - 1337:80
     links:
       - memcached
       - postgres
@@ -37,8 +34,17 @@ services:
     build: frontend
     volumes:
       - ./frontend:/usr/app:rw
+
+  nginx:
+    build: nginx
     ports:
       - 80:80
+    links:
+      - websrv-flask
+      - frontend
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
 
 volumes:
   postgres:
