@@ -196,11 +196,11 @@ function parsePasswordChallenge({password_enabled, password}) {
  */
 function parseQuestionnaire(data) {
     if (prop("shadow", data) === true) {
-        return parseShadowQuestionnaire(data, data);
+        return parseShadowQuestionnaire(data, data);  // TODO use ...rest
     } else if (!data.hasOwnProperty("owners")) {
         return parseTemplateQuestionnaire(data);
     }
-    return parseConcreteQuestionnaire(data, data);
+    return parseConcreteQuestionnaire(data, data);  // TODO use ...rest
 }
 
 /**
@@ -270,6 +270,7 @@ function parseTemplateQuestionnaire({
  * @param {Boolean} template
  * @param {Boolean} allow_embedded
  * @param {String} xapi_target
+ * @param {String} lti_consumer_key
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
@@ -289,6 +290,7 @@ function parseShadowQuestionnaire({
                                       published,
                                       allow_embedded,
                                       xapi_target,
+                                      lti_consumer_key,
                                       current_language,
                                       original_language,
                                       available_languages,
@@ -309,7 +311,7 @@ function parseShadowQuestionnaire({
         published,
         allow_embedded,
         xapi_target,
-        "",
+        lti_consumer_key,
         map(parseDimension, dimensions),
         parseChallenges(whole),
         parseResource(reference_to)
@@ -330,6 +332,7 @@ function parseShadowQuestionnaire({
  * @param {Boolean} template
  * @param {Boolean} allow_embedded
  * @param {String} xapi_target
+ * @param {String} lti_consumer_key
  * @param {Object} current_language
  * @param {Object} original_language
  * @param {Array} available_languages
@@ -351,6 +354,7 @@ function parseConcreteQuestionnaire({
                                         template,
                                         allow_embedded,
                                         xapi_target,
+                                        lti_consumer_key,
                                         current_language,
                                         original_language,
                                         available_languages,
@@ -373,7 +377,7 @@ function parseConcreteQuestionnaire({
         published,
         allow_embedded,
         xapi_target,
-        "",
+        lti_consumer_key,
         map(parseDimension, dimensions),
         parseChallenges(whole),
         incoming_reference_count,
