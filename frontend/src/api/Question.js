@@ -1,24 +1,24 @@
 import Future from "fluture";
 import {
-    assoc,
-    clone,
-    contains,
-    dissoc,
-    has,
-    map,
-    path,
-    pipe,
-    prop,
-    when
+  assoc,
+  clone,
+  contains,
+  dissoc,
+  has,
+  map,
+  path,
+  pipe,
+  prop,
+  when
 } from "ramda";
 
-import {fetchApi} from "./Util/Request";
-import {extractJson} from "./Util/Response";
-import {parseQuestion} from "./Util/Parse";
+import { fetchApi } from "./Util/Request";
+import { extractJson } from "./Util/Response";
+import { parseQuestion } from "./Util/Parse";
 
 import Question, {
-    ConcreteQuestion,
-    ShadowQuestion
+  ConcreteQuestion,
+  ShadowQuestion
 } from "../model/SurveyBase/Question";
 import renameProp from "./Util/renameProp";
 
@@ -39,15 +39,12 @@ const concreteProperties = ["text"];
  * @cancel
  */
 function fetchQuestion(authenticationToken, href, language = null) {
-    return fetchApi(
-        href,
-        {
-            authenticationToken,
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(parseQuestion);
+  return fetchApi(href, {
+    authenticationToken,
+    language
+  })
+    .chain(extractJson)
+    .map(parseQuestion);
 }
 
 /**
@@ -63,7 +60,7 @@ function fetchQuestion(authenticationToken, href, language = null) {
  * @cancel
  */
 function fetchQuestionById(authenticationToken, id, language = null) {
-    return fetchQuestion(authenticationToken, `/api/question/${id}`, language);
+  return fetchQuestion(authenticationToken, `/api/question/${id}`, language);
 }
 
 /**
@@ -78,15 +75,12 @@ function fetchQuestionById(authenticationToken, id, language = null) {
  * @cancel
  */
 function fetchQuestionTemplates(authenticationToken, language = null) {
-    return fetchApi(
-        "/api/question/template",
-        {
-            authenticationToken,
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(map(parseQuestion));
+  return fetchApi("/api/question/template", {
+    authenticationToken,
+    language
+  })
+    .chain(extractJson)
+    .map(map(parseQuestion));
 }
 
 /**
@@ -104,29 +98,31 @@ function fetchQuestionTemplates(authenticationToken, language = null) {
  * @cancel
  */
 function updateQuestion(authenticationToken, question, language, params) {
-    let parsedParams = pipe(
-        renameProp("referenceId", "reference_id"),
-        when(
-            has("range"),
-            pipe(
-                assoc("range_start", path(["range", "start"], params)),
-                assoc("range_end", path(["range", "end"], params)),
-                dissoc("range")
-            )
-        )
-    )(params);
-
-    return fetchApi(
-        question.href,
-        {
-            method: "PATCH",
-            authenticationToken,
-            body: JSON.stringify(parsedParams),
-            language
-        }
+  let parsedParams = pipe(
+    renameProp("referenceId", "reference_id"),
+    when(
+      has("range"),
+      pipe(
+        assoc("range_start", path(["range", "start"], params)),
+        assoc("range_end", path(["range", "end"], params)),
+        dissoc("range")
+      )
     )
-        .chain(extractJson)
-        .map(pipe(prop("question"), parseQuestion));
+  )(params);
+
+  return fetchApi(question.href, {
+    method: "PATCH",
+    authenticationToken,
+    body: JSON.stringify(parsedParams),
+    language
+  })
+    .chain(extractJson)
+    .map(
+      pipe(
+        prop("question"),
+        parseQuestion
+      )
+    );
 }
 
 /**
@@ -145,31 +141,32 @@ function updateQuestion(authenticationToken, question, language, params) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateOwnedIncomingReferences(authenticationToken, concreteQuestion) {
-    const resolvedShadowQuestionFutures = [];
+function populateOwnedIncomingReferences(
+  authenticationToken,
+  concreteQuestion
+) {
+  const resolvedShadowQuestionFutures = [];
 
-    // Use basic for loop to easily replace values.
-    for (let i = 0; i < concreteQuestion.ownedIncomingReferences.length; i++) {
-        /** @type {Resource|ShadowQuestion} */
-        let reference = concreteQuestion.ownedIncomingReferences[i];
+  // Use basic for loop to easily replace values.
+  for (let i = 0; i < concreteQuestion.ownedIncomingReferences.length; i++) {
+    /** @type {Resource|ShadowQuestion} */
+    let reference = concreteQuestion.ownedIncomingReferences[i];
 
-        if (instanceOf(reference, Resource)) {
-            const shadowQuestionFuture = fetchQuestion(
-                authenticationToken,
-                reference.href,
-                concreteQuestion.languageData.currentLanguage
-            )
-                .chain(shadowQuestion => {
-                    concreteQuestion.ownedIncomingReferences[i] =
-                        shadowQuestion;
-                    return Future.of(shadowQuestion);
-                });
+    if (instanceOf(reference, Resource)) {
+      const shadowQuestionFuture = fetchQuestion(
+        authenticationToken,
+        reference.href,
+        concreteQuestion.languageData.currentLanguage
+      ).chain(shadowQuestion => {
+        concreteQuestion.ownedIncomingReferences[i] = shadowQuestion;
+        return Future.of(shadowQuestion);
+      });
 
-            resolvedShadowQuestionFutures.push(shadowQuestionFuture);
-        }
+      resolvedShadowQuestionFutures.push(shadowQuestionFuture);
     }
-    // MAYBE: is Infinity appropriate?
-    return Future.parallel(Infinity, resolvedShadowQuestionFutures);
+  }
+  // MAYBE: is Infinity appropriate?
+  return Future.parallel(Infinity, resolvedShadowQuestionFutures);
 }
 
 /**
@@ -189,18 +186,17 @@ function populateOwnedIncomingReferences(authenticationToken, concreteQuestion) 
  * @cancel
  */
 function populateReferenceTo(authenticationToken, shadowQuestion) {
-    if (instanceOf(shadowQuestion.referenceTo, Resource)) {
-        const shadowQuestionFuture = fetchQuestion(
-            authenticationToken,
-            shadowQuestion.referenceTo.href,
-            shadowQuestion.languageData.currentLanguage
-        )
-            .chain(concreteQuestion => {
-                shadowQuestion.referenceTo = concreteQuestion;
-                return Future.of(concreteQuestion);
-            });
-    }
-    return Future.of(shadowQuestion.referenceTo);
+  if (instanceOf(shadowQuestion.referenceTo, Resource)) {
+    const shadowQuestionFuture = fetchQuestion(
+      authenticationToken,
+      shadowQuestion.referenceTo.href,
+      shadowQuestion.languageData.currentLanguage
+    ).chain(concreteQuestion => {
+      shadowQuestion.referenceTo = concreteQuestion;
+      return Future.of(concreteQuestion);
+    });
+  }
+  return Future.of(shadowQuestion.referenceTo);
 }
 
 /**
@@ -215,21 +211,21 @@ function populateReferenceTo(authenticationToken, shadowQuestion) {
  * @cancel
  */
 function populateQuestion(authenticationToken, question) {
-    // Type warnings can be ignored, since they are tested.
-    if (instanceOf(question, ShadowQuestion)) {
-        return populateReferenceTo(authenticationToken, question);
-    }
-    if (instanceOf(question, ConcreteQuestion)) {
-        return populateOwnedIncomingReferences(authenticationToken, question);
-    }
+  // Type warnings can be ignored, since they are tested.
+  if (instanceOf(question, ShadowQuestion)) {
+    return populateReferenceTo(authenticationToken, question);
+  }
+  if (instanceOf(question, ConcreteQuestion)) {
+    return populateOwnedIncomingReferences(authenticationToken, question);
+  }
 }
 
 export {
-    fetchQuestion,
-    fetchQuestionById,
-    fetchQuestionTemplates,
-    updateQuestion,
-    populateOwnedIncomingReferences,
-    populateReferenceTo,
-    populateQuestion
+  fetchQuestion,
+  fetchQuestionById,
+  fetchQuestionTemplates,
+  updateQuestion,
+  populateOwnedIncomingReferences,
+  populateReferenceTo,
+  populateQuestion
 };

@@ -20,63 +20,61 @@
 </template>
 
 <script>
-    import {all, join, map, pipe, split, test, trim} from "ramda";
+import { all, join, map, pipe, split, test, trim } from "ramda";
 
-    import ChallengeForm from "./ChallengeForm";
-    import EMailListBase from "../../../../model/SurveyBase/Challenge/EMailListBase";
+import ChallengeForm from "./ChallengeForm";
+import EMailListBase from "../../../../model/SurveyBase/Challenge/EMailListBase";
 
-    export default {
-        name: "EMailListForm",
-        components: {
-            ChallengeForm
-        },
-        props: {
-            challenge: {
-                type: EMailListBase,
-                required: true
-            },
-            name: {
-                type: String,
-                required: true
-            }
-        },
-        data() {
-            return {
-                templist: ""
-            };
-        },
-        watch: {
-            challenge: {
-                immediate: true,
-                handler(newChallenge) {
-                    this.templist = join(", ", this.challenge.emails);
-                }
-            }
-        },
-        methods: {
-            setList() {
-                const elems = pipe(
-                    split(","),
-                    map(trim)
-                )(this.templist);
-
-                if (!all(test(/.*@.*\..*/), elems)) {
-                    alert("The E-Mail list must be a comma-separated list of valid E-Mails.");
-                    return;
-                }
-
-                const newChallenge = this.challenge.clone();
-                newChallenge.emails = elems;
-
-                this.$emit(
-                    'input',
-                    newChallenge
-                );
-            }
-        }
+export default {
+  name: "EMailListForm",
+  components: {
+    ChallengeForm
+  },
+  props: {
+    challenge: {
+      type: EMailListBase,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
     }
+  },
+  data() {
+    return {
+      templist: ""
+    };
+  },
+  watch: {
+    challenge: {
+      immediate: true,
+      handler(newChallenge) {
+        this.templist = join(", ", this.challenge.emails);
+      }
+    }
+  },
+  methods: {
+    setList() {
+      const elems = pipe(
+        split(","),
+        map(trim)
+      )(this.templist);
+
+      if (!all(test(/.*@.*\..*/), elems)) {
+        alert(
+          "The E-Mail list must be a comma-separated list of valid E-Mails."
+        );
+        return;
+      }
+
+      const newChallenge = this.challenge.clone();
+      newChallenge.emails = elems;
+
+      this.$emit("input", newChallenge);
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-
 </style>

@@ -5,13 +5,11 @@ import Resource from "./Resource";
  * \o/
  */
 class Party extends Resource {
-    constructor(href, id) {
-        super(href, id);
-    }
+  constructor(href, id) {
+    super(href, id);
+  }
 }
 
 export default Party;
 
-export {
-    Party
-};
+export { Party };

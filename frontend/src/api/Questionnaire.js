@@ -1,29 +1,31 @@
 import Future from "fluture";
-import {contains, map, path, pipe, prop, without} from "ramda";
+import { contains, map, path, pipe, prop, without } from "ramda";
 
-import {extractJson} from "./Util/Response";
-import {fetchApi} from "./Util/Request";
+import { extractJson } from "./Util/Response";
+import { fetchApi } from "./Util/Request";
 import {
-    parseDimension,
-    parseQuestionnaire,
-    parseSubmissionQuestionnaire
+  parseDimension,
+  parseQuestionnaire,
+  parseSubmissionQuestionnaire
 } from "./Util/Parse";
-import {updateDimension} from "./Dimension";
+import { updateDimension } from "./Dimension";
 
 import {
-    ConcreteQuestionnaire,
-    ShadowQuestionnaire
+  ConcreteQuestionnaire,
+  ShadowQuestionnaire
 } from "../model/SurveyBase/Questionnaire";
-import {ConcreteDimension} from "../model/SurveyBase/Dimension";
+import { ConcreteDimension } from "../model/SurveyBase/Dimension";
 import renameProp from "./Util/renameProp";
 
 const properties = [
-    "name", "description", "isPublic", "allowEmbedded", "xapiTarget"
+  "name",
+  "description",
+  "isPublic",
+  "allowEmbedded",
+  "xapiTarget"
 ];
 
-const concreteProperties = [
-    "name", "description"
-];
+const concreteProperties = ["name", "description"];
 
 /**
  * Create a new ConcreteQuestionnaire.
@@ -40,41 +42,52 @@ const concreteProperties = [
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function createConcreteQuestionnaire(authenticationToken,
-                                     language,
-                                     name,
-                                     description,
-                                     isPublic,
-                                     allowEmbedded,
-                                     xapiTarget = null) {
-    const creationData = {
-        name,
-        description
-    };
-    let patchData = {
-        "published": isPublic,
-        "allow_embedded": allowEmbedded,
-    };
-    if (xapiTarget !== null) {
-        patchData["xapi_target"] = xapiTarget;
-    }
+function createConcreteQuestionnaire(
+  authenticationToken,
+  language,
+  name,
+  description,
+  isPublic,
+  allowEmbedded,
+  xapiTarget = null
+) {
+  const creationData = {
+    name,
+    description
+  };
+  let patchData = {
+    published: isPublic,
+    allow_embedded: allowEmbedded
+  };
+  if (xapiTarget !== null) {
+    patchData["xapi_target"] = xapiTarget;
+  }
 
-    // First create the ConcreteQuestionnaire with initial data
-    return fetchApi(
-        "/api/dataclient/concrete_questionnaire",
-        {
-            method: "POST",
-            authenticationToken,
-            body: JSON.stringify(creationData),
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(pipe(prop("questionnaire"), parseQuestionnaire))
-        // Then update it with the rest of the data
-        .chain(questionnaire => updateQuestionnaire(
-            authenticationToken, questionnaire, language, patchData
-        ));
+  // First create the ConcreteQuestionnaire with initial data
+  return (
+    fetchApi("/api/dataclient/concrete_questionnaire", {
+      method: "POST",
+      authenticationToken,
+      body: JSON.stringify(creationData),
+      language
+    })
+      .chain(extractJson)
+      .map(
+        pipe(
+          prop("questionnaire"),
+          parseQuestionnaire
+        )
+      )
+      // Then update it with the rest of the data
+      .chain(questionnaire =>
+        updateQuestionnaire(
+          authenticationToken,
+          questionnaire,
+          language,
+          patchData
+        )
+      )
+  );
 }
 
 /**
@@ -91,18 +104,20 @@ function createConcreteQuestionnaire(authenticationToken,
  * @cancel
  */
 function createShadowQuestionnaire(authenticationToken, questionnaire) {
-    return fetchApi(
-        "/api/dataclient/shadow_questionnaire",
-        {
-            method: "POST",
-            authenticationToken,
-            body: JSON.stringify({
-                id: questionnaire.id
-            })
-        }
-    )
-        .chain(extractJson)
-        .map(pipe(prop("questionnaire"), parseQuestionnaire));
+  return fetchApi("/api/dataclient/shadow_questionnaire", {
+    method: "POST",
+    authenticationToken,
+    body: JSON.stringify({
+      id: questionnaire.id
+    })
+  })
+    .chain(extractJson)
+    .map(
+      pipe(
+        prop("questionnaire"),
+        parseQuestionnaire
+      )
+    );
 }
 
 /**
@@ -117,9 +132,9 @@ function createShadowQuestionnaire(authenticationToken, questionnaire) {
  * @cancel
  */
 function fetchMyQuestionnaires(authenticationToken, language) {
-    return fetchApi("/api/dataclient/questionnaire", {authenticationToken})
-        .chain(extractJson)
-        .map(map(parseQuestionnaire));
+  return fetchApi("/api/dataclient/questionnaire", { authenticationToken })
+    .chain(extractJson)
+    .map(map(parseQuestionnaire));
 }
 
 /**
@@ -135,14 +150,12 @@ function fetchMyQuestionnaires(authenticationToken, language) {
  * @cancel
  */
 function fetchQuestionnaire(authenticationToken, href, language = null) {
-    return fetchApi(
-        href,
-        {
-            language,
-            authenticationToken,
-        })
-        .chain(extractJson)
-        .map(parseQuestionnaire);
+  return fetchApi(href, {
+    language,
+    authenticationToken
+  })
+    .chain(extractJson)
+    .map(parseQuestionnaire);
 }
 
 /**
@@ -157,7 +170,11 @@ function fetchQuestionnaire(authenticationToken, href, language = null) {
  * @cancel
  */
 function fetchQuestionnaireById(authenticationToken, id, language = null) {
-    return fetchQuestionnaire(authenticationToken, `/api/questionnaire/${id}`, language);
+  return fetchQuestionnaire(
+    authenticationToken,
+    `/api/questionnaire/${id}`,
+    language
+  );
 }
 
 /**
@@ -167,18 +184,16 @@ function fetchQuestionnaireById(authenticationToken, id, language = null) {
  * @returns {Future}
  */
 function fetchQuestionnaireForSubmissionById(
-    authenticationToken,
-    id,
-    language = null
+  authenticationToken,
+  id,
+  language = null
 ) {
-    return fetchApi(
-        `/api/questionnaire/${id}`,
-        {
-            authenticationToken,
-            language
-        }
-    ).chain(extractJson)
-        .map(parseSubmissionQuestionnaire);
+  return fetchApi(`/api/questionnaire/${id}`, {
+    authenticationToken,
+    language
+  })
+    .chain(extractJson)
+    .map(parseSubmissionQuestionnaire);
 }
 
 /**
@@ -193,15 +208,12 @@ function fetchQuestionnaireForSubmissionById(
  * @cancel
  */
 function fetchQuestionnaireTemplates(authenticationToken, language = null) {
-    return fetchApi(
-        "/api/questionnaire/template",
-        {
-            authenticationToken,
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(map(parseQuestionnaire));
+  return fetchApi("/api/questionnaire/template", {
+    authenticationToken,
+    language
+  })
+    .chain(extractJson)
+    .map(map(parseQuestionnaire));
 }
 
 /**
@@ -218,25 +230,32 @@ function fetchQuestionnaireTemplates(authenticationToken, language = null) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function updateQuestionnaire(authenticationToken, questionnaire, language, params) {
-    let parsedParams = pipe(
-        renameProp("isPublic", "published"),
-        renameProp("referenceId", "reference_id"),
-        renameProp("xapiTarget", "xapi_target"),
-        renameProp("allowEmbedded", "allow_embedded")
-    )(params);
+function updateQuestionnaire(
+  authenticationToken,
+  questionnaire,
+  language,
+  params
+) {
+  let parsedParams = pipe(
+    renameProp("isPublic", "published"),
+    renameProp("referenceId", "reference_id"),
+    renameProp("xapiTarget", "xapi_target"),
+    renameProp("allowEmbedded", "allow_embedded")
+  )(params);
 
-    return fetchApi(
-        questionnaire.href,
-        {
-            method: "PATCH",
-            authenticationToken,
-            body: JSON.stringify(parsedParams),
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(pipe(prop("questionnaire"), parseQuestionnaire));
+  return fetchApi(questionnaire.href, {
+    method: "PATCH",
+    authenticationToken,
+    body: JSON.stringify(parsedParams),
+    language
+  })
+    .chain(extractJson)
+    .map(
+      pipe(
+        prop("questionnaire"),
+        parseQuestionnaire
+      )
+    );
 }
 
 /**
@@ -250,14 +269,10 @@ function updateQuestionnaire(authenticationToken, questionnaire, language, param
  * @cancel
  */
 function deleteQuestionnaire(authenticationToken, questionnaire) {
-    return fetchApi(
-        questionnaire.href,
-        {
-            method: "DELETE",
-            authenticationToken
-        }
-    )
-        .map(() => true);
+  return fetchApi(questionnaire.href, {
+    method: "DELETE",
+    authenticationToken
+  }).map(() => true);
 }
 
 /**
@@ -277,25 +292,36 @@ function deleteQuestionnaire(authenticationToken, questionnaire) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function addConcreteDimension(authenticationToken, questionnaire, name, randomizeQuestions) {
-    return fetchApi(
-        questionnaire.href + "/concrete_dimension",
-        {
-            method: "POST",
-            authenticationToken,
-            body: JSON.stringify({name}),
-            language: questionnaire.languageData.currentLanguage
-        }
-    )
-        .chain(extractJson)
-        .map(pipe(prop("dimension"), parseDimension))
-        // Update dimension with non-initial parameters after creation
-        .chain(dimension => updateDimension(
-            authenticationToken,
-            dimension,
-            questionnaire.languageData.currentLanguage,
-            {randomizeQuestions}
-        ));
+function addConcreteDimension(
+  authenticationToken,
+  questionnaire,
+  name,
+  randomizeQuestions
+) {
+  return (
+    fetchApi(questionnaire.href + "/concrete_dimension", {
+      method: "POST",
+      authenticationToken,
+      body: JSON.stringify({ name }),
+      language: questionnaire.languageData.currentLanguage
+    })
+      .chain(extractJson)
+      .map(
+        pipe(
+          prop("dimension"),
+          parseDimension
+        )
+      )
+      // Update dimension with non-initial parameters after creation
+      .chain(dimension =>
+        updateDimension(
+          authenticationToken,
+          dimension,
+          questionnaire.languageData.currentLanguage,
+          { randomizeQuestions }
+        )
+      )
+  );
 }
 
 /**
@@ -317,16 +343,18 @@ function addConcreteDimension(authenticationToken, questionnaire, name, randomiz
  * @cancel
  */
 function addShadowDimension(authenticationToken, questionnaire, dimension) {
-    return fetchApi(
-        questionnaire.href + "/shadow_dimension",
-        {
-            method: "POST",
-            authenticationToken,
-            body: JSON.stringify({id: dimension.id})
-        }
-    )
-        .chain(extractJson)
-        .map(pipe(prop("dimension"), parseDimension));
+  return fetchApi(questionnaire.href + "/shadow_dimension", {
+    method: "POST",
+    authenticationToken,
+    body: JSON.stringify({ id: dimension.id })
+  })
+    .chain(extractJson)
+    .map(
+      pipe(
+        prop("dimension"),
+        parseDimension
+      )
+    );
 }
 
 /**
@@ -345,18 +373,14 @@ function addShadowDimension(authenticationToken, questionnaire, dimension) {
  * @cancel
  */
 function removeDimension(authenticationToken, questionnaire, dimension) {
-    if (contains(dimension, questionnaire.dimensions)) {
-        return fetchApi(
-            dimension.href,
-            {
-                method: "DELETE",
-                authenticationToken
-            }
-        )
-            .map(() => true);
-    } else {
-        return Future.reject("Dimension not contained in Questionnaire.");
-    }
+  if (contains(dimension, questionnaire.dimensions)) {
+    return fetchApi(dimension.href, {
+      method: "DELETE",
+      authenticationToken
+    }).map(() => true);
+  } else {
+    return Future.reject("Dimension not contained in Questionnaire.");
+  }
 }
 
 /**
@@ -377,34 +401,34 @@ function removeDimension(authenticationToken, questionnaire, dimension) {
  * @cancel
  */
 function populateOwnedIncomingReferences(
-    authenticationToken,
-    concreteQuestionnaire
+  authenticationToken,
+  concreteQuestionnaire
 ) {
-    const resolvedShadowQuestionnaireFutures = [];
+  const resolvedShadowQuestionnaireFutures = [];
 
-    // Use basic for loop to easily replace values.
-    for (let i = 0;
-         i < concreteQuestionnaire.ownedIncomingReferences.length;
-         i++) {
-        let reference = concreteQuestionnaire.ownedIncomingReferences[i];
+  // Use basic for loop to easily replace values.
+  for (
+    let i = 0;
+    i < concreteQuestionnaire.ownedIncomingReferences.length;
+    i++
+  ) {
+    let reference = concreteQuestionnaire.ownedIncomingReferences[i];
 
-        if (instanceOf(reference, Resource)) {
-            const shadowQuestionnaireFuture = fetchQuestionnaire(
-                authenticationToken,
-                reference.href,
-                concreteQuestionnaire.languageData.currentLanguage
-            )
-                .chain(shadowQuestionnaire => {
-                    concreteQuestionnaire.ownedIncomingReferences[i] =
-                        shadowQuestionnaire;
-                    return Future.of(shadowQuestionnaire);
-                });
+    if (instanceOf(reference, Resource)) {
+      const shadowQuestionnaireFuture = fetchQuestionnaire(
+        authenticationToken,
+        reference.href,
+        concreteQuestionnaire.languageData.currentLanguage
+      ).chain(shadowQuestionnaire => {
+        concreteQuestionnaire.ownedIncomingReferences[i] = shadowQuestionnaire;
+        return Future.of(shadowQuestionnaire);
+      });
 
-            resolvedShadowQuestionnaireFutures.push(shadowQuestionnaireFuture);
-        }
+      resolvedShadowQuestionnaireFutures.push(shadowQuestionnaireFuture);
     }
-    // MAYBE: is Infinity appropriate?
-    return Future.parallel(Infinity, resolvedShadowQuestionnaireFutures);
+  }
+  // MAYBE: is Infinity appropriate?
+  return Future.parallel(Infinity, resolvedShadowQuestionnaireFutures);
 }
 
 /**
@@ -421,18 +445,17 @@ function populateOwnedIncomingReferences(
  * @cancel
  */
 function populateReferenceTo(authenticationToken, shadowQuestionnaire) {
-    if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
-        return fetchQuestionnaire(
-            authenticationToken,
-            shadowQuestionnaire.referenceTo.href,
-            shadowQuestionnaire.languageData.currentLanguage
-        )
-            .chain(concreteQuestionnaire => {
-                shadowQuestionnaire.referenceTo = concreteQuestionnaire;
-                return Future.of(concreteQuestionnaire);
-            });
-    }
-    return Future.of(shadowQuestionnaire.referenceTo);
+  if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
+    return fetchQuestionnaire(
+      authenticationToken,
+      shadowQuestionnaire.referenceTo.href,
+      shadowQuestionnaire.languageData.currentLanguage
+    ).chain(concreteQuestionnaire => {
+      shadowQuestionnaire.referenceTo = concreteQuestionnaire;
+      return Future.of(concreteQuestionnaire);
+    });
+  }
+  return Future.of(shadowQuestionnaire.referenceTo);
 }
 
 /**
@@ -447,34 +470,28 @@ function populateReferenceTo(authenticationToken, shadowQuestionnaire) {
  * @cancel
  */
 function populateQuestionnaire(authenticationToken, questionnaire) {
-    if (instanceOf(questionnaire, ShadowQuestionnaire)) {
-        return populateReferenceTo(
-            authenticationToken,
-            questionnaire
-        );
-    }
-    if (instanceOf(questionnaire, ConcreteQuestionnaire)) {
-        return populateOwnedIncomingReferences(
-            authenticationToken,
-            questionnaire
-        );
-    }
+  if (instanceOf(questionnaire, ShadowQuestionnaire)) {
+    return populateReferenceTo(authenticationToken, questionnaire);
+  }
+  if (instanceOf(questionnaire, ConcreteQuestionnaire)) {
+    return populateOwnedIncomingReferences(authenticationToken, questionnaire);
+  }
 }
 
 export {
-    createConcreteQuestionnaire,
-    createShadowQuestionnaire,
-    fetchMyQuestionnaires,
-    fetchQuestionnaire,
-    fetchQuestionnaireById,
-    fetchQuestionnaireTemplates,
-    fetchQuestionnaireForSubmissionById,
-    updateQuestionnaire,
-    deleteQuestionnaire,
-    addConcreteDimension,
-    addShadowDimension,
-    removeDimension,
-    populateOwnedIncomingReferences,
-    populateReferenceTo,
-    populateQuestionnaire
+  createConcreteQuestionnaire,
+  createShadowQuestionnaire,
+  fetchMyQuestionnaires,
+  fetchQuestionnaire,
+  fetchQuestionnaireById,
+  fetchQuestionnaireTemplates,
+  fetchQuestionnaireForSubmissionById,
+  updateQuestionnaire,
+  deleteQuestionnaire,
+  addConcreteDimension,
+  addShadowDimension,
+  removeDimension,
+  populateOwnedIncomingReferences,
+  populateReferenceTo,
+  populateQuestionnaire
 };

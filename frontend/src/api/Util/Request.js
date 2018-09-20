@@ -1,8 +1,8 @@
-import {always, assoc, identity, ifElse, isNil} from "ramda";
+import { always, assoc, identity, ifElse, isNil } from "ramda";
 import Future from "fluture";
 
-import {buildApiUrl} from "./Path";
-import {categorizeResponse} from "./Response";
+import { buildApiUrl } from "./Path";
+import { categorizeResponse } from "./Response";
 
 /**
  * Build headers from a given authentication token.
@@ -11,13 +11,13 @@ import {categorizeResponse} from "./Response";
  * @returns {Object}
  */
 function buildAuthenticationHeaders(authenticationToken = "") {
-    if (authenticationToken !== "") {
-        return {
-            Authorization: `Bearer ${authenticationToken}`
-        };
-    } else {
-        return {};
-    }
+  if (authenticationToken !== "") {
+    return {
+      Authorization: `Bearer ${authenticationToken}`
+    };
+  } else {
+    return {};
+  }
 }
 
 /**
@@ -29,16 +29,16 @@ function buildAuthenticationHeaders(authenticationToken = "") {
  * @deprecated
  */
 function getLanguageHeaders(language = null) {
-    if (isNil(language)) {
-        return {};
-    }
-    return {
-        "Accept-Language": language.shortName
-    };
+  if (isNil(language)) {
+    return {};
+  }
+  return {
+    "Accept-Language": language.shortName
+  };
 }
 
 const defaultHeaders = {
-    "Content-Type": "application/json"
+  "Content-Type": "application/json"
 };
 
 /**
@@ -64,43 +64,42 @@ const defaultHeaders = {
  *      categorizeResponse.
  * @cancel cancels the http request
  */
-function fetchApi(path,
-                  {
-                      method = "GET",
-                      body = "",
-                      headers = {},
-                      authenticationToken = "",
-                      language = null
-                  }) {
-    return Future((reject, resolve) => {
-        const controller = new AbortController();
-        const signal = controller.signal;
+function fetchApi(
+  path,
+  {
+    method = "GET",
+    body = "",
+    headers = {},
+    authenticationToken = "",
+    language = null
+  }
+) {
+  return Future((reject, resolve) => {
+    const controller = new AbortController();
+    const signal = controller.signal;
 
-        const useHeaders = {
-            ...defaultHeaders,
-            ...headers,
-            ...buildAuthenticationHeaders(authenticationToken)
-        };
+    const useHeaders = {
+      ...defaultHeaders,
+      ...headers,
+      ...buildAuthenticationHeaders(authenticationToken)
+    };
 
-        const fetchParams = {
-            method,
-            headers: useHeaders,
-            signal
-        };
+    const fetchParams = {
+      method,
+      headers: useHeaders,
+      signal
+    };
 
-        if (method !== "GET" && method !== "HEAD") {
-            fetchParams["body"] = body;
-        }
+    if (method !== "GET" && method !== "HEAD") {
+      fetchParams["body"] = body;
+    }
 
-        fetch(buildApiUrl(path, language), fetchParams)
-            .then(resolve)
-            .catch(reject);
+    fetch(buildApiUrl(path, language), fetchParams)
+      .then(resolve)
+      .catch(reject);
 
-        return controller.abort;
-    })
-        .chain(categorizeResponse);
+    return controller.abort;
+  }).chain(categorizeResponse);
 }
 
-export {
-    fetchApi
-};
+export { fetchApi };

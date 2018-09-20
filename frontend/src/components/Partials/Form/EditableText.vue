@@ -42,96 +42,96 @@
 </template>
 
 <script>
-    import IconEdit from "../../../assets/icons/baseline-edit-24px.svg";
+import IconEdit from "../../../assets/icons/baseline-edit-24px.svg";
 
-    export default {
-        name: "EditableText",
-        components: {
-            IconEdit
-        },
-        props: {
-            value: {
-                type: String
-            },
-            ellipseText: {
-                type: Boolean,
-                default: false
-            },
-            textArea: {
-                type: Boolean,
-                default: false
-            },
-            editLeft: {
-                type: Boolean,
-                default: false
-            }
-        },
-        data() {
-            return {
-                editing: false,
-                storedValue: "",
-                runningValue: ""
-            };
-        },
-        watch: {
-            value: {
-                immediate: true,
-                handler(value) {
-                    this.runningValue = value;
-                }
-            }
-        },
-        methods: {
-            startEditing() {
-                this.editing = true;
-                this.storedValue = this.runningValue;
-                this.$nextTick(() => {
-                    this.$refs.input.focus();
-                })
-            },
-            finishEditing() {
-                this.editing = false;
-                this.$emit("input", this.runningValue);
-            },
-            cancelEditing() {
-                this.editing = false;
-                this.runningValue = this.storedValue;
-            }
-        }
+export default {
+  name: "EditableText",
+  components: {
+    IconEdit
+  },
+  props: {
+    value: {
+      type: String
+    },
+    ellipseText: {
+      type: Boolean,
+      default: false
+    },
+    textArea: {
+      type: Boolean,
+      default: false
+    },
+    editLeft: {
+      type: Boolean,
+      default: false
     }
+  },
+  data() {
+    return {
+      editing: false,
+      storedValue: "",
+      runningValue: ""
+    };
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(value) {
+        this.runningValue = value;
+      }
+    }
+  },
+  methods: {
+    startEditing() {
+      this.editing = true;
+      this.storedValue = this.runningValue;
+      this.$nextTick(() => {
+        this.$refs.input.focus();
+      });
+    },
+    finishEditing() {
+      this.editing = false;
+      this.$emit("input", this.runningValue);
+    },
+    cancelEditing() {
+      this.editing = false;
+      this.runningValue = this.storedValue;
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/_mixins";
+@import "../../scss/_mixins";
 
-    .editable-text {
-        &__text {
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1em;
+.editable-text {
+  &__text {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1em;
 
-            &--ellipse {
-                span {
-                    @include ellipse();
-                }
-            }
-
-            &--editLeft {
-                grid-template-columns: 1em 1fr;
-            }
-        }
-
-        &__form {
-            width: 100%;
-            display: grid;
-            grid-auto-flow: column;
-            grid-template-columns: auto 4em;
-        }
-
-        &__edit-icon {
-            cursor: pointer;
-            transform: scale(.8, .8);
-            transform-origin: bottom left;
-        }
+    &--ellipse {
+      span {
+        @include ellipse();
+      }
     }
+
+    &--editLeft {
+      grid-template-columns: 1em 1fr;
+    }
+  }
+
+  &__form {
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: auto 4em;
+  }
+
+  &__edit-icon {
+    cursor: pointer;
+    transform: scale(0.8, 0.8);
+    transform-origin: bottom left;
+  }
+}
 </style>

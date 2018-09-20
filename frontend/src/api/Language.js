@@ -1,8 +1,8 @@
-import {map} from "ramda";
+import { map } from "ramda";
 
-import {fetchApi} from "./Util/Request";
-import {extractJson} from "./Util/Response";
-import {parseLanguage} from "./Util/Parse";
+import { fetchApi } from "./Util/Request";
+import { extractJson } from "./Util/Response";
+import { parseLanguage } from "./Util/Parse";
 
 /**
  * Fetches all available Languages on the server.
@@ -13,13 +13,9 @@ import {parseLanguage} from "./Util/Parse";
  * @cancel
  */
 function fetchLanguages() {
-    return fetchApi(
-        "/api/language", {}
-    )
-        .chain(extractJson)
-        .map(map(parseLanguage))
+  return fetchApi("/api/language", {})
+    .chain(extractJson)
+    .map(map(parseLanguage));
 }
 
-export {
-    fetchLanguages
-};
+export { fetchLanguages };

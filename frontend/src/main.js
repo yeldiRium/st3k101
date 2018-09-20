@@ -12,7 +12,7 @@ import "abortcontroller-polyfill";
 
 import App from "./components/App";
 import router from "./router";
-import store, {initialize as initializeStore} from "./store";
+import store, { initialize as initializeStore } from "./store";
 
 Vue.use(Vuex);
 Vue.use(vClickOutside);
@@ -24,23 +24,23 @@ Vue.use(vApiError);
 Vue.config.productionTip = false;
 
 initializeStore().fork(
-    error => {
-        store.commit("initialLoadingError", error);
-    },
-    data => {
-        store.commit("initialLoadingDone", data);
+  error => {
+    store.commit("initialLoadingError", error);
+  },
+  data => {
+    store.commit("initialLoadingDone", data);
 
-        // Start the application only, if the initial loading was successful
-        new Vue({
-            el: "#container",
-            router,
-            store,
-            components: {App},
-            template: "<App/>"
-        });
+    // Start the application only, if the initial loading was successful
+    new Vue({
+      el: "#container",
+      router,
+      store,
+      components: { App },
+      template: "<App/>"
+    });
 
-        if (typeof ltiSessionToken !== 'undefined') {
-             router.push("/embedded");
-        }
+    if (typeof ltiSessionToken !== "undefined") {
+      router.push("/embedded");
     }
+  }
 );

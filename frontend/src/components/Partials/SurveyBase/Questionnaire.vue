@@ -197,463 +197,411 @@
 </template>
 
 <script>
-    import {mapState} from "vuex-fluture";
-    import {assoc, map, path, sum} from "ramda";
+import { mapState } from "vuex-fluture";
+import { assoc, map, path, sum } from "ramda";
 
-    import {Questionnaire} from "../../../model/SurveyBase/Questionnaire";
+import { Questionnaire } from "../../../model/SurveyBase/Questionnaire";
 
-    import SurveyBase from "./SurveyBase";
-    import Dimension from "./Dimension";
-    import ListItem from "../List/Item";
-    import EditableText from "../Form/EditableText";
-    import LanguagePicker from "../LanguagePicker";
-    import ReferenceCounter from "./Config/ReferenceCounter";
-    import Toggle from "../Form/ToggleButton";
-    import Button from "../Form/Button";
-    import ChooseChallengeForm from "./Challenge/ChooseChallengeForm";
-    import Collapsible from "../Collapsible";
-    import TrackerEntries from "./TrackerEntries";
+import SurveyBase from "./SurveyBase";
+import Dimension from "./Dimension";
+import ListItem from "../List/Item";
+import EditableText from "../Form/EditableText";
+import LanguagePicker from "../LanguagePicker";
+import ReferenceCounter from "./Config/ReferenceCounter";
+import Toggle from "../Form/ToggleButton";
+import Button from "../Form/Button";
+import ChooseChallengeForm from "./Challenge/ChooseChallengeForm";
+import Collapsible from "../Collapsible";
+import TrackerEntries from "./TrackerEntries";
 
-    import IconLink from "../../../assets/icons/baseline-link-24px.svg";
-    import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
-    import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
-    import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
-    import {isAtLeast} from "../../../model/Roles";
-    import Roles from "../../../model/Roles";
+import IconLink from "../../../assets/icons/baseline-link-24px.svg";
+import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
+import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
+import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
+import { isAtLeast } from "../../../model/Roles";
+import Roles from "../../../model/Roles";
 
-    export default {
-        name: "Questionnaire",
-        extends: SurveyBase,
-        components: {
-            Collapsible,
-            ListItem,
-            Dimension,
-            LanguagePicker,
-            ReferenceCounter,
-            Toggle,
-            EditableText,
-            Button,
-            ChooseChallengeForm,
-            IconLink,
-            IconReorder,
-            IconExpandLess,
-            IconExpandMore,
-            TrackerEntries
-        },
-        props: {
-            /** @type {Questionnaire} */
-            questionnaire: {
-                type: Questionnaire
-            },
-            initiallyExpanded: {
-                type: Boolean,
-                default: false
-            },
-            showLink: {
-                type: Boolean,
-                default: true
-            }
-        },
-        data() {
-            return {
-                expanded: false,
-                header: {
-                    height: 0
-                },
-                dropdown: {
-                    height: 0
-                },
-                expandChallenges: false
-            }
-        },
-        computed: {
-            ...mapState("session", ["dataClient"]),
-            classes() {
-                return {
-                    "questionnaire--disabled": !this.isEditable(this.questionnaire)
-                }
-            },
-            /**
-             * Returns a message displaying the number of Dimensions and Ques-
-             * tions in the Questionnaire.
-             *
-             * @returns {string}
-             */
-            subtext() {
-                let questionCount = sum(
-                    map(
-                        path(["questions", "length"]),
-                        this.questionnaire.dimensions
-                    )
-                );
-                return `Contains ${this.questionnaire.dimensions.length} dimensions and ${questionCount} questions.`;
-            },
-            isMakeTemplateButtonShown() {
-                return isAtLeast(this.dataClient, Roles.Contributor) && this.isEditable(this.questionnaire);
-            }
-        },
-        methods: {
-            toggleExpanded() {
-                this.expanded = !this.expanded;
-            },
-            toggleExpandChallenges() {
-                this.expandChallenges = !this.expandChallenges;
-            },
-            /**
-             * Switch the Questionnaire to the given language.
-             * @param {Language} language
-             */
-            changeLanguage(language) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/fetchQuestionnaire",
-                        {href: this.questionnaire.href, language}
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Opens a dialog for entering a new translation.
-             *
-             * @param {Language} language
-             */
-            openAddNewTranslationDialog(language) {
-                if (!this.isEditable(this.questionnaire)) {
-                    return;
-                }
-                this.$modal.show(
-                    "modal-translate-questionnaire",
-                    {
-                        language,
-                        handler: this.addNewTranslation,
-                        name: this.questionnaire.name,
-                        description: this.questionnaire.description
-                    }
-                );
-            },
-            /**
-             * Add a new translation to the Questionnaire.
-             * This means set new field values via API for the given languages
-             * and then fetch the questionnaire anew in the now existing language.
-             *
-             * @param {Language} language
-             * @param {String} name
-             * @param {String} description
-             */
-            addNewTranslation({language, name, description}) {
-                if (!this.isEditable(this.questionnaire)) {
-                    return;
-                }
-
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            language,
-                            params: {
-                                name,
-                                description
-                            }
-                        }
-                    )
-                        .chain(
-                            questionnaire => this.$store.dispatch(
-                                "questionnaires/fetchQuestionnaire",
-                                {href: questionnaire.href, language}
-                            )
-                        )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Generically updates the Questionnaire via the Store.
-             *
-             * @param {String} prop The name of the updated property.
-             * @param {*} value The new value for it.
-             * @param {Boolean} mustBeEditable Whether the Questionnaire must be
-             *  editable for this to work.
-             */
-            updateQuestionnaire(prop, value, mustBeEditable = false) {
-                if (mustBeEditable && !this.isEditable(this.questionnaire)) {
-                    return;
-                }
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            params: assoc(prop, value, {})
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            openUseDimensionTemplateDialog() {
-                this.$modal.show(
-                    "modal-use-dimension-template",
-                    {
-                        handler: this.useDimensionTemplate
-                    }
-                );
-            },
-            useDimensionTemplate({dimension}) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/addShadowDimension",
-                        {
-                            questionnaire: this.questionnaire,
-                            concreteDimension: dimension
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            openNewDimensionDialog() {
-                if (!this.isEditable(this.questionnaire)) {
-                    return;
-                }
-                this.$modal.show(
-                    "modal-create-dimension",
-                    {
-                        language: this.questionnaire.languageData.currentLanguage,
-                        handler: this.createDimension
-                    }
-                )
-            },
-            createDimension({name, randomizeQuestions}) {
-                if (!this.isEditable(this.questionnaire)) {
-                    return;
-                }
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/addConcreteDimension",
-                        {
-                            questionnaire: this.questionnaire,
-                            params: {
-                                name,
-                                randomizeQuestions
-                            }
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            deleteDimension(dimension) {
-                if (!this.isEditable(this.questionnaire)) {
-                    return;
-                }
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/removeDimension",
-                        {
-                            questionnaire: this.questionnaire,
-                            dimension
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Asks for confirmation, if the Questionnaire should be deleted, and
-             * emits an event commanding to do so, if the user confirms.
-             */
-            deleteQuestionnaire() {
-                this.$modal.show(
-                    "dialog",
-                    {
-                        title: `Really delete Questionnaire?`,
-                        text: `Do you really want to delete Questionnaire "${this.questionnaire.name}"?`,
-                        buttons: [
-                            {
-                                text: "Cancel"
-                            },
-                            {
-                                text: "Confirm",
-                                handler: () => this.$emit(
-                                    "questionnaire-delete",
-                                    this.questionnaire
-                                ),
-                                default: true
-                            }
-                        ]
-                    }
-                )
-            },
-            /**
-             * Replaces the given challenge in the questionnaire.
-             *
-             * @param {Challenge} newChallenge
-             */
-            updateChallenge(newChallenge) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateChallengeOnQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            challenge: newChallenge
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Publishes / Retracts this dimension as a template.
-             * TODO: prompt dataclient when there are still incoming
-             * references
-             * TODO: what is the correct behaviour in aforementioned
-             * case?
-             */
-            toggleIsTemplate() {
-                if (!this.isEditable(this.questionnaire)) {
-                        return;  // can't publish other people's content
-                }
-
-                let template = !this.questionnaire.template;
-
-                const cancel = this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/updateQuestionnaire",
-                        {
-                            questionnaire: this.questionnaire,
-                            params: {
-                                template
-                            }
-                        }
-                    ).chain(questionnaire => this.$store.dispatch(
-                                "questionnaires/fetchQuestionnaire",
-                                {href: questionnaire.href}
-                            ))
-                    ).fork(
-                        this.$handleApiError,
-                        () => {
-                            this.$emit("updated");
-                        }
-                    );
-            }
-        },
-        created() {
-            this.expanded = this.initiallyExpanded;
-        }
+export default {
+  name: "Questionnaire",
+  extends: SurveyBase,
+  components: {
+    Collapsible,
+    ListItem,
+    Dimension,
+    LanguagePicker,
+    ReferenceCounter,
+    Toggle,
+    EditableText,
+    Button,
+    ChooseChallengeForm,
+    IconLink,
+    IconReorder,
+    IconExpandLess,
+    IconExpandMore,
+    TrackerEntries
+  },
+  props: {
+    /** @type {Questionnaire} */
+    questionnaire: {
+      type: Questionnaire
+    },
+    initiallyExpanded: {
+      type: Boolean,
+      default: false
+    },
+    showLink: {
+      type: Boolean,
+      default: true
     }
+  },
+  data() {
+    return {
+      expanded: false,
+      header: {
+        height: 0
+      },
+      dropdown: {
+        height: 0
+      },
+      expandChallenges: false
+    };
+  },
+  computed: {
+    ...mapState("session", ["dataClient"]),
+    classes() {
+      return {
+        "questionnaire--disabled": !this.isEditable(this.questionnaire)
+      };
+    },
+    /**
+     * Returns a message displaying the number of Dimensions and Ques-
+     * tions in the Questionnaire.
+     *
+     * @returns {string}
+     */
+    subtext() {
+      let questionCount = sum(
+        map(path(["questions", "length"]), this.questionnaire.dimensions)
+      );
+      return `Contains ${
+        this.questionnaire.dimensions.length
+      } dimensions and ${questionCount} questions.`;
+    },
+    isMakeTemplateButtonShown() {
+      return (
+        isAtLeast(this.dataClient, Roles.Contributor) &&
+        this.isEditable(this.questionnaire)
+      );
+    }
+  },
+  methods: {
+    toggleExpanded() {
+      this.expanded = !this.expanded;
+    },
+    toggleExpandChallenges() {
+      this.expandChallenges = !this.expandChallenges;
+    },
+    /**
+     * Switch the Questionnaire to the given language.
+     * @param {Language} language
+     */
+    changeLanguage(language) {
+      this.$load(
+        this.$store.dispatch("questionnaires/fetchQuestionnaire", {
+          href: this.questionnaire.href,
+          language
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    /**
+     * Opens a dialog for entering a new translation.
+     *
+     * @param {Language} language
+     */
+    openAddNewTranslationDialog(language) {
+      if (!this.isEditable(this.questionnaire)) {
+        return;
+      }
+      this.$modal.show("modal-translate-questionnaire", {
+        language,
+        handler: this.addNewTranslation,
+        name: this.questionnaire.name,
+        description: this.questionnaire.description
+      });
+    },
+    /**
+     * Add a new translation to the Questionnaire.
+     * This means set new field values via API for the given languages
+     * and then fetch the questionnaire anew in the now existing language.
+     *
+     * @param {Language} language
+     * @param {String} name
+     * @param {String} description
+     */
+    addNewTranslation({ language, name, description }) {
+      if (!this.isEditable(this.questionnaire)) {
+        return;
+      }
+
+      this.$load(
+        this.$store
+          .dispatch("questionnaires/updateQuestionnaire", {
+            questionnaire: this.questionnaire,
+            language,
+            params: {
+              name,
+              description
+            }
+          })
+          .chain(questionnaire =>
+            this.$store.dispatch("questionnaires/fetchQuestionnaire", {
+              href: questionnaire.href,
+              language
+            })
+          )
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    /**
+     * Generically updates the Questionnaire via the Store.
+     *
+     * @param {String} prop The name of the updated property.
+     * @param {*} value The new value for it.
+     * @param {Boolean} mustBeEditable Whether the Questionnaire must be
+     *  editable for this to work.
+     */
+    updateQuestionnaire(prop, value, mustBeEditable = false) {
+      if (mustBeEditable && !this.isEditable(this.questionnaire)) {
+        return;
+      }
+      this.$load(
+        this.$store.dispatch("questionnaires/updateQuestionnaire", {
+          questionnaire: this.questionnaire,
+          params: assoc(prop, value, {})
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    openUseDimensionTemplateDialog() {
+      this.$modal.show("modal-use-dimension-template", {
+        handler: this.useDimensionTemplate
+      });
+    },
+    useDimensionTemplate({ dimension }) {
+      this.$load(
+        this.$store.dispatch("questionnaires/addShadowDimension", {
+          questionnaire: this.questionnaire,
+          concreteDimension: dimension
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    openNewDimensionDialog() {
+      if (!this.isEditable(this.questionnaire)) {
+        return;
+      }
+      this.$modal.show("modal-create-dimension", {
+        language: this.questionnaire.languageData.currentLanguage,
+        handler: this.createDimension
+      });
+    },
+    createDimension({ name, randomizeQuestions }) {
+      if (!this.isEditable(this.questionnaire)) {
+        return;
+      }
+      this.$load(
+        this.$store.dispatch("questionnaires/addConcreteDimension", {
+          questionnaire: this.questionnaire,
+          params: {
+            name,
+            randomizeQuestions
+          }
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    deleteDimension(dimension) {
+      if (!this.isEditable(this.questionnaire)) {
+        return;
+      }
+      this.$load(
+        this.$store.dispatch("questionnaires/removeDimension", {
+          questionnaire: this.questionnaire,
+          dimension
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    /**
+     * Asks for confirmation, if the Questionnaire should be deleted, and
+     * emits an event commanding to do so, if the user confirms.
+     */
+    deleteQuestionnaire() {
+      this.$modal.show("dialog", {
+        title: `Really delete Questionnaire?`,
+        text: `Do you really want to delete Questionnaire "${
+          this.questionnaire.name
+        }"?`,
+        buttons: [
+          {
+            text: "Cancel"
+          },
+          {
+            text: "Confirm",
+            handler: () =>
+              this.$emit("questionnaire-delete", this.questionnaire),
+            default: true
+          }
+        ]
+      });
+    },
+    /**
+     * Replaces the given challenge in the questionnaire.
+     *
+     * @param {Challenge} newChallenge
+     */
+    updateChallenge(newChallenge) {
+      this.$load(
+        this.$store.dispatch("questionnaires/updateChallengeOnQuestionnaire", {
+          questionnaire: this.questionnaire,
+          challenge: newChallenge
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    /**
+     * Publishes / Retracts this dimension as a template.
+     * TODO: prompt dataclient when there are still incoming
+     * references
+     * TODO: what is the correct behaviour in aforementioned
+     * case?
+     */
+    toggleIsTemplate() {
+      if (!this.isEditable(this.questionnaire)) {
+        return; // can't publish other people's content
+      }
+
+      let template = !this.questionnaire.template;
+
+      const cancel = this.$load(
+        this.$store
+          .dispatch("questionnaires/updateQuestionnaire", {
+            questionnaire: this.questionnaire,
+            params: {
+              template
+            }
+          })
+          .chain(questionnaire =>
+            this.$store.dispatch("questionnaires/fetchQuestionnaire", {
+              href: questionnaire.href
+            })
+          )
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    }
+  },
+  created() {
+    this.expanded = this.initiallyExpanded;
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/_variables";
+@import "../../scss/_variables";
 
-    .questionnaire {
-        display: flex;
-        flex-flow: column;
+.questionnaire {
+  display: flex;
+  flex-flow: column;
 
-        background-color: $primary-light;
+  background-color: $primary-light;
 
-        &--disabled {
-            background-color: $lighter;
-        }
+  &--disabled {
+    background-color: $lighter;
+  }
 
-        &--bordered {
-            border: 1px solid $primary;
+  &--bordered {
+    border: 1px solid $primary;
 
-            &.questionnaire--disabled {
-                border-color: $slightlylight;
-            }
-        }
+    &.questionnaire--disabled {
+      border-color: $slightlylight;
+    }
+  }
 
-        &__add-dimension-button {
-            background-color: $primary;
-        }
+  &__add-dimension-button {
+    background-color: $primary;
+  }
 
-        &__body {
-            padding: 0.5em 2em 0.5em 2em;
+  &__body {
+    padding: 0.5em 2em 0.5em 2em;
 
-            display: grid;
-            grid-template-columns: minmax(max-content, 1fr) 5fr;
-            grid-row-gap: 0.5em;
-            align-items: center;
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) 5fr;
+    grid-row-gap: 0.5em;
+    align-items: center;
 
-            > *:not(.questionnaire__dimensions) {
-                text-align: center;
-            }
-        }
+    > *:not(.questionnaire__dimensions) {
+      text-align: center;
+    }
+  }
 
-        &__preferences {
-            display: grid;
-            grid-template-columns: minmax(max-content, 1fr) 5fr;
-            grid-row-gap: 0.5em;
-            align-items: center;
-            text-align: center;
-        }
+  &__preferences {
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) 5fr;
+    grid-row-gap: 0.5em;
+    align-items: center;
+    text-align: center;
+  }
 
-        &__table-label {
-            padding: 0 0.5em 0 0.5em;
+  &__table-label {
+    padding: 0 0.5em 0 0.5em;
 
-            &--span-2 {
-                grid-column: 1 / span 2;
-            }
-        }
+    &--span-2 {
+      grid-column: 1 / span 2;
+    }
+  }
 
-        &__dimensions {
-            width: 100%;
+  &__dimensions {
+    width: 100%;
 
-            display: flex;
-            flex-flow: column;
+    display: flex;
+    flex-flow: column;
 
-            grid-column: 1 / span 2;
-        }
+    grid-column: 1 / span 2;
+  }
 
-        &__buttons {
-            grid-column: 1 / span 2;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+  &__buttons {
+    grid-column: 1 / span 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 
-            margin-bottom: 8px;
+    margin-bottom: 8px;
 
-            .button {
-                margin: 0 8px 0 8px;
-                background-color: $primary-light;
-                border: $primary 1px solid;
-            }
-        }
+    .button {
+      margin: 0 8px 0 8px;
+      background-color: $primary-light;
+      border: $primary 1px solid;
+    }
+  }
 
-        .toggle {
-            > div {
-                color: $darker;
-            }
-
-            &-off.toggle-off-active,
-            &-on.toggle-on-active {
-                color: $verydark;
-            }
-        }
+  .toggle {
+    > div {
+      color: $darker;
     }
 
+    &-off.toggle-off-active,
+    &-on.toggle-on-active {
+      color: $verydark;
+    }
+  }
+}
 </style>

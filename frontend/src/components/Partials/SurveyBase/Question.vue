@@ -100,296 +100,276 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex-fluture";
+import { mapGetters } from "vuex-fluture";
 
-    import {assoc} from "ramda";
+import { assoc } from "ramda";
 
-    import {Question} from "../../../model/SurveyBase/Question";
-    import {Roles, isAtLeast} from "../../../model/Roles";
+import { Question } from "../../../model/SurveyBase/Question";
+import { Roles, isAtLeast } from "../../../model/Roles";
 
-    import {setRange, setText} from "../../../api/Question";
+import { setRange, setText } from "../../../api/Question";
 
-    import SurveyBase from "./SurveyBase";
-    import ListItem from "../List/Item";
-    import LanguagePicker from "../LanguagePicker";
-    import ReferenceCounter from "./Config/ReferenceCounter";
-    import RangeEditor from "./Config/RangeEditor";
-    import Range from "./Config/RangeSVG";
-    import Button from "../Form/Button";
-    import EditableText from "../Form/EditableText";
-    import TrackerEntries from "./TrackerEntries";
+import SurveyBase from "./SurveyBase";
+import ListItem from "../List/Item";
+import LanguagePicker from "../LanguagePicker";
+import ReferenceCounter from "./Config/ReferenceCounter";
+import RangeEditor from "./Config/RangeEditor";
+import Range from "./Config/RangeSVG";
+import Button from "../Form/Button";
+import EditableText from "../Form/EditableText";
+import TrackerEntries from "./TrackerEntries";
 
-    import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
-    import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
+import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg";
+import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
 
-    export default {
-        name: "Question",
-        extends: SurveyBase,
-        components: {
-            ListItem,
-            LanguagePicker,
-            ReferenceCounter,
-            RangeEditor,
-            Range,
-            Button,
-            EditableText,
-            TrackerEntries,
-            IconExpandMore,
-            IconExpandLess
-        },
-        props: {
-            /** @type {Question} */
-            question: {
-                type: Question
-            },
-            /** @type {Boolean} */
-            initiallyExpanded: {
-                type: Boolean,
-                default: false
-            }
-        },
-        data() {
-            return {
-                /** @type {Boolean} */
-                expanded: false
-            }
-        },
-        created() {
-            this.expanded = this.initiallyExpanded;
-        },
-        computed: {
-            ...mapGetters("session", ["dataClient"]),
-            isMakeTemplateButtonShown() {
-                return isAtLeast(this.dataClient, Roles.Contributor) && this.isEditable(this.question);
-            },
-            /**
-             * CSS Classes for Question container div.
-             */
-            classes() {
-                return {
-                    "question--disabled": !this.isEditable(this.question)
-                }
-            }
-        },
-        methods: {
-            /**
-             * Toggle whether the Question is collapsed or expanded.
-             */
-            toggleExpanded() {
-                this.expanded = !this.expanded;
-            },
-            /**
-             * Switch the Question to the given language.
-             * @param {Language} language
-             */
-            changeLanguage(language) {
-                const cancel = this.$load(
-                    this.$store.dispatch(
-                        "questions/fetchQuestion",
-                        {href: this.question.href, language}
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Opens a dialog for entering a new translation.
-             *
-             * @param {Language} language
-             */
-            openAddNewTranslationDialog(language) {
-                if (!this.isEditable(this.question)) {
-                    return;
-                }
-                this.$modal.show(
-                    "modal-translate-question",
-                    {
-                        language,
-                        handler: this.addNewTranslation,
-                        text: this.question.text
-                    }
-                );
-            },
-            /**
-             * Add a new translation to the Question.
-             * This means set new field values via API for the given languages
-             * and then fetch the question anew in the now existing language.
-             *
-             * @param {Language} language
-             * @param {String} text
-             */
-            addNewTranslation({language, text}) {
-                if (!this.isEditable(this.question)) {
-                    return;
-                }
-
-                const cancel = this.$load(
-                    this.$store.dispatch(
-                        "questions/updateQuestion",
-                        {
-                            question: this.question,
-                            language,
-                            params: {
-                                text
-                            }
-                        }
-                    )
-                        .chain(question => this.$store.dispatch(
-                            "questions/fetchQuestion",
-                            {href: question.href, language}
-                        ))
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Generically updates the Question via the Store.
-             *
-             * @param {String} prop The name of the updated property.
-             * @param {*} value The new value for it.
-             * @param {Boolean} mustBeEditable Whether the Question must be
-             *  editable for this to work.
-             */
-            updateQuestion(prop, value, mustBeEditable=false) {
-                if (mustBeEditable && !this.isEditable(this.question)) {
-                    return;
-                }
-                this.$load(
-                    this.$store.dispatch(
-                        "questions/updateQuestion",
-                        {
-                            question: this.question,
-                            params: assoc(prop, value, {})
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                        this.$emit("updated");
-                    }
-                );
-            },
-            /**
-             * Asks for confirmation, if the Question should be deleted, and
-             * emits an event which commands to do so, if the users confirms.
-             */
-            deleteQuestion() {
-                this.$modal.show(
-                    "dialog",
-                    {
-                        title: `Really delete Question?`,
-                        text: `Do you really want to delete Question "${this.question.name}"?`,
-                        buttons: [
-                            {
-                                text: "Cancel"
-                            },
-                            {
-                                text: "Confirm",
-                                handler: () => this
-                                    .$emit("question-delete", this.question),
-                                default: true
-                            }
-                        ]
-                    }
-                )
-            },
-            /**
-             * Publishes / Retracts this question as a template.
-             * TODO: prompt dataclient when there are still incoming
-             * references
-             * TODO: what is the correct behaviour in aforementioned
-             * case?
-             */
-            toggleIsTemplate() {
-                if (!this.isEditable(this.question)) {
-                        return;  // can't publish other people's content
-                }
-
-                let template = !this.question.template;
-
-                const cancel = this.$load(
-                    this.$store.dispatch(
-                        "questions/updateQuestion",
-                        {
-                            question: this.question,
-                            params: {
-                                template
-                            }
-                        }
-                    ).chain(question => this.$store.dispatch(
-                                "questions/fetchQuestion",
-                                {href: question.href}
-                            ))
-                    ).fork(
-                        this.$handleApiError,
-                        () => {
-                            this.$emit("updated");
-                        }
-                    );
-            }
-        }
+export default {
+  name: "Question",
+  extends: SurveyBase,
+  components: {
+    ListItem,
+    LanguagePicker,
+    ReferenceCounter,
+    RangeEditor,
+    Range,
+    Button,
+    EditableText,
+    TrackerEntries,
+    IconExpandMore,
+    IconExpandLess
+  },
+  props: {
+    /** @type {Question} */
+    question: {
+      type: Question
+    },
+    /** @type {Boolean} */
+    initiallyExpanded: {
+      type: Boolean,
+      default: false
     }
+  },
+  data() {
+    return {
+      /** @type {Boolean} */
+      expanded: false
+    };
+  },
+  created() {
+    this.expanded = this.initiallyExpanded;
+  },
+  computed: {
+    ...mapGetters("session", ["dataClient"]),
+    isMakeTemplateButtonShown() {
+      return (
+        isAtLeast(this.dataClient, Roles.Contributor) &&
+        this.isEditable(this.question)
+      );
+    },
+    /**
+     * CSS Classes for Question container div.
+     */
+    classes() {
+      return {
+        "question--disabled": !this.isEditable(this.question)
+      };
+    }
+  },
+  methods: {
+    /**
+     * Toggle whether the Question is collapsed or expanded.
+     */
+    toggleExpanded() {
+      this.expanded = !this.expanded;
+    },
+    /**
+     * Switch the Question to the given language.
+     * @param {Language} language
+     */
+    changeLanguage(language) {
+      const cancel = this.$load(
+        this.$store.dispatch("questions/fetchQuestion", {
+          href: this.question.href,
+          language
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    /**
+     * Opens a dialog for entering a new translation.
+     *
+     * @param {Language} language
+     */
+    openAddNewTranslationDialog(language) {
+      if (!this.isEditable(this.question)) {
+        return;
+      }
+      this.$modal.show("modal-translate-question", {
+        language,
+        handler: this.addNewTranslation,
+        text: this.question.text
+      });
+    },
+    /**
+     * Add a new translation to the Question.
+     * This means set new field values via API for the given languages
+     * and then fetch the question anew in the now existing language.
+     *
+     * @param {Language} language
+     * @param {String} text
+     */
+    addNewTranslation({ language, text }) {
+      if (!this.isEditable(this.question)) {
+        return;
+      }
+
+      const cancel = this.$load(
+        this.$store
+          .dispatch("questions/updateQuestion", {
+            question: this.question,
+            language,
+            params: {
+              text
+            }
+          })
+          .chain(question =>
+            this.$store.dispatch("questions/fetchQuestion", {
+              href: question.href,
+              language
+            })
+          )
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    /**
+     * Generically updates the Question via the Store.
+     *
+     * @param {String} prop The name of the updated property.
+     * @param {*} value The new value for it.
+     * @param {Boolean} mustBeEditable Whether the Question must be
+     *  editable for this to work.
+     */
+    updateQuestion(prop, value, mustBeEditable = false) {
+      if (mustBeEditable && !this.isEditable(this.question)) {
+        return;
+      }
+      this.$load(
+        this.$store.dispatch("questions/updateQuestion", {
+          question: this.question,
+          params: assoc(prop, value, {})
+        })
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    },
+    /**
+     * Asks for confirmation, if the Question should be deleted, and
+     * emits an event which commands to do so, if the users confirms.
+     */
+    deleteQuestion() {
+      this.$modal.show("dialog", {
+        title: `Really delete Question?`,
+        text: `Do you really want to delete Question "${this.question.name}"?`,
+        buttons: [
+          {
+            text: "Cancel"
+          },
+          {
+            text: "Confirm",
+            handler: () => this.$emit("question-delete", this.question),
+            default: true
+          }
+        ]
+      });
+    },
+    /**
+     * Publishes / Retracts this question as a template.
+     * TODO: prompt dataclient when there are still incoming
+     * references
+     * TODO: what is the correct behaviour in aforementioned
+     * case?
+     */
+    toggleIsTemplate() {
+      if (!this.isEditable(this.question)) {
+        return; // can't publish other people's content
+      }
+
+      let template = !this.question.template;
+
+      const cancel = this.$load(
+        this.$store
+          .dispatch("questions/updateQuestion", {
+            question: this.question,
+            params: {
+              template
+            }
+          })
+          .chain(question =>
+            this.$store.dispatch("questions/fetchQuestion", {
+              href: question.href
+            })
+          )
+      ).fork(this.$handleApiError, () => {
+        this.$emit("updated");
+      });
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/_variables";
+@import "../../scss/_variables";
 
-    .question {
-        display: flex;
-        flex-flow: column;
+.question {
+  display: flex;
+  flex-flow: column;
 
-        background-color: $primary-light;
+  background-color: $primary-light;
 
-        &--disabled {
-            background-color: $lighter;
-        }
+  &--disabled {
+    background-color: $lighter;
+  }
 
-        &--bordered {
-            border: 1px solid $primary;
+  &--bordered {
+    border: 1px solid $primary;
 
-            &.question--disabled {
-                border-color: $slightlylight;
-            }
-        }
-
-        &__body {
-            padding: 0.5em 2em 0.5em 2em;
-
-            display: grid;
-            grid-template-columns: minmax(max-content, 1fr) 5fr;
-            grid-row-gap: 0.5em;
-            align-items: center;
-
-            > * {
-                text-align: center
-            }
-
-        }
-
-        &__table-label {
-            padding: 0 0.5em 0 0.5em;
-
-            &--span-2 {
-                grid-column: 1 / span 2;
-            }
-        }
-
-        &__buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-
-            margin-bottom: 8px;
-
-            .button {
-                margin: 0 8px 0 8px;
-            }
-        }
+    &.question--disabled {
+      border-color: $slightlylight;
     }
+  }
+
+  &__body {
+    padding: 0.5em 2em 0.5em 2em;
+
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) 5fr;
+    grid-row-gap: 0.5em;
+    align-items: center;
+
+    > * {
+      text-align: center;
+    }
+  }
+
+  &__table-label {
+    padding: 0 0.5em 0 0.5em;
+
+    &--span-2 {
+      grid-column: 1 / span 2;
+    }
+  }
+
+  &__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    margin-bottom: 8px;
+
+    .button {
+      margin: 0 8px 0 8px;
+    }
+  }
+}
 </style>

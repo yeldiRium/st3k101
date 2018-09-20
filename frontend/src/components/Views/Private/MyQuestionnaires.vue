@@ -27,136 +27,114 @@
 </template>
 
 <script>
-    import {mapGetters, mapState} from "vuex-fluture";
+import { mapGetters, mapState } from "vuex-fluture";
 
-    import Button from "../../Partials/Form/Button";
-    import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
-    import TrackerEntries from "../../Partials/SurveyBase/TrackerEntries";
+import Button from "../../Partials/Form/Button";
+import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
+import TrackerEntries from "../../Partials/SurveyBase/TrackerEntries";
 
-    export default {
-        name: "MyQuestionnaires",
-        components: {
-            TrackerEntries,
-            Button,
-            Questionnaire
-        },
-        computed: {
-            ...mapState("session", ["dataClient"]),
-            ...mapGetters("questionnaires", ["myQuestionnaires"]),
-            ...mapState("global", ["window"]),
-            itemStyle() {
-                let width = "1200px";
-                if (this.window.width * .8 < 1200) {
-                    width = "80%";
-                }
+export default {
+  name: "MyQuestionnaires",
+  components: {
+    TrackerEntries,
+    Button,
+    Questionnaire
+  },
+  computed: {
+    ...mapState("session", ["dataClient"]),
+    ...mapGetters("questionnaires", ["myQuestionnaires"]),
+    ...mapState("global", ["window"]),
+    itemStyle() {
+      let width = "1200px";
+      if (this.window.width * 0.8 < 1200) {
+        width = "80%";
+      }
 
-                return {
-                    width: width
-                };
-            }
-        },
-        methods: {
-            /**
-             * Open the loading... modal;
-             * Load the Questionnaires owned by the current DataClient from the
-             * API;
-             * Close the loading... modal
-             */
-            openUseQuestionnaireTemplateDialog() {
-                this.$modal.show(
-                    "modal-use-questionnaire-template",
-                    {
-                        handler: this.useQuestionnaireTemplate
-                    }
-                );
-            },
-            useQuestionnaireTemplate({questionnaire}) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/createShadowQuestionnaire",
-                        {concreteQuestionnaire: questionnaire}
-                    )
-                )
-                    .fork(
-                        this.$handleApiError,
-                        () => {
-                        }
-                    );
-            },
-            openNewQuestionnaireDialog() {
-                this.$modal.show(
-                    "modal-create-questionnaire",
-                    {
-                        language: this.dataClient.language,
-                        handler: this.createQuestionnaire
-                    }
-                );
-            },
-            createQuestionnaire({
-                                    name, description, isPublic, allowEmbedded,
-                                    xapiTarget
-                                }) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/createConcreteQuestionnaire",
-                        {
-                            language: this.dataClient.language,
-                            name,
-                            description,
-                            isPublic,
-                            allowEmbedded,
-                            xapiTarget
-                        }
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                    }
-                );
-            },
-            deleteQuestionnaire(questionnaire) {
-                this.$load(
-                    this.$store.dispatch(
-                        "questionnaires/deleteQuestionnaire",
-                        {questionnaire}
-                    )
-                ).fork(
-                    this.$handleApiError,
-                    () => {
-                    }
-                );
-            }
-        }
+      return {
+        width: width
+      };
     }
+  },
+  methods: {
+    /**
+     * Open the loading... modal;
+     * Load the Questionnaires owned by the current DataClient from the
+     * API;
+     * Close the loading... modal
+     */
+    openUseQuestionnaireTemplateDialog() {
+      this.$modal.show("modal-use-questionnaire-template", {
+        handler: this.useQuestionnaireTemplate
+      });
+    },
+    useQuestionnaireTemplate({ questionnaire }) {
+      this.$load(
+        this.$store.dispatch("questionnaires/createShadowQuestionnaire", {
+          concreteQuestionnaire: questionnaire
+        })
+      ).fork(this.$handleApiError, () => {});
+    },
+    openNewQuestionnaireDialog() {
+      this.$modal.show("modal-create-questionnaire", {
+        language: this.dataClient.language,
+        handler: this.createQuestionnaire
+      });
+    },
+    createQuestionnaire({
+      name,
+      description,
+      isPublic,
+      allowEmbedded,
+      xapiTarget
+    }) {
+      this.$load(
+        this.$store.dispatch("questionnaires/createConcreteQuestionnaire", {
+          language: this.dataClient.language,
+          name,
+          description,
+          isPublic,
+          allowEmbedded,
+          xapiTarget
+        })
+      ).fork(this.$handleApiError, () => {});
+    },
+    deleteQuestionnaire(questionnaire) {
+      this.$load(
+        this.$store.dispatch("questionnaires/deleteQuestionnaire", {
+          questionnaire
+        })
+      ).fork(this.$handleApiError, () => {});
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/_variables";
+@import "../../scss/_variables";
 
-    .my-questionnaires {
-        display: grid;
-        grid-template-columns: 100%;
-        grid-auto-flow: row;
-        grid-row-gap: 0.5em;
+.my-questionnaires {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-auto-flow: row;
+  grid-row-gap: 0.5em;
 
-        justify-items: center;
+  justify-items: center;
 
-        &__questionnaires {
-            width: 100%;
+  &__questionnaires {
+    width: 100%;
 
-            display: grid;
-            grid-template-columns: 100%;
-            grid-auto-flow: row;
-            grid-row-gap: 0.5em;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-auto-flow: row;
+    grid-row-gap: 0.5em;
 
-            justify-items: center;
-        }
+    justify-items: center;
+  }
 
-        &__buttons {
-            display: grid;
-            grid-auto-flow: column;
-            grid-column-gap: 0.5em;
-        }
-
-    }
+  &__buttons {
+    display: grid;
+    grid-auto-flow: column;
+    grid-column-gap: 0.5em;
+  }
+}
 </style>

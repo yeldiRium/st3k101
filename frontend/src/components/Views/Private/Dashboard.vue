@@ -46,149 +46,148 @@
 </template>
 
 <script>
-    import {mapGetters} from "vuex-fluture";
-    import {Future} from "fluture";
-    import {map, prop, reject, isNil} from "ramda";
+import { mapGetters } from "vuex-fluture";
+import { Future } from "fluture";
+import { map, prop, reject, isNil } from "ramda";
 
-    import RadarChart from "../../Partials/Graph/RadarChart";
-    import TrackerEntries from "../../Partials/SurveyBase/TrackerEntries";
+import RadarChart from "../../Partials/Graph/RadarChart";
+import TrackerEntries from "../../Partials/SurveyBase/TrackerEntries";
 
-    export default {
-        components: {
-            RadarChart,
-            TrackerEntries
-        },
-        computed: {
-            ...mapGetters("questionnaires", ["myQuestionnaires"]),
-            ...mapGetters("statistics", ["statisticByQuestionHref"]),
-            submissionCount() {
-               return (questionnaire) => {
-                   for (let dimension of questionnaire.dimensions) {
-                       for (let question of dimension.questions) {
-                           let statistic = this.statisticByQuestionHref(question.href);
-                           if (!isNil(statistic)) {
-                               return statistic.n;
-                           }
-                       }
-                   }
-                   return 0;
-               };
-            },
-        },
-        created() {
-            this.loadData();
-        },
-        methods: {
-            showGraphFor(dimension) {
-                if (dimension.questions.length < 1) {
-                    return false;
-                }
-                return this.submissionCount > 0;
-            },
-            statisticsByDimension(dimension) {
-                return reject(
-                    isNil,
-                    map(
-                        (href) => this.statisticByQuestionHref(href),
-                        map(prop('href'), dimension.questions)
-                    )
-                );
-            },
-            loadData() {
-                this.loadStatistics().fork(
-                    this.$handleApiError,
-                    () => {
-                    }
-                );
-            },
-            loadStatistics() {
-                let futures = [];
-                for (let questionnaire of this.myQuestionnaires) {
-                    futures.push(
-                        this.$store.dispatch("statistics/fetchQuestionStatisticsForQuestionnaire", {questionnaire})
-                    );
-                }
-                return Future.parallel(Infinity, futures);
+export default {
+  components: {
+    RadarChart,
+    TrackerEntries
+  },
+  computed: {
+    ...mapGetters("questionnaires", ["myQuestionnaires"]),
+    ...mapGetters("statistics", ["statisticByQuestionHref"]),
+    submissionCount() {
+      return questionnaire => {
+        for (let dimension of questionnaire.dimensions) {
+          for (let question of dimension.questions) {
+            let statistic = this.statisticByQuestionHref(question.href);
+            if (!isNil(statistic)) {
+              return statistic.n;
             }
+          }
         }
+        return 0;
+      };
     }
+  },
+  created() {
+    this.loadData();
+  },
+  methods: {
+    showGraphFor(dimension) {
+      if (dimension.questions.length < 1) {
+        return false;
+      }
+      return this.submissionCount > 0;
+    },
+    statisticsByDimension(dimension) {
+      return reject(
+        isNil,
+        map(
+          href => this.statisticByQuestionHref(href),
+          map(prop("href"), dimension.questions)
+        )
+      );
+    },
+    loadData() {
+      this.loadStatistics().fork(this.$handleApiError, () => {});
+    },
+    loadStatistics() {
+      let futures = [];
+      for (let questionnaire of this.myQuestionnaires) {
+        futures.push(
+          this.$store.dispatch(
+            "statistics/fetchQuestionStatisticsForQuestionnaire",
+            { questionnaire }
+          )
+        );
+      }
+      return Future.parallel(Infinity, futures);
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/variables";
+@import "../../scss/variables";
 
-    .dashboard {
-        display: flex;
-        flex-direction: column;
-        width: 98%;
-        margin: 0 auto 0 auto;
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  width: 98%;
+  margin: 0 auto 0 auto;
 
-        &__questionnaire {
-            border: $primary 1px solid;
-            display: flex;
-            flex-direction: column;
-            margin: 1em 0 1em 0;
-            min-width: 210px;
+  &__questionnaire {
+    border: $primary 1px solid;
+    display: flex;
+    flex-direction: column;
+    margin: 1em 0 1em 0;
+    min-width: 210px;
 
-            -webkit-box-shadow: -1px 6px 25px 9px rgba(0,0,0,0.22);
-            -moz-box-shadow: -1px 6px 25px 9px rgba(0,0,0,0.22);
-            box-shadow: -1px 6px 25px 9px rgba(0,0,0,0.22);
+    -webkit-box-shadow: -1px 6px 25px 9px rgba(0, 0, 0, 0.22);
+    -moz-box-shadow: -1px 6px 25px 9px rgba(0, 0, 0, 0.22);
+    box-shadow: -1px 6px 25px 9px rgba(0, 0, 0, 0.22);
 
-            &__title {
-                background-color: $primary-light;
-                //height: 3em;
-                padding: 1em;
-            }
-
-            &__general-info {
-                width: 80vw;
-                padding-top: 1em;
-                margin: auto;
-            }
-
-            &__body {
-                margin-top: 1em;
-                width: 100%;
-                display: flex;
-                flex-direction: row;
-                align-items: stretch;
-                flex-wrap: wrap;
-                justify-content: space-evenly;
-            }
-        }
-
-        &__dimension {
-            display: block;
-            position: center;
-            margin-bottom: 1em;
-
-            &__chart {
-                background-color: $primary-light;
-                border: $primary 1px solid;
-                border-radius: 5px;
-                display: flex;
-                flex-direction: column;
-                width: 80vw;
-                min-width: 250px;
-            }
-        }
-
-        .chart-title {
-            text-align: center;
-            padding: 0 auto 0 auto;
-            border-bottom: $primary 1px solid;
-        }
+    &__title {
+      background-color: $primary-light;
+      //height: 3em;
+      padding: 1em;
     }
 
-    @media (min-width: 1000px) {
-        .dashboard__dimension__chart {
-            width: 38vw;
-        }
+    &__general-info {
+      width: 80vw;
+      padding-top: 1em;
+      margin: auto;
     }
 
-    .chart-placeholder {
-        text-align: center;
-        background-color: $lighter;
-        padding: 2em 0 2em 0;
+    &__body {
+      margin-top: 1em;
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
     }
+  }
+
+  &__dimension {
+    display: block;
+    position: center;
+    margin-bottom: 1em;
+
+    &__chart {
+      background-color: $primary-light;
+      border: $primary 1px solid;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      width: 80vw;
+      min-width: 250px;
+    }
+  }
+
+  .chart-title {
+    text-align: center;
+    padding: 0 auto 0 auto;
+    border-bottom: $primary 1px solid;
+  }
+}
+
+@media (min-width: 1000px) {
+  .dashboard__dimension__chart {
+    width: 38vw;
+  }
+}
+
+.chart-placeholder {
+  text-align: center;
+  background-color: $lighter;
+  padding: 2em 0 2em 0;
+}
 </style>

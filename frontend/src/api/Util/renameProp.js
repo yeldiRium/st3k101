@@ -1,4 +1,4 @@
-import {assoc, curry, dissoc, has, pipe, prop, when} from "ramda";
+import { assoc, curry, dissoc, has, pipe, prop, when } from "ramda";
 
 /**
  * Removes oldProp from obj and adds newProp to obj with the value from oldProp.
@@ -12,13 +12,13 @@ import {assoc, curry, dissoc, has, pipe, prop, when} from "ramda";
  * @return {Object}
  */
 const renameProp = curry((oldProp, newProp, obj) => {
-    return when(
-        has(oldProp),
-        pipe(
-            obj => assoc(newProp, prop(oldProp, obj), obj),
-            dissoc(oldProp)
-        )
-    )(obj);
+  return when(
+    has(oldProp),
+    pipe(
+      obj => assoc(newProp, prop(oldProp, obj), obj),
+      dissoc(oldProp)
+    )
+  )(obj);
 });
 
 export default renameProp;

@@ -29,95 +29,95 @@
 </template>
 
 <script>
-    import {has} from "ramda";
+import { has } from "ramda";
 
-    import Button from "../Form/Button";
+import Button from "../Form/Button";
 
-    export default {
-        name: "ModalCreateResource",
-        components: {
-            Button
-        },
-        computed: {
-            /**
-             * Returns true, if there is no content in the "buttons" slot and
-             * thus the default buttons should be rendered.
-             * @returns {boolean}
-             */
-            defaultButtons() {
-                return !has("buttons", this.$slots);
-            }
-        },
-        methods: {
-            cancel() {
-                this.$emit("cancel");
-            },
-            create() {
-                this.$emit("create");
-            },
-            onKeyUp() {
-                // Enter key was pressed
-                if (event.which == 13) {
-                    this.$emit("create");
-                    return;
-                }
-
-                // Escape key was pressed
-                if (event.which == 27) {
-                    this.$emit("cancel");
-                    return;
-                }
-            }
-        },
-        beforeMount() {
-            window.addEventListener("keyup", this.onKeyUp);
-        },
-        beforeDestroy() {
-            window.removeEventListener("keyup", this.onKeyUp);
-        }
+export default {
+  name: "ModalCreateResource",
+  components: {
+    Button
+  },
+  computed: {
+    /**
+     * Returns true, if there is no content in the "buttons" slot and
+     * thus the default buttons should be rendered.
+     * @returns {boolean}
+     */
+    defaultButtons() {
+      return !has("buttons", this.$slots);
     }
+  },
+  methods: {
+    cancel() {
+      this.$emit("cancel");
+    },
+    create() {
+      this.$emit("create");
+    },
+    onKeyUp() {
+      // Enter key was pressed
+      if (event.which == 13) {
+        this.$emit("create");
+        return;
+      }
+
+      // Escape key was pressed
+      if (event.which == 27) {
+        this.$emit("cancel");
+        return;
+      }
+    }
+  },
+  beforeMount() {
+    window.addEventListener("keyup", this.onKeyUp);
+  },
+  beforeDestroy() {
+    window.removeEventListener("keyup", this.onKeyUp);
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/_variables";
+@import "../../scss/_variables";
 
-    .modal-create-resource {
-        display: grid;
-        grid-template-rows: 2em auto 2em;
-        grid-row-gap: 10px;
+.modal-create-resource {
+  display: grid;
+  grid-template-rows: 2em auto 2em;
+  grid-row-gap: 10px;
 
-        &__header {
-            background-color: $primary-light;
+  &__header {
+    background-color: $primary-light;
 
-            font-size: 1.4em;
-            text-align: center;
-        }
+    font-size: 1.4em;
+    text-align: center;
+  }
 
-        &__body {
-            padding-left: 20px;
-            padding-right: 20px;
+  &__body {
+    padding-left: 20px;
+    padding-right: 20px;
 
-            display: flex;
-            flex-flow: column;
-            align-items: center;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
 
-            > * {
-                margin-bottom: 10px;
-            }
-        }
-
-        &__buttons {
-            padding: 0 20px 0 20px;
-
-            display: grid;
-            grid-auto-columns: 1fr;
-            grid-auto-flow: column;
-            grid-column-gap: 1em;
-            justify-content: center;
-        }
-
-        &__button {
-            flex-grow: 1;
-        }
+    > * {
+      margin-bottom: 10px;
     }
+  }
+
+  &__buttons {
+    padding: 0 20px 0 20px;
+
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    grid-column-gap: 1em;
+    justify-content: center;
+  }
+
+  &__button {
+    flex-grow: 1;
+  }
+}
 </style>

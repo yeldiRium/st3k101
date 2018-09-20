@@ -24,25 +24,24 @@
 </template>
 
 <script>
-    import EMailListForm from "./EMailListForm";
-    import Challenge from "../../../../model/SurveyBase/Challenge/Challenge";
-    import PasswordForm from "./PasswordForm";
+import EMailListForm from "./EMailListForm";
+import Challenge from "../../../../model/SurveyBase/Challenge/Challenge";
+import PasswordForm from "./PasswordForm";
 
-    export default {
-        name: "ChooseChallengeForm",
-        components: {
-            EMailListForm,
-            PasswordForm
-        },
-        props: {
-            challenge: {
-                type: Challenge,
-                required: true
-            }
-        }
+export default {
+  name: "ChooseChallengeForm",
+  components: {
+    EMailListForm,
+    PasswordForm
+  },
+  props: {
+    challenge: {
+      type: Challenge,
+      required: true
     }
+  }
+};
 </script>
 
 <style lang="scss">
-
 </style>

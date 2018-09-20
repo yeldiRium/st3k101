@@ -1,9 +1,9 @@
 import Future from "fluture";
 import * as R from "ramda";
-import {extractJson} from "./Util/Response";
-import {parseDataClient} from "./Util/Parse";
-import {fetchApi} from "./Util/Request";
-import {InternalServerError} from "./Errors";
+import { extractJson } from "./Util/Response";
+import { parseDataClient } from "./Util/Parse";
+import { fetchApi } from "./Util/Request";
+import { InternalServerError } from "./Errors";
 
 /**
  * Register a new DataClient.
@@ -16,15 +16,15 @@ import {InternalServerError} from "./Errors";
  * @cancel see fetchApi
  */
 function register(email, password) {
-    return fetchApi("/api/dataclient", {
-        method: "POST",
-        body: JSON.stringify({
-            email,
-            password
-        })
+  return fetchApi("/api/dataclient", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      password
     })
-        .chain(extractJson)
-        .map(parseDataClient);
+  })
+    .chain(extractJson)
+    .map(parseDataClient);
 }
 
 /**
@@ -38,15 +38,15 @@ function register(email, password) {
  * @cancel see fetchApi
  */
 function requestSession(email, password) {
-    return fetchApi("/api/session", {
-        method: "POST",
-        body: JSON.stringify({
-            email,
-            password
-        })
+  return fetchApi("/api/session", {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      password
     })
-        .chain(extractJson)
-        .map(R.prop("session_token"));
+  })
+    .chain(extractJson)
+    .map(R.prop("session_token"));
 }
 
 /**
@@ -59,11 +59,10 @@ function requestSession(email, password) {
  * @cancel see fetchApi
  */
 function endSession(authenticationToken) {
-    return fetchApi("/api/session", {
-        method: "DELETE",
-        authenticationToken
-    })
-        .map(() => true);
+  return fetchApi("/api/session", {
+    method: "DELETE",
+    authenticationToken
+  }).map(() => true);
 }
 
 /**
@@ -77,11 +76,11 @@ function endSession(authenticationToken) {
  * @cancel see fetchApi
  */
 function getCurrentDataClient(authenticationToken) {
-    return fetchApi("/api/dataclient", {
-        authenticationToken
-    })
-        .chain(extractJson)
-        .map(parseDataClient);
+  return fetchApi("/api/dataclient", {
+    authenticationToken
+  })
+    .chain(extractJson)
+    .map(parseDataClient);
 }
 
 /**
@@ -109,75 +108,80 @@ function getCurrentDataClient(authenticationToken) {
  * @rejects {ApiError|TypeError}
  */
 function requestLtiSession(
-    consumerKey,
-    userId,
-    questionnaireId,
-    clientIp,
+  consumerKey,
+  userId,
+  questionnaireId,
+  clientIp,
+  {
+    context_id = null,
+    context_label = null,
+    context_title = null,
+    launch_presentation_locale = null,
+    launch_presentation_return_url = null,
+    lis_person_contact_email_primary = null,
+    lis_person_name_family = null,
+    lis_person_name_full = null,
+    lis_person_name_given = null,
+    resource_link_description = null,
+    resource_link_title = null,
+    tool_consumer_info_product_family_code = null,
+    tool_consumer_info_version = null,
+    tool_consumer_instance_description = null,
+    tool_consumer_instance_guid = null
+  }
+) {
+  let body = R.filter(R.complement(R.isNil), {
+    user_id: userId,
+    oauth_consumer_key: consumerKey,
+    context_id: context_id,
+    context_label: context_label,
+    context_title: context_title,
+    launch_presentation_locale: launch_presentation_locale,
+    launch_presentation_return_url: launch_presentation_return_url,
+    lis_person_contact_email_primary: lis_person_contact_email_primary,
+    lis_person_name_family: lis_person_name_family,
+    lis_person_name_full: lis_person_name_full,
+    lis_person_name_given: lis_person_name_given,
+    resource_link_description: resource_link_description,
+    resource_link_title: resource_link_title,
+    tool_consumer_info_product_family_code: tool_consumer_info_product_family_code,
+    tool_consumer_info_version: tool_consumer_info_version,
+    tool_consumer_instance_description: tool_consumer_instance_description,
+    tool_consumer_instance_guid: tool_consumer_instance_guid
+  });
+  // TODO: make hard-coded path configurable
+  return fetchApi(
+    `http://websrv-flask/api/questionnaire/${questionnaireId}/lti`,
     {
-        context_id=null,
-        context_label=null,
-        context_title=null,
-        launch_presentation_locale=null,
-        launch_presentation_return_url=null,
-        lis_person_contact_email_primary=null,
-        lis_person_name_family=null,
-        lis_person_name_full=null,
-        lis_person_name_given=null,
-        resource_link_description=null,
-        resource_link_title=null,
-        tool_consumer_info_product_family_code=null,
-        tool_consumer_info_version=null,
-        tool_consumer_instance_description=null,
-        tool_consumer_instance_guid=null
-    }) {
-    let body = R.filter(
-        R.complement(R.isNil),
-        {
-            user_id: userId,
-            oauth_consumer_key: consumerKey,
-            context_id: context_id,
-            context_label: context_label,
-            context_title: context_title,
-            launch_presentation_locale: launch_presentation_locale,
-            launch_presentation_return_url: launch_presentation_return_url,
-            lis_person_contact_email_primary: lis_person_contact_email_primary,
-            lis_person_name_family: lis_person_name_family,
-            lis_person_name_full: lis_person_name_full,
-            lis_person_name_given: lis_person_name_given,
-            resource_link_description: resource_link_description,
-            resource_link_title: resource_link_title,
-            tool_consumer_info_product_family_code: tool_consumer_info_product_family_code,
-            tool_consumer_info_version: tool_consumer_info_version,
-            tool_consumer_instance_description: tool_consumer_instance_description,
-            tool_consumer_instance_guid: tool_consumer_instance_guid
-        });
-    // TODO: make hard-coded path configurable
-    return fetchApi(`http://websrv-flask/api/questionnaire/${questionnaireId}/lti`, {
-        method: "POST",
-        headers: {
-            "X-Forwarded-For": clientIp
-        },
-        body: JSON.stringify(body)
-    })
-        .chain(extractJson)
-        .chain(
-            R.ifElse(
-                R.has("session_token"),
-                R.pipe(
-                    R.prop("session_token"),
-                    Future.of
-                ),
-                () => Future.reject(
-                    new InternalServerError("Session token wasn't returned, although no error message was given.")
-                )
+      method: "POST",
+      headers: {
+        "X-Forwarded-For": clientIp
+      },
+      body: JSON.stringify(body)
+    }
+  )
+    .chain(extractJson)
+    .chain(
+      R.ifElse(
+        R.has("session_token"),
+        R.pipe(
+          R.prop("session_token"),
+          Future.of
+        ),
+        () =>
+          Future.reject(
+            new InternalServerError(
+              "Session token wasn't returned, although no error message was given."
             )
-        );
+          )
+      )
+    );
 }
 
 export {
-    register,
-    requestSession,
-    endSession,
-    getCurrentDataClient,
-    requestLtiSession
+  register,
+  requestSession,
+  endSession,
+  getCurrentDataClient,
+  requestLtiSession
 };

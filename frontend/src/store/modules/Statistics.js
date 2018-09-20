@@ -1,112 +1,112 @@
-import {isNil, find, clone, reject, equals} from "ramda";
+import { isNil, find, clone, reject, equals } from "ramda";
 
-import {Future} from "fluture";
+import { Future } from "fluture";
 
 import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
-import {fetchQuestionStatistic, fetchQuestionStatisticsByQuestionnaire} from "../../api/Statistic";
+import {
+  fetchQuestionStatistic,
+  fetchQuestionStatisticsByQuestionnaire
+} from "../../api/Statistic";
 
 const store = {
-    namespaced: true,
-    state: {
-        /***
-         * All QuestionStatistics objects that have been loaded from the API.
-         *
-         * @type {Array<QuestionStatistic>}
-         */
-        questionStatistics: []
-    },
-    getters: {
-        statisticByQuestionHref(state, getters, rootState, rootGetters) {
-            return (href) => {
-                const statistic = clone(find(
-                    statistic => statistic.questionHref === href,
-                    state.questionStatistics
-                ));
+  namespaced: true,
+  state: {
+    /***
+     * All QuestionStatistics objects that have been loaded from the API.
+     *
+     * @type {Array<QuestionStatistic>}
+     */
+    questionStatistics: []
+  },
+  getters: {
+    statisticByQuestionHref(state, getters, rootState, rootGetters) {
+      return href => {
+        const statistic = clone(
+          find(
+            statistic => statistic.questionHref === href,
+            state.questionStatistics
+          )
+        );
 
-                if (isNil(statistic)) {
-                    return null;
-                }
+        if (isNil(statistic)) {
+          return null;
+        }
 
-                return statistic;
-            };
-        }
-    },
-    actions: {
-        /***
-         * Fetches the QuestionStatistic object for a given question
-         * via the api and stores it.
-         *
-         * @param commit
-         * @param rootGetters
-         * @param question {Question}
-         */
-        fetchQuestionStatistic({commit, rootGetters}, {question}) {
-            return fetchQuestionStatistic(
-                rootGetters["session/sessionToken"],
-                question.href
-            )
-                .chain(statistic => {
-                        commit(
-                            "patchQuestionStatisticInStore",
-                            {statistic}
-                        );
-                        return Future.of(statistic);
-                    }
-                );
-        },
-        fetchQuestionStatisticsForQuestionnaire({commit, rootGetters}, {questionnaire}) {
-            return fetchQuestionStatisticsByQuestionnaire(
-               rootGetters["session/sessionToken"],
-               questionnaire.href
-            )
-                .chain(statistics => {
-                    commit("patchQuestionStatisticsInStore", {statistics});
-                    return Future.of(statistics);
-                });
-        }
-    },
-    mutations: {
-        /**
-         * Update currently stored representation of statistic in store
-         * with provided value.
-         *
-         * Warning: Runs in O(n) time where n is the number of Questions
-         * owned by the current DataClient. Use sparingly.
-         *
-         * @param state
-         * @param statistic {QuestionStatistic}
-         */
-        patchQuestionStatisticInStore(state, {statistic}) {
-            state.questionStatistics = reject(
-                equals(statistic),
-                state.questionStatistics
-            ).concat([statistic]);
-        },
-        /**
-         * Update all currently stored representations of statistics in store
-         * with the statistics provided.
-         *
-         * Runs in O(n) time where n is the number of Questions owned by the
-         * current DataClient.
-         *
-         * @param store
-         * @param statistics {Array<QuestionStatistic>}
-         */
-        patchQuestionStatisticsInStore(state, {statistics}) {
-            let uniqueStatistics = {};
-            for (let storedStatistic of state.questionStatistics) {
-                uniqueStatistics[storedStatistic.id] = storedStatistic;
-            }
-            for (let fetchedStatistic of statistics) {
-                uniqueStatistics[fetchedStatistic.id] = fetchedStatistic;
-            }
-            state.questionStatistics = Object.values(uniqueStatistics);
-        }
+        return statistic;
+      };
     }
+  },
+  actions: {
+    /***
+     * Fetches the QuestionStatistic object for a given question
+     * via the api and stores it.
+     *
+     * @param commit
+     * @param rootGetters
+     * @param question {Question}
+     */
+    fetchQuestionStatistic({ commit, rootGetters }, { question }) {
+      return fetchQuestionStatistic(
+        rootGetters["session/sessionToken"],
+        question.href
+      ).chain(statistic => {
+        commit("patchQuestionStatisticInStore", { statistic });
+        return Future.of(statistic);
+      });
+    },
+    fetchQuestionStatisticsForQuestionnaire(
+      { commit, rootGetters },
+      { questionnaire }
+    ) {
+      return fetchQuestionStatisticsByQuestionnaire(
+        rootGetters["session/sessionToken"],
+        questionnaire.href
+      ).chain(statistics => {
+        commit("patchQuestionStatisticsInStore", { statistics });
+        return Future.of(statistics);
+      });
+    }
+  },
+  mutations: {
+    /**
+     * Update currently stored representation of statistic in store
+     * with provided value.
+     *
+     * Warning: Runs in O(n) time where n is the number of Questions
+     * owned by the current DataClient. Use sparingly.
+     *
+     * @param state
+     * @param statistic {QuestionStatistic}
+     */
+    patchQuestionStatisticInStore(state, { statistic }) {
+      state.questionStatistics = reject(
+        equals(statistic),
+        state.questionStatistics
+      ).concat([statistic]);
+    },
+    /**
+     * Update all currently stored representations of statistics in store
+     * with the statistics provided.
+     *
+     * Runs in O(n) time where n is the number of Questions owned by the
+     * current DataClient.
+     *
+     * @param store
+     * @param statistics {Array<QuestionStatistic>}
+     */
+    patchQuestionStatisticsInStore(state, { statistics }) {
+      let uniqueStatistics = {};
+      for (let storedStatistic of state.questionStatistics) {
+        uniqueStatistics[storedStatistic.id] = storedStatistic;
+      }
+      for (let fetchedStatistic of statistics) {
+        uniqueStatistics[fetchedStatistic.id] = fetchedStatistic;
+      }
+      state.questionStatistics = Object.values(uniqueStatistics);
+    }
+  }
 };
 
 export default store;
 
-export {
-    store
-};
+export { store };

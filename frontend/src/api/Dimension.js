@@ -1,26 +1,26 @@
 import Future from "fluture";
 import {
-    assoc,
-    clone,
-    contains,
-    dissoc,
-    has,
-    map,
-    pipe,
-    prop,
-    without
+  assoc,
+  clone,
+  contains,
+  dissoc,
+  has,
+  map,
+  pipe,
+  prop,
+  without
 } from "ramda";
 
-import {fetchApi} from "./Util/Request";
-import {extractJson} from "./Util/Response";
-import {updateQuestion} from "./Question";
-import {parseDimension, parseQuestion} from "./Util/Parse";
+import { fetchApi } from "./Util/Request";
+import { extractJson } from "./Util/Response";
+import { updateQuestion } from "./Question";
+import { parseDimension, parseQuestion } from "./Util/Parse";
 
 import {
-    ConcreteDimension,
-    ShadowDimension
+  ConcreteDimension,
+  ShadowDimension
 } from "../model/SurveyBase/Dimension";
-import {ConcreteQuestion} from "../model/SurveyBase/Question";
+import { ConcreteQuestion } from "../model/SurveyBase/Question";
 import renameProp from "./Util/renameProp";
 
 const properties = ["name", "randomizeQuestions"];
@@ -40,15 +40,12 @@ const concreteProperties = ["name"];
  * @cancel
  */
 function fetchDimension(authenticationToken, href, language = null) {
-    return fetchApi(
-        href,
-        {
-            authenticationToken,
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(parseDimension);
+  return fetchApi(href, {
+    authenticationToken,
+    language
+  })
+    .chain(extractJson)
+    .map(parseDimension);
 }
 
 /**
@@ -64,7 +61,7 @@ function fetchDimension(authenticationToken, href, language = null) {
  * @cancel
  */
 function fetchDimensionById(authenticationToken, id, language = null) {
-    return fetchDimension(authenticationToken, `/api/dimension/${id}`, language);
+  return fetchDimension(authenticationToken, `/api/dimension/${id}`, language);
 }
 
 /**
@@ -79,15 +76,12 @@ function fetchDimensionById(authenticationToken, id, language = null) {
  * @cancel
  */
 function fetchDimensionTemplates(authenticationToken, language = null) {
-    return fetchApi(
-        "/api/dimension/template",
-        {
-            authenticationToken,
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(map(parseDimension));
+  return fetchApi("/api/dimension/template", {
+    authenticationToken,
+    language
+  })
+    .chain(extractJson)
+    .map(map(parseDimension));
 }
 
 /**
@@ -105,22 +99,24 @@ function fetchDimensionTemplates(authenticationToken, language = null) {
  * @cancel
  */
 function updateDimension(authenticationToken, dimension, language, params) {
-    let parsedParams = pipe(
-        renameProp("randomizeQuestions", "randomize_question_order"),
-        renameProp("referenceId", "reference_id")
-    )(params);
+  let parsedParams = pipe(
+    renameProp("randomizeQuestions", "randomize_question_order"),
+    renameProp("referenceId", "reference_id")
+  )(params);
 
-    return fetchApi(
-        dimension.href,
-        {
-            method: "PATCH",
-            authenticationToken,
-            body: JSON.stringify(parsedParams),
-            language
-        }
-    )
-        .chain(extractJson)
-        .map(pipe(prop("dimension"), parseDimension));
+  return fetchApi(dimension.href, {
+    method: "PATCH",
+    authenticationToken,
+    body: JSON.stringify(parsedParams),
+    language
+  })
+    .chain(extractJson)
+    .map(
+      pipe(
+        prop("dimension"),
+        parseDimension
+      )
+    );
 }
 
 /**
@@ -140,23 +136,27 @@ function updateDimension(authenticationToken, dimension, language, params) {
  * @cancel
  */
 function addConcreteQuestion(authenticationToken, dimension, text, range) {
-    return fetchApi(
-        dimension.href + "/concrete_question",
-        {
-            method: "POST",
-            authenticationToken,
-            body: JSON.stringify({text}),
-            language: dimension.languageData.currentLanguage
-        }
+  return fetchApi(dimension.href + "/concrete_question", {
+    method: "POST",
+    authenticationToken,
+    body: JSON.stringify({ text }),
+    language: dimension.languageData.currentLanguage
+  })
+    .chain(extractJson)
+    .map(
+      pipe(
+        prop("question"),
+        parseQuestion
+      )
     )
-        .chain(extractJson)
-        .map(pipe(prop("question"), parseQuestion))
-        .chain(question => updateQuestion(
-            authenticationToken,
-            question,
-            dimension.languageData.currentLanguage,
-            {range}
-        ));
+    .chain(question =>
+      updateQuestion(
+        authenticationToken,
+        question,
+        dimension.languageData.currentLanguage,
+        { range }
+      )
+    );
 }
 
 /**
@@ -178,16 +178,18 @@ function addConcreteQuestion(authenticationToken, dimension, text, range) {
  * @cancel
  */
 function addShadowQuestion(authenticationToken, dimension, question) {
-    return fetchApi(
-        dimension.href + "/shadow_question",
-        {
-            method: "POST",
-            authenticationToken,
-            body: JSON.stringify({id: question.id})
-        }
-    )
-        .chain(extractJson)
-        .map(pipe(prop("question"), parseQuestion));
+  return fetchApi(dimension.href + "/shadow_question", {
+    method: "POST",
+    authenticationToken,
+    body: JSON.stringify({ id: question.id })
+  })
+    .chain(extractJson)
+    .map(
+      pipe(
+        prop("question"),
+        parseQuestion
+      )
+    );
 }
 
 /**
@@ -205,18 +207,14 @@ function addShadowQuestion(authenticationToken, dimension, question) {
  * @cancel
  */
 function removeQuestion(authenticationToken, dimension, question) {
-    if (contains(question, dimension.questions)) {
-        return fetchApi(
-            question.href,
-            {
-                method: "DELETE",
-                authenticationToken
-            }
-        )
-            .map(() => true);
-    } else {
-        return Future.reject("Question not contained in Dimension.");
-    }
+  if (contains(question, dimension.questions)) {
+    return fetchApi(question.href, {
+      method: "DELETE",
+      authenticationToken
+    }).map(() => true);
+  } else {
+    return Future.reject("Question not contained in Dimension.");
+  }
 }
 
 /**
@@ -235,30 +233,31 @@ function removeQuestion(authenticationToken, dimension, question) {
  * @reject {TypeError|ApiError}
  * @cancel
  */
-function populateOwnedIncomingReferences(authenticationToken, concreteDimension) {
-    const resolvedShadowDimensionFutures = [];
+function populateOwnedIncomingReferences(
+  authenticationToken,
+  concreteDimension
+) {
+  const resolvedShadowDimensionFutures = [];
 
-    // Use basic for loop to easily replace values.
-    for (let i = 0; i < concreteDimension.ownedIncomingReferences.length; i++) {
-        let reference = concreteDimension.ownedIncomingReferences[i];
+  // Use basic for loop to easily replace values.
+  for (let i = 0; i < concreteDimension.ownedIncomingReferences.length; i++) {
+    let reference = concreteDimension.ownedIncomingReferences[i];
 
-        if (instanceOf(reference, Resource)) {
-            const shadowDimensionFuture = fetchDimension(
-                authenticationToken,
-                reference.href,
-                concreteDimension.languageData.currentLanguage
-            )
-                .chain(shadowDimension => {
-                    concreteDimension.ownedIncomingReferences[i] =
-                        shadowDimension;
-                    return Future.of(shadowDimension);
-                });
+    if (instanceOf(reference, Resource)) {
+      const shadowDimensionFuture = fetchDimension(
+        authenticationToken,
+        reference.href,
+        concreteDimension.languageData.currentLanguage
+      ).chain(shadowDimension => {
+        concreteDimension.ownedIncomingReferences[i] = shadowDimension;
+        return Future.of(shadowDimension);
+      });
 
-            resolvedShadowDimensionFutures.push(shadowDimensionFuture);
-        }
+      resolvedShadowDimensionFutures.push(shadowDimensionFuture);
     }
-    // MAYBE: is Infinity appropriate?
-    return Future.parallel(Infinity, resolvedShadowDimensionFutures);
+  }
+  // MAYBE: is Infinity appropriate?
+  return Future.parallel(Infinity, resolvedShadowDimensionFutures);
 }
 
 /**
@@ -275,18 +274,17 @@ function populateOwnedIncomingReferences(authenticationToken, concreteDimension)
  * @cancel
  */
 function populateReferenceTo(authenticationToken, shadowDimension) {
-    if (instanceOf(shadowDimension.referenceTo, Resource)) {
-        return fetchDimension(
-            authenticationToken,
-            shadowDimension.referenceTo.href,
-            shadowDimension.languageData.currentLanguage
-        )
-            .chain(concreteDimension => {
-                shadowDimension.referenceTo = concreteDimension;
-                return Future.of(concreteDimension);
-            });
-    }
-    return Future.of(shadowDimension.referenceTo);
+  if (instanceOf(shadowDimension.referenceTo, Resource)) {
+    return fetchDimension(
+      authenticationToken,
+      shadowDimension.referenceTo.href,
+      shadowDimension.languageData.currentLanguage
+    ).chain(concreteDimension => {
+      shadowDimension.referenceTo = concreteDimension;
+      return Future.of(concreteDimension);
+    });
+  }
+  return Future.of(shadowDimension.referenceTo);
 }
 
 /**
@@ -301,20 +299,20 @@ function populateReferenceTo(authenticationToken, shadowDimension) {
  * @cancel
  */
 function populateDimension(authenticationToken, dimension) {
-    if (instanceOf(dimension, ShadowDimension)) {
-        return populateReferenceTo(authenticationToken, dimension);
-    }
-    if (instanceOf(dimension, ConcreteDimension)) {
-        return populateOwnedIncomingReferences(authenticationToken, dimension);
-    }
+  if (instanceOf(dimension, ShadowDimension)) {
+    return populateReferenceTo(authenticationToken, dimension);
+  }
+  if (instanceOf(dimension, ConcreteDimension)) {
+    return populateOwnedIncomingReferences(authenticationToken, dimension);
+  }
 }
 
 export {
-    fetchDimension,
-    fetchDimensionById,
-    fetchDimensionTemplates,
-    updateDimension,
-    addConcreteQuestion,
-    addShadowQuestion,
-    removeQuestion
+  fetchDimension,
+  fetchDimensionById,
+  fetchDimensionTemplates,
+  updateDimension,
+  addConcreteQuestion,
+  addShadowQuestion,
+  removeQuestion
 };

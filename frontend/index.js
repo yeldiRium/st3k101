@@ -7,8 +7,8 @@
  */
 
 import express from "express";
-global.fetch = require('node-fetch');
-require('abortcontroller-polyfill/dist/polyfill-patch-fetch');
+global.fetch = require("node-fetch");
+require("abortcontroller-polyfill/dist/polyfill-patch-fetch");
 
 import config from "./config/expressConfig";
 
@@ -16,15 +16,17 @@ import embeddedAuthenticationMiddleware from "./src/express/embeddedAuthenticati
 
 const app = express();
 
-app.use(express.urlencoded({
+app.use(
+  express.urlencoded({
     extended: true
-}));
+  })
+);
 
 app.use(express.json());
 
 app.post(
-    '/survey/:questionnaireId/lti',
-    embeddedAuthenticationMiddleware(config.frontendPath)
+  "/survey/:questionnaireId/lti",
+  embeddedAuthenticationMiddleware(config.frontendPath)
 );
 
 app.use(express.static("dist"));

@@ -1,7 +1,7 @@
 import SurveyBase from "./SurveyBase";
 
 import Range from "./Config/Range";
-import {clone, map} from "ramda";
+import { clone, map } from "ramda";
 
 /**
  * BaseClass for ShadowQuestion and ConcreteQuestion.
@@ -9,63 +9,65 @@ import {clone, map} from "ramda";
  * classes, this would be one.
  */
 class Question extends SurveyBase {
-    /**
-     * @param {string}  href See Resource.
-     * @param {String} id See Resource.
-     * @param {Array<Party>} owners See OwnedResource.
-     * @param {LanguageData} languageData See SurveyBase.
-     * @param {Boolean} template See SurveyBase.
-     * @param {String} referenceId See SurveyBase.
-     * @param {string}  text The Question text.
-     * @param {Range}   range The range for the Question's answer.
-     */
-    constructor(href,
-                id,
-                owners,
-                languageData,
-                template,
-                referenceId,
-                text,
-                range) {
-        super(href, id, owners, languageData, template, referenceId);
+  /**
+   * @param {string}  href See Resource.
+   * @param {String} id See Resource.
+   * @param {Array<Party>} owners See OwnedResource.
+   * @param {LanguageData} languageData See SurveyBase.
+   * @param {Boolean} template See SurveyBase.
+   * @param {String} referenceId See SurveyBase.
+   * @param {string}  text The Question text.
+   * @param {Range}   range The range for the Question's answer.
+   */
+  constructor(
+    href,
+    id,
+    owners,
+    languageData,
+    template,
+    referenceId,
+    text,
+    range
+  ) {
+    super(href, id, owners, languageData, template, referenceId);
 
-        this.text = text;
-        this.range = range;
-    }
+    this.text = text;
+    this.range = range;
+  }
 
-    /**
-     * True, if this Question is a ShadowQuestion.
-     *
-     * @returns {boolean}
-     */
-    get isShadow() {
-        throw new Error("Please override this.");
-    };
+  /**
+   * True, if this Question is a ShadowQuestion.
+   *
+   * @returns {boolean}
+   */
+  get isShadow() {
+    throw new Error("Please override this.");
+  }
 
-    /**
-     * True, if this Question is a ConcreteQuestion.
-     *
-     * @returns {boolean}
-     */
-    get isConcrete() {
-        throw new Error("Please override this.");
-    }
+  /**
+   * True, if this Question is a ConcreteQuestion.
+   *
+   * @returns {boolean}
+   */
+  get isConcrete() {
+    throw new Error("Please override this.");
+  }
 
-    /**
-     * @returns {Question}
-     */
-    clone() {
-        return new Question(
-            this._href,
-            this._id,
-            [...this._owners],
-            this.languageData.clone(),
-            this.template,
-            this.referenceId,
-            this.text,
-            this.range.clone()
-        );
-    }
+  /**
+   * @returns {Question}
+   */
+  clone() {
+    return new Question(
+      this._href,
+      this._id,
+      [...this._owners],
+      this.languageData.clone(),
+      this.template,
+      this.referenceId,
+      this.text,
+      this.range.clone()
+    );
+  }
 }
 
 /**
@@ -73,86 +75,81 @@ class Question extends SurveyBase {
  * ShadowQuestions. It is a real Question with own, editable content.
  */
 class ConcreteQuestion extends Question {
-    /**
-     * @param {String}  href See Resource.
-     * @param {String} id See Resource.
-     * @param {Array<Party>} owners See OwnedResource.
-     * @param {LanguageData} languageData See SurveyBase.
-     * @param {Boolean} template See SurveyBase.
-     * @param {String} referenceId See SurveyBase.
-     * @param {string}  text See Question.
-     * @param {Range}   range See Question.
-     * @param {number}  incomingReferenceCount Number of references to this
-     *  Question.
-     *  This counts references not owned by the current user and can thus be
-     *  bigger than the number of ownedIncomingReferences.
-     * @param {Array.<Resource|ShadowQuestion>} ownedIncomingReferences List of
-     *  all references (in form of hrefs or ShadowQuestion instances) to this
-     *  Question, which the current user owns.
-     */
-    constructor(href,
-                id,
-                owners,
-                languageData,
-                template,
-                referenceId,
-                text,
-                range,
-                incomingReferenceCount,
-                ownedIncomingReferences) {
-        if (incomingReferenceCount < ownedIncomingReferences.length) {
-            throw new Error("ReferenceCount can't be smaller than list of owned references.");
-        }
-
-        super(
-            href,
-            id,
-            owners,
-            languageData,
-            template,
-            referenceId,
-            text,
-            range
-        );
-        this.incomingReferenceCount = incomingReferenceCount;
-        this.ownedIncomingReferences = ownedIncomingReferences;
+  /**
+   * @param {String}  href See Resource.
+   * @param {String} id See Resource.
+   * @param {Array<Party>} owners See OwnedResource.
+   * @param {LanguageData} languageData See SurveyBase.
+   * @param {Boolean} template See SurveyBase.
+   * @param {String} referenceId See SurveyBase.
+   * @param {string}  text See Question.
+   * @param {Range}   range See Question.
+   * @param {number}  incomingReferenceCount Number of references to this
+   *  Question.
+   *  This counts references not owned by the current user and can thus be
+   *  bigger than the number of ownedIncomingReferences.
+   * @param {Array.<Resource|ShadowQuestion>} ownedIncomingReferences List of
+   *  all references (in form of hrefs or ShadowQuestion instances) to this
+   *  Question, which the current user owns.
+   */
+  constructor(
+    href,
+    id,
+    owners,
+    languageData,
+    template,
+    referenceId,
+    text,
+    range,
+    incomingReferenceCount,
+    ownedIncomingReferences
+  ) {
+    if (incomingReferenceCount < ownedIncomingReferences.length) {
+      throw new Error(
+        "ReferenceCount can't be smaller than list of owned references."
+      );
     }
 
-    get isShadow() {
-        return false;
-    }
+    super(href, id, owners, languageData, template, referenceId, text, range);
+    this.incomingReferenceCount = incomingReferenceCount;
+    this.ownedIncomingReferences = ownedIncomingReferences;
+  }
 
-    get isConcrete() {
-        return true;
-    }
+  get isShadow() {
+    return false;
+  }
 
-    /**
-     * Number of reference to this Question, which are owned by the current
-     * user.
-     *
-     * @returns {number}
-     */
-    ownedIncomingReferenceCount() {
-        return this.ownedIncomingReferences.length;
-    }
+  get isConcrete() {
+    return true;
+  }
 
-    /**
-     * @returns {ConcreteQuestion}
-     */
-    clone() {
-        return new ConcreteQuestion(
-            this._href,
-            this._id,
-            [...this._owners],
-            this.languageData.clone(),
-            this.template,
-            this.referenceId,
-            this.text,
-            this.range.clone(),
-            this.incomingReferenceCount,
-            map(clone, this.ownedIncomingReferences)
-        );
-    }
+  /**
+   * Number of reference to this Question, which are owned by the current
+   * user.
+   *
+   * @returns {number}
+   */
+  ownedIncomingReferenceCount() {
+    return this.ownedIncomingReferences.length;
+  }
+
+  /**
+   * @returns {ConcreteQuestion}
+   */
+  clone() {
+    return new ConcreteQuestion(
+      this._href,
+      this._id,
+      [...this._owners],
+      this.languageData.clone(),
+      this.template,
+      this.referenceId,
+      this.text,
+      this.range.clone(),
+      this.incomingReferenceCount,
+      map(clone, this.ownedIncomingReferences)
+    );
+  }
 }
 
 /**
@@ -160,58 +157,56 @@ class ConcreteQuestion extends Question {
  * its content is just a shadow of the reference.
  */
 class ShadowQuestion extends Question {
-    /**
-     * @param {String}  href See Resource.
-     * @param {String} id See Resource.
-     * @param {Array<Party>} owners See OwnedResource.
-     * @param {LanguageData} languageData See SurveyBase.
-     * @param {String} referenceId See SurveyBase.
-     * @param {string}  text See Question.
-     * @param {Range}   range See Question.
-     * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the
-     *  referenced Question.
-     */
-    constructor(href,
-                id,
-                owners,
-                languageData,
-                referenceId,
-                text,
-                range,
-                referenceTo) {
-        super(href, id, owners, languageData, false, referenceId, text, range);
-        this.referenceTo = referenceTo;
-    }
+  /**
+   * @param {String}  href See Resource.
+   * @param {String} id See Resource.
+   * @param {Array<Party>} owners See OwnedResource.
+   * @param {LanguageData} languageData See SurveyBase.
+   * @param {String} referenceId See SurveyBase.
+   * @param {string}  text See Question.
+   * @param {Range}   range See Question.
+   * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the
+   *  referenced Question.
+   */
+  constructor(
+    href,
+    id,
+    owners,
+    languageData,
+    referenceId,
+    text,
+    range,
+    referenceTo
+  ) {
+    super(href, id, owners, languageData, false, referenceId, text, range);
+    this.referenceTo = referenceTo;
+  }
 
-    get isShadow() {
-        return true;
-    }
+  get isShadow() {
+    return true;
+  }
 
-    get isConcrete() {
-        return false;
-    }
+  get isConcrete() {
+    return false;
+  }
 
-    /**
-     * @returns {ShadowQuestion}
-     */
-    clone() {
-        return new ShadowQuestion(
-            this._href,
-            this._id,
-            [...this._owners],
-            this.languageData.clone(),
-            this.referenceId,
-            this.text,
-            this.range.clone(),
-            this.referenceTo.clone()
-        );
-    }
+  /**
+   * @returns {ShadowQuestion}
+   */
+  clone() {
+    return new ShadowQuestion(
+      this._href,
+      this._id,
+      [...this._owners],
+      this.languageData.clone(),
+      this.referenceId,
+      this.text,
+      this.range.clone(),
+      this.referenceTo.clone()
+    );
+  }
 }
 
 export default Question;
 
-export {
-    Question,
-    ConcreteQuestion,
-    ShadowQuestion
-}
+export { Question, ConcreteQuestion, ShadowQuestion };

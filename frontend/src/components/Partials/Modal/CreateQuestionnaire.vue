@@ -46,68 +46,68 @@
 </template>
 
 <script>
-    import {isNil} from "ramda";
-    import {mapState} from "vuex-fluture";
+import { isNil } from "ramda";
+import { mapState } from "vuex-fluture";
 
-    import CreateResource from "./CreateResource";
-    import Toggle from "../Form/ToggleButton";
+import CreateResource from "./CreateResource";
+import Toggle from "../Form/ToggleButton";
 
-    export default {
-        name: "ModalCreateQuestionnaire",
-        components: {
-            CreateResource,
-            Toggle
-        },
-        data() {
-            return {
-                language: null,
-                handler: null,
-                name: "Questionnaire name",
-                description: "Questionnaire description",
-                isPublic: false,
-                allowEmbedded: false,
-                xapiTarget: ""
-            }
-        },
-        computed: {
-            ...mapState("session", ["dataClient"])
-        },
-        methods: {
-            beforeOpen({params: {language, handler}}) {
-                if (isNil(language)) {
-                    throw new Error("Parameter language required!");
-                }
-                if (isNil(handler)) {
-                    throw new Error("Parameter handler required!");
-                }
-                this.language = language;
-                this.handler = handler;
-            },
-            cancel() {
-                this.$modal.hide("modal-create-questionnaire");
-            },
-            /**
-             * Emits a "questionnaire-create" event with all needed data to cre-
-             * ate the questionnaire.
-             */
-            create() {
-                this.$modal.hide("modal-create-questionnaire");
-                this.handler({
-                    name: this.name,
-                    description: this.description,
-                    isPublic: this.isPublic,
-                    allowEmbedded: this.allowEmbedded,
-                    xapiTarget: this.xapiTarget
-                });
-            }
-        }
+export default {
+  name: "ModalCreateQuestionnaire",
+  components: {
+    CreateResource,
+    Toggle
+  },
+  data() {
+    return {
+      language: null,
+      handler: null,
+      name: "Questionnaire name",
+      description: "Questionnaire description",
+      isPublic: false,
+      allowEmbedded: false,
+      xapiTarget: ""
+    };
+  },
+  computed: {
+    ...mapState("session", ["dataClient"])
+  },
+  methods: {
+    beforeOpen({ params: { language, handler } }) {
+      if (isNil(language)) {
+        throw new Error("Parameter language required!");
+      }
+      if (isNil(handler)) {
+        throw new Error("Parameter handler required!");
+      }
+      this.language = language;
+      this.handler = handler;
+    },
+    cancel() {
+      this.$modal.hide("modal-create-questionnaire");
+    },
+    /**
+     * Emits a "questionnaire-create" event with all needed data to cre-
+     * ate the questionnaire.
+     */
+    create() {
+      this.$modal.hide("modal-create-questionnaire");
+      this.handler({
+        name: this.name,
+        description: this.description,
+        isPublic: this.isPublic,
+        allowEmbedded: this.allowEmbedded,
+        xapiTarget: this.xapiTarget
+      });
     }
+  }
+};
 </script>
 
 <style lang="scss">
-    .modal-create-questionnaire {
-        &__questionnaire-name {
-            width: 80%;
-        }
-    }
+.modal-create-questionnaire {
+  &__questionnaire-name {
+    width: 80%;
+  }
+}
 </style>

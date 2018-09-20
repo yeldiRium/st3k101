@@ -1,30 +1,30 @@
-import {map, prop} from "ramda";
+import { map, prop } from "ramda";
 
-import {Language, LanguageData} from "../../model/Language";
+import { Language, LanguageData } from "../../model/Language";
 import DataClient from "../../model/DataClient";
 import Range from "../../model/SurveyBase/Config/Range";
 import {
-    ConcreteQuestionnaire,
-    ShadowQuestionnaire
+  ConcreteQuestionnaire,
+  ShadowQuestionnaire
 } from "../../model/SurveyBase/Questionnaire";
 import {
-    ConcreteDimension,
-    ShadowDimension
+  ConcreteDimension,
+  ShadowDimension
 } from "../../model/SurveyBase/Dimension";
 import {
-    ConcreteQuestion,
-    ShadowQuestion
+  ConcreteQuestion,
+  ShadowQuestion
 } from "../../model/SurveyBase/Question";
-import {Resource} from "../../model/Resource";
+import { Resource } from "../../model/Resource";
 import EMailWhitelist from "../../model/SurveyBase/Challenge/EMailWhitelist";
 import EMailBlacklist from "../../model/SurveyBase/Challenge/EMailBlacklist";
 import Password from "../../model/SurveyBase/Challenge/Password";
 import {
-    ItemAddedTrackerEntry,
-    ItemRemovedTrackerEntry,
-    QuestionnaireRemovedTrackerEntry,
-    TranslatedPropertyUpdatedTrackerEntry,
-    PropertyUpdatedTrackerEntry
+  ItemAddedTrackerEntry,
+  ItemRemovedTrackerEntry,
+  QuestionnaireRemovedTrackerEntry,
+  TranslatedPropertyUpdatedTrackerEntry,
+  PropertyUpdatedTrackerEntry
 } from "../../model/TrackerEntry";
 import SubmissionQuestionnaire from "../../model/Submission/SubmissionQuestionnaire";
 import SubmissionDimension from "../../model/Submission/SubmissionDimension";
@@ -38,8 +38,8 @@ import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
  * @param {String} value
  * @return {Language}
  */
-function parseLanguage({item_id, value}) {
-    return new Language(item_id, value);
+function parseLanguage({ item_id, value }) {
+  return new Language(item_id, value);
 }
 
 /**
@@ -52,15 +52,15 @@ function parseLanguage({item_id, value}) {
  * @return {LanguageData}
  */
 function parseLanguageData({
-                               current_language,
-                               original_language,
-                               available_languages
-                           }) {
-    return new LanguageData(
-        parseLanguage(current_language),
-        parseLanguage(original_language),
-        map(parseLanguage, available_languages)
-    );
+  current_language,
+  original_language,
+  available_languages
+}) {
+  return new LanguageData(
+    parseLanguage(current_language),
+    parseLanguage(original_language),
+    map(parseLanguage, available_languages)
+  );
 }
 
 /**
@@ -70,8 +70,8 @@ function parseLanguageData({
  * @param {String} id
  * @returns {Resource}
  */
-function parseResource({href, id}) {
-    return new Resource(href, id);
+function parseResource({ href, id }) {
+  return new Resource(href, id);
 }
 
 /**
@@ -81,7 +81,7 @@ function parseResource({href, id}) {
  * @returns {Array<Roles>}
  */
 function parseRoles(roles) {
-    return map(prop("value"), roles);
+  return map(prop("value"), roles);
 }
 
 /**
@@ -95,14 +95,14 @@ function parseRoles(roles) {
  * @param {Array<Object>} roles
  * @return {DataClient}
  */
-function parseDataClient({email, id, href, language, roles}) {
-    return new DataClient(
-        href,
-        id,
-        email,
-        parseLanguage(language),
-        parseRoles(roles)
-    );
+function parseDataClient({ email, id, href, language, roles }) {
+  return new DataClient(
+    href,
+    id,
+    email,
+    parseLanguage(language),
+    parseRoles(roles)
+  );
 }
 
 /**
@@ -112,14 +112,8 @@ function parseDataClient({email, id, href, language, roles}) {
  * @param href
  * @return {DataClient}
  */
-function parseSmallDataClient({id, href}) {
-    return new DataClient(
-        href,
-        id,
-        "",
-        null,
-        []
-    );
+function parseSmallDataClient({ id, href }) {
+  return new DataClient(href, id, "", null, []);
 }
 
 /**
@@ -131,11 +125,11 @@ function parseSmallDataClient({id, href}) {
  * @return {Array<Challenge>}
  */
 function parseChallenges(questionnaire) {
-    return [
-        parseEMailWhitelistChallenge(questionnaire),
-        parseEmailBlacklistChallenge(questionnaire),
-        parsePasswordChallenge(questionnaire)
-    ];
+  return [
+    parseEMailWhitelistChallenge(questionnaire),
+    parseEmailBlacklistChallenge(questionnaire),
+    parsePasswordChallenge(questionnaire)
+  ];
 }
 
 /**
@@ -146,13 +140,10 @@ function parseChallenges(questionnaire) {
  * @returns {EMailWhitelist}
  */
 function parseEMailWhitelistChallenge({
-                                          email_whitelist_enabled,
-                                          email_whitelist
-                                      }) {
-    return new EMailWhitelist(
-        email_whitelist_enabled,
-        email_whitelist
-    );
+  email_whitelist_enabled,
+  email_whitelist
+}) {
+  return new EMailWhitelist(email_whitelist_enabled, email_whitelist);
 }
 
 /**
@@ -163,13 +154,10 @@ function parseEMailWhitelistChallenge({
  * @returns {EMailBlacklist}
  */
 function parseEmailBlacklistChallenge({
-                                 email_blacklist_enabled,
-                                 email_blacklist
-                             }) {
-    return new EMailBlacklist(
-        email_blacklist_enabled,
-        email_blacklist
-    );
+  email_blacklist_enabled,
+  email_blacklist
+}) {
+  return new EMailBlacklist(email_blacklist_enabled, email_blacklist);
 }
 
 /**
@@ -180,11 +168,8 @@ function parseEmailBlacklistChallenge({
  * @returns {Password}
  */
 
-function parsePasswordChallenge({password_enabled, password}) {
-    return new Password(
-        password_enabled,
-        password
-    );
+function parsePasswordChallenge({ password_enabled, password }) {
+  return new Password(password_enabled, password);
 }
 
 /**
@@ -195,12 +180,12 @@ function parsePasswordChallenge({password_enabled, password}) {
  * @return {Questionnaire}
  */
 function parseQuestionnaire(data) {
-    if (prop("shadow", data) === true) {
-        return parseShadowQuestionnaire(data, data);  // TODO use ...rest
-    } else if (!data.hasOwnProperty("owners")) {
-        return parseTemplateQuestionnaire(data);
-    }
-    return parseConcreteQuestionnaire(data, data);  // TODO use ...rest
+  if (prop("shadow", data) === true) {
+    return parseShadowQuestionnaire(data, data); // TODO use ...rest
+  } else if (!data.hasOwnProperty("owners")) {
+    return parseTemplateQuestionnaire(data);
+  }
+  return parseConcreteQuestionnaire(data, data); // TODO use ...rest
 }
 
 /**
@@ -221,39 +206,39 @@ function parseQuestionnaire(data) {
  * @returns {ConcreteQuestionnaire}
  */
 function parseTemplateQuestionnaire({
-                                        href,
-                                        id,
-                                        reference_id,
-                                        name,
-                                        description,
-                                        dimensions,
-                                        template,
-                                        current_language,
-                                        original_language,
-                                        available_languages
-                                    }) {
-    return new ConcreteQuestionnaire(
-        href,
-        id,
-        [],
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        template,
-        reference_id,
-        name,
-        description,
-        false,
-        false,
-        "",
-        "",
-        map(parseDimension, dimensions),
-        [],
-        0,
-        []
-    );
+  href,
+  id,
+  reference_id,
+  name,
+  description,
+  dimensions,
+  template,
+  current_language,
+  original_language,
+  available_languages
+}) {
+  return new ConcreteQuestionnaire(
+    href,
+    id,
+    [],
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    template,
+    reference_id,
+    name,
+    description,
+    false,
+    false,
+    "",
+    "",
+    map(parseDimension, dimensions),
+    [],
+    0,
+    []
+  );
 }
 
 /**
@@ -279,43 +264,46 @@ function parseTemplateQuestionnaire({
  *
  * @return {ShadowQuestionnaire}
  */
-function parseShadowQuestionnaire({
-                                      href,
-                                      id,
-                                      owners,
-                                      reference_id,
-                                      name,
-                                      description,
-                                      dimensions,
-                                      published,
-                                      allow_embedded,
-                                      xapi_target,
-                                      lti_consumer_key,
-                                      current_language,
-                                      original_language,
-                                      available_languages,
-                                      reference_to
-                                  }, whole) {
-    return new ShadowQuestionnaire(
-        href,
-        id,
-        map(parseSmallDataClient, owners),
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        reference_id,
-        name,
-        description,
-        published,
-        allow_embedded,
-        xapi_target,
-        lti_consumer_key,
-        map(parseDimension, dimensions),
-        parseChallenges(whole),
-        parseResource(reference_to)
-    );
+function parseShadowQuestionnaire(
+  {
+    href,
+    id,
+    owners,
+    reference_id,
+    name,
+    description,
+    dimensions,
+    published,
+    allow_embedded,
+    xapi_target,
+    lti_consumer_key,
+    current_language,
+    original_language,
+    available_languages,
+    reference_to
+  },
+  whole
+) {
+  return new ShadowQuestionnaire(
+    href,
+    id,
+    map(parseSmallDataClient, owners),
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    reference_id,
+    name,
+    description,
+    published,
+    allow_embedded,
+    xapi_target,
+    lti_consumer_key,
+    map(parseDimension, dimensions),
+    parseChallenges(whole),
+    parseResource(reference_to)
+  );
 }
 
 /**
@@ -342,47 +330,50 @@ function parseShadowQuestionnaire({
  *
  * @return {ConcreteQuestionnaire}
  */
-function parseConcreteQuestionnaire({
-                                        href,
-                                        id,
-                                        owners,
-                                        reference_id,
-                                        name,
-                                        description,
-                                        dimensions,
-                                        published,
-                                        template,
-                                        allow_embedded,
-                                        xapi_target,
-                                        lti_consumer_key,
-                                        current_language,
-                                        original_language,
-                                        available_languages,
-                                        owned_incoming_references,
-                                        incoming_reference_count
-                                    }, whole) {
-    return new ConcreteQuestionnaire(
-        href,
-        id,
-        map(parseSmallDataClient, owners),
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        template,
-        reference_id,
-        name,
-        description,
-        published,
-        allow_embedded,
-        xapi_target,
-        lti_consumer_key,
-        map(parseDimension, dimensions),
-        parseChallenges(whole),
-        incoming_reference_count,
-        map(parseResource, owned_incoming_references)
-    );
+function parseConcreteQuestionnaire(
+  {
+    href,
+    id,
+    owners,
+    reference_id,
+    name,
+    description,
+    dimensions,
+    published,
+    template,
+    allow_embedded,
+    xapi_target,
+    lti_consumer_key,
+    current_language,
+    original_language,
+    available_languages,
+    owned_incoming_references,
+    incoming_reference_count
+  },
+  whole
+) {
+  return new ConcreteQuestionnaire(
+    href,
+    id,
+    map(parseSmallDataClient, owners),
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    template,
+    reference_id,
+    name,
+    description,
+    published,
+    allow_embedded,
+    xapi_target,
+    lti_consumer_key,
+    map(parseDimension, dimensions),
+    parseChallenges(whole),
+    incoming_reference_count,
+    map(parseResource, owned_incoming_references)
+  );
 }
 
 /**
@@ -393,12 +384,12 @@ function parseConcreteQuestionnaire({
  * @return {Dimension}
  */
 function parseDimension(data) {
-    if (prop("shadow", data) === true) {
-        return parseShadowDimension(data);
-    } else if (!data.hasOwnProperty("owners")) {
-        return parseTemplateDimension(data);
-    }
-    return parseConcreteDimension(data);
+  if (prop("shadow", data) === true) {
+    return parseShadowDimension(data);
+  } else if (!data.hasOwnProperty("owners")) {
+    return parseTemplateDimension(data);
+  }
+  return parseConcreteDimension(data);
 }
 
 /**
@@ -419,34 +410,34 @@ function parseDimension(data) {
  * @returns {ConcreteDimension}
  */
 function parseTemplateDimension({
-                                    href,
-                                    id,
-                                    reference_id,
-                                    name,
-                                    questions,
-                                    randomize_question_order,
-                                    template,
-                                    current_language,
-                                    original_language,
-                                    available_languages
-                                }) {
-    return new ConcreteDimension(
-        href,
-        id,
-        [],  // owners
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        template,
-        reference_id,
-        name,
-        map(parseQuestion, questions),
-        randomize_question_order,
-        0,  // incoming_reference_count
-        []  // owned_incoming_references
-    );
+  href,
+  id,
+  reference_id,
+  name,
+  questions,
+  randomize_question_order,
+  template,
+  current_language,
+  original_language,
+  available_languages
+}) {
+  return new ConcreteDimension(
+    href,
+    id,
+    [], // owners
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    template,
+    reference_id,
+    name,
+    map(parseQuestion, questions),
+    randomize_question_order,
+    0, // incoming_reference_count
+    [] // owned_incoming_references
+  );
 }
 
 /**
@@ -468,33 +459,33 @@ function parseTemplateDimension({
  * @return {ShadowDimension}
  */
 function parseShadowDimension({
-                                  href,
-                                  id,
-                                  owners,
-                                  reference_id,
-                                  name,
-                                  questions,
-                                  randomize_question_order,
-                                  current_language,
-                                  original_language,
-                                  available_languages,
-                                  reference_to
-                              }) {
-    return new ShadowDimension(
-        href,
-        id,
-        map(parseSmallDataClient, owners),
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        reference_id,
-        name,
-        map(parseQuestion, questions),
-        randomize_question_order,
-        parseResource(reference_to)
-    );
+  href,
+  id,
+  owners,
+  reference_id,
+  name,
+  questions,
+  randomize_question_order,
+  current_language,
+  original_language,
+  available_languages,
+  reference_to
+}) {
+  return new ShadowDimension(
+    href,
+    id,
+    map(parseSmallDataClient, owners),
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    reference_id,
+    name,
+    map(parseQuestion, questions),
+    randomize_question_order,
+    parseResource(reference_to)
+  );
 }
 
 /**
@@ -517,37 +508,37 @@ function parseShadowDimension({
  * @return {ConcreteDimension}
  */
 function parseConcreteDimension({
-                                    href,
-                                    id,
-                                    owners,
-                                    reference_id,
-                                    name,
-                                    questions,
-                                    randomize_question_order,
-                                    template,
-                                    current_language,
-                                    original_language,
-                                    available_languages,
-                                    owned_incoming_references,
-                                    incoming_reference_count
-                                }) {
-    return new ConcreteDimension(
-        href,
-        id,
-        map(parseSmallDataClient, owners),
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        template,
-        reference_id,
-        name,
-        map(parseQuestion, questions),
-        randomize_question_order,
-        incoming_reference_count,
-        map(parseResource, owned_incoming_references)
-    );
+  href,
+  id,
+  owners,
+  reference_id,
+  name,
+  questions,
+  randomize_question_order,
+  template,
+  current_language,
+  original_language,
+  available_languages,
+  owned_incoming_references,
+  incoming_reference_count
+}) {
+  return new ConcreteDimension(
+    href,
+    id,
+    map(parseSmallDataClient, owners),
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    template,
+    reference_id,
+    name,
+    map(parseQuestion, questions),
+    randomize_question_order,
+    incoming_reference_count,
+    map(parseResource, owned_incoming_references)
+  );
 }
 
 /**
@@ -558,12 +549,12 @@ function parseConcreteDimension({
  * @return {Question}
  */
 function parseQuestion(data) {
-    if (prop("shadow", data) === true) {
-        return parseShadowQuestion(data);
-    } else if (!data.hasOwnProperty("owners")) {
-        return parseTemplateQuestion(data);
-    }
-    return parseConcreteQuestion(data);
+  if (prop("shadow", data) === true) {
+    return parseShadowQuestion(data);
+  } else if (!data.hasOwnProperty("owners")) {
+    return parseTemplateQuestion(data);
+  }
+  return parseConcreteQuestion(data);
 }
 
 /**
@@ -584,33 +575,33 @@ function parseQuestion(data) {
  * @returns {ConcreteQuestion}
  */
 function parseTemplateQuestion({
-                                   href,
-                                   id,
-                                   reference_id,
-                                   text,
-                                   range_start,
-                                   range_end,
-                                   template,
-                                   current_language,
-                                   original_language,
-                                   available_languages
-                               }) {
-    return new ConcreteQuestion(
-        href,
-        id,
-        [],  // owners
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        template,
-        reference_id,
-        text,
-        new Range({start: range_start, end: range_end}),
-        0,  // incoming reference count
-        []  // owned incoming references
-    );
+  href,
+  id,
+  reference_id,
+  text,
+  range_start,
+  range_end,
+  template,
+  current_language,
+  original_language,
+  available_languages
+}) {
+  return new ConcreteQuestion(
+    href,
+    id,
+    [], // owners
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    template,
+    reference_id,
+    text,
+    new Range({ start: range_start, end: range_end }),
+    0, // incoming reference count
+    [] // owned incoming references
+  );
 }
 
 /**
@@ -632,32 +623,32 @@ function parseTemplateQuestion({
  * @return {ShadowQuestion}
  */
 function parseShadowQuestion({
-                                 href,
-                                 id,
-                                 owners,
-                                 reference_id,
-                                 text,
-                                 range_start,
-                                 range_end,
-                                 current_language,
-                                 original_language,
-                                 available_languages,
-                                 reference_to
-                             }) {
-    return new ShadowQuestion(
-        href,
-        id,
-        map(parseSmallDataClient, owners),
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        reference_id,
-        text,
-        new Range({start: range_start, end: range_end}),
-        parseResource(reference_to)
-    );
+  href,
+  id,
+  owners,
+  reference_id,
+  text,
+  range_start,
+  range_end,
+  current_language,
+  original_language,
+  available_languages,
+  reference_to
+}) {
+  return new ShadowQuestion(
+    href,
+    id,
+    map(parseSmallDataClient, owners),
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    reference_id,
+    text,
+    new Range({ start: range_start, end: range_end }),
+    parseResource(reference_to)
+  );
 }
 
 /**
@@ -680,36 +671,36 @@ function parseShadowQuestion({
  * @return {ConcreteQuestion}
  */
 function parseConcreteQuestion({
-                                   href,
-                                   id,
-                                   owners,
-                                   reference_id,
-                                   text,
-                                   range_start,
-                                   range_end,
-                                   template,
-                                   current_language,
-                                   original_language,
-                                   available_languages,
-                                   owned_incoming_references,
-                                   incoming_reference_count
-                               }) {
-    return new ConcreteQuestion(
-        href,
-        id,
-        map(parseSmallDataClient, owners),
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        template,
-        reference_id,
-        text,
-        new Range({start: range_start, end: range_end}),
-        incoming_reference_count,
-        map(parseResource, owned_incoming_references)
-    );
+  href,
+  id,
+  owners,
+  reference_id,
+  text,
+  range_start,
+  range_end,
+  template,
+  current_language,
+  original_language,
+  available_languages,
+  owned_incoming_references,
+  incoming_reference_count
+}) {
+  return new ConcreteQuestion(
+    href,
+    id,
+    map(parseSmallDataClient, owners),
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    template,
+    reference_id,
+    text,
+    new Range({ start: range_start, end: range_end }),
+    incoming_reference_count,
+    map(parseResource, owned_incoming_references)
+  );
 }
 
 /**
@@ -726,6 +717,16 @@ function parseConcreteQuestion({
  * @returns {PropertyUpdatedTrackerEntry}
  */
 function parsePropertyUpdatedTrackerEntry({
+  dataclient_email,
+  timestamp,
+  item_name,
+  item_type,
+  item_href,
+  property_name,
+  previous_value,
+  new_value
+}) {
+  return new PropertyUpdatedTrackerEntry(
     dataclient_email,
     timestamp,
     item_name,
@@ -734,17 +735,7 @@ function parsePropertyUpdatedTrackerEntry({
     property_name,
     previous_value,
     new_value
-}) {
-    return new PropertyUpdatedTrackerEntry(
-        dataclient_email,
-        timestamp,
-        item_name,
-        item_type,
-        item_href,
-        property_name,
-        previous_value,
-        new_value
-    );
+  );
 }
 
 /**
@@ -762,6 +753,17 @@ function parsePropertyUpdatedTrackerEntry({
  * @returns {TranslatedPropertyUpdatedTrackerEntry}
  */
 function parseTranslatedPropertyUpdatedTrackerEntry({
+  dataclient_email,
+  timestamp,
+  item_name,
+  item_type,
+  item_href,
+  property_name,
+  previous_value,
+  new_value,
+  language
+}) {
+  return new TranslatedPropertyUpdatedTrackerEntry(
     dataclient_email,
     timestamp,
     item_name,
@@ -771,18 +773,7 @@ function parseTranslatedPropertyUpdatedTrackerEntry({
     previous_value,
     new_value,
     language
-}) {
-    return new TranslatedPropertyUpdatedTrackerEntry(
-        dataclient_email,
-        timestamp,
-        item_name,
-        item_type,
-        item_href,
-        property_name,
-        previous_value,
-        new_value,
-        language
-    );
+  );
 }
 
 /**
@@ -798,6 +789,16 @@ function parseTranslatedPropertyUpdatedTrackerEntry({
  * @returns {ItemAddedTrackerEntry}
  */
 function parseItemAddedTrackeEntry({
+  dataclient_email,
+  timestamp,
+  parent_item_name,
+  parent_item_type,
+  parent_item_href,
+  added_item_name,
+  added_item_type,
+  added_item_href
+}) {
+  return new ItemAddedTrackerEntry(
     dataclient_email,
     timestamp,
     parent_item_name,
@@ -806,17 +807,7 @@ function parseItemAddedTrackeEntry({
     added_item_name,
     added_item_type,
     added_item_href
-}) {
-    return new ItemAddedTrackerEntry(
-        dataclient_email,
-        timestamp,
-        parent_item_name,
-        parent_item_type,
-        parent_item_href,
-        added_item_name,
-        added_item_type,
-        added_item_href
-    );
+  );
 }
 
 /**
@@ -830,21 +821,21 @@ function parseItemAddedTrackeEntry({
  * @returns {ItemRemovedTrackerEntry}
  */
 function parseItemRemovedTrackerEntry({
+  dataclient_email,
+  timestamp,
+  parent_item_name,
+  parent_item_type,
+  parent_item_href,
+  removed_item_name
+}) {
+  return new ItemRemovedTrackerEntry(
     dataclient_email,
     timestamp,
     parent_item_name,
     parent_item_type,
     parent_item_href,
     removed_item_name
-}) {
-    return new ItemRemovedTrackerEntry(
-        dataclient_email,
-        timestamp,
-        parent_item_name,
-        parent_item_type,
-        parent_item_href,
-        removed_item_name
-    );
+  );
 }
 
 /**
@@ -855,15 +846,15 @@ function parseItemRemovedTrackerEntry({
  * @returns {QuestionnaireRemovedTrackerEntry}
  */
 function parseQuestionnaireRemovedTrackerEntry({
+  dataclient_email,
+  timestamp,
+  questionnaire_name
+}) {
+  return new QuestionnaireRemovedTrackerEntry(
     dataclient_email,
     timestamp,
     questionnaire_name
-}) {
-    return new QuestionnaireRemovedTrackerEntry(
-        dataclient_email,
-        timestamp,
-        questionnaire_name
-    );
+  );
 }
 
 /**
@@ -872,18 +863,18 @@ function parseQuestionnaireRemovedTrackerEntry({
  * @returns {*}
  */
 function parseTrackerEntry(data) {
-    switch (data.type) {
-        case "PropertyUpdatedTrackerEntry":
-            return parsePropertyUpdatedTrackerEntry(data);
-        case "TranslatedPropertyUpdatedTrackerEntry":
-            return parseTranslatedPropertyUpdatedTrackerEntry(data);
-        case "ItemAddedTrackerEntry":
-            return parseItemAddedTrackeEntry(data);
-        case "ItemRemovedTrackerEntry":
-            return parseItemRemovedTrackerEntry(data);
-        case "QuestionnaireRemovedTrackerEntry":
-            return parseQuestionnaireRemovedTrackerEntry(data);
-    }
+  switch (data.type) {
+    case "PropertyUpdatedTrackerEntry":
+      return parsePropertyUpdatedTrackerEntry(data);
+    case "TranslatedPropertyUpdatedTrackerEntry":
+      return parseTranslatedPropertyUpdatedTrackerEntry(data);
+    case "ItemAddedTrackerEntry":
+      return parseItemAddedTrackeEntry(data);
+    case "ItemRemovedTrackerEntry":
+      return parseItemRemovedTrackerEntry(data);
+    case "QuestionnaireRemovedTrackerEntry":
+      return parseQuestionnaireRemovedTrackerEntry(data);
+  }
 }
 
 /**
@@ -901,29 +892,29 @@ function parseTrackerEntry(data) {
  * @returns {SubmissionQuestion}
  */
 function parseSubmissionQuestion({
+  id,
+  href,
+  text,
+  range_start,
+  range_end,
+  current_language,
+  original_language,
+  available_languages
+}) {
+  return new SubmissionQuestion(
     id,
     href,
     text,
-    range_start,
-    range_end,
-    current_language,
-    original_language,
-    available_languages
-}) {
-    return new SubmissionQuestion(
-        id,
-        href,
-        text,
-        new Range({
-            start: range_start,
-            end: range_end
-        }),
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        })
-    );
+    new Range({
+      start: range_start,
+      end: range_end
+    }),
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    })
+  );
 }
 
 /**
@@ -941,27 +932,27 @@ function parseSubmissionQuestion({
  * @returns {SubmissionDimension}
  */
 function parseSubmissionDimension({
+  id,
+  href,
+  name,
+  randomize_question_order,
+  current_language,
+  original_language,
+  available_languages,
+  questions
+}) {
+  return new SubmissionDimension(
     id,
     href,
     name,
     randomize_question_order,
-    current_language,
-    original_language,
-    available_languages,
-    questions
-}) {
-    return new SubmissionDimension(
-        id,
-        href,
-        name,
-        randomize_question_order,
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        map(parseSubmissionQuestion, questions)
-    );
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
+    map(parseSubmissionQuestion, questions)
+  );
 }
 
 /**
@@ -979,29 +970,29 @@ function parseSubmissionDimension({
  * @returns {SubmissionQuestionnaire}
  */
 function parseSubmissionQuestionnaire({
+  id,
+  href,
+  name,
+  description,
+  password_enabled,
+  dimensions,
+  current_language,
+  original_language,
+  available_languages
+}) {
+  return new SubmissionQuestionnaire(
     id,
     href,
     name,
     description,
+    parseLanguageData({
+      current_language,
+      original_language,
+      available_languages
+    }),
     password_enabled,
-    dimensions,
-    current_language,
-    original_language,
-    available_languages
-}){
-    return new SubmissionQuestionnaire(
-        id,
-        href,
-        name,
-        description,
-        parseLanguageData({
-            current_language,
-            original_language,
-            available_languages
-        }),
-        password_enabled,
-        map(parseSubmissionDimension, dimensions)
-    );
+    map(parseSubmissionDimension, dimensions)
+  );
 }
 
 /**
@@ -1021,6 +1012,19 @@ function parseSubmissionQuestionnaire({
  * @returns {QuestionStatistic}
  */
 function parseQuestionStatistic({
+  question_id,
+  question_href,
+  question_text,
+  question_range_start,
+  question_range_end,
+  n,
+  biggest,
+  smallest,
+  q1,
+  q2,
+  q3
+}) {
+  return new QuestionStatistic(
     question_id,
     question_href,
     question_text,
@@ -1032,40 +1036,27 @@ function parseQuestionStatistic({
     q1,
     q2,
     q3
-}) {
-    return new QuestionStatistic(
-        question_id,
-        question_href,
-        question_text,
-        question_range_start,
-        question_range_end,
-        n,
-        biggest,
-        smallest,
-        q1,
-        q2,
-        q3
-    );
+  );
 }
 
 export {
-    parseLanguage,
-    parseLanguageData,
-    parseDataClient,
-    parseChallenges,
-    parseEMailWhitelistChallenge,
-    parseEmailBlacklistChallenge,
-    parsePasswordChallenge,
-    parseQuestionnaire,
-    parseShadowQuestionnaire,
-    parseConcreteQuestionnaire,
-    parseDimension,
-    parseShadowDimension,
-    parseConcreteDimension,
-    parseQuestion,
-    parseShadowQuestion,
-    parseConcreteQuestion,
-    parseTrackerEntry,
-    parseSubmissionQuestionnaire,
-    parseQuestionStatistic
+  parseLanguage,
+  parseLanguageData,
+  parseDataClient,
+  parseChallenges,
+  parseEMailWhitelistChallenge,
+  parseEmailBlacklistChallenge,
+  parsePasswordChallenge,
+  parseQuestionnaire,
+  parseShadowQuestionnaire,
+  parseConcreteQuestionnaire,
+  parseDimension,
+  parseShadowDimension,
+  parseConcreteDimension,
+  parseQuestion,
+  parseShadowQuestion,
+  parseConcreteQuestion,
+  parseTrackerEntry,
+  parseSubmissionQuestionnaire,
+  parseQuestionStatistic
 };

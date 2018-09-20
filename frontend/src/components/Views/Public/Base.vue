@@ -6,17 +6,17 @@
 </template>
 
 <script>
-    import LanguagePicker from "../../Partials/LanguagePicker";
+import LanguagePicker from "../../Partials/LanguagePicker";
 
-    export default {
-        name: "PublicBase",
-        components: {LanguagePicker}
-    };
+export default {
+  name: "PublicBase",
+  components: { LanguagePicker }
+};
 </script>
 
 <style lang="scss">
-    * {
-        padding: 0;
-        margin: 0;
-    }
+* {
+  padding: 0;
+  margin: 0;
+}
 </style>

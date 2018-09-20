@@ -34,57 +34,57 @@
 </template>
 
 <script>
-    import RangeSVG from "./RangeSVG";
+import RangeSVG from "./RangeSVG";
 
-    import Range from "../../../../model/SurveyBase/Config/Range";
+import Range from "../../../../model/SurveyBase/Config/Range";
 
-    export default {
-        name: "RangeEditor",
-        components: {
-            RangeSVG
-        },
-        props: {
-            /** @type {Range} */
-            value: {
-                type: Range
-            }
-        },
-        methods: {
-            updateStart(event) {
-                this.$emit(
-                    "input",
-                    new Range({
-                        start: Number(event.target.value),
-                        end: this.value.end
-                    })
-                );
-            },
-            updateEnd(event) {
-                this.$emit(
-                    "input",
-                    new Range({
-                        start: this.value.start,
-                        end: Number(event.target.value)
-                    })
-                );
-            }
-        }
+export default {
+  name: "RangeEditor",
+  components: {
+    RangeSVG
+  },
+  props: {
+    /** @type {Range} */
+    value: {
+      type: Range
     }
+  },
+  methods: {
+    updateStart(event) {
+      this.$emit(
+        "input",
+        new Range({
+          start: Number(event.target.value),
+          end: this.value.end
+        })
+      );
+    },
+    updateEnd(event) {
+      this.$emit(
+        "input",
+        new Range({
+          start: this.value.start,
+          end: Number(event.target.value)
+        })
+      );
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../../scss/_variables";
+@import "../../../scss/_variables";
 
-    .range-editor {
-        display: grid;
-        justify-items: center;
+.range-editor {
+  display: grid;
+  justify-items: center;
 
-        &__input {
-            width: 3em;
-        }
+  &__input {
+    width: 3em;
+  }
 
-        &__preview {
-            width: 100%;
-        }
-    }
+  &__preview {
+    width: 100%;
+  }
+}
 </style>

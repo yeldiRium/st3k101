@@ -74,62 +74,59 @@
 </template>
 
 <script>
-    import {
-        TrackerEntry
-    } from "../../../model/TrackerEntry";
+import { TrackerEntry } from "../../../model/TrackerEntry";
 
-
-    export default {
-        name: "TrackerEntry",
-        props: {
-            trackerEntry: {
-                type: TrackerEntry
-            },
-            all: {
-                type: Boolean
-            }
-        },
-        methods: {
-            buildRouterLinkParams(itemType, itemHref) {
-                let name = "";
-                let id = itemHref.match(/\/(\d+)\/?$/)[1];
-
-                switch (itemType) {
-                    case "ConcreteQuestion":
-                    case "ShadowQuestion":
-                    case "Question":
-                        name = 'AQuestion';
-                        break;
-                    case "ConcreteDimension":
-                    case "ShadowDimension":
-                    case "Dimension":
-                        name = 'ADimension';
-                        break;
-                    case "ConcreteQuestionnaire":
-                    case "ShadowQuestionnaire":
-                    case "Questionnaire":
-                        name = 'AQuestionnaire';
-                        break;
-                }
-                return {
-                    name: name,
-                    params: {
-                        id: id
-                    }
-                };
-            }
-        }
+export default {
+  name: "TrackerEntry",
+  props: {
+    trackerEntry: {
+      type: TrackerEntry
+    },
+    all: {
+      type: Boolean
     }
+  },
+  methods: {
+    buildRouterLinkParams(itemType, itemHref) {
+      let name = "";
+      let id = itemHref.match(/\/(\d+)\/?$/)[1];
+
+      switch (itemType) {
+        case "ConcreteQuestion":
+        case "ShadowQuestion":
+        case "Question":
+          name = "AQuestion";
+          break;
+        case "ConcreteDimension":
+        case "ShadowDimension":
+        case "Dimension":
+          name = "ADimension";
+          break;
+        case "ConcreteQuestionnaire":
+        case "ShadowQuestionnaire":
+        case "Questionnaire":
+          name = "AQuestionnaire";
+          break;
+      }
+      return {
+        name: name,
+        params: {
+          id: id
+        }
+      };
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/variables";
-    .tracker-entry {
-        display: inline-block;
-        text-align: left;
-        overflow-wrap: break-word;
-        border-left: $primary 2px solid;
-        padding-left: 8px;
-        margin-bottom: .6em;
-    }
+@import "../../scss/variables";
+.tracker-entry {
+  display: inline-block;
+  text-align: left;
+  overflow-wrap: break-word;
+  border-left: $primary 2px solid;
+  padding-left: 8px;
+  margin-bottom: 0.6em;
+}
 </style>

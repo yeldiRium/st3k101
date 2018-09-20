@@ -3,7 +3,7 @@ import Router from "vue-router";
 
 import PublicBase from "../components/Views/Public/Base";
 import SurveyForSubmission from "../components/Views/Public/SurveyForSubmission";
-import EmbeddedSurveyForSubmission from "../components/Views/Embedded/EmbeddedSurveyForSubmission"
+import EmbeddedSurveyForSubmission from "../components/Views/Embedded/EmbeddedSurveyForSubmission";
 import Authentication from "../components/Views/Public/Authentication";
 
 import PrivateBase from "../components/Views/Private/Base";
@@ -17,68 +17,68 @@ import AQuestionnaire from "../components/Views/Private/AQuestionnaire";
 Vue.use(Router);
 
 export default new Router({
-    routes: [
-        {
-            path: "/",
-            name: "PublicBase",
-            component: PublicBase,
+  routes: [
+    {
+      path: "/",
+      name: "PublicBase",
+      component: PublicBase,
 
-            children: [
-                {
-                    path: "survey/:id",
-                    name: "SurveyForSubmission",
-                    component: SurveyForSubmission
-                },
-                {
-                    path: "authentication",
-                    name: "Authentication",
-                    component: Authentication
-                }
-            ]
+      children: [
+        {
+          path: "survey/:id",
+          name: "SurveyForSubmission",
+          component: SurveyForSubmission
         },
         {
-            path: "/embedded",
-            name: "Embedded",
-            component: EmbeddedSurveyForSubmission
-        },
-        {
-            path: "/private",
-            redirect: "/private/dashboard",
-            name: "Private",
-            component: PrivateBase,
-
-            children: [
-                {
-                    path: "dashboard",
-                    name: "Dashboard",
-                    component: Dashboard
-                },
-                {
-                    path: "questionnaires",
-                    name: "MyQuestionnaires",
-                    component: MyQuestionnaires
-                },
-                {
-                    path: "account",
-                    name: "Account",
-                    component: Account
-                },
-                {
-                    path: "questionnaires/question/:id",
-                    name: "AQuestion",
-                    component: AQuestion
-                },
-                {
-                    path: "questionnaires/dimension/:id",
-                    name: "ADimension",
-                    component: ADimension
-                },
-                {
-                    path: "questionnaires/questionnaire/:id",
-                    name: "AQuestionnaire",
-                    component: AQuestionnaire
-                }
-            ]
+          path: "authentication",
+          name: "Authentication",
+          component: Authentication
         }
-    ]
-})
+      ]
+    },
+    {
+      path: "/embedded",
+      name: "Embedded",
+      component: EmbeddedSurveyForSubmission
+    },
+    {
+      path: "/private",
+      redirect: "/private/dashboard",
+      name: "Private",
+      component: PrivateBase,
+
+      children: [
+        {
+          path: "dashboard",
+          name: "Dashboard",
+          component: Dashboard
+        },
+        {
+          path: "questionnaires",
+          name: "MyQuestionnaires",
+          component: MyQuestionnaires
+        },
+        {
+          path: "account",
+          name: "Account",
+          component: Account
+        },
+        {
+          path: "questionnaires/question/:id",
+          name: "AQuestion",
+          component: AQuestion
+        },
+        {
+          path: "questionnaires/dimension/:id",
+          name: "ADimension",
+          component: ADimension
+        },
+        {
+          path: "questionnaires/questionnaire/:id",
+          name: "AQuestionnaire",
+          component: AQuestionnaire
+        }
+      ]
+    }
+  ]
+});

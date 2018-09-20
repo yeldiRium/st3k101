@@ -44,92 +44,92 @@
 </template>
 
 <script>
-    export default {
-        name: "ToggleSVG",
-        props: {
-            /** @type Boolean */
-            value: {
-                type: Boolean,
-            },
-            /** If set to true, the toggle isn't usable. */
-            disabled: {
-                type: Boolean,
-                default: false
-            }
-        },
-        data() {
-            return {
-                on: false
-            };
-        },
-        created() {
-            this.on = this.value;
-        },
-        computed: {
-            /**
-             * Class object on the svg element.
-             */
-            classes() {
-                return {
-                    "toggle-svg--on": this.on,
-                    "toggle-svg--off": !this.on,
-                    "toggle-svg--disabled": this.disabled
-                };
-            },
-            buttonX() {
-                if (this.on) {
-                    return 92;
-                } else {
-                    return 11;
-                }
-            }
-        },
-        methods: {
-            toggle() {
-                if (this.disabled) {
-                    return;
-                }
-
-                this.on = !this.on;
-                let animation;
-                if (this.on) {
-                    animation = this.$refs["to-on"];
-                } else {
-                    animation = this.$refs["to-off"];
-                }
-                animation.beginElement();
-                this.$emit("input", this.on);
-            }
-        }
+export default {
+  name: "ToggleSVG",
+  props: {
+    /** @type Boolean */
+    value: {
+      type: Boolean
+    },
+    /** If set to true, the toggle isn't usable. */
+    disabled: {
+      type: Boolean,
+      default: false
     }
+  },
+  data() {
+    return {
+      on: false
+    };
+  },
+  created() {
+    this.on = this.value;
+  },
+  computed: {
+    /**
+     * Class object on the svg element.
+     */
+    classes() {
+      return {
+        "toggle-svg--on": this.on,
+        "toggle-svg--off": !this.on,
+        "toggle-svg--disabled": this.disabled
+      };
+    },
+    buttonX() {
+      if (this.on) {
+        return 92;
+      } else {
+        return 11;
+      }
+    }
+  },
+  methods: {
+    toggle() {
+      if (this.disabled) {
+        return;
+      }
+
+      this.on = !this.on;
+      let animation;
+      if (this.on) {
+        animation = this.$refs["to-on"];
+      } else {
+        animation = this.$refs["to-off"];
+      }
+      animation.beginElement();
+      this.$emit("input", this.on);
+    }
+  }
+};
 </script>
 
 <style lang="scss">
-    @import "../../scss/_variables";
+@import "../../scss/_variables";
 
-    .toggle-svg {
-        &__background {
-            fill: $slightlydark;
-        }
+.toggle-svg {
+  &__background {
+    fill: $slightlydark;
+  }
 
-        &__button {
-            fill: $verylight;
-        }
+  &__button {
+    fill: $verylight;
+  }
 
-        &__reactor {
-            fill: rgba(0, 0, 0, 0);
-        }
+  &__reactor {
+    fill: rgba(0, 0, 0, 0);
+  }
 
-        &--on {
-            .toggle-svg__background {
-                fill: $primary;
-            }
-        }
-
-        &--disabled {
-            .toggle-svg__background {
-                fill: $slightlylight;
-            }
-        }
+  &--on {
+    .toggle-svg__background {
+      fill: $primary;
     }
+  }
+
+  &--disabled {
+    .toggle-svg__background {
+      fill: $slightlylight;
+    }
+  }
+}
 </style>
