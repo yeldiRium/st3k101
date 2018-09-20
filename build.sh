@@ -1,8 +1,11 @@
 #!/bin/bash
 
+docker_user=$2
+docker_registry=$3
+
 info_message () {
 	echo    "Usage:"
-	echo -e "\tbuild command [registry]"
+	echo -e "\tbuild command name [registry]"
 	echo    ""
 	echo    "Commands:"
 	echo -e "\tbuild     Build images."
@@ -12,20 +15,15 @@ info_message () {
 	echo    ""
 	echo -e "Parameters: "
 	echo -e "\tregistry  Docker registry in the form hostname[:port]."
-	echo -e "\t          Required by build, publish and run."
-}
-
-check_registry () {
-	if [ -z $docker_registry ]; then
-		echo "Parameter registry is missing!"
-		echo ""
-		info_message
-		exit 1
-		fi
+	echo -e "\t          If none is specified, docker hub is used."
+	echo -e "\tname      Docker account name. Used to name images."
+	echo    ""
+	echo    "You need to manually log in to your docker registry"
+	echo    "before running this script."
 }
 
 build () {
-	find . -name Dockerfile -exec ./docker-build.sh {} $docker_registry \;
+	find . -name Dockerfile -exec ./docker-build.sh {} $docker_user $docker_registry \;
 }
 
 test () {
@@ -33,20 +31,16 @@ test () {
 }
 
 publish () {
-	find . -name Dockerfile -exec ./docker-publish.sh {} $docker_registry \;
+	find . -name Dockerfile -exec ./docker-publish.sh {} $docker_user $docker_registry \;
 }
-
-docker_registry=$2
 
 case $1 in
 	build) build ;;
 	test) test ;;
 	publish)
-		check_registry
 		publish
 	;;
 	run)
-		check_registry
 		build && test && publish
 	;;
 	*) info_message ;;

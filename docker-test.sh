@@ -5,6 +5,6 @@ folder=$(dirname $dockerfile)
 service=$(basename $folder)
 sha=$(git rev-parse HEAD)
 
-name="uc/efla-$service"
+name="yeldir/efla-$service"
 
 sh -c "$folder/docker-test.sh $name:$sha"

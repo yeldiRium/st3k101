@@ -1,12 +1,17 @@
 #!/bin/bash
 
 dockerfile=$1
-registry=$2
+dockeruser=$2
+registry=$3
 folder=$(dirname $dockerfile)
 service=$(basename $folder)
 version=$(cat "$folder/Version")
 sha=$(git rev-parse HEAD)
 
-name="$registry/uc/efla-$service"
+if [ -z $registry ]; then
+	name="$dockeruser/efla-$service"
+else
+	name="$registry/$dockeruser/efla-$service"
+fi
 
 docker build $folder -t "$name:latest" -t "$name:$version" -t "$name:$sha"
