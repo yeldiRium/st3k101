@@ -25,22 +25,12 @@
                     <Button @action="paginationPrevious()">
                         ⬅️
                     </Button>
-                    <div v-for="iLeft in paginationIndex"
-                         :key="iLeft"
+                    <div v-for="iPage in dimensionCount"
                          class="pagination__droplet"
-                         @click="paginationGoto(iLeft - 1)"
+                         :class="{'pagination__current': iPage - 1 === paginationIndex}"
+                         @click="paginationGoto(iPage - 1)"
                     >
-                        {{paginationLabelFor(iLeft - 1)}}
-                    </div>
-                    <div class="pagination__current">
-                        {{paginationLabelFor(paginationIndex)}}
-                    </div>
-                    <div v-for="iRight in (dimensionCount - paginationIndex - 2)"
-                         :key="iRight + paginationIndex"
-                         class="pagination__droplet"
-                         @click="paginationGoto(iRight + paginationIndex)"
-                    >
-                        {{paginationLabelFor(iRight + paginationIndex)}}
+                        {{paginationLabelFor(iPage)}}
                     </div>
                     <Button @action="paginationNext()">
                         ➡️
@@ -66,7 +56,7 @@
         <div class="submit"
              v-if="submissionQuestionnaire !== null"
         >
-            <div v-show="paginationIndex === dimensionCount - 1">
+            <div v-show="paginationIndex === dimensionCount">
                 <Button @action="submit()"
                         :class="{'button--grey': !isReadyToSubmit}"
                 >
@@ -92,6 +82,8 @@
 
     import Button from "../../Partials/Form/Button";
     import QuestionForm from "../../Partials/SurveyBase/Submission/QuestionForm";
+    import {submitResponseLti} from "../../../api/Submission";
+    import {mapState} from "vuex-fluture";
 
     export default {
         name: "EmbeddedSurveyForSubmission",
@@ -108,6 +100,7 @@
             }
         },
         computed: {
+            ...mapState("session", ["sessionToken"]),
             dimensionCount() {
                 if (R.isNil(this.submissionQuestionnaire)) {
                     return 0;
@@ -115,7 +108,7 @@
                 return this.submissionQuestionnaire.dimensions.length;
             },
             paginationAtSurvey() {
-                return (this.paginationIndex > -1) && (this.paginationIndex < this.dimensionCount - 1);
+                return (this.paginationIndex > -1) && (this.paginationIndex < this.dimensionCount);
             },
             selectedDimension() {
                 const dummy = {
@@ -131,13 +124,13 @@
             paginationLabelFor() {
                 return index => {
                     if (!R.isNil(this.submissionQuestionnaire)) {
-                        let dimension = this.submissionQuestionnaire.dimensions[index];
+                        let dimension = this.submissionQuestionnaire.dimensions[index - 1];  // https://vuejs.org/v2/guide/list.html#v-for-with-a-Range
                         let incompleteCount = this.getNumberOfIncompleteQuestions(dimension);
                         if (incompleteCount === 0) {
                             return "✔️";
                         }
                     }
-                    return index + 1;
+                    return index;
                 }
             },
             isReadyToSubmit() {
@@ -248,10 +241,12 @@
                     return;
                 }
                 this.$load(
-                    // TODO: own endpoint for embedded submission
-                    // submitResponse(this.submissionQuestionnaire, this.inputData)
+                    submitResponseLti(this.submissionQuestionnaire, this.sessionToken)
                 ).fork(
                     this.$handleApiError,
+                    () => {
+                        this.$router.push("/embedded/thank-you")
+                    }
                 );
             }
         },
