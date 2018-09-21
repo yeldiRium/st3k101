@@ -2,7 +2,7 @@
 ** Development Setup
    Requires:
    - node.js >=9
-   - a running and reachable websrv-flask container
+   - a running and reachable ST3K101-backend container
 
    Install dependencies locally.
    #+BEGIN_SRC bash
@@ -26,8 +26,8 @@
    locally. This will watch the project and rebuild on change.
    However, you still have to reload the browser every time.
 ** Building
-   =docker_registry= must be of the form =hostname[:port]= and is required to
-   tag and push the container to/with the correct registry.
+   =docker_registry= must be of the form =hostname[:port]=. If none is
+   supplied, docker hub is assumed.
 
    Build the container.
     #+BEGIN_SRC bash
@@ -49,11 +49,7 @@
       ./../build.sh run <docker_registry>
     #+END_SRC
 ** Configuration
-*** Ports
-    -  80
 *** Environment
     - NODE_ENV
       Tells node, whether it is running in =development=, =testing= or
       =production= mode.
-**** TODO parameterize dependency
-     Domain name for websrv-flask should be set via environment variables.
