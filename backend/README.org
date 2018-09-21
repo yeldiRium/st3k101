@@ -23,10 +23,10 @@
    #+END_SRC
 
    Wait a few seconds for postgres to start. Then start
-   websrv-flask. This will start a memcached container
+   backend. This will start a memcached container
    in the background.
    #+BEGIN_SRC bash
-     docker-compose up websrv-flask
+     docker-compose up backend
    #+END_SRC
 
    Optionally start adminer for a gui for postgres.
@@ -57,8 +57,6 @@
       ./../build.sh run <docker_registry>
     #+END_SRC
 ** Configuration
-*** Ports
-    - 80
 *** Environment
 **** Postgres
      Needs someparameters for user and db creation.
@@ -68,6 +66,3 @@
 
      Needs a volume of some kind mounted to =/var/lib/postgresql/data=, so that
      database content is persisted.
-**** TODO parameterize dependencies
-     Domain names of postgres and memcached should be set via environment
-     variables.

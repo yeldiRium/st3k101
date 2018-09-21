@@ -11,27 +11,15 @@ __pycache__/
 *.njsproj
 *.sln
 
-# Database
-postgres/data
-
-# Websrv-flask Frontend
-node_modules
-.sass-cache
-websrv-flask/app/static/fonts/*
-websrv-flask/app/static/css/*
-websrv-flask/app/static/js/bundle.js
+# backend Frontend
+backend/app/static/*
 
 # Compiled translations
 **/*.mo
 
 # Actual Frontend
 frontend/dist
-frondend/npm-debug.log*
-frondend/yarn-debug.log*
-frondend/yarn-error.log*
-frondend/test/unit/coverage
-frondend/test/e2e/reports
-frondend/selenium-debug.log
+frontend/node_modules
 
 # virtualenv
 .venv

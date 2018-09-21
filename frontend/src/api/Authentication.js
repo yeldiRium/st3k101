@@ -150,16 +150,13 @@ function requestLtiSession(
     tool_consumer_instance_guid: tool_consumer_instance_guid
   });
   // TODO: make hard-coded path configurable
-  return fetchApi(
-    `http://websrv-flask/api/questionnaire/${questionnaireId}/lti`,
-    {
-      method: "POST",
-      headers: {
-        "X-Forwarded-For": clientIp
-      },
-      body: JSON.stringify(body)
-    }
-  )
+  return fetchApi(`/api/questionnaire/${questionnaireId}/lti`, {
+    method: "POST",
+    headers: {
+      "X-Forwarded-For": clientIp
+    },
+    body: JSON.stringify(body)
+  })
     .chain(extractJson)
     .chain(
       R.ifElse(

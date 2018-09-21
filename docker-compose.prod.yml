@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   postgres:
-    build: postgres
+    image: yeldir/efla-postgres
     restart: always
     environment:
       - POSTGRES_PASSWORD=kksrk0vv3zigez6
@@ -22,21 +22,17 @@ services:
     restart: always
 
   backend:
-    build: backend
+    image: yeldir/efla-backend
     restart: always
     links:
       - memcached
       - postgres
-    volumes:
-      - ./backend/app:/app
 
   frontend:
-    build: frontend
-    volumes:
-      - ./frontend:/usr/app:rw
+    image: yeldir/efla-frontend
 
   nginx:
-    build: nginx
+    image: yeldir/efla-nginx
     ports:
       - 80:80
     links:

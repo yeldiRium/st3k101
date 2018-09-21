@@ -11,9 +11,9 @@ version=$(cat "$folder/Version")
 sha=$(git rev-parse HEAD)
 
 if [ -z $registry ]; then
-	name="$dockeruser/efla-$service"
+	name="$dockeruser/st3k101-$service"
 else
-	name="$registry/$dockeruser/efla-$service"
+	name="$registry/$dockeruser/st3k101-$service"
 fi
 
 latest="$name:latest"
