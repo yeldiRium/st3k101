@@ -1,4 +1,5 @@
-__pycache__/
+__pycache__
+node_modules
 
 # General
 .DS_Store
@@ -11,15 +12,11 @@ __pycache__/
 *.njsproj
 *.sln
 
-# backend Frontend
-backend/app/static/*
-
+# Backend
 # Compiled translations
 **/*.mo
-
-# Actual Frontend
-frontend/dist
-frontend/node_modules
-
 # virtualenv
 .venv
+
+# Frontend
+frontend/dist
