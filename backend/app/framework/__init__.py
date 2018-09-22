@@ -14,7 +14,10 @@ def get_client_ip() -> str:
     checking the X-Forwarded-For http header attribute which is set by nginx.
     :return: str The client's IP
     """
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr).upper()
+    ip = request.headers.get(
+        'X-Real-IP',
+        request.headers.get('X-Forwarded-For', request.remote_addr)
+    ).upper()
     ipv4_mapped_ipv6 = re.compile(r"^::FFFF:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$")
     matches = ipv4_mapped_ipv6.match(ip)
     if matches is not None:
