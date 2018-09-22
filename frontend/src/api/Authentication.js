@@ -89,6 +89,7 @@ function getCurrentDataClient(authenticationToken) {
  * @param consumerKey {String}
  * @param userId {String}
  * @param questionnaireId {String}
+ * @param clientIp {String}
  * @param context_id {String}
  * @param context_label {String}
  * @param context_title {String}
@@ -150,7 +151,7 @@ function requestLtiSession(
     tool_consumer_instance_guid: tool_consumer_instance_guid
   });
   // TODO: make hard-coded path configurable
-  return fetchApi(`/api/questionnaire/${questionnaireId}/lti`, {
+  return fetchApi(`http://backend/api/questionnaire/${questionnaireId}/lti`, {
     method: "POST",
     headers: {
       "X-Forwarded-For": clientIp
