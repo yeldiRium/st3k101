@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  build:
+    machine:
+      # might not have any effect, since dlc is a premium feature
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run:
+          name: build images
+          command: |
+            ./build.sh build yeldir
+      - run:
+          name: test images
+          command: |
+            ./build.sh test
+      - run:
+          name: login to docker hub
+          command: |
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: push images to docker hub
+          command: |
+            ./build.sh publish yeldir
