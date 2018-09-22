@@ -2,7 +2,7 @@
 
 ## About
 
-Seminar work of Hannes Leutloff & Noha Hummel for the computional humanities
+Seminar work of Hannes Leutloff & Noah Hummel for the computional humanities
 seminar @ Goethe University (WS17/18)
 
 ### Dependencies:
