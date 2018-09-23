@@ -1,6 +1,6 @@
 import { isNil, find, clone, reject, equals } from "ramda";
 
-import { Future } from "fluture";
+import { Future } from "fluture/index.js";
 
 import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
 import {

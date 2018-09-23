@@ -1,5 +1,5 @@
 import { always, assoc, identity, ifElse, isNil } from "ramda";
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 
 import { buildApiUrl } from "./Path";
 import { categorizeResponse } from "./Response";

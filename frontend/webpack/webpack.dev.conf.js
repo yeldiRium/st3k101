@@ -9,27 +9,25 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = merge(baseWebpackConfig, {
-  module: {
-    rules: utils.styleLoaders({
-      sourceMap: config.dev.cssSourceMap
-    })
-  },
+  mode: "development",
+
   // cheap-module-eval-source-map is faster for development
   devtool: config.dev.devtool,
-
   watch: true,
   watchOptions: {
     aggregateTimeout: 300,
     poll: 1000
   },
-
+  module: {
+    rules: utils.styleLoaders({
+      sourceMap: config.dev.cssSourceMap
+    })
+  },
   plugins: [
     new webpack.DefinePlugin({
       "process.env": require("../config/dev.env")
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
-    new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       template: config.build.indexTemplate,

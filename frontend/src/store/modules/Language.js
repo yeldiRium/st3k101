@@ -1,5 +1,5 @@
 import { sort } from "ramda";
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 
 import { byShortName, Language } from "../../model/Language";
 import { fetchLanguages } from "../../api/Language";

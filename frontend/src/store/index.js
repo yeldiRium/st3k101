@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex-fluture";
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 
 import {
   initialize as initializeGlobalStore,

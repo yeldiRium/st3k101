@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import * as Future from "fluture";
+import * as Future from "fluture/index.js";
 import * as R from "ramda";
 
 import Button from "../../Partials/Form/Button";

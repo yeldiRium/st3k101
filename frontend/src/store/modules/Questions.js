@@ -1,5 +1,5 @@
 import { bind, filter, find, isNil, map, pipe, reject } from "ramda";
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 
 import {
   fetchQuestion,

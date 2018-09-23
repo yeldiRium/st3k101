@@ -1,4 +1,4 @@
-import { Future } from "fluture";
+import { Future } from "fluture/index.js";
 
 import { complement, equals, filter, find, isNil } from "ramda";
 

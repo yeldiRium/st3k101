@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 import R from "ramda";
 import { requestLtiSession } from "../api/Authentication";
 

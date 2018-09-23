@@ -1,5 +1,5 @@
 import { curry } from "ramda";
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 import {
   ForbiddenError,
   BadRequestError,

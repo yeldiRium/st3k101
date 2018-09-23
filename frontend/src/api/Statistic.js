@@ -1,4 +1,4 @@
-import { Future } from "fluture";
+import { Future } from "fluture/index.js";
 
 import { fetchApi } from "./Util/Request";
 import { extractJson } from "./Util/Response";

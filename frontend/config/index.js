@@ -29,9 +29,6 @@ module.exports = {
     // Source maps.
     productionSourceMap: true,
     // https://webpack.js.org/configuration/devtool/#production
-    devtool: "#source-map",
-
-    // Which file extensions should be zipped.
-    gzipExtensions: ["js", "css"]
+    devtool: "#source-map"
   }
 };

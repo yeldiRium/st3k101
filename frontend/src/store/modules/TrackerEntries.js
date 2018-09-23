@@ -1,5 +1,5 @@
 import { filter } from "ramda";
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 import {
   fetchMyTrackerEntries,
   fetchTrackerEntriesByItemHref

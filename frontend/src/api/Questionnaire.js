@@ -1,4 +1,4 @@
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 import { contains, map, path, pipe, prop, without } from "ramda";
 
 import { extractJson } from "./Util/Response";

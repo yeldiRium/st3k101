@@ -19,7 +19,7 @@ import {
   when,
   without
 } from "ramda";
-import Future from "fluture";
+import * as Future from "fluture/index.js";
 
 import { ConcreteQuestionnaire } from "../../model/SurveyBase/Questionnaire";
 import { Language } from "../../model/Language";

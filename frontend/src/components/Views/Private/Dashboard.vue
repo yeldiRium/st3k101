@@ -47,7 +47,7 @@
 
 <script>
 import { mapGetters } from "vuex-fluture";
-import { Future } from "fluture";
+import { Future } from "fluture/index.js";
 import { map, prop, reject, isNil } from "ramda";
 
 import RadarChart from "../../Partials/Graph/RadarChart";
