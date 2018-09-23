@@ -24,7 +24,6 @@ module.exports = {
 
     // Paths
     distPath: path.resolve(__dirname, "../dist"),
-    distAssetsPath: "static",
     distPublicPath: "/",
 
     // Source maps.

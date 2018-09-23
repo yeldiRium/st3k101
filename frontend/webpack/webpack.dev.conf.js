@@ -5,18 +5,13 @@ const config = require("../config");
 const merge = require("webpack-merge");
 const path = require("path");
 const baseWebpackConfig = require("./webpack.base.conf");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const portfinder = require("portfinder");
-
-const HOST = process.env.HOST;
-const PORT = process.env.PORT && Number(process.env.PORT);
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({
-      sourceMap: config.dev.cssSourceMap,
-      usePostCSS: true
+      sourceMap: config.dev.cssSourceMap
     })
   },
   // cheap-module-eval-source-map is faster for development

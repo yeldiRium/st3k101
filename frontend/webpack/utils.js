@@ -3,10 +3,6 @@ const path = require("path");
 const config = require("../config/index");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-exports.assetsPath = function(_path) {
-  return path.posix.join(config.build.distAssetsPath, _path);
-};
-
 exports.cssLoaders = function(options) {
   options = options || {};
 
@@ -17,18 +13,9 @@ exports.cssLoaders = function(options) {
     }
   };
 
-  const postcssLoader = {
-    loader: "postcss-loader",
-    options: {
-      sourceMap: options.sourceMap
-    }
-  };
-
   // generate loader string to be used with extract text plugin
   function generateLoaders(loader, loaderOptions) {
-    const loaders = options.usePostCSS
-      ? [cssLoader, postcssLoader]
-      : [cssLoader];
+    const loaders = [cssLoader];
 
     if (loader) {
       loaders.push({
@@ -54,12 +41,7 @@ exports.cssLoaders = function(options) {
   // https://vue-loader.vuejs.org/en/configurations/extract-css.html
   return {
     css: generateLoaders(),
-    postcss: generateLoaders(),
-    less: generateLoaders("less"),
-    sass: generateLoaders("sass", { indentedSyntax: true }),
-    scss: generateLoaders("sass"),
-    stylus: generateLoaders("stylus"),
-    styl: generateLoaders("stylus")
+    scss: generateLoaders("sass")
   };
 };
 
