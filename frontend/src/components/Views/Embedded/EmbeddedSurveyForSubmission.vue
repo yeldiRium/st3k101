@@ -7,14 +7,14 @@
                 <div class="embedded__header">
                     {{selectedDimension.name}}
                 </div>
-                <div class="embedded__main" id="scrollable-container">
+                <div class="embedded__main scrollbox" id="scrollable-container">
                     <div v-for="dimension in submissionQuestionnaire.dimensions">
                         <div v-show="dimension.id === selectedDimension.id"><!-- pagination also -->
-                            <QuestionForm v-for="question in getQuestionsOrdered(dimension)"
+                            <QuestionForm :key="question.href"
+                                          v-for="question in getQuestionsOrdered(dimension)"
                                           :question="question"
-                                          :key="question.href"
                                           @response-change="updateResponseValue($event)"
-                                          class="make-small-pl0x"
+                                          class="embedded__question"
                             />
                         </div>
                     </div>
@@ -22,18 +22,24 @@
                 <div class="embedded__footer"
                      v-if="paginationAtSurvey"
                 >
-                    <Button @action="paginationPrevious()">
-                        ⬅️
-                    </Button>
                     <div v-for="iPage in dimensionCount"
                          class="pagination__droplet"
                          :class="{'pagination__current': iPage - 1 === paginationIndex}"
                          @click="paginationGoto(iPage - 1)"
                     >
-                        {{paginationLabelFor(iPage)}}
+                        {{iPage}}
+                        <div class="badge"
+                             v-bind:data-badge="answerCountLabelFor(iPage)"
+                        >
+
+                        </div>
                     </div>
-                    <Button @action="paginationNext()">
-                        ➡️
+                    <Button @action="paginationNext()"
+                            class="next"
+                    >
+                        <span>
+                            ↪️ Next 🤔
+                        </span>
                     </Button>
                 </div>
             </div>
@@ -41,37 +47,41 @@
         <div class="welcome"
              v-if="submissionQuestionnaire !== null"
         >
-            <div v-show="paginationIndex === -1">
-                <div class="welcome__title">
-                    {{submissionQuestionnaire.name}}
-                </div>
-                <div class="welcome__description">
-                    {{submissionQuestionnaire.description}}
-                </div>
-                <Button @action="paginationNext()">
-                    Start
-                </Button>
-            </div>
+            <WelcomePage :title="submissionQuestionnaire.name"
+                         :text="submissionQuestionnaire.description"
+                         v-if="paginationIndex === -1"
+                         @startClicked="paginationNext()"
+            >
+            </WelcomePage>
         </div>
-        <div class="submit"
-             v-if="submissionQuestionnaire !== null"
-        >
-            <div v-show="paginationIndex === dimensionCount">
-                <Button @action="submit()"
+        <div v-if="submissionQuestionnaire !== null">
+            <div v-show="paginationIndex === dimensionCount"
+                 class="submit"
+            >
+                <div class="card">
+                    <h1>Ready to submit your answers?</h1>
+                    <p>You can review your answers before submitting by clicking the button at the bottom of this screen.</p>
+                    <Button @action="submit()"
                         :class="{'button--grey': !isReadyToSubmit}"
+                        class="submit__submit"
                 >
                     <p v-if="isReadyToSubmit">Submit</p>
                     <p v-else>Please complete the survey first.</p>
                 </Button>
-                <Button @action="paginationPrevious()">
-                    Review answers
+                </div>
+                <Button @action="paginationPrevious()"
+                        class="submit__previous"
+                >
+                    ↩️ Review answers
                 </Button>
             </div>
         </div>
         <div class="error"
              v-if="error !== null"
         >
-            <p>{{error.message}}</p>
+            <h1 class="error__heading">Oops!</h1>
+            <p class="error__text">An error occurred while launching the survey. Please contact the responsible Instructor to resolve this issue.</p>
+            <p class="error__reason">Reason: {{error.message}}</p>
         </div>
     </div>
 </template>
@@ -84,10 +94,12 @@ import Button from "../../Partials/Form/Button";
 import QuestionForm from "../../Partials/SurveyBase/Submission/QuestionForm";
 import { submitResponseLti } from "../../../api/Submission";
 import { mapState } from "vuex-fluture";
+import WelcomePage from "./Partials/WelcomePage";
 
 export default {
   name: "EmbeddedSurveyForSubmission",
   components: {
+    WelcomePage,
     Button,
     QuestionForm
   },
@@ -96,10 +108,12 @@ export default {
       submissionQuestionnaire: null,
       paginationIndex: -1,
       error: null,
-      scrollableContainer: null
+      scrollableContainer: null,
+      questionOrderPerDimension: {}
     };
   },
   computed: {
+    ...mapState("global", ["window"]),
     ...mapState("session", ["sessionToken"]),
     dimensionCount() {
       if (R.isNil(this.submissionQuestionnaire)) {
@@ -133,6 +147,26 @@ export default {
           }
         }
         return index;
+      };
+    },
+    answerCountLabelFor() {
+      return index => {
+        if (!R.isNil(this.submissionQuestionnaire)) {
+          let dimension = this.submissionQuestionnaire.dimensions[index - 1]; // https://vuejs.org/v2/guide/list.html#v-for-with-a-Range
+          let incompleteCount = this.getNumberOfIncompleteQuestions(dimension);
+          let buttonWidth = this.window.width / this.dimensionCount;
+
+          if (incompleteCount === 0) {
+            if (buttonWidth > 200) {
+              return "Completed! 🎉";
+            }
+            return "🎉";
+          }
+          return `${dimension.questions.length - incompleteCount} / ${
+            dimension.questions.length
+          }`;
+        }
+        return "";
       };
     },
     isReadyToSubmit() {
@@ -213,11 +247,16 @@ export default {
         return qs;
       }
 
+      if (this.questionOrderPerDimension.hasOwnProperty(dimension.id)) {
+        return this.questionOrderPerDimension[dimension.id];
+      }
+
       // from https://stackoverflow.com/a/12646864
       for (let i = qs.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [qs[i], qs[j]] = [qs[j], qs[i]];
       }
+      this.questionOrderPerDimension[dimension.id] = qs;
       return qs;
     },
     /**
@@ -278,6 +317,12 @@ export default {
 }
 
 .error {
+  margin: 4em;
+
+  &__reason {
+    margin-top: 2em;
+    font-size: small;
+  }
 }
 
 .embedded {
@@ -290,13 +335,15 @@ export default {
     top: 0px;
     left: 0px;
     right: 0px;
-    overflow: hidden;
+    word-wrap: break-spaces;
     text-align: center;
     margin: 0 auto 0 auto;
-    height: 1.5em;
+    //height: 2em;
+
+    font-size: large;
   }
   &__footer {
-    height: 2.1em;
+    height: 2em;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -310,39 +357,123 @@ export default {
   &__main {
     background-color: white;
     position: absolute;
-    top: 1.5em;
-    bottom: 2.1em;
+    top: 2em;
+    bottom: 2em;
     left: 0px;
     right: 0px;
     overflow: auto;
     width: 100vw;
   }
-}
 
-.dimension-title {
-  width: 100vw;
-  margin: 0 auto 0 auto;
-  font-size: large;
-}
-
-.make-small-pl0x {
-  font-size: small !important;
+  &__question {
+    max-width: 80%;
+    margin: auto;
+  }
 }
 
 .pagination {
   &__droplet {
-    text-align: center;
-
-    width: 100%;
-
-    font-size: small;
-    padding: 0 auto 0 auto;
+    text-align: left;
+    font-size: large;
+    width: 66%;
+    padding-left: 1em;
+    border-right: $primary 1px solid;
+    transition: width 0.33s ease, background-color 0.33s ease,
+      font-size 0.33s ease, font-weight 0.33s ease;
+  }
+  &__droplet:hover {
+    background-color: $secondary-light;
   }
   &__current {
-    text-align: center;
     width: 100%;
+    color: white;
+    vertical-align: center;
     background-color: $primary;
     padding: 0 auto 0 auto;
+    font-weight: bolder;
   }
+  &__current:hover {
+    background-color: $primary;
+  }
+}
+
+.badge {
+  position: relative;
+}
+.badge[data-badge]:after {
+  content: attr(data-badge);
+  position: absolute;
+  right: 1em;
+  top: -1.5em;
+  font-size: small;
+  text-align: center;
+}
+
+.scrollbox {
+  overflow: auto;
+
+  background:
+		/* Shadow covers */ linear-gradient(
+      white 30%,
+      rgba(255, 255, 255, 0)
+    ),
+    linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%,
+    /* Shadows */
+      radial-gradient(
+        50% 0,
+        farthest-side,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      ),
+    radial-gradient(
+        50% 100%,
+        farthest-side,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      )
+      0 100%;
+  background:
+		/* Shadow covers */ linear-gradient(
+      white 30%,
+      rgba(255, 255, 255, 0)
+    ),
+    linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%,
+    /* Shadows */
+      radial-gradient(
+        farthest-side at 50% 0,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      ),
+    radial-gradient(
+        farthest-side at 50% 100%,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      )
+      0 100%;
+  background-repeat: no-repeat;
+  background-color: white;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+
+  /* Opera doesn't support this in the shorthand */
+  background-attachment: local, local, scroll, scroll;
+}
+
+.submit {
+  &__submit {
+    margin-top: 12%;
+    font-size: x-large;
+    width: auto;
+  }
+
+  &__previous {
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    margin: auto;
+  }
+}
+
+.card {
+  margin: 10%;
 }
 </style>
