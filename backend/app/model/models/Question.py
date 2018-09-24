@@ -170,7 +170,7 @@ class Question(SurveyBase):
 
     def add_question_result(self, answer_value: int, data_subject: DataSubject,
                             needs_verification: bool=True,
-                            verification_token: str="") -> bool:
+                            verification_token: str="") -> QuestionResponse:
         """
         Adds a new QuestionResponse to the Question.
         :param answer_value: int The value the DataSubject has chosen
@@ -196,7 +196,7 @@ class Question(SurveyBase):
 
         # replacement business logic for previous results
         if len(earlier_results) == 0:
-            return True
+            return result
 
         elif len(earlier_results) == 1:
             earlier_result = earlier_results[0]
@@ -214,8 +214,7 @@ class Question(SurveyBase):
                 # replace earlier result
                 self.responses.remove(verified_result)
 
-        # TODO: not necessary anymore because answer count is selected on the fly
-        return False  # signal that answer count has not changed
+        return result
 
 
 class ConcreteQuestion(Question):
