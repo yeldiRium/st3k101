@@ -60,7 +60,7 @@ class XApiSt3k101Context(XApiContext):
                     "objectType": "Place"
                 }
             }
-
+        return me
 
 
 class XApiSurveyContext(XApiContext):
