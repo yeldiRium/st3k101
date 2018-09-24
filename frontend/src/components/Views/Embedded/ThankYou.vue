@@ -6,7 +6,7 @@
         </div>
         <hr/>
         <div class="container">
-            <div v-if="schedule !== null">
+            <div v-if="schedule !== null && schedule !== undefined">
                 You may retake this survey before {{schedule.end.toLocaleDateString()}}
             </div>
             <div v-for="notice in notices"
@@ -27,13 +27,11 @@ export default {
   props: {
     schedule: {
       type: Object,
-      default: {
-        end: new Date()
-      }
+      default: null
     },
     notices: {
       type: Array,
-      default: ["Some note here lel"]
+      default: () => []
     }
   }
 };
