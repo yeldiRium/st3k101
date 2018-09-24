@@ -21,3 +21,5 @@ class LtiRequestSchema(Schema):
     tool_consumer_info_version = fields.String()
     tool_consumer_instance_description = fields.String()
     tool_consumer_instance_guid = fields.String()
+
+    ext_user_username = fields.String(required=False)

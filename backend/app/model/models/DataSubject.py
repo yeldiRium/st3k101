@@ -18,7 +18,7 @@ class DataSubject(Party):
     email = db.Column(db.String(120))
     lti_user_id = db.Column(db.String(256))
     moodle_username = db.Column(db.String(120))  # TODO: use ext_user_username if available
-    source = db.Column(db.String(120), default="Standalone")  # TODO: use tool_consumer_instance_guid
+    source = db.Column(db.String(120), default="Standalone")
 
     @property
     def roles(self) -> List[Role]:

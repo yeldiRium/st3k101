@@ -63,6 +63,10 @@ class LtiSessionResource(Resource):
             abort(403, message='Invalid consumer key.')
 
         subject = DataSubject.get_or_create(lti_user_id=data['user_id'])
+        subject.source = data['tool_consumer_instance_guid']
+        if 'ext_user_username' in data:
+            subject.moodle_username = data['ext_user_username']
+
         if 'lis_person_contact_email_primary' in data:
             subject.email = data['lis_person_contact_email_primary']
 
