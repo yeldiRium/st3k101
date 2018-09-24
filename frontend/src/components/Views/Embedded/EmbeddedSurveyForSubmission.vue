@@ -1,6 +1,14 @@
 <template>
-    <div>
-        <div v-if="submissionQuestionnaire !== null">
+    <div v-if="submissionQuestionnaire !== null">
+        <div v-if="!userHasSubmitted">
+            <div class="welcome">
+                <WelcomePage :title="submissionQuestionnaire.name"
+                             :text="submissionQuestionnaire.description"
+                             v-if="paginationIndex === -1"
+                             @startClicked="paginationNext()"
+                >
+                </WelcomePage>
+            </div>
             <div class="embedded__survey"
                 v-show="paginationAtSurvey"
             >
@@ -29,6 +37,7 @@
                     >
                         {{iPage}}
                         <div class="badge"
+                             :class="{'badge__current': iPage - 1 === paginationIndex}"
                              v-bind:data-badge="answerCountLabelFor(iPage)"
                         >
 
@@ -38,36 +47,24 @@
                             class="next"
                     >
                         <span>
-                            ↪️ Next 🤔
+                            ↪️ Next Page
                         </span>
                     </Button>
                 </div>
             </div>
-        </div>
-        <div class="welcome"
-             v-if="submissionQuestionnaire !== null"
-        >
-            <WelcomePage :title="submissionQuestionnaire.name"
-                         :text="submissionQuestionnaire.description"
-                         v-if="paginationIndex === -1"
-                         @startClicked="paginationNext()"
-            >
-            </WelcomePage>
-        </div>
-        <div v-if="submissionQuestionnaire !== null">
-            <div v-show="paginationIndex === dimensionCount"
-                 class="submit"
+            <div class="submit"
+             v-show="paginationIndex === dimensionCount"
             >
                 <div class="card">
                     <h1>Ready to submit your answers?</h1>
                     <p>You can review your answers before submitting by clicking the button at the bottom of this screen.</p>
                     <Button @action="submit()"
-                        :class="{'button--grey': !isReadyToSubmit}"
-                        class="submit__submit"
-                >
-                    <p v-if="isReadyToSubmit">Submit</p>
-                    <p v-else>Please complete the survey first.</p>
-                </Button>
+                            :class="{'button--grey': !isReadyToSubmit}"
+                            class="submit__submit"
+                    >
+                        <p v-if="isReadyToSubmit">Submit</p>
+                        <p v-else>Please complete the survey first.</p>
+                    </Button>
                 </div>
                 <Button @action="paginationPrevious()"
                         class="submit__previous"
@@ -76,6 +73,10 @@
                 </Button>
             </div>
         </div>
+        <ThankYou v-else
+                  :schedule="submissionQuestionnaire.schedule"
+        >
+        </ThankYou>
         <div class="error"
              v-if="error !== null"
         >
@@ -95,10 +96,12 @@ import QuestionForm from "../../Partials/SurveyBase/Submission/QuestionForm";
 import { submitResponseLti } from "../../../api/Submission";
 import { mapState } from "vuex-fluture";
 import WelcomePage from "./Partials/WelcomePage";
+import ThankYou from "./ThankYou";
 
 export default {
   name: "EmbeddedSurveyForSubmission",
   components: {
+    ThankYou,
     WelcomePage,
     Button,
     QuestionForm
@@ -109,7 +112,8 @@ export default {
       paginationIndex: -1,
       error: null,
       scrollableContainer: null,
-      questionOrderPerDimension: {}
+      questionOrderPerDimension: {},
+      userHasSubmitted: false
     };
   },
   computed: {
@@ -281,7 +285,7 @@ export default {
       this.$load(
         submitResponseLti(this.submissionQuestionnaire, this.sessionToken)
       ).fork(this.$handleApiError, () => {
-        this.$router.push("/embedded/thank-you");
+        this.userHasSubmitted = true;
       });
     }
   },
@@ -399,7 +403,12 @@ export default {
 
 .badge {
   position: relative;
+
+  &__current {
+    color: white;
+  }
 }
+
 .badge[data-badge]:after {
   content: attr(data-badge);
   position: absolute;
