@@ -74,7 +74,7 @@ function fetchApi(
     language = null
   }
 ) {
-  return Future((reject, resolve) => {
+  return Future.Future((reject, resolve) => {
     const controller = new AbortController();
     const signal = controller.signal;
 
