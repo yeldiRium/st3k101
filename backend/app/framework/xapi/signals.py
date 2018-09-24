@@ -1,5 +1,3 @@
-from typing import Union
-
 from framework.signals import SIG_LOGGED_IN, SIG_ANSWER_SUBMITTED
 from framework.xapi.publisher import XApiPublisher
 from framework.xapi.statements.XApiAnswerSubmittedStatement import XApiAnswerSubmittedStatement
