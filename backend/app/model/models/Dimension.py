@@ -6,7 +6,8 @@ from flask import g
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
-from framework.tracker import TrackingType, item_added, item_removed
+from framework.tracker import TrackingType
+from framework.signals import item_added, item_removed
 from model import db, MUTABLE_HSTORE, translation_hybrid
 from model.models.Question import Question, ConcreteQuestion, ShadowQuestion
 from model.models.SurveyBase import SurveyBase
@@ -125,7 +126,7 @@ class ConcreteDimension(Dimension):
 
     @staticmethod
     def from_shadow(shadow):
-        d = ConcreteDimension("")  # FIXME: this is not preserving shadow.original_langugae
+        d = ConcreteDimension("")
         d.name_translations = shadow.name_translations
         d.original_language = shadow.original_language
         d.randomize_question_order = shadow.randomize_question_order

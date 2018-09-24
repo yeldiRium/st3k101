@@ -6,7 +6,8 @@ import utils
 from auth.session import current_user
 from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
-from framework.tracker import TrackingType, translation_hybrid_updated, property_updated
+from framework.tracker import TrackingType
+from framework.signals import property_updated, translation_hybrid_updated
 from model import db
 from model.models.OwnershipBase import OwnershipBase
 

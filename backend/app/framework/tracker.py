@@ -2,11 +2,22 @@ from enum import Enum, auto
 
 from flask import g
 
+from framework.signals import (
+    property_updated,
+    translation_hybrid_updated,
+    item_added,
+    item_removed,
+    questionnaire_removed
+)
+from model.models.TrackerEntry import (
+    PropertyUpdatedTrackerEntry,
+    TranslatedPropertyUpdatedTrackerEntry,
+    ItemAddedTrackerEntry,
+    ItemRemovedTrackerEntry,
+    QuestionnaireRemovedTrackerEntry
+)
 from auth.session import current_user
-from framework.signals import app_signals
 from model import db
-from model.models.TrackerEntry import PropertyUpdatedTrackerEntry, TranslatedPropertyUpdatedTrackerEntry, \
-    ItemAddedTrackerEntry, ItemRemovedTrackerEntry, QuestionnaireRemovedTrackerEntry
 
 __author__ = "Noah Hummel"
 
@@ -14,13 +25,6 @@ __author__ = "Noah Hummel"
 class TrackingType(Enum):
     Primitive = auto()
     TranslationHybrid = auto()
-
-
-property_updated = app_signals.signal('property_updated')
-translation_hybrid_updated = app_signals.signal('translation_hybrid_updated')
-item_added = app_signals.signal('item_added')
-item_removed = app_signals.signal('item_removed')
-questionnaire_removed = app_signals.signal('questionnaire_removed')
 
 
 @property_updated.connect
@@ -33,7 +37,7 @@ def track_property_updated(
     if previous_value is None:  # first time property is set
         return
 
-    if previous_value == new_value:
+    if previous_value == new_value:  # orly?
         return
 
     # remove previous entries for same property

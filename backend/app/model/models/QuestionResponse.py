@@ -11,6 +11,7 @@ class QuestionResponse(OwnershipBase):
     value = db.Column(db.SmallInteger, nullable=False)
     verified = db.Column(db.Boolean, default=False, nullable=False)
     verification_token = db.Column(db.String(32))
+    xapi_statement = db.Column(db.JSON)
 
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 

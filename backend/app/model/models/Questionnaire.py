@@ -7,11 +7,11 @@ from typing import Dict
 
 from flask import g
 
-from auth.session import current_user
 from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
-from framework.tracker import TrackingType, item_added, item_removed, questionnaire_removed
+from framework.tracker import TrackingType
+from framework.signals import item_added, item_removed, questionnaire_removed
 from model import db, MUTABLE_HSTORE, translation_hybrid
 from model.models.Dimension import Dimension, ConcreteDimension, ShadowDimension
 from model.models.QuestionResponse import QuestionResponse
