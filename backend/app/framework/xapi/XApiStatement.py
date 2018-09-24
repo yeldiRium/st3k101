@@ -26,6 +26,9 @@ class XApiStatement(XApiItem):
         self.__result = xapi_result
         self.__context = xapi_context
 
+    def get_id(self) -> uuid.UUID:
+        return self.__id
+
     def get_actor(self) -> XApiActor:
         return self.__actor
 

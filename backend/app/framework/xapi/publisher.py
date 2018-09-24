@@ -1,10 +1,12 @@
-import sys
+from datetime import datetime
+
+import requests
 from typing import Optional, List, Iterable
 
-from requests_futures.sessions import FuturesSession
 from flask import json, g
 
 from framework.xapi.XApiStatement import XApiStatement
+from utils import debug_print
 
 __author__ = "Noah Hummel"
 
@@ -53,6 +55,8 @@ class XApiPublisher(object):
         if not receivers:
             receivers = [g._config['XAPI_DEFAULT_TARGET']]
 
+        debug_print("XApiPublisher: Enqueueing statement {} for {}.".format(statement.get_id(), receivers))
+
         publication = XApiPublication(statement, receivers)
         self.__publication_queue[publication.id] = publication
 
@@ -64,43 +68,46 @@ class XApiPublisher(object):
         self.enqueue(statement, *receivers)
 
     def publish(self):
-        session = FuturesSession()
+        debug_print("Publishing xapi statements...")
         headers = {
             'Content-Type': 'application/json',
             'X-Experience-API-Version': '1.0.0',
-            'User-Agent': 'st3k101/2   .0'
+            'User-Agent': 'st3k101/2.0'
         }
+        debug_print(self.__publication_queue)
+        to_send = set()
+        sent = set()
+        for publication_id, publication in self.__publication_queue.items():
+            for receiver in publication.receivers:
+                to_send.add((publication_id, receiver))
+        debug_print(to_send)
 
-        def _settle_or_retry(publication_id, receiver, try_count):
-            def _do_settle_or_retry(future):
-                if future.exception() is None:  # settle
-                    return
+        max_retries = g._config['XAPI_MAX_RETRIES']
+        for _ in range(max_retries):
+            for item in sent:
+                to_send.discard(item)
 
+            if len(to_send) == 0:
+                break
+
+            for publication_id, receiver in to_send:
                 publication = self.__publication_queue[publication_id]
-
-                if try_count > g._config['XAPI_MAX_RETRIES']:
-                    # save lost statement to disk
-                    with open(g._config['XAPI_LOST_LOGFILE'], 'a') as f:
-                        f.write("Lost statement for <{}> @ {}\n".format(receiver, publication.timestamp))
-                        f.write("Statement was lost after {} unsuccessful transmissions.\n".format(try_count))
-                        f.write(publication.json)
-                        f.write("\n\n")
-
-                _req = session.post(
-                    receiver,
-                    json=publication.json,
-                    headers=headers
+                req = requests.post(
+                    receiver, json=publication.json, headers=headers
                 )
-                _req.add_done_callback(_settle_or_retry(publication_id, receiver, try_count + 1))
+                if req.status_code == 200:
+                    sent.add((publication_id, receiver))
 
-            return _do_settle_or_retry
-
-        for publication in self.__publication_queue:
-            for i_receiver in publication.receivers:
-                req = session.post(
-                    i_receiver, json=publication.json, headers=headers
-                )
-                req.add_done_callback(_settle_or_retry(publication.id, i_receiver, 0))
+        for lost_id, unavailable_receiver in to_send:
+            lost_publication = self.__publication_queue[lost_id]
+            debug_print("XApiPublisher: LOST xAPI statement {} for {}".format(lost_id, unavailable_receiver))
+            with open(g._config['XAPI_LOST_LOG'], 'a') as lost_log:
+                lost_log.write(datetime.now().isoformat())
+                lost_log.write(": lost xAPI statement after {} attempts to send.\n".format(max_retries))
+                lost_log.write("Destination: {}\n".format(unavailable_receiver))
+                lost_log.write("Statement:\n")
+                lost_log.write(lost_publication.json)
+                lost_log.write("\nEnd of statement.\n\n")
 
     def rollback(self):
         self.__publication_queue = dict()
