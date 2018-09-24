@@ -18,5 +18,8 @@ node_modules
 # virtualenv
 .venv
 
+# logfiles, debugging
+*.log
+
 # Frontend
 frontend/dist
