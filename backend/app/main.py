@@ -9,6 +9,7 @@ from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages, BabelLanguage
+from framework.xapi.publisher import XApiPublisher
 from model.models.DataClient import DataClient
 from model.models.DataSubject import DataSubject
 from utils import debug_print
@@ -96,6 +97,8 @@ def after_request(response: Response):
     :param response: Reponse That is about to be sent back
     :return: Response the response that is sent back to the client
     """
+    XApiPublisher.get_instance().publish()
+
     # hacky scheduling
     for job in laziness.LAZY_JOBS:
         job()  # TODO: remove
