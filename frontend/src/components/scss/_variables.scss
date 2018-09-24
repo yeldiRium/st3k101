@@ -1,10 +1,15 @@
-$primary-dark: #488807;
-$primary: #6AD300;
-$primary-light: #befa7d;
+$sky: #caebf2;
+$carbon: #a9a9a9;
+$watermelon: #ff3b3f;
+$neutral: #efefef;
 
-$secondary-dark: #214F66;
-$secondary: #337CA0;
-$secondary-light: #A2C3D3;
+$primary-dark: $carbon;
+$primary: $watermelon;
+$primary-light: $neutral;
+
+$secondary-dark: $sky;
+$secondary: $sky;
+$secondary-light: $sky;
 
 $verydark: #1E1E1E;
 $darker: #878787;
