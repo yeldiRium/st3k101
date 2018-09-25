@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from uuid import UUID
 
 from framework.xapi.XApiItem import XApiItem
 from framework.xapi.XApiActivities import XApiActivities
@@ -70,18 +71,19 @@ class XApiAgentObject(XApiObject):
         return self.get_agent().as_dict()
 
 
-class xApiStatementRefObject(XApiObject):
+class XApiStatementRefObject(XApiObject):
 
-    def __init__(self, statement: "XApiStatement"):
-        self.__statement = statement
-
-    def get_statement(self) -> "XApiStatement":
-        return self.__statement
+    def __init__(self, statement: "XApiStatement"=None, statement_id: UUID=None):
+        assert (statement is not None) or (statement_id is not None)
+        if statement is not None:
+            self.__statement_id = statement.get_id()
+        else:
+            self.__statement_id = statement_id
 
     def get_object_type(self) -> str:
         return "StatementRef"
 
     def get_object_info(self) -> dict:
         return {
-            "id": self.get_statement().get_id()
+            "id": self.__statement_id
         }

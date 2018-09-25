@@ -201,7 +201,6 @@ class LtiResponseResource(Resource):
             abort(403, message="Survey has concluded.")
 
         all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
-        results = []
 
         for dimension_data in data['dimensions']:
             dimension = next((d for d in questionnaire.dimensions
@@ -223,7 +222,6 @@ class LtiResponseResource(Resource):
                     needs_verification=False
                 )
                 all_questions.remove(question_data['id'])
-                results.append(result)
 
         if all_questions:
             db.session.rollback()
@@ -233,9 +231,6 @@ class LtiResponseResource(Resource):
             }, 400
 
         db.session.commit()
-        for result in results:
-            if result.verified:
-                SIG_ANSWER_SUBMITTED.send(result)
         return {
             'message': 'Submission successful.'
         }, 200

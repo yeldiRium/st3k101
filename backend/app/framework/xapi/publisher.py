@@ -6,6 +6,7 @@ from typing import Optional, List, Iterable
 from flask import json, g
 
 from framework.xapi.XApiStatement import XApiStatement
+from framework.xapi.statements.XApiVoidStatement import XApiVoidStatement
 from utils import debug_print
 
 __author__ = "Noah Hummel"
@@ -74,13 +75,11 @@ class XApiPublisher(object):
             'X-Experience-API-Version': '1.0.0',
             'User-Agent': 'st3k101/2.0'
         }
-        debug_print(self.__publication_queue)
         to_send = set()
         sent = set()
         for publication_id, publication in self.__publication_queue.items():
             for receiver in publication.receivers:
                 to_send.add((publication_id, receiver))
-        debug_print(to_send)
 
         max_retries = g._config['XAPI_MAX_RETRIES']
         for _ in range(max_retries):

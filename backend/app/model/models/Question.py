@@ -5,6 +5,7 @@ from flask import g
 
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
+from framework.signals import SIG_ANSWER_SUBMITTED, SIG_ANSWER_VOIDED
 from framework.tracker import TrackingType
 from model.models.DataSubject import DataSubject
 from model.models.OwnershipBase import query_owned
@@ -195,14 +196,13 @@ class Question(SurveyBase):
         self.responses.append(result)
 
         # replacement business logic for previous results
-        if len(earlier_results) == 0:
-            return result
-
-        elif len(earlier_results) == 1:
+        if len(earlier_results) == 1:
             earlier_result = earlier_results[0]
             # replace earlier unverified result, or earlier verified
             # result, if new result is already verified
             if not earlier_result.verified or result.verified:
+                if earlier_result.verified:
+                    SIG_ANSWER_VOIDED.send(earlier_result)
                 self.responses.remove(earlier_result)
 
         elif len(earlier_results) == 2:
@@ -212,7 +212,11 @@ class Question(SurveyBase):
             self.responses.remove(unverified_result)
             if result.verified:
                 # replace earlier result
+                SIG_ANSWER_VOIDED.send(verified_result)
                 self.responses.remove(verified_result)
+
+        if result.verified:
+            SIG_ANSWER_SUBMITTED.send(result)
 
         return result
 
