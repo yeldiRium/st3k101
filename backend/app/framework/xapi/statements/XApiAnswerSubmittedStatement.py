@@ -21,7 +21,7 @@ class XApiAnswerSubmittedStatement(XApiStatement):
             XApiVerb(XApiVerbs.SubmittedAnswer),
             XApiActivityObject(
                 XApiActivities.Question,
-                ResourceBroker.url_for(question),
+                question.reference_id,
                 question.name_translations
             ),
             xapi_context=XApiSt3k101Context(),
