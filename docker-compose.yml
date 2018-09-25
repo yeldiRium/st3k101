@@ -35,6 +35,15 @@ services:
     volumes:
       - ./frontend:/usr/app:rw
 
+  xapi-publisher:
+    build: xapi-publisher
+    restart: always
+
+  mongo:
+    image: bitnami/mongodb:3.6
+    volumes:
+      - mongo:/bitnami
+
   nginx:
     build: nginx
     ports:
@@ -48,3 +57,4 @@ services:
 
 volumes:
   postgres:
+  mongo:
