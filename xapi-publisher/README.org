@@ -1,0 +1,45 @@
+* ST3K101 xAPI Publisher Microservice
+Receives xAPI statements and publishes them at some later time.
+May store xAPI statements that are waiting for approval before they can
+be submitted and publish them at some later point in time.
+
+Will try to send any stored and approved statements after each
+request. If the destination returns a non-OK status code,
+the statement will be resent the next time.
+
+** API
+
+*** /enqueue/immediate
+Enqueues a statement that may be published immediately
+
+**** Payload: application/json
+
+#+BEGIN_SRC javascript
+{
+    statements: [...],  // list of xAPI statements
+    receivers: ["172.18.0.1", "141.2.1.21"],  // list of receivers
+}
+#+END_SRC
+
+*** /enqueue/deferred/<key>
+Enqueues a statement that may not be published immediately.
+
+**** Arguments
+
+| Name | Description                                                                  |
+|------+------------------------------------------------------------------------------|
+| key  | A hashable value that is used to later approve the statements for publishing |
+|      |                                                                              |
+
+**** Payload: application/json
+
+#+BEGIN_SRC javascript
+{
+    statements: [...],  // list of xAPI statements
+    receivers: ["172.18.0.1", "141.2.1.21"],  // list of receivers
+}
+#+END_SRC
+*** /cancel/<key>
+    Cancels all deferred statements that were submitted under this key.
+*** /approve/<key>
+    Approves all deferred statements that were submitted under this key.

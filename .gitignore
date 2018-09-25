@@ -23,3 +23,6 @@ node_modules
 
 # Frontend
 frontend/dist
+
+# emacs
+*.org~
