@@ -11,6 +11,7 @@ from auth.roles import Role, needs_minimum_role
 from auth.session import current_user
 from framework.captcha import validate_captcha
 from framework.signals import SIG_ANSWER_SUBMITTED, SIG_ANSWERS_VALIDATED
+from framework.xapi.XApiPublisher import XApiPublisher
 from framework.xapi.submission_hooks import do_submission_hooks
 from model import db
 from model.models.DataSubject import DataSubject
@@ -141,6 +142,7 @@ class ResponseListForQuestionnaireResource(Resource):
 
         if all_questions:
             db.session.rollback()
+            XApiPublisher().rollback()
             return {
                 'message': 'Missing questions.',
                 'missing': list(all_questions)
@@ -239,6 +241,7 @@ class LtiResponseResource(Resource):
 
         if all_questions:
             db.session.rollback()
+            XApiPublisher().rollback()
             return {
                 'message': 'Missing questions.',
                 'missing': list(all_questions)
