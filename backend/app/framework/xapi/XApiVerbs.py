@@ -10,21 +10,35 @@ class XApiVerbs(Enum):
         }
     }
 
-    AskedQuestion = {
+    Asked = {
         "id": "http://adlnet.gov/expapi/verbs/asked",
         "display": {
             "en-US": "Indicates the DataClient asked a survey question, i.e. someone accessed a survey."
         }
     }
 
-    SubmittedAnswer = {
+    Answered = {
         "id": "http://adlnet.gov/expapi/verbs/answered",
-        "display" : {
-            "en-US": "Indicates the DataSubject answered a survey question at st3k101. This is a direct result of http://adlnet.gov/expapi/verbs/asked ."
+        "display": {
+            "en-US": "Indicates the DataSubject answered something."
         }
     }
 
-    ArchivedQuestionnaire = {
+    PublishedSurvey = {
+        "id": "http://fantasy.land/published",
+        "display": {
+            "en-US": "Indicates the DataClient published a survey."
+        }
+    }
+
+    RetractedSurvey = {
+        "id": "http://activitystrea.ms/schema/1.0/retract",
+        "display": {
+            "en-US": "Indicates the DataClient retracted a previously published a survey."
+        }
+    }
+
+    ConcludedSurvey = {
         "id": "http://activitystrea.ms/schema/1.0/archive",
         "display": {
             "en-US": "Indicates the DataClient has concluded and archived their survey at st3k101."

@@ -25,3 +25,13 @@ class XApiScoredResult(XApiResult):
                 "raw": self.__raw
             }
         }
+
+
+class XApiResponseResult(XApiResult):
+    def __init__(self, text):
+        self.__text = text
+
+    def as_dict(self) -> dict:
+        return {
+            "response": self.__text
+        }

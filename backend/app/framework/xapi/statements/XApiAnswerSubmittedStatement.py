@@ -18,7 +18,7 @@ class XApiAnswerSubmittedStatement(XApiStatement):
     def __init__(self, datasubject: DataSubject, question: Question, value: int):
         super(XApiAnswerSubmittedStatement, self).__init__(
             XApiMboxActor(datasubject.email, datasubject.email),
-            XApiVerb(XApiVerbs.SubmittedAnswer),
+            XApiVerb(XApiVerbs.Answered),
             XApiActivityObject(
                 XApiActivities.Question,
                 question.reference_id,
