@@ -11,6 +11,7 @@ from auth.roles import Role, needs_minimum_role
 from auth.session import current_user
 from framework.captcha import validate_captcha
 from framework.signals import SIG_ANSWER_SUBMITTED, SIG_ANSWERS_VALIDATED
+from framework.xapi.submission_hooks import do_submission_hooks
 from model import db
 from model.models.DataSubject import DataSubject
 from model.models.Dimension import Dimension
@@ -122,6 +123,7 @@ class ResponseListForQuestionnaireResource(Resource):
                 return {
                     'message': 'Questionnaire has no dimension with id {}'.format(dimension_data['id'])
                 }, 400
+
             for question_data in dimension_data['questions']:
                 question = next((q for q in dimension.questions
                                  if q.id == question_data['id']), None)  # type: Question
@@ -132,6 +134,10 @@ class ResponseListForQuestionnaireResource(Resource):
                 question.add_question_result(question_data['value'], data_subject,
                                              verification_token=verification_token)
                 all_questions.remove(question_data['id'])
+
+            do_submission_hooks(dimension, dimension_data, data_subject)
+
+        do_submission_hooks(questionnaire, data, data_subject)
 
         if all_questions:
             db.session.rollback()
@@ -226,6 +232,10 @@ class LtiResponseResource(Resource):
                     needs_verification=False
                 )
                 all_questions.remove(question_data['id'])
+
+            do_submission_hooks(dimension, dimension_data)
+
+        do_submission_hooks(questionnaire, data)
 
         if all_questions:
             db.session.rollback()
