@@ -17,9 +17,12 @@ Enqueues a statement that may be published immediately
 #+BEGIN_SRC javascript
 {
     statements: [...],  // list of xAPI statements
-    receivers: ["172.18.0.1", "141.2.1.21"],  // list of receivers
+    receivers: ["http://172.18.0.1", "http://141.2.1.21"],  // list of receivers
 }
 #+END_SRC
+
+Make sure to prefix all receivers with ~http://~ or ~https://~ for SSL, as
+the ~requests~ library needs to know which protocol to use.
 
 *** /enqueue/deferred/<key>
 Enqueues a statement that may not be published immediately.
@@ -29,16 +32,19 @@ Enqueues a statement that may not be published immediately.
 | Name | Description                                                                  |
 |------+------------------------------------------------------------------------------|
 | key  | A hashable value that is used to later approve the statements for publishing |
-|      |                                                                              |
 
 **** Payload: application/json
 
 #+BEGIN_SRC javascript
 {
     statements: [...],  // list of xAPI statements
-    receivers: ["172.18.0.1", "141.2.1.21"],  // list of receivers
+    receivers: ["http://172.18.0.1", "http://141.2.1.21"],  // list of receivers
 }
 #+END_SRC
+
+Make sure to prefix all receivers with ~http://~ or ~https://~ for SSL, as
+the ~requests~ library needs to know which protocol to use.
+
 *** /cancel/<key>
     Cancels all deferred statements that were submitted under this key.
 *** /approve/<key>
