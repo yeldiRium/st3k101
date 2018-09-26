@@ -10,7 +10,7 @@ from api.schema.Submission import SubmissionSchema
 from auth.roles import Role, needs_minimum_role
 from auth.session import current_user
 from framework.captcha import validate_captcha
-from framework.signals import SIG_ANSWER_SUBMITTED, SIG_ANSWERS_VALIDATED
+from framework.signals import SIG_ANSWERS_VALIDATED
 from framework.xapi.XApiPublisher import XApiPublisher
 from framework.xapi.submission_hooks import do_submission_hooks
 from model import db

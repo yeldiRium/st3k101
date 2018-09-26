@@ -1,4 +1,3 @@
-from framework.signals import SIG_ANSWER_SUBMITTED
 from model import db
 from model.models.DataSubject import DataSubject
 from model.models.OwnershipBase import OwnershipBase
@@ -36,6 +35,5 @@ class QuestionResponse(OwnershipBase):
 
         self.verified = True
         self.verification_token = None
-        SIG_ANSWER_SUBMITTED.send(self)
 
         return len(verified_results) == 0  # no previous verified results?
