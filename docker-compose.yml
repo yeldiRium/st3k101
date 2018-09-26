@@ -27,6 +27,7 @@ services:
     links:
       - memcached
       - postgres
+      - xapi-publisher
     volumes:
       - ./backend/app:/app
 
@@ -38,6 +39,16 @@ services:
   xapi-publisher:
     build: xapi-publisher
     restart: always
+    volumes:
+      - ./xapi-publisher/app:/app
+    links:
+      - mongo
+      - redis
+
+  redis:
+    image: library/redis
+    volumes:
+      - redis:/data
 
   mongo:
     image: bitnami/mongodb:3.6
@@ -58,3 +69,4 @@ services:
 volumes:
   postgres:
   mongo:
+  redis:
