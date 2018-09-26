@@ -13,12 +13,18 @@ class XApiPublisher(metaclass=Singleton):
     def __init__(self):
         self.__requests = []
 
+    def __repr__(self):
+        import pprint
+        pp = pprint.PrettyPrinter()
+        return object.__repr__(self) + "\n" + pp.pformat(self.__requests)
+
     def flush(self):
         for url, payload in self.__requests:
             if payload:
                 requests.post(url, json=json.dumps(payload))
             else:
                 requests.post(url)
+        self.__requests = []  # avoid sending duplicates, yes that happened.
 
     def rollback(self):
         self.__requests = []
