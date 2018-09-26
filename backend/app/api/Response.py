@@ -1,3 +1,5 @@
+from typing import List
+
 from flask import request
 from flask_restful import Resource, abort
 
@@ -8,7 +10,7 @@ from api.schema.Submission import SubmissionSchema
 from auth.roles import Role, needs_minimum_role
 from auth.session import current_user
 from framework.captcha import validate_captcha
-from framework.signals import SIG_ANSWER_SUBMITTED
+from framework.signals import SIG_ANSWER_SUBMITTED, SIG_ANSWERS_VALIDATED
 from model import db
 from model.models.DataSubject import DataSubject
 from model.models.Dimension import Dimension
@@ -175,11 +177,13 @@ class ResponseResource(Resource):
 
 class ResponseVerificationResource(Resource):
     def get(self, verification_token: str=None):
-        response = QuestionResponse.query.filter_by(
-            verification_token=verification_token).first()  # type: QuestionResponse
-        if not response:
+        responses = QuestionResponse.query.filter_by(
+            verification_token=verification_token).all()  # type: List[QuestionResponse]
+        if not responses:
             abort(404)
-        response.verify()
+        for response in responses:
+            response.verify()
+        SIG_ANSWERS_VALIDATED.send(responses[0].question.dimension.questionnaire)
         db.session.commit()
         return  # TODO redirect
 
@@ -187,7 +191,7 @@ class ResponseVerificationResource(Resource):
 class LtiResponseResource(Resource):
     @needs_minimum_role(Role.Unprivileged)
     def post(self, questionnaire_id: int=None):
-        schema = SubmissionSchema(exclude=["data_subject"])  # TODO: implement
+        schema = SubmissionSchema(exclude=["data_subject"])
         data, errors = schema.load(request.json)
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
 
@@ -230,6 +234,7 @@ class LtiResponseResource(Resource):
                 'missing': list(all_questions)
             }, 400
 
+        SIG_ANSWERS_VALIDATED.send(questionnaire)
         db.session.commit()
         return {
             'message': 'Submission successful.'
