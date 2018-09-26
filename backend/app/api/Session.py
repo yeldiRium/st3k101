@@ -9,7 +9,7 @@ from api.schema.LtiRequestSchema import LtiRequestSchema
 from api.schema.Session import LoginSchema, SessionSchema
 from auth.roles import needs_role, Role
 from framework.exceptions import UserNotLoggedInException, BadCredentialsException
-from framework.signals import SIG_LOGGED_IN
+from framework.signals import SIG_LOGGED_IN, SIG_LTI_LAUNCH
 from model import db
 from model.models.DataClient import DataClient
 from model.models.DataSubject import DataSubject
@@ -59,6 +59,8 @@ class LtiSessionResource(Resource):
         if errors:
             return errors, 400
 
+        # TODO: parse launch_presentation_locale in use as g._language
+
         if not questionnaire.allow_embedded:
             abort(403)
 
@@ -77,6 +79,11 @@ class LtiSessionResource(Resource):
 
         if session_token is not None:
             db.session.commit()
+            SIG_LTI_LAUNCH.send(
+                subject,
+                tool_consumer_guid=data['tool_consumer_instance_guid'],
+                tool_consumer_name=data['tool_consumer_instance_description']
+            )
             return SessionSchema().dump({"session_token": session_token}).data
 
 

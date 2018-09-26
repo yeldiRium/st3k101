@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class XApiActivities(Enum):
     Question = {
         "type": "http://adlnet.gov/expapi/activities/question",
@@ -26,5 +27,12 @@ class XApiActivities(Enum):
         "type": "http://activitystrea.ms/schema/1.0/page",
         "description": {
             "en-US": "This is the log in page of the st3k101 survey tool."
+        }
+    }
+
+    EmbeddedLogin = {
+        "type": "http://activitystrea.ms/schema/1.0/page",
+        "description": {
+            "en-US": "This is the page where st3k101 is embedded."
         }
     }

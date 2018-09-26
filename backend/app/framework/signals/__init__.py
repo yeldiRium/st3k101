@@ -11,8 +11,8 @@ item_added = app_signals.signal('item_added')
 item_removed = app_signals.signal('item_removed')
 questionnaire_removed = app_signals.signal('questionnaire_removed')
 
-SIG_LOGGED_IN = app_signals.signal('logged_in')  # current
-SIG_LTI_LAUNCH = app_signals.signal('lti_launch')
+SIG_LOGGED_IN = app_signals.signal('logged_in')
+SIG_LTI_LAUNCH = app_signals.signal('lti_launch')  # current
 SIG_ANSWER_SUBMITTED = app_signals.signal('answer_submitted')
 SIG_QUESTION_ANSWERED = app_signals.signal('question_answered')
 SIG_ANSWERS_VALIDATED = app_signals.signal('answers_validated')

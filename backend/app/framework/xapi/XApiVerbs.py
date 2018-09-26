@@ -6,7 +6,7 @@ class XApiVerbs(Enum):
     LoggedIn = {
         "id": "https://brindlewaye.com/xAPITerms/verbs/loggedin",
         "display": {
-            "en-US": "Indicates the DataClient logged in at st3k101." 
+            "en-US": "Indicates someone logged in at st3k101."
         }
     }
 
