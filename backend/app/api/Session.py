@@ -9,7 +9,9 @@ from api.schema.LtiRequestSchema import LtiRequestSchema
 from api.schema.Session import LoginSchema, SessionSchema
 from auth.roles import needs_role, Role
 from framework.exceptions import UserNotLoggedInException, BadCredentialsException
+from framework.signals import SIG_LOGGED_IN
 from model import db
+from model.models.DataClient import DataClient
 from model.models.DataSubject import DataSubject
 from model.models.Questionnaire import Questionnaire
 
@@ -30,6 +32,7 @@ class SessionResource(Resource):
 
         try:
             session_token = auth.dataclient.login(data['email'], data['password'])
+            SIG_LOGGED_IN.send(DataClient.query.filter_by(email=data['email']).first())
             return SessionSchema().dump({'session_token': session_token}).data
         except BadCredentialsException:
             abort(404, message='User not found.')
