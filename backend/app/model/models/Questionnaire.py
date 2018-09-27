@@ -14,7 +14,7 @@ from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType
 from framework.signals import item_added, item_removed, questionnaire_removed, SIG_QUESTIONNAIRE_PUBLISHED, \
-    SIG_QUESTIONNAIRE_UNPUBLISHED
+    SIG_QUESTIONNAIRE_UNPUBLISHED, SIG_SURVEY_CONCLUDED
 from model import db, MUTABLE_HSTORE, translation_hybrid
 from model.models.Dimension import Dimension, ConcreteDimension, ShadowDimension
 from model.models.QuestionResponse import QuestionResponse
@@ -213,6 +213,7 @@ class Questionnaire(SurveyBase):
         then updates the published and concluded state accordingly.
         """
         previously_published = copy(self.published)
+        previously_concluded = copy(self.concluded)
         if self.scheduled:
             now = datetime.now()
             if self.begins < now < self.ends:
@@ -225,6 +226,9 @@ class Questionnaire(SurveyBase):
             SIG_QUESTIONNAIRE_PUBLISHED.send(self)
         if previously_published and not self.published:
             SIG_QUESTIONNAIRE_UNPUBLISHED.send(self)
+
+        if not previously_concluded and self.concluded:
+            SIG_SURVEY_CONCLUDED.send(self)
 
 
 class ConcreteQuestionnaire(Questionnaire):
