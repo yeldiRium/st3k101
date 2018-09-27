@@ -21,7 +21,7 @@ from model.models.QuestionResponse import QuestionResponse
 from model.models.Questionnaire import Questionnaire
 from utils import generate_verification_token
 from utils.dicts import merge_error_dicts
-from utils.email import validate_email_blacklist, validate_email_whitelist
+from framework.email import validate_email_blacklist, validate_email_whitelist
 
 __author__ = "Noah Hummel"
 

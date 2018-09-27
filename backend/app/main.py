@@ -1,11 +1,10 @@
-from flask import render_template, g, request, make_response, abort
+from flask import g, request, make_response, abort
 from werkzeug.wrappers import Response
 
 import auth
 import auth.session
 from app import app as original_app
 from auth.users import PartyTypes
-from framework import laziness
 from framework.exceptions import *
 from framework.internationalization import list_sorted_by_long_name, _
 from framework.internationalization.babel_languages import babel_languages, BabelLanguage

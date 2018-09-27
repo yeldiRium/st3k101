@@ -6,7 +6,7 @@ from framework import importer
 from framework.internationalization.babel_languages import BabelLanguage
 from model import db
 from model.models.DataClient import DataClient
-from utils.flask import setup_app_context
+from framework.flask import setup_app_context
 
 
 @app.cli.command()

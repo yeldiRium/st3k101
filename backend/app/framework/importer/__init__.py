@@ -1,9 +1,7 @@
-from flask import json
-
 from framework.importer.schema.Questionnaire import QuestionnaireImportSchema
 from model import db
 from model.models.Questionnaire import ConcreteQuestionnaire
-from utils.flask import context_language
+from framework.flask import context_language
 
 __author__ = "Noah Hummel"
 
