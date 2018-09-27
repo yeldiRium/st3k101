@@ -1,3 +1,5 @@
+from copy import copy
+
 from datetime import datetime
 
 import os
@@ -11,7 +13,8 @@ from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType
-from framework.signals import item_added, item_removed, questionnaire_removed
+from framework.signals import item_added, item_removed, questionnaire_removed, SIG_QUESTIONNAIRE_PUBLISHED, \
+    SIG_QUESTIONNAIRE_UNPUBLISHED
 from model import db, MUTABLE_HSTORE, translation_hybrid
 from model.models.Dimension import Dimension, ConcreteDimension, ShadowDimension
 from model.models.QuestionResponse import QuestionResponse
@@ -209,6 +212,7 @@ class Questionnaire(SurveyBase):
         Checks whether self is scheduled to begin and end at a certain time,
         then updates the published and concluded state accordingly.
         """
+        previously_published = copy(self.published)
         if self.scheduled:
             now = datetime.now()
             if self.begins < now < self.ends:
@@ -216,6 +220,12 @@ class Questionnaire(SurveyBase):
                 self.concluded = False
             elif self.ends < now:
                 self.concluded = True
+
+        if not previously_published and self.published:
+            SIG_QUESTIONNAIRE_PUBLISHED.send(self)
+        if previously_published and not self.published:
+            SIG_QUESTIONNAIRE_UNPUBLISHED.send(self)
+
 
 class ConcreteQuestionnaire(Questionnaire):
     id = db.Column(db.Integer, db.ForeignKey(Questionnaire.id), primary_key=True)
