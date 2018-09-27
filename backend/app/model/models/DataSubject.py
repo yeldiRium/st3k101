@@ -1,3 +1,7 @@
+from flask import g
+
+from framework.internationalization.babel_languages import BabelLanguage
+
 __author__ = "Noah Hummel"
 
 
@@ -19,6 +23,13 @@ class DataSubject(Party):
     lti_user_id = db.Column(db.String(256))
     moodle_username = db.Column(db.String(120))  # TODO: use ext_user_username if available
     source = db.Column(db.String(120), default="Standalone")
+    launch_language = db.Column(db.Enum(BabelLanguage))
+
+    @property
+    def language(self) -> BabelLanguage:
+        if self.launch_language is not None:
+            return self.launch_language
+        return g._config['BABEL_DEFAULT_LOCALE']
 
     @property
     def roles(self) -> List[Role]:

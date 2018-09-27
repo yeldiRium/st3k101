@@ -70,7 +70,8 @@ def before_request():
         g._language = BabelLanguage[http_locale.lower()]
 
     # if user is logged in and a DataClient, set locale based on user prefs, override HTTP header
-    if g._current_user and isinstance(g._current_user, DataClient):
+    if g._current_user and \
+            (isinstance(g._current_user, DataClient) or isinstance(g._current_user, DataSubject)):
         g._language = g._current_user.language
 
     # we also hand out a cookie the first time a locale is set and just

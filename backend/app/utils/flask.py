@@ -5,6 +5,7 @@ from framework.internationalization.babel_languages import BabelLanguage
 
 __author__ = "Noah Hummel"
 
+
 def setup_app_context(app, language=None, user=None):
     """
     Sets request-global variables needed for the app to function.

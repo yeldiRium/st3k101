@@ -213,3 +213,7 @@ BabelLanguage = Enum(value='BabelLanguage', names=babel_languages)
 
 def is_language(lang):
     return any((lang == i.name for i in BabelLanguage))
+
+
+def language_exists(short_tag: str) -> bool:
+    return short_tag in babel_languages

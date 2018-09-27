@@ -1,7 +1,9 @@
-from typing import Tuple, List
+import re
+
+from typing import Tuple, List, Optional
 
 from flask_babel import gettext
-from .babel_languages import babel_languages
+from .babel_languages import babel_languages, BabelLanguage, language_exists
 
 __author__ = "Noah Hummel, Hannes Leutloff"
 
@@ -45,3 +47,16 @@ def list_sorted_by_long_name() -> List[Tuple[str, str]]:
                                    name
     """
     return sorted(babel_languages.items(), key=lambda aTuple: aTuple[1])
+
+
+def parse_language_tag(tag: str) -> Optional[BabelLanguage]:
+    pattern = re.compile(r'^([^-_]{1,4})([-_].*)?$')
+    match = pattern.match(tag)
+    if match is None:
+        return None
+
+    short_tag = match[1]
+    if language_exists(short_tag):
+        return BabelLanguage[short_tag]
+
+    return None

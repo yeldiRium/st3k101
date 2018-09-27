@@ -2,6 +2,7 @@ from marshmallow import Schema, fields
 
 __author__ = "Noah Hummel"
 
+
 class LtiRequestSchema(Schema):
     oauth_consumer_key = fields.String(required=True)
     user_id = fields.String(required=True)

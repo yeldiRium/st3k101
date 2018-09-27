@@ -51,7 +51,8 @@ class SurveyBase(OwnershipBase):
     def reference_id(self, value: str):
         previous = copy(self._reference_id)
         self._reference_id = utils.unicode_to_xml_friendly_ascii(value)
-        SIG_REFERENCE_ID_UPDATED.send(self, previous_value=previous)
+        if previous:
+            SIG_REFERENCE_ID_UPDATED.send(self, previous_value=previous)
 
     @property
     def available_languages(self):

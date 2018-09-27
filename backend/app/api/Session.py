@@ -9,11 +9,13 @@ from api.schema.LtiRequestSchema import LtiRequestSchema
 from api.schema.Session import LoginSchema, SessionSchema
 from auth.roles import needs_role, Role
 from framework.exceptions import UserNotLoggedInException, BadCredentialsException
+from framework.internationalization import parse_language_tag
 from framework.signals import SIG_LOGGED_IN, SIG_LTI_LAUNCH
 from model import db
 from model.models.DataClient import DataClient
 from model.models.DataSubject import DataSubject
 from model.models.Questionnaire import Questionnaire
+from utils import debug_print
 
 __author__ = "Noah Hummel"
 
@@ -59,21 +61,24 @@ class LtiSessionResource(Resource):
         if errors:
             return errors, 400
 
-        # TODO: parse launch_presentation_locale in use as g._language
-
         if not questionnaire.allow_embedded:
             abort(403)
 
         if questionnaire.lti_consumer_key != data['oauth_consumer_key']:
             abort(403, message='Invalid consumer key.')
 
-        subject = DataSubject.get_or_create(lti_user_id=data['user_id'])
+        # user provisioning
+        subject = DataSubject.get_or_create(lti_user_id=data['user_id'])  # FIXME: not globally unique, use tc_guid as well
         subject.source = data['tool_consumer_instance_guid']
         if 'ext_user_username' in data:
             subject.moodle_username = data['ext_user_username']
-
         if 'lis_person_contact_email_primary' in data:
             subject.email = data['lis_person_contact_email_primary']
+
+        # parse lti launch locale and update user locale preferences
+        language = parse_language_tag(data['launch_presentation_locale'])
+        subject.launch_language = language  # it is okay to set this to None, subject.language has defaults
+        debug_print("LTI: launch locale parsed: {}".format(language))
 
         session_token = auth.datasubject.new_lti_session(subject.lti_user_id)
 

@@ -7,6 +7,7 @@ from utils.flask import context_language
 
 __author__ = "Noah Hummel"
 
+
 def import_questionnaires(questionnaires_as_json):
     questionnaires = QuestionnaireImportSchema(many=True).loads(questionnaires_as_json).data
     for questionnaire in questionnaires:
