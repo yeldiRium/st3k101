@@ -105,6 +105,7 @@ function getCurrentDataClient(authenticationToken) {
  * @param tool_consumer_info_version {String}
  * @param tool_consumer_instance_description {String}
  * @param tool_consumer_instance_guid {String}
+ * @param ext_user_username {String} extension used by moodle for moodle user names
  * @resolves {String} {String}
  * @rejects {ApiError|TypeError}
  */
@@ -128,7 +129,8 @@ function requestLtiSession(
     tool_consumer_info_product_family_code = null,
     tool_consumer_info_version = null,
     tool_consumer_instance_description = null,
-    tool_consumer_instance_guid = null
+    tool_consumer_instance_guid = null,
+    ext_user_username = null
   }
 ) {
   let body = R.filter(R.complement(R.isNil), {
@@ -148,7 +150,8 @@ function requestLtiSession(
     tool_consumer_info_product_family_code: tool_consumer_info_product_family_code,
     tool_consumer_info_version: tool_consumer_info_version,
     tool_consumer_instance_description: tool_consumer_instance_description,
-    tool_consumer_instance_guid: tool_consumer_instance_guid
+    tool_consumer_instance_guid: tool_consumer_instance_guid,
+    ext_user_username: ext_user_username
   });
   // TODO: make hard-coded path configurable
   return fetchApi(`http://backend/api/questionnaire/${questionnaireId}/lti`, {
