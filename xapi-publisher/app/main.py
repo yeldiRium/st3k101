@@ -19,13 +19,7 @@ def enqueue(statement, receivers, survey_base_id: int=None):
     document = {
         'approved': survey_base_id is None,
         'approval_key': survey_base_id,
-        'receivers': [
-            {
-                'receiver': receiver,
-                'retry_count': 0,
-                'retry_after': datetime.now()
-            } for receiver in receivers
-        ],
+        'receivers': receivers,
         'statement': statement,
         'retry_count': 0,
         'retry_after': datetime.now()
@@ -60,55 +54,46 @@ def get_next_retry_time(retry_count):
     return datetime.now() + timedelta(seconds=interval_seconds)
 
 
-@celery.task
-def flush():
-    documents = collection.find({'approved': True})
+class LogOnAbortTask(celery.Task):
+    def after_return(self, status, retval, task_id, args, kwargs, einfo):
+        if self.max_retries == self.request.retries:
+            log_lost(*args)
+
+
+@celery.task(
+    base=LogOnAbortTask,
+    autoretry_for=(AssertionError,),
+    retry_backoff=True,
+    retry_kwargs={'max_retries': app.config['MAX_RETRIES']}
+)
+def send_statement(statement: dict, receiver: str):
+    """
+    Send a statement to a specific receiver, using at most MAX_RETRIES.
+    Logs to LOST_LOG when MAX_RETRIES are exceeded.
+    :param statement: An xAPI statement.
+    :param receiver: An http(s) xAPI endpoint
+    """
     headers = {
         'Content-Type': 'application/json',
         'X-Experience-API-Version': '1.0.0',
         'User-Agent': 'st3k101/2.0'
     }
+    payload = json.dumps(statement)
+    req = requests.post(receiver, json=payload, headers=headers)
+    assert req.status_code == 200
 
-    sent = []
+
+def flush():
+    """
+    Get all approved statements and schedule tasks for sending them.
+    """
+    documents = collection.find({'approved': True})
     for document in documents:
         receivers = document['receivers']
         statement = document['statement']
 
-        unavailable_receivers = []
-        for receiver_info in receivers:
-            receiver = receiver_info['receiver']
-            retry_count = receiver_info['retry_count']
-            retry_after = receiver_info['retry_after']
-
-            if retry_count > app.config['MAX_RETRIES']:
-                # drop statement after MAX_RETRIES
-                log_lost(statement, receiver)
-                sent.append(document)
-                continue
-
-            if datetime.now() <= retry_after:
-                continue
-
-            req = requests.post(
-                receiver, json=statement, headers=headers
-            )
-            if req.status_code != 200:
-                unavailable_receivers.append({
-                    'receiver': receiver,
-                    'retry_count': retry_count + 1,
-                    'retry_after': get_next_retry_time(retry_count)
-                })
-
-        if not unavailable_receivers:  # all sent successfully
-            sent.append(document)
-        else:
-            collection.update_one(
-                {'_id': document['_id']},
-                {'$set': {
-                    'receivers': unavailable_receivers
-                }}
-            )
-    for document in sent:
+        for receiver in receivers:
+            send_statement.delay(statement, receiver)
         collection.delete_one({'_id': document['_id']})
 
 
@@ -146,5 +131,5 @@ def cancel(survey_base_id: int=None):
 
 @app.after_request
 def after_request(response: Response):
-    flush.delay()  # TODO: if no new statements are sent, no retries are performed, use celery beat
+    flush()
     return response
