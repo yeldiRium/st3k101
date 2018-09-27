@@ -96,7 +96,7 @@ def publish_questionnaire_published_xapi_statement(sender: Questionnaire):
     activity = get_xapi_object(sender)
     context = XApiSt3k101Context()
 
-    receiver = get_xapi_object(sender)
+    receiver = get_xapi_target(sender)
     statement = XApiStatement(actor, verb, activity, xapi_context=context)
     XApiPublisher().enqueue([statement], [receiver])
 
@@ -108,7 +108,7 @@ def publish_questionnaire_retracted_xapi_statement(sender: Questionnaire):
     activity = get_xapi_object(sender)
     context = XApiSt3k101Context()
 
-    receiver = get_xapi_object(sender)
+    receiver = get_xapi_target(sender)
     statement = XApiStatement(actor, verb, activity, xapi_context=context)
     XApiPublisher().enqueue([statement], [receiver])
 

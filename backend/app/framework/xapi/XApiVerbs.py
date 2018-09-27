@@ -34,7 +34,7 @@ class XApiVerbs(Enum):
     RetractedSurvey = {
         "id": "http://activitystrea.ms/schema/1.0/retract",
         "display": {
-            "en-US": "Indicates the DataClient retracted a previously published a survey."
+            "en-US": "Indicates the DataClient retracted a previously published survey."
         }
     }
 

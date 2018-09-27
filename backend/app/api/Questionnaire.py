@@ -1,3 +1,5 @@
+from copy import copy
+
 from flask import request
 from flask_restful import Resource, abort
 
@@ -6,6 +8,7 @@ from framework.dependency_injection import ResourceBroker
 from api.schema.Questionnaire import QuestionnaireSchema, ShadowQuestionnaireSchema
 from auth.roles import needs_minimum_role, Role, current_has_minimum_role
 from auth.session import current_user
+from framework.signals import SIG_QUESTIONNAIRE_PUBLISHED, SIG_QUESTIONNAIRE_UNPUBLISHED
 from model import db
 from model.models.DataClient import DataClient
 from model.models.OwnershipBase import query_owned
@@ -43,6 +46,8 @@ class QuestionnaireResource(Resource):
                 'errors': errors
             }, 400
 
+        previously_published = copy(questionnaire.published)
+
         shadow_attributes = ['published', 'allow_embedded', 'xapi_target']
         for k, v in data.items():
             if isinstance(questionnaire, ShadowQuestionnaire):
@@ -58,6 +63,11 @@ class QuestionnaireResource(Resource):
             setattr(questionnaire, k, v)
         questionnaire.apply_scheduling()
         db.session.commit()
+
+        if not previously_published and questionnaire.published:
+            SIG_QUESTIONNAIRE_PUBLISHED.send(questionnaire)
+        if previously_published and not questionnaire.published:
+            SIG_QUESTIONNAIRE_UNPUBLISHED.send(questionnaire)
 
         response = {
             'message': 'Questionnaire updated.',
