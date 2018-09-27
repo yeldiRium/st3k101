@@ -1,5 +1,7 @@
 import os
 from abc import abstractmethod
+from copy import copy
+
 from typing import Dict, List
 
 import utils
@@ -7,7 +9,7 @@ from auth.session import current_user
 from framework.internationalization import _
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType
-from framework.signals import property_updated, translation_hybrid_updated
+from framework.signals import property_updated, translation_hybrid_updated, SIG_REFERENCE_ID_UPDATED
 from model import db
 from model.models.OwnershipBase import OwnershipBase
 
@@ -47,7 +49,9 @@ class SurveyBase(OwnershipBase):
 
     @reference_id.setter
     def reference_id(self, value: str):
+        previous = copy(self._reference_id)
         self._reference_id = utils.unicode_to_xml_friendly_ascii(value)
+        SIG_REFERENCE_ID_UPDATED.send(self, previous_value=previous)
 
     @property
     def available_languages(self):

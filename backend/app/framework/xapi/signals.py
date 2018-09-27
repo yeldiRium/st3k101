@@ -66,7 +66,10 @@ def approve_pending_xapi_statements(sender: Questionnaire):
 
 
 @SIG_REFERENCE_ID_UPDATED.connect
-def publish_reference_id_updated_xapi_statement(sender: SurveyBase, previous_value):
+def publish_reference_id_updated_xapi_statement(
+        sender: SurveyBase,
+        previous_value: str="Missing"
+):
     actor = get_current_user_as_actor()
     verb = XApiVerb(XApiVerbs.ChangedReferenceId)
     activity = None
@@ -81,7 +84,7 @@ def publish_reference_id_updated_xapi_statement(sender: SurveyBase, previous_val
     result = XApiResponseResult(sender.reference_id)
     context = XApiSt3k101Context()
 
-    receiver = get_xapi_object(sender)
+    receiver = get_xapi_target(sender)
     statement = XApiStatement(actor, verb, activity, result, context)
     XApiPublisher().enqueue([statement], [receiver])
 
