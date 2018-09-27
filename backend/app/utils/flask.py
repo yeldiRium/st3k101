@@ -18,7 +18,7 @@ def setup_app_context(app, language=None, user=None):
         g._language = BabelLanguage[app.config['BABEL_DEFAULT_LOCALE']]
     else:
         g._language = language
-    g._current_user = user  # TODO: what should be the default value?
+    g._current_user = user
 
 
 @contextmanager

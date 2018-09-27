@@ -3,12 +3,14 @@ from abc import abstractmethod
 from flask import g
 from geolite2 import geolite2
 
+from auth.session import current_user
 from framework import get_client_ip
-from framework.dependency_injection import ResourceBroker
+from api.utils.ResourceBroker import ResourceBroker
 from framework.xapi.XApiActivities import XApiActivities
 from framework.xapi.XApiItem import XApiItem
 from framework.xapi.XApiActor import XApiMboxActor
 from framework.xapi.XApiObject import XApiActivityObject
+from model.models.DataSubject import DataSubject
 
 
 class XApiContext(XApiItem):
@@ -18,10 +20,19 @@ class XApiContext(XApiItem):
 
 
 class XApiSt3k101Context(XApiContext):
+    """
+    Provides the default context for all xAPI statements issued by st3k101.
+    It includes a platform string, containing the name "st3k101" as well
+    as the tool consumer guid if the statement was generated via an embedded context,
+    the request language and, if available, the client's geolocation.
+    """
     def __init__(self):
-        self.__platform = "st3k101"  # TODO: detect embedded launch and add tool consumer to platform string
+        self.__platform = "st3k101"
+        if current_user() and isinstance(current_user(), DataSubject):
+            self.__platform += " via {}".format(current_user().source)
+
         self.__language = g._language.name
-        # self.__revision = revision  TODO: manage by xAPIPublisher
+
         try:
             location = geolite2.reader().get(get_client_ip())["location"]
             self.__geolocation = (location["latitude"], location["longitude"])

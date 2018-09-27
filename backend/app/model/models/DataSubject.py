@@ -21,7 +21,7 @@ class DataSubject(Party):
 
     email = db.Column(db.String(120))
     lti_user_id = db.Column(db.String(256))
-    moodle_username = db.Column(db.String(120))  # TODO: use ext_user_username if available
+    moodle_username = db.Column(db.String(120))
     source = db.Column(db.String(120), default="Standalone")
     launch_language = db.Column(db.Enum(BabelLanguage))
 
@@ -36,7 +36,7 @@ class DataSubject(Party):
         return [Role.Unprivileged]
 
     @staticmethod
-    def get_or_create(email: str=None, lti_user_id: str=None) -> "DataSubject":
+    def get_or_create(email: str=None, lti_user_id: str=None, tool_consumer: str=None) -> "DataSubject":
 
         if email is not None:
             subject = DataSubject.query.filter_by(email=email).first()
@@ -44,9 +44,9 @@ class DataSubject(Party):
                 subject = DataSubject(email=email)
                 db.session.add(subject)
         elif lti_user_id is not None:
-            subject = DataSubject.query.filter_by(lti_user_id=lti_user_id).first()
+            subject = DataSubject.query.filter_by(lti_user_id=lti_user_id, source=tool_consumer).first()
             if subject is None:
-                subject = DataSubject(lti_user_id=lti_user_id)
+                subject = DataSubject(lti_user_id=lti_user_id, source=tool_consumer)
                 db.session.add(subject)
         else:
             raise ValueError("No identifying feature provided! Provide email, oder lti_user_id.")

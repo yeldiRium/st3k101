@@ -2,7 +2,7 @@ import click
 
 from app import app
 from auth.roles import Role
-from framework import services, importer
+from framework import importer
 from framework.internationalization.babel_languages import BabelLanguage
 from model import db
 from model.models.DataClient import DataClient
@@ -96,11 +96,3 @@ def setup(ctx):
     ctx.invoke(initdb)
     ctx.invoke(register, role=Role.Root.name)
     # TODO: parse & insert first templates
-
-
-@app.cli.command()
-def update_statistics():
-    click.echo("Updating all statistics models...")
-    services.update_all_statistics()
-    db.session.commit()
-    click.echo("Done!")

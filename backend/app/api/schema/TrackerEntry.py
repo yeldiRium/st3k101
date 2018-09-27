@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields
 
 from api.schema.fields import enum_field
-from framework.dependency_injection import ResourceBroker
+from api.utils.ResourceBroker import ResourceBroker
 from framework.internationalization.babel_languages import BabelLanguage
 from model.models.TrackerEntry import PropertyUpdatedTrackerEntry, TranslatedPropertyUpdatedTrackerEntry, \
     ItemAddedTrackerEntry, ItemRemovedTrackerEntry, QuestionnaireRemovedTrackerEntry

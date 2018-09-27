@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-from framework.dependency_injection import ResourceBroker
+from api.utils.ResourceBroker import ResourceBroker
 
 __author__ = "Noah Hummel"
 

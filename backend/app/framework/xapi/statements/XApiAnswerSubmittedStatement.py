@@ -1,4 +1,4 @@
-from framework.dependency_injection import ResourceBroker
+from api.utils.ResourceBroker import ResourceBroker
 from framework.xapi.XApiActivities import XApiActivities
 from framework.xapi.XApiActor import XApiMboxActor, XApiAccountActor
 from framework.xapi.XApiContext import XApiSt3k101Context

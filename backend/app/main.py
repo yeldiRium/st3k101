@@ -100,10 +100,6 @@ def after_request(response: Response):
     """
     XApiPublisher().flush()
 
-    # hacky scheduling
-    for job in laziness.LAZY_JOBS:
-        job()  # TODO: remove
-
     # set the locale as cookie, keeps locale constant for a period of time
     if request.args.get('locale'):
         if request.args.get('locale_cookie', 1) == 1:
@@ -130,7 +126,7 @@ def page_not_found(error):
     Called on HTTP 404
     :param error: L'Error
     """
-    return "Nisch da", 404  # render_template("home_404.html"), 404 TODO: make nice
+    return "Nisch da", 404
 
 
 @app.errorhandler(500)
@@ -142,7 +138,7 @@ def internal_server_error_handler(error):
     :param error: The exception 
     :return: Response that is sent back to the user
     """
-    return make_response(error, 500)  # TODO: nice error page
+    return make_response(error, 500)
 
 
 @app.errorhandler(AccessControlException)

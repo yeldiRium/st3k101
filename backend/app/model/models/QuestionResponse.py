@@ -27,7 +27,7 @@ class QuestionResponse(OwnershipBase):
         """
         question = self.question
 
-        earlier_results = question.get_results_by_subject(self.data_subject)
+        earlier_results = question.get_question_responses_by_subject(self.data_subject)
         verified_results = list(filter(lambda x: x.verified, earlier_results))
 
         for vr in verified_results:  # remove previous verified result(s?)

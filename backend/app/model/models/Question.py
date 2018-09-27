@@ -28,8 +28,6 @@ class Question(SurveyBase):
     __tablename__ = 'question'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
-    dirty = db.Column(db.Boolean, default=False, nullable=False)
-
     # foreign keys
     dimension_id = db.Column(db.Integer, db.ForeignKey('dimension.id'))
 
@@ -158,8 +156,7 @@ class Question(SurveyBase):
         """
         raise NotImplementedError
 
-    # TODO: refactor: get_responses_by_subject
-    def get_results_by_subject(self, subject: DataSubject) -> List[QuestionResponse]:
+    def get_question_responses_by_subject(self, subject: DataSubject) -> List[QuestionResponse]:
         """
         Returns a list of all QuestionResponses for for this Question which were
         submitted by a specific DataSubject.
@@ -182,9 +179,7 @@ class Question(SurveyBase):
                                        verifying the result
         :return: bool Indicating whether the answer count has increased or not
         """
-        self.dirty = True  # FIXME: might not actually be dirty yet
-
-        earlier_results = self.get_results_by_subject(data_subject)
+        earlier_results = self.get_question_responses_by_subject(data_subject)
         verified_results = list(filter(lambda x: x.verified, earlier_results))
         unverified_results = list(filter(lambda x: not x.verified,
                                          earlier_results))
