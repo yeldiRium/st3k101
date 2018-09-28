@@ -78,7 +78,7 @@ def send_statement(statement: dict, receiver: str):
         'X-Experience-API-Version': '1.0.0',
         'User-Agent': 'st3k101/2.0'
     }
-    payload = json.dumps(statement)
+    payload = json.dumps(statement) if type(statement) is not str else statement
     req = requests.post(receiver, json=payload, headers=headers)
     assert req.status_code == 200
 
