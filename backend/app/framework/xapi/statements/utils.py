@@ -70,6 +70,6 @@ def get_xapi_object(the_item: SurveyBase):
     assert activity is not None
     return XApiActivityObject(
         activity,
-        the_item.reference_id,
+        "<{}>:{}".format(the_item.owning_dataclient.email, the_item.reference_id),
         the_item.name_translations
     )

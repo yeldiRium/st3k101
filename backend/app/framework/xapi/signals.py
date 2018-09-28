@@ -33,14 +33,10 @@ def publish_logged_in_xapi_statement(sender: Party):
 
 
 @SIG_LTI_LAUNCH.connect
-def publish_lti_launch_xapi_statement(sender: DataSubject, tool_consumer_guid="Missing.", tool_consumer_name="Missing."):
+def publish_lti_launch_xapi_statement(sender: DataSubject, questionnaire=None):
     actor = get_party_as_actor(sender)
-    verb = XApiVerb(XApiVerbs.LoggedIn)
-    activity = XApiActivityObject(
-        XApiActivities.EmbeddedLogin,
-        tool_consumer_guid,
-        {g._language.name:  tool_consumer_name}
-    )
+    verb = XApiVerb(XApiVerbs.Accessed)
+    activity = get_xapi_object(questionnaire)
     context = XApiSt3k101Context()
     statement = XApiStatement(
         actor,
@@ -80,8 +76,9 @@ def publish_reference_id_updated_xapi_statement(
     elif isinstance(sender, Questionnaire):
         activity = XApiActivities.Questionnaire
     assert activity is not None
+    previous_value = "<{}>:{}".format(sender.owning_dataclient.email, previous_value)
     activity = XApiActivityObject(activity, previous_value, sender.name_translations)
-    result = XApiResponseResult(sender.reference_id)
+    result = XApiResponseResult("<{}>:{}".format(sender.owning_dataclient.email, sender.reference_id))
     context = XApiSt3k101Context()
 
     receiver = get_xapi_target(sender)

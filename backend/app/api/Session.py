@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, g
 from flask_restful import abort, Resource
 
 import auth.dataclient
@@ -85,10 +85,10 @@ class LtiSessionResource(Resource):
 
         if session_token is not None:
             db.session.commit()
-            SIG_LTI_LAUNCH.send(
+            g._current_user = subject
+            SIG_LTI_LAUNCH.send(  # TODO: what survey is the subject launching?
                 subject,
-                tool_consumer_guid=data['tool_consumer_instance_guid'],
-                tool_consumer_name=data['tool_consumer_instance_description']
+                questionnaire=questionnaire
             )
             return SessionSchema().dump({"session_token": session_token}).data
 

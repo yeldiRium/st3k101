@@ -1,6 +1,6 @@
 import re
 
-from framework.xapi.XApiContext import XApiSt3k101Context
+from framework.xapi.XApiContext import XApiSurveyContext
 from framework.xapi.XApiResult import XApiScoredResult
 from framework.xapi.XApiStatement import XApiStatement
 from framework.xapi.XApiVerb import XApiVerb
@@ -46,7 +46,7 @@ def do_submission_hooks(the_item: SurveyBase, submission_data: dict, actor: Part
         hook_configuration['score_max'],
         1
     )
-    context = XApiSt3k101Context()
+    context = XApiSurveyContext(the_item)
 
     statement = XApiStatement(
         actor,

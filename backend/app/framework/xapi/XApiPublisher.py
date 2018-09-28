@@ -31,7 +31,7 @@ class XApiPublisher(metaclass=Singleton):
 
     def enqueue(self, statements: List[XApiStatement], receivers):
         payload = {
-            'statements': [s.as_dict() for s in statements],
+            'statements': [s.as_json() for s in statements],
             'receivers': receivers
         }
         self.__requests.append((
@@ -41,7 +41,7 @@ class XApiPublisher(metaclass=Singleton):
 
     def enqueue_deferred(self, statements: List[XApiStatement], receivers, key):
         payload = {
-            'statements': [s.as_dict() for s in statements],
+            'statements': [s.as_json() for s in statements],
             'receivers': receivers
         }
 

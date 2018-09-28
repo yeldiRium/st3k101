@@ -2,7 +2,7 @@ import os
 from abc import abstractmethod
 from copy import copy
 
-from typing import Dict, List
+from typing import Dict
 
 import utils
 from auth.session import current_user
@@ -11,6 +11,7 @@ from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType
 from framework.signals import property_updated, translation_hybrid_updated, SIG_REFERENCE_ID_UPDATED
 from model import db
+from model.models.DataClient import DataClient
 from model.models.OwnershipBase import OwnershipBase
 
 
@@ -40,9 +41,13 @@ class SurveyBase(OwnershipBase):
         self._template = value
 
     @property
+    def owning_dataclient(self) -> DataClient:
+        return next(filter(lambda o: isinstance(o, DataClient), self.owners))
+
+    @property
     def reference_id(self) -> str:
         # set initial reference_id if name already present
-        if not self._reference_id:
+        if not self._reference_id:  # FIXME keeps regenerating
             if self.name is not None and len(self.name) > 0:
                 self._reference_id = self.generate_reference_id()
         return self._reference_id

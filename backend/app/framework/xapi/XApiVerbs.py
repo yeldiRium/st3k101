@@ -10,6 +10,13 @@ class XApiVerbs(Enum):
         }
     }
 
+    Accessed = {
+        "id": "https://w3id.org/xapi/dod-isd/verbs/accessed",
+        "display": {
+            "en-US": "Indicates someone accessed a resource at st3k101."
+        }
+    }
+
     Asked = {
         "id": "http://adlnet.gov/expapi/verbs/asked",
         "display": {

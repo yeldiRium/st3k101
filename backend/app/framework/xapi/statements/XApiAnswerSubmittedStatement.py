@@ -1,8 +1,4 @@
-from api.utils.ResourceBroker import ResourceBroker
-from framework.xapi.XApiActivities import XApiActivities
-from framework.xapi.XApiActor import XApiMboxActor, XApiAccountActor
-from framework.xapi.XApiContext import XApiSt3k101Context
-from framework.xapi.XApiObject import XApiActivityObject
+from framework.xapi.XApiContext import XApiSurveyContext
 from framework.xapi.XApiResult import XApiScoredResult
 from framework.xapi.XApiStatement import XApiStatement
 from framework.xapi.XApiVerb import XApiVerb
@@ -21,6 +17,6 @@ class XApiAnswerSubmittedStatement(XApiStatement):
             get_party_as_actor(datasubject),
             XApiVerb(XApiVerbs.Answered),
             get_xapi_object(question),
-            xapi_context=XApiSt3k101Context(),
+            xapi_context=XApiSurveyContext(question),
             xapi_result=XApiScoredResult(value, question.range_start, question.range_end, 1)
         )
