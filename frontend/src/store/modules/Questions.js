@@ -8,6 +8,7 @@ import {
   updateQuestion
 } from "../../api/Question";
 import { BadRequestError } from "../../api/Errors";
+import * as R from "ramda";
 
 const store = {
   namespaced: true,
@@ -53,11 +54,22 @@ const store = {
      * @reject
      * @cancel
      */
-    patchQuestionInStore({ commit }, { question }) {
-      return Future((reject, resolve) => {
-        commit("patchQuestion", { question });
-        resolve(question);
-      });
+    patchQuestionInStore({ getters, commit, dispatch }, { question }) {
+      let oldQuestion = getters.questionById(question.id);
+      if (!R.isNil(oldQuestion)) {
+        commit("replaceQuestion", { question });
+        // update any references to this template in the store
+        let futures = R.map(
+          reference => dispatch("fetchQuestion", reference),
+          question.ownedIncomingReferences
+        );
+        return Future.parallel(Infinity, futures).chain(() =>
+          Future.of(question)
+        );
+      } else {
+        commit("addQuestion", { question });
+      }
+      return Future.of(question);
     },
     /**
      * Removes the given Question from the store.
@@ -176,29 +188,30 @@ const store = {
   },
   mutations: {
     /**
-     * Check, if a Question with the given Question's id already
-     * exists.
-     * If so, overwrite the existing one.
-     * Otherwise append the new one to the list.
+     * Adds a Question to the store.
      *
      * @param state
      * @param {Question} question
      */
-    patchQuestion(state, { question }) {
-      let existingQuestionWasReplaced = false;
-      state.questions = map(iQuestion => {
-        if (question.identifiesWith(iQuestion)) {
-          if (!question.isReadonlyTemplate || iQuestion.isReadonlyTemplate) {
-            existingQuestionWasReplaced = true;
-            return question;
-          }
-        }
-        return iQuestion;
-      }, state.questions);
-      if (existingQuestionWasReplaced) {
-        return;
-      }
-
+    addQuestion(state, { question }) {
+      state.questions.push(question.clone());
+    },
+    /**
+     * Replaces an existing question in the store with an updated version.
+     * Does not replace a writeable question with a readonly template.
+     *
+     * @param state
+     * @param {Question} question
+     */
+    replaceQuestion(state, { question }) {
+      state.questions = reject(
+        R.allPass([
+          iQuestion => iQuestion.identifiesWith(question),
+          iQuestion =>
+            question.isReadonlyTemplate || !question.isReadonlyTemplate
+        ]),
+        state.questions
+      );
       state.questions.push(question);
     },
     /**

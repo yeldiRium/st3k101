@@ -24,6 +24,7 @@ import {
   updateDimension
 } from "../../api/Dimension";
 import { BadRequestError, ValidationError } from "../../api/Errors";
+import * as R from "ramda";
 
 const store = {
   namespaced: true,
@@ -131,16 +132,13 @@ const store = {
           commit("replaceDimension", { dimension });
           if (dimension.isConcrete && dimension.template) {
             // update any references to this template in the store
-            let reloadOwnedIncomingReferencesFutures = [];
-            for (let reference of dimension.ownedIncomingReferences) {
-              reloadOwnedIncomingReferencesFutures.push(
-                dispatch("fetchDimension", reference)
-              );
-            }
-            return Future.parallel(
-              Infinity,
-              reloadOwnedIncomingReferencesFutures
-            ).chain(() => Future.of(dimension));
+            let futures = R.map(
+              reference => dispatch("fetchDimension", reference),
+              dimension.ownedIncomingReferences
+            );
+            return Future.parallel(Infinity, futures).chain(() =>
+              Future.of(dimension)
+            );
           }
         } else {
           commit("addDimension", { dimension });
