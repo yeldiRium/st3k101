@@ -56,8 +56,18 @@ export default {
       if (this.all) {
         return this.myTrackerEntries;
       }
+
+      if (R.isNil(this.surveyBase)) {
+        return [];
+      }
+
+      let the_href = this.surveyBase.href;
+      if (this.surveyBase.isShadow) {
+        the_href = this.surveyBase.referenceTo.href;
+      }
+
       let ownTrackerEntries = this.myTrackerEntries.filter(
-        e => e.itemHref === this.surveyBase.href
+        e => e.itemHref === the_href
       );
 
       if (!this.recurse) {
