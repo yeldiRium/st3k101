@@ -13,7 +13,7 @@
                 </tr>
                 <tr>
                     <td>Total number of submissions:</td>
-                    <td>{{ submissionCount(questionnaire) }}</td>
+                    <td>{{ submissionCountForQuestionnaire(questionnaire) }}</td>
                 </tr>
             </table>
             <div class="dashboard__questionnaire__body">
@@ -61,17 +61,50 @@ export default {
   computed: {
     ...mapGetters("questionnaires", ["myQuestionnaires"]),
     ...mapGetters("statistics", ["statisticByQuestionHref"]),
-    submissionCount() {
-      return questionnaire => {
-        for (let dimension of questionnaire.dimensions) {
-          for (let question of dimension.questions) {
-            let statistic = this.statisticByQuestionHref(question.href);
-            if (!isNil(statistic)) {
-              return statistic.n;
+    submissionCountForDimension() {
+      return dimension => {
+        let maxCount = 0;
+        for (let question of dimension.questions) {
+          let statistic = this.statisticByQuestionHref(question.href);
+          if (!isNil(statistic)) {
+            if (statistic.n > maxCount) {
+              maxCount = statistic.n;
             }
           }
         }
-        return 0;
+        return maxCount;
+      };
+    },
+    submissionCountForQuestionnaire() {
+      return questionnaire => {
+        let maxCount = 0;
+        for (let dimension of questionnaire.dimensions) {
+          let submissionCount = this.submissionCountForDimension(dimension);
+          if (submissionCount > maxCount) {
+            maxCount = submissionCount;
+          }
+        }
+        return maxCount;
+      };
+    },
+    showGraphFor() {
+      return dimension => {
+        console.log();
+        if (dimension.questions.length < 1) {
+          return false;
+        }
+        return this.submissionCountForDimension(dimension) > 0;
+      };
+    },
+    statisticsByDimension() {
+      return dimension => {
+        return reject(
+          isNil,
+          map(
+            href => this.statisticByQuestionHref(href),
+            map(prop("href"), dimension.questions)
+          )
+        );
       };
     }
   },
@@ -79,21 +112,6 @@ export default {
     this.loadData();
   },
   methods: {
-    showGraphFor(dimension) {
-      if (dimension.questions.length < 1) {
-        return false;
-      }
-      return this.submissionCount > 0;
-    },
-    statisticsByDimension(dimension) {
-      return reject(
-        isNil,
-        map(
-          href => this.statisticByQuestionHref(href),
-          map(prop("href"), dimension.questions)
-        )
-      );
-    },
     loadData() {
       this.loadStatistics().fork(this.$handleApiError, () => {});
     },
@@ -176,6 +194,7 @@ export default {
     text-align: center;
     padding: 0 auto 0 auto;
     border-bottom: $primary 1px solid;
+    background-color: $primary;
   }
 }
 

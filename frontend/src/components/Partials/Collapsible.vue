@@ -48,6 +48,12 @@ export default {
     IconExpandLess,
     IconExpandMore
   },
+  props: {
+    startExpanded: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       expanded: false
@@ -57,6 +63,9 @@ export default {
     toggleExpanded() {
       this.expanded = !this.expanded;
     }
+  },
+  created() {
+    this.expanded = this.startExpanded;
   }
 };
 </script>

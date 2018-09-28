@@ -1,4 +1,4 @@
-import { isNil, find, clone, reject, equals } from "ramda";
+import { isNil, find, clone, reject, equals, without, concat } from "ramda";
 
 import { Future } from "fluture/index.js";
 
@@ -91,18 +91,14 @@ const store = {
      * Runs in O(n) time where n is the number of Questions owned by the
      * current DataClient.
      *
-     * @param store
+     * @param state
      * @param statistics {Array<QuestionStatistic>}
      */
     patchQuestionStatisticsInStore(state, { statistics }) {
-      let uniqueStatistics = {};
-      for (let storedStatistic of state.questionStatistics) {
-        uniqueStatistics[storedStatistic.id] = storedStatistic;
-      }
-      for (let fetchedStatistic of statistics) {
-        uniqueStatistics[fetchedStatistic.id] = fetchedStatistic;
-      }
-      state.questionStatistics = Object.values(uniqueStatistics);
+      state.questionStatistics = concat(
+        without(statistics, state.questionStatistics),
+        statistics
+      );
     }
   }
 };
