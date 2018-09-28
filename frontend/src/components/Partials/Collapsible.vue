@@ -89,6 +89,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: $primary;
 
     &__label {
       margin-left: 1em;

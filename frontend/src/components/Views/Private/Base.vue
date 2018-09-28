@@ -25,17 +25,16 @@ export default {
           this.$router.replace({
             name: "Authentication"
           });
+        } else {
+          this.loadMyQuestionnaires()
+            .chain(this.loadMyTrackerEntries)
+            .fork(this.$handleApiError, () => {});
         }
       }
     }
   },
   computed: {
     ...mapGetters("session", ["isLoggedIn"])
-  },
-  created() {
-    this.$load(
-      this.loadMyQuestionnaires().chain(this.loadMyTrackerEntries)
-    ).fork(this.$handleApiError, () => {});
   },
   methods: {
     loadMyQuestionnaires() {
