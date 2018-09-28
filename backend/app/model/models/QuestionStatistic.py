@@ -53,13 +53,13 @@ class QuestionStatistic(OwnershipBase):
                                   .filter_by(question_id=self.question_id,
                                              verified=True)\
                                   .order_by(QuestionResponse.value).all()
-        self.smallest = 0  # setting to 0 here, because column is not nullable
-        self.biggest = 0
+        self.smallest = self.question.range_end
+        self.biggest = self.question.range_start
 
         for result in results:
-            if self.smallest is None or result.value < self.smallest:
+            if result.value < self.smallest:
                 self.smallest = result.value
-            if self.biggest is None or result.value > self.biggest:
+            if result.value > self.biggest:
                 self.biggest = result.value
 
         self.n = n = len(results)

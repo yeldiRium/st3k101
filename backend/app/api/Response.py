@@ -134,6 +134,7 @@ class ResponseListForQuestionnaireResource(Resource):
                     }, 400
                 question.add_question_result(question_data['value'], data_subject,
                                              verification_token=verification_token)
+                question.statistic.update()
                 all_questions.remove(question_data['id'])
 
             do_submission_hooks(dimension, dimension_data, data_subject)
@@ -234,6 +235,7 @@ class LtiResponseResource(Resource):
                     needs_verification=False
                 )
                 all_questions.remove(question_data['id'])
+                question.statistic.update()
 
             do_submission_hooks(dimension, dimension_data)
 
