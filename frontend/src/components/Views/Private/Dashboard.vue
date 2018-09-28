@@ -108,8 +108,10 @@ export default {
       };
     }
   },
-  created() {
-    this.loadData();
+  watch: {
+    myQuestionnaires(oldValue, newValue) {
+      this.loadData();
+    }
   },
   methods: {
     loadData() {
