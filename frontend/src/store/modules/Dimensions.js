@@ -1,4 +1,5 @@
 import {
+  allPass,
   assoc,
   bind,
   clone,
@@ -105,6 +106,7 @@ const store = {
      * store.
      *
      * @param dispatch
+     * @param getters
      * @param commit
      * @param {Dimension} dimension
      * @return {Future}
@@ -112,7 +114,7 @@ const store = {
      * @reject
      * @cancel
      */
-    patchDimensionInStore({ dispatch, commit }, { dimension }) {
+    patchDimensionInStore({ dispatch, getters, commit }, { dimension }) {
       const patchQuestionFutures = [];
       for (const question of dimension.questions) {
         patchQuestionFutures.push(
@@ -124,7 +126,25 @@ const store = {
         );
       }
       return Future.parallel(Infinity, patchQuestionFutures).chain(() => {
-        commit("patchDimension", { dimension });
+        let oldDimension = getters.dimensionById(dimension.id);
+        if (!isNil(oldDimension)) {
+          commit("replaceDimension", { dimension });
+          if (dimension.isConcrete && dimension.template) {
+            // update any references to this template in the store
+            let reloadOwnedIncomingReferencesFutures = [];
+            for (let reference of dimension.ownedIncomingReferences) {
+              reloadOwnedIncomingReferencesFutures.push(
+                dispatch("fetchDimension", reference)
+              );
+            }
+            return Future.parallel(
+              Infinity,
+              reloadOwnedIncomingReferencesFutures
+            ).chain(() => Future.of(dimension));
+          }
+        } else {
+          commit("addDimension", { dimension });
+        }
         return Future.of(dimension);
       });
     },
@@ -417,39 +437,42 @@ const store = {
   },
   mutations: {
     /**
-     * Check, if a Dimension with the given Dimension's id already
-     * exists.
-     * If so, overwrite the existing one.
-     * Otherwise append the new one to the list.
+     * Adds a dimension to the store.
      *
      * @param state
      * @param {Dimension} dimension
      */
-    patchDimension(state, { dimension }) {
-      const normalizedDimension = dimension.clone();
-      normalizedDimension.questions = map(
+    addDimension(state, { dimension }) {
+      const sparseDimension = dimension.clone();
+      sparseDimension.questions = map(
         question => question.id,
-        normalizedDimension.questions
+        sparseDimension.questions
       );
-
-      let existingDimensionWasReplaced = false;
-      state.dimensions = map(iDimension => {
-        if (normalizedDimension.identifiesWith(iDimension)) {
-          if (
-            !normalizedDimension.isReadonlyTemplate ||
-            iDimension.isReadonlyTemplate
-          ) {
-            existingDimensionWasReplaced = true;
-            return normalizedDimension;
-          }
-        }
-        return iDimension;
-      }, state.dimensions);
-      if (existingDimensionWasReplaced) {
-        return;
-      }
-
-      state.dimensions.push(normalizedDimension);
+      state.dimensions.push(sparseDimension);
+    },
+    /**
+     * Replaces a dimension in the store.
+     * Does not replace a writeable dimension by a readonly template.
+     *
+     * @param state
+     * @param {Dimension} dimension
+     */
+    replaceDimension(state, { dimension }) {
+      const sparseDimension = dimension.clone();
+      sparseDimension.questions = map(
+        question => question.id,
+        sparseDimension.questions
+      );
+      state.dimensions = reject(
+        allPass([
+          dimension => dimension.identifiesWith(sparseDimension),
+          // do not replace a writeable dimension by a readonly template
+          dimension =>
+            dimension.isReadonlyTemplate || !sparseDimension.isReadonlyTemplate
+        ]),
+        state.dimensions
+      );
+      state.dimensions.push(sparseDimension);
     },
     /**
      * Removes the given Dimension from the store.
