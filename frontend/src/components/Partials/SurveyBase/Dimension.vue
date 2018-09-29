@@ -34,7 +34,7 @@
             <!-- List of Questions -->
             <div class="dimension__questions">
                 <Question class="question--bordered"
-                          v-for="question in dimension.questions"
+                          v-for="question in questionsOrdered"
                           :key="question.href"
                           :question="question"
                           :deletable="dimension.isConcrete"
@@ -94,7 +94,7 @@
                     </template>
 
                     <span class="dimension__table-label">
-                        Reference ID:
+                        xAPI ID:
                     </span>
                     <template>
                         <EditableText v-if="dimension.isConcrete"
@@ -144,6 +144,7 @@ import IconExpandLess from "../../../assets/icons/baseline-expand_less-24px.svg"
 import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg";
 import Collapsible from "../Collapsible";
 import Roles, { isAtLeast } from "../../../model/Roles";
+import * as R from "ramda";
 
 export default {
   name: "Dimension",
@@ -203,6 +204,9 @@ export default {
      */
     subtext() {
       return `Contains ${this.dimension.questions.length} questions.`;
+    },
+    questionsOrdered() {
+      return R.sortBy(R.prop("id"), this.dimension.questions);
     }
   },
   methods: {
