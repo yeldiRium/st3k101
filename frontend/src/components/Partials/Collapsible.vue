@@ -79,7 +79,7 @@ export default {
   display: flex;
   flex-flow: column;
 
-  border: 1px solid $primary;
+  border: 1px solid $primary-dark;
   width: 100%;
 
   &--no-border {
@@ -87,7 +87,7 @@ export default {
   }
 
   &--border-top {
-    border-top: $primary 1px solid;
+    border-top: $primary-dark 1px solid;
   }
 
   &--primary-light {
@@ -98,7 +98,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: $primary;
+    background-color: $primary-light;
 
     &__label {
       margin-left: 1em;
@@ -107,7 +107,7 @@ export default {
 
   &__body {
     padding: 1em;
-    border-top: $primary 1px solid;
+    border-top: $primary-dark 1px solid;
   }
 
   &__buttons {
