@@ -1,5 +1,6 @@
 import SurveyBase from "./SurveyBase";
-import { clone, map } from "ramda";
+import * as R from "ramda";
+import { allContentsEqual } from "../../utility/functional";
 
 class Questionnaire extends SurveyBase {
   /**
@@ -84,9 +85,33 @@ class Questionnaire extends SurveyBase {
       this.allowEmbedded,
       this.xapiTarget,
       this.ltiConsumerKey,
-      map(clone, this.dimensions),
-      map(clone, this.challenges)
+      R.map(R.clone, this.dimensions),
+      R.map(R.clone, this.challenges)
     );
+  }
+
+  /**
+   * Strict equality check that checks if all members if this are the same as the
+   * members of otherQuestionnaire.
+   *
+   * @param {Questionnaire} otherQuestionnaire
+   * @returns {Boolean}
+   */
+  contentEquals(otherQuestionnaire) {
+    return R.allPass([
+      o => R.equals(o.href, this.href),
+      o => R.equals(o.languageData, this.languageData),
+      o => R.equals(o.template, this.template),
+      o => R.equals(o.referenceId, this.referenceId),
+      o => R.equals(o.name, this.name),
+      o => R.equals(o.description, this.description),
+      o => R.equals(o.isPublic, this.isPublic),
+      o => R.equals(o.allowEmbedded, this.allowEmbedded),
+      o => R.equals(o.xapiTarget, this.xapiTarget),
+      o => R.equals(o.ltiConsumerKey, this.ltiConsumerKey),
+      o => allContentsEqual(o.dimensions, this.dimensions)
+      // TODO also check challenges. Not needed at the moment, as this is only used for reloading shadows and those don't need to reload the concrete challenges.
+    ])(otherQuestionnaire);
   }
 }
 
@@ -188,10 +213,10 @@ class ConcreteQuestionnaire extends Questionnaire {
       this.allowEmbedded,
       this.xapiTarget,
       this.ltiConsumerKey,
-      map(clone, this.dimensions),
-      map(clone, this.challenges),
+      R.map(R.clone, this.dimensions),
+      R.map(R.clone, this.challenges),
       this.incomingReferenceCount,
-      map(clone, this.ownedIncomingReferences)
+      R.map(R.clone, this.ownedIncomingReferences)
     );
   }
 }
@@ -274,8 +299,8 @@ class ShadowQuestionnaire extends Questionnaire {
       this.allowEmbedded,
       this.xapiTarget,
       this.ltiConsumerKey,
-      map(clone, this.dimensions),
-      map(clone, this.challenges),
+      R.map(R.clone, this.dimensions),
+      R.map(R.clone, this.challenges),
       this.referenceTo.clone()
     );
   }

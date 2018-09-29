@@ -8,6 +8,7 @@ import {
   isNil,
   map,
   pipe,
+  prop,
   reject,
   uniq,
   without
@@ -127,12 +128,16 @@ const store = {
         );
       }
       return Future.parallel(Infinity, patchQuestionFutures).chain(() => {
-        let oldDimension = getters.dimensionById(dimension.id);
+        const oldDimension = getters.dimensionById(dimension.id);
         if (!isNil(oldDimension)) {
           commit("replaceDimension", { dimension });
-          if (dimension.isConcrete && dimension.template) {
-            // update any references to this template in the store
-            let futures = R.map(
+          if (
+            dimension.isConcrete &&
+            dimension.template &&
+            !dimension.contentEquals(oldDimension)
+          ) {
+            // update any references to this template in the store, but only if modified
+            const futures = R.map(
               reference => dispatch("fetchDimension", reference),
               dimension.ownedIncomingReferences
             );
@@ -442,10 +447,7 @@ const store = {
      */
     addDimension(state, { dimension }) {
       const sparseDimension = dimension.clone();
-      sparseDimension.questions = map(
-        question => question.id,
-        sparseDimension.questions
-      );
+      sparseDimension.questions = map(prop("id"), sparseDimension.questions);
       state.dimensions.push(sparseDimension);
     },
     /**
@@ -457,16 +459,13 @@ const store = {
      */
     replaceDimension(state, { dimension }) {
       const sparseDimension = dimension.clone();
-      sparseDimension.questions = map(
-        question => question.id,
-        sparseDimension.questions
-      );
+      sparseDimension.questions = map(prop("id"), sparseDimension.questions);
       state.dimensions = reject(
         allPass([
-          dimension => dimension.identifiesWith(sparseDimension),
-          // do not replace a writeable dimension by a readonly template
-          dimension =>
-            dimension.isReadonlyTemplate || !sparseDimension.isReadonlyTemplate
+          iDimension => iDimension.identifiesWith(sparseDimension),
+          // do not replace a fully accessible dimension by a readonly template
+          iDimension =>
+            iDimension.isReadonlyTemplate || !sparseDimension.isReadonlyTemplate
         ]),
         state.dimensions
       );

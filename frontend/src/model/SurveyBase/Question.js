@@ -1,7 +1,7 @@
 import SurveyBase from "./SurveyBase";
 
 import Range from "./Config/Range";
-import { clone, map } from "ramda";
+import * as R from "ramda";
 
 /**
  * BaseClass for ShadowQuestion and ConcreteQuestion.
@@ -67,6 +67,24 @@ class Question extends SurveyBase {
       this.text,
       this.range.clone()
     );
+  }
+
+  /**
+   * Strict equality check that checks if all members if this are the same as the
+   * members of otherQuestion.
+   *
+   * @param {Question} otherQuestion
+   * @returns {bool}
+   */
+  contentEquals(otherQuestion) {
+    return R.allPass([
+      o => R.equals(o.href, this.href),
+      o => R.equals(o.languageData, this.languageData),
+      o => R.equals(o.template, this.template),
+      o => R.equals(o.referenceId, this.referenceId),
+      o => R.equals(o.text, this.text),
+      o => R.equals(o.range, this.range)
+    ])(otherQuestion);
   }
 }
 
@@ -147,7 +165,7 @@ class ConcreteQuestion extends Question {
       this.text,
       this.range.clone(),
       this.incomingReferenceCount,
-      map(clone, this.ownedIncomingReferences)
+      R.map(R.clone, this.ownedIncomingReferences)
     );
   }
 }
