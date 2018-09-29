@@ -1,3 +1,5 @@
+import * as R from "ramda";
+
 class Range {
   /**
    * @param {number} start
@@ -91,6 +93,19 @@ class Range {
       start: this._start,
       end: this._end
     });
+  }
+
+  /**
+   * Strict equality check.
+   *
+   * @param {Range} otherRange
+   * @returns {Boolean}
+   */
+  equals(otherRange) {
+    return R.allPass([
+      o => R.equals(o.start, this.start),
+      o => R.equals(o.end, this.end)
+    ])(otherRange);
   }
 }
 

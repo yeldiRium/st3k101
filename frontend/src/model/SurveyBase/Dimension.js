@@ -1,5 +1,6 @@
 import SurveyBase from "./SurveyBase";
-import { clone, map } from "ramda";
+import * as R from "ramda";
+import { allContentsEqual, allTrue } from "../../utility/functional";
 
 class Dimension extends SurveyBase {
   /**
@@ -59,10 +60,30 @@ class Dimension extends SurveyBase {
       [...this._owners],
       this.languageData.clone(),
       this.template,
+      this.referenceId,
       this.name,
-      map(clone, this.questions),
+      R.map(R.clone, this.questions),
       this.randomizeQuestions
     );
+  }
+
+  /**
+   * Strict equality check that checks if all members of this are the same as
+   * the members of otherDimension.
+   *
+   * @param {Dimension} otherDimension
+   * @returns {bool}
+   */
+  contentEquals(otherDimension) {
+    return R.allPass([
+      o => R.equals(o.href, this.href),
+      o => R.equals(o.languageData, this.languageData),
+      o => R.equals(o.referenceId, this.referenceId),
+      o => R.equals(o.template, this.template),
+      o => R.equals(o.name, this.name),
+      o => R.equals(o.randomizeQuestions, this.randomizeQuestions),
+      o => allContentsEqual(o.questions, this.questions)
+    ])(otherDimension);
   }
 }
 
@@ -135,10 +156,10 @@ class ConcreteDimension extends Dimension {
       this.template,
       this.referenceId,
       this.name,
-      map(clone, this.questions),
+      R.map(R.clone, this.questions),
       this.randomizeQuestions,
       this.incomingReferenceCount,
-      map(clone, this.ownedIncomingReferences)
+      R.map(R.clone, this.ownedIncomingReferences)
     );
   }
 
@@ -208,7 +229,7 @@ class ShadowDimension extends Dimension {
       this.languageData.clone(),
       this.referenceId,
       this.name,
-      map(clone, this.questions),
+      R.map(R.clone, this.questions),
       this.randomizeQuestions,
       this.referenceTo.clone()
     );
