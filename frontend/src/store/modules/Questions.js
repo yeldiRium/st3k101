@@ -47,7 +47,9 @@ const store = {
      * If so, overwrite the existing one.
      * Otherwise append the new one to the list.
      *
+     * @param getters
      * @param commit
+     * @param dispatch
      * @param {Question} question
      * @return {Future}
      * @resolve {Question}
@@ -55,17 +57,19 @@ const store = {
      * @cancel
      */
     patchQuestionInStore({ getters, commit, dispatch }, { question }) {
-      let oldQuestion = getters.questionById(question.id);
+      const oldQuestion = getters.questionById(question.id);
       if (!R.isNil(oldQuestion)) {
         commit("replaceQuestion", { question });
-        // update any references to this template in the store
-        let futures = R.map(
-          reference => dispatch("fetchQuestion", reference),
-          question.ownedIncomingReferences
-        );
-        return Future.parallel(Infinity, futures).chain(() =>
-          Future.of(question)
-        );
+        if (!question.contentEquals(oldQuestion)) {
+          // update any references to this template in the store
+          let futures = R.map(
+            reference => dispatch("fetchQuestion", reference),
+            question.ownedIncomingReferences
+          );
+          return Future.parallel(Infinity, futures).chain(() =>
+            Future.of(question)
+          );
+        }
       } else {
         commit("addQuestion", { question });
       }
@@ -208,11 +212,11 @@ const store = {
         R.allPass([
           iQuestion => iQuestion.identifiesWith(question),
           iQuestion =>
-            question.isReadonlyTemplate || !question.isReadonlyTemplate
+            iQuestion.isReadonlyTemplate || !question.isReadonlyTemplate
         ]),
         state.questions
       );
-      state.questions.push(question);
+      state.questions.push(question.clone());
     },
     /**
      * Removes the given Question from the store.

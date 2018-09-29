@@ -1,5 +1,6 @@
 import {
   __,
+  allPass,
   always,
   any,
   assoc,
@@ -144,6 +145,7 @@ const store = {
      * Does so bottom up, so that hierarchies are never partially in the
      * store.
      *
+     * @param getters
      * @param dispatch
      * @param commit
      * @param {Questionnaire} questionnaire
@@ -152,7 +154,10 @@ const store = {
      * @reject
      * @cancel
      */
-    patchQuestionnaireInStore({ dispatch, commit }, { questionnaire }) {
+    patchQuestionnaireInStore(
+      { getters, dispatch, commit },
+      { questionnaire }
+    ) {
       const patchDimensionFutures = [];
       for (const dimension of questionnaire.dimensions) {
         patchDimensionFutures.push(
@@ -164,7 +169,24 @@ const store = {
         );
       }
       return Future.parallel(Infinity, patchDimensionFutures).chain(() => {
-        commit("patchQuestionnaire", { questionnaire });
+        const oldQuestionnaire = getters.questionnaireById(questionnaire.id);
+        if (!isNil(oldQuestionnaire)) {
+          commit("replaceQuestionnaire", { questionnaire });
+          if (questionnaire.isConcrete && questionnaire.template) {
+            if (!questionnaire.contentEquals(oldQuestionnaire)) {
+              let futures = map(
+                reference => dispatch("fetchQuestionnaire", reference),
+                questionnaire.ownedIncomingReferences
+              );
+              return Future.parallel(Infinity, futures).chain(() =>
+                Future.of(questionnaire)
+              );
+            }
+          }
+        } else {
+          commit("addQuestionnaire", { questionnaire });
+        }
+
         return Future.of(questionnaire);
       });
     },
@@ -628,39 +650,36 @@ const store = {
     }
   },
   mutations: {
+    replaceQuestionnaire(state, { questionnaire }) {
+      const sparseQuestionnaire = questionnaire.clone();
+      sparseQuestionnaire.dimensions = map(
+        prop("id"),
+        questionnaire.dimensions
+      );
+      state.questionnaires = reject(
+        allPass([
+          iQuestionnaire => iQuestionnaire.identifiesWith(sparseQuestionnaire),
+          iQuestionnaire =>
+            iQuestionnaire.isReadonlyTemplate ||
+            !sparseQuestionnaire.isReadonlyTemplate
+        ]),
+        state.questionnaires
+      );
+      state.questionnaires.push(sparseQuestionnaire);
+    },
     /**
-     * Check, if a Questionnaire with the given Questionnaire's id already
-     * exists.
-     * If so, overwrite the existing one.
-     * Otherwise append the new one to the list.
+     * Adds a new Questionnaire to the store.
      *
      * @param state
      * @param {Questionnaire} questionnaire
      */
-    patchQuestionnaire(state, { questionnaire }) {
-      questionnaire.dimensions = map(
-        dimension => dimension.id,
+    addQuestionnaire(state, { questionnaire }) {
+      const sparseQuestionnaire = questionnaire.clone();
+      sparseQuestionnaire.dimensions = map(
+        prop("id"),
         questionnaire.dimensions
       );
-
-      let existingQuestionnaireWasReplaced = false;
-      state.questionnaires = map(iQuestionnaire => {
-        if (questionnaire.identifiesWith(iQuestionnaire)) {
-          if (
-            !questionnaire.isReadonlyTemplate ||
-            iQuestionnaire.isReadonlyTemplate
-          ) {
-            existingQuestionnaireWasReplaced = true;
-            return questionnaire;
-          }
-        }
-        return iQuestionnaire;
-      }, state.questionnaires);
-      if (existingQuestionnaireWasReplaced) {
-        return;
-      }
-
-      state.questionnaires.push(questionnaire);
+      state.questionnaires.push(sparseQuestionnaire);
     },
     /**
      * Removes the given Questionnaire from the store.
