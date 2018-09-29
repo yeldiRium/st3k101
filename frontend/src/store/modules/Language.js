@@ -8,8 +8,8 @@ const store = {
   namespaced: true,
   state: {
     currentLanguage: {
-      short: "de",
-      long: "Deutsch"
+      shortName: "de",
+      longName: "Deutsch"
     },
     /**
      * @type {Array<Language>} List of all languages in the system.

@@ -89,11 +89,12 @@ export default {
       description,
       isPublic,
       allowEmbedded,
-      xapiTarget
+      xapiTarget,
+      language
     }) {
       this.$load(
         this.$store.dispatch("questionnaires/createConcreteQuestionnaire", {
-          language: this.dataClient.language,
+          language: language,
           name,
           description,
           isPublic,

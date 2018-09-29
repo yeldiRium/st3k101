@@ -138,7 +138,9 @@ export default {
       this.recomputeHack++;
 
       this.$nextTick(() => {
-        this.$refs.filter.focus();
+        if (!isNil(this.$refs.filter)) {
+          this.$refs.filter.focus();
+        }
       });
     },
     closeLanguageMenu() {
@@ -206,7 +208,7 @@ export default {
   }
 
   &__language-menu {
-    position: absolute;
+    position: fixed;
     padding-top: 5px;
     padding-bottom: 5px;
     max-height: 40vh;
@@ -220,7 +222,7 @@ export default {
     display: flex;
     flex-flow: column;
 
-    z-index: 1000;
+    z-index: 2000;
   }
 
   &__item {

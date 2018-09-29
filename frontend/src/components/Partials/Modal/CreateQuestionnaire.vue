@@ -11,10 +11,18 @@
                 Create new Questionnaire
             </template>
             <template slot="body">
-                <input class="modal-create-questionnaire__questionnaire-name"
-                       name="questionnaire-name"
-                       v-model="name"
-                />
+                    <LanguagePicker
+                                class="modal-create-questionnaire__language-picker"
+                            :language-data="languageData"
+                            @choose-language="changeLanguage"
+                            :useLongNames="true"
+                    >
+                    </LanguagePicker>
+
+                    <input class="modal-create-questionnaire__questionnaire-name"
+                           name="questionnaire-name"
+                           v-model="name"
+                    />
 
                 <textarea v-model="description"/>
 
@@ -37,7 +45,7 @@
                 </Toggle>
 
                 <label>
-                    xAPI target
+                    xAPI endpoint:
                     <input v-model="xapiTarget"/>
                 </label>
             </template>
@@ -51,12 +59,15 @@ import { mapState } from "vuex-fluture";
 
 import CreateResource from "./CreateResource";
 import Toggle from "../Form/ToggleButton";
+import LanguagePicker from "../LanguagePicker";
+import { LanguageData } from "../../../model/Language";
 
 export default {
   name: "ModalCreateQuestionnaire",
   components: {
     CreateResource,
-    Toggle
+    Toggle,
+    LanguagePicker
   },
   data() {
     return {
@@ -70,7 +81,11 @@ export default {
     };
   },
   computed: {
-    ...mapState("session", ["dataClient"])
+    ...mapState("session", ["dataClient"]),
+    ...mapState("language", ["languages", "currentLanguage"]),
+    languageData() {
+      return new LanguageData(this.language, null, this.languages);
+    }
   },
   methods: {
     beforeOpen({ params: { language, handler } }) {
@@ -82,6 +97,9 @@ export default {
       }
       this.language = language;
       this.handler = handler;
+    },
+    changeLanguage(language) {
+      this.language = language;
     },
     cancel() {
       this.$modal.hide("modal-create-questionnaire");
@@ -97,7 +115,8 @@ export default {
         description: this.description,
         isPublic: this.isPublic,
         allowEmbedded: this.allowEmbedded,
-        xapiTarget: this.xapiTarget
+        xapiTarget: this.xapiTarget,
+        language: this.language
       });
     }
   }
