@@ -60,9 +60,13 @@ const store = {
       const oldQuestion = getters.questionById(question.id);
       if (!R.isNil(oldQuestion)) {
         commit("replaceQuestion", { question });
-        if (!question.contentEquals(oldQuestion)) {
+        if (
+          question.isConcrete &&
+          question.template &&
+          !question.contentEquals(oldQuestion)
+        ) {
           // update any references to this template in the store
-          let futures = R.map(
+          const futures = R.map(
             reference => dispatch("fetchQuestion", reference),
             question.ownedIncomingReferences
           );
@@ -211,6 +215,7 @@ const store = {
       state.questions = reject(
         R.allPass([
           iQuestion => iQuestion.identifiesWith(question),
+          // do not replace a fully accessible question by a readonly template
           iQuestion =>
             iQuestion.isReadonlyTemplate || !question.isReadonlyTemplate
         ]),

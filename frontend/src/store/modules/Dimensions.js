@@ -131,17 +131,19 @@ const store = {
         const oldDimension = getters.dimensionById(dimension.id);
         if (!isNil(oldDimension)) {
           commit("replaceDimension", { dimension });
-          if (dimension.isConcrete && dimension.template) {
-            if (!dimension.contentEquals(oldDimension)) {
-              // update any references to this template in the store, but only if modified
-              let futures = R.map(
-                reference => dispatch("fetchDimension", reference),
-                dimension.ownedIncomingReferences
-              ); // FIXME only do this when dimension != oldDimension
-              return Future.parallel(Infinity, futures).chain(() =>
-                Future.of(dimension)
-              );
-            }
+          if (
+            dimension.isConcrete &&
+            dimension.template &&
+            !dimension.contentEquals(oldDimension)
+          ) {
+            // update any references to this template in the store, but only if modified
+            const futures = R.map(
+              reference => dispatch("fetchDimension", reference),
+              dimension.ownedIncomingReferences
+            );
+            return Future.parallel(Infinity, futures).chain(() =>
+              Future.of(dimension)
+            );
           }
         } else {
           commit("addDimension", { dimension });
@@ -461,7 +463,7 @@ const store = {
       state.dimensions = reject(
         allPass([
           iDimension => iDimension.identifiesWith(sparseDimension),
-          // do not replace a writeable dimension by a readonly template
+          // do not replace a fully accessible dimension by a readonly template
           iDimension =>
             iDimension.isReadonlyTemplate || !sparseDimension.isReadonlyTemplate
         ]),

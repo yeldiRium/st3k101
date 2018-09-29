@@ -172,16 +172,18 @@ const store = {
         const oldQuestionnaire = getters.questionnaireById(questionnaire.id);
         if (!isNil(oldQuestionnaire)) {
           commit("replaceQuestionnaire", { questionnaire });
-          if (questionnaire.isConcrete && questionnaire.template) {
-            if (!questionnaire.contentEquals(oldQuestionnaire)) {
-              let futures = map(
-                reference => dispatch("fetchQuestionnaire", reference),
-                questionnaire.ownedIncomingReferences
-              );
-              return Future.parallel(Infinity, futures).chain(() =>
-                Future.of(questionnaire)
-              );
-            }
+          if (
+            questionnaire.isConcrete &&
+            questionnaire.template &&
+            !questionnaire.contentEquals(oldQuestionnaire)
+          ) {
+            const futures = map(
+              reference => dispatch("fetchQuestionnaire", reference),
+              questionnaire.ownedIncomingReferences
+            );
+            return Future.parallel(Infinity, futures).chain(() =>
+              Future.of(questionnaire)
+            );
           }
         } else {
           commit("addQuestionnaire", { questionnaire });
@@ -659,6 +661,7 @@ const store = {
       state.questionnaires = reject(
         allPass([
           iQuestionnaire => iQuestionnaire.identifiesWith(sparseQuestionnaire),
+          // do not replace a fully accessible questionnaire by a readonly template
           iQuestionnaire =>
             iQuestionnaire.isReadonlyTemplate ||
             !sparseQuestionnaire.isReadonlyTemplate
