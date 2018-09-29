@@ -38,6 +38,22 @@
              v-if="expanded"
              ref="dropdown"
         >
+
+            <span>
+                Description:
+            </span>
+            <template>
+                <EditableText v-if="questionnaire.isConcrete"
+                              :value="questionnaire.description"
+                              @input="updateQuestionnaire('description', $event, true)"
+                              :text-area="true"
+                              :edit-left="true"
+                />
+                <div v-else>
+                    {{ questionnaire.description }}
+                </div>
+            </template>
+
             <div class="questionnaire__dimensions">
                 <Dimension class="dimension--bordered"
                            v-for="dimension in questionnaire.dimensions"
@@ -98,21 +114,6 @@
                                         :to="{name: 'AQuestionnaire', params: {id: questionnaire.referenceTo.id}}">Go to template</router-link>
                             </span>
                         </template>
-                    </template>
-
-                    <span class="questionnaire__table-label">
-                        Description:
-                    </span>
-                    <template>
-                        <EditableText v-if="questionnaire.isConcrete"
-                                      :value="questionnaire.description"
-                                      @input="updateQuestionnaire('description', $event, true)"
-                                      :text-area="true"
-                                      :edit-left="true"
-                        />
-                        <div v-else>
-                            {{ questionnaire.description }}
-                        </div>
                     </template>
 
                     <span class="questionnaire__table-label">
