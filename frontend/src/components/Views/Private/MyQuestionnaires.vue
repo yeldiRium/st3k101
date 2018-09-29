@@ -2,7 +2,7 @@
     <div class="my-questionnaires">
         <div class="my-questionnaires__questionnaires">
             <Questionnaire :style="itemStyle"
-                           v-for="questionnaire in myQuestionnaires"
+                           v-for="questionnaire in myQuestionnairesOrdered"
                            :key="questionnaire.href"
                            :questionnaire="questionnaire"
                            @questionnaire-delete="deleteQuestionnaire(questionnaire)"
@@ -28,6 +28,7 @@
 
 <script>
 import { mapGetters, mapState } from "vuex-fluture";
+import * as R from "ramda";
 
 import Button from "../../Partials/Form/Button";
 import Questionnaire from "../../Partials/SurveyBase/Questionnaire";
@@ -53,6 +54,9 @@ export default {
       return {
         width: width
       };
+    },
+    myQuestionnairesOrdered() {
+      return R.sortBy(R.prop("id"), this.myQuestionnaires);
     }
   },
   methods: {
