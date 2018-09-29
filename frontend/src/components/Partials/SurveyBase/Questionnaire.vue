@@ -117,7 +117,7 @@
                     </template>
 
                     <span class="questionnaire__table-label">
-                        XAPI Target:
+                        xAPI Target:
                     </span>
                     <template>
                         <EditableText v-if="questionnaire.isConcrete"
@@ -131,7 +131,7 @@
                     </template>
 
                     <span class="questionnaire__table-label">
-                        Reference ID:
+                        xAPI Activity ID:
                     </span>
                     <template>
                         <EditableText v-if="questionnaire.isConcrete"
@@ -152,7 +152,12 @@
                             @input="updateQuestionnaire('isPublic', $event)"
                     >
                     </Toggle>
+                </div>
+            </Collapsible>
 
+            <Collapsible>
+                <span slot="head">embedding information</span>
+                <div slot="body" class="questionnaire__preferences">
                     <span class="questionnaire__table-label">
                         Allow Embedding:
                     </span>
@@ -161,19 +166,16 @@
                             @input="updateQuestionnaire('allowEmbedded', $event)"
                     >
                     </Toggle>
-                </div>
-            </Collapsible>
 
-            <Collapsible>
-                <span slot="head">embedding</span>
-                <div slot="body" class="questionnaire__preferences">
-                    <span class="questionnaire__table-label">
-                        URL
+                    <span>
+                        Tool URL:
                     </span>
-                    <span>{{`${questionnaire.href}/lti`}}</span>
+                    <span>
+                        {{ ltiUrl }}
+                    </span>
 
                     <span class="questionnaire__table-label">
-                        Key
+                        Tool Consumer Key:
                     </span>
                     <span>{{questionnaire.ltiConsumerKey}}</span>
                 </div>
@@ -297,6 +299,11 @@ export default {
     },
     dimensionsOrdered() {
       return R.sortBy(R.prop("id"), this.questionnaire.dimensions);
+    },
+    ltiUrl() {
+      return `https://${window.location.hostname}/survey/${
+        this.questionnaire.id
+      }/lti`;
     }
   },
   methods: {
