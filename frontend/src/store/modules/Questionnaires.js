@@ -342,7 +342,11 @@ const store = {
         );
       }
       if (!isNil(href)) {
-        future = fetchQuestionnaire(authenticationToken, href, language);
+        future = fetchQuestionnaire(
+          rootGetters["session/sessionToken"],
+          href,
+          language
+        );
       } else {
         future = fetchQuestionnaireById(
           rootGetters["session/sessionToken"],
