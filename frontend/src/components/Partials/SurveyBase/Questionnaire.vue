@@ -40,7 +40,7 @@
         >
             <div class="questionnaire__dimensions">
                 <Dimension class="dimension--bordered"
-                           v-for="dimension in questionnaire.dimensions"
+                           v-for="dimension in dimensionsOrdered"
                            :key="dimension.href"
                            :dimension="dimension"
                            :deletable="questionnaire.isConcrete"
@@ -220,6 +220,7 @@ import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg"
 import IconReorder from "../../../assets/icons/baseline-reorder-24px.svg";
 import { isAtLeast } from "../../../model/Roles";
 import Roles from "../../../model/Roles";
+import * as R from "ramda";
 
 export default {
   name: "Questionnaire",
@@ -292,6 +293,9 @@ export default {
         isAtLeast(this.dataClient, Roles.Contributor) &&
         this.isEditable(this.questionnaire)
       );
+    },
+    dimensionsOrdered() {
+      return R.sortBy(R.prop("id"), this.questionnaire.dimensions);
     }
   },
   methods: {
