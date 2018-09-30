@@ -183,13 +183,8 @@ function fetchQuestionnaireById(authenticationToken, id, language = null) {
  * @param language
  * @returns {Future}
  */
-function fetchQuestionnaireForSubmissionById(
-  authenticationToken,
-  id,
-  language = null
-) {
+function fetchQuestionnaireForSubmissionById(id, language = null) {
   return fetchApi(`/api/questionnaire/${id}`, {
-    authenticationToken,
     language
   })
     .chain(extractJson)
