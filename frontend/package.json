@@ -93,5 +93,8 @@
     "env": {
       "jest/globals": true
     }
+  },
+  "jest": {
+    "collectCoverage": true
   }
 }
