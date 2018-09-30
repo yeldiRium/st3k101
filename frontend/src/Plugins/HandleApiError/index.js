@@ -22,7 +22,6 @@ const Plugin = {
      * @param {ApiError} error
      */
     Vue.prototype.$handleApiError = function(error) {
-      console.error(error);
       switch (error.name) {
         case "TypeError":
           Vue.prototype.$notify({
@@ -49,7 +48,6 @@ const Plugin = {
         case "AuthorizationError":
           store.commit("session/endSession");
           router.push({ name: "Authentication" });
-          console.log(this);
           Vue.prototype.$notify({
             type: "error",
             title: "Session expired",
