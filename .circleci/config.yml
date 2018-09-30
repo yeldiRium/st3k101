@@ -10,9 +10,17 @@ jobs:
     steps:
       - checkout
       - run:
-          name: run test
+          name: greenkeeper lockfile update
+          command: |
+            greenkeeper-lockfile-update
+      - run:
+          name: test images
           command: |
             ./build.sh test
+      - run:
+          name: greenkeeper lockfile upload
+          command: |
+            greenkeeper-lockfile-upload
       - run:
           name: build images
           command: |
@@ -25,13 +33,21 @@ jobs:
     steps:
       - checkout
       - run:
-          name: build images
+          name: greenkeeper lockfile update
           command: |
-            ./build.sh build yeldir
+            greenkeeper-lockfile-update
       - run:
           name: test images
           command: |
             ./build.sh test
+      - run:
+          name: greenkeeper lockfile upload
+          command: |
+            greenkeeper-lockfile-upload
+      - run:
+          name: build images
+          command: |
+            ./build.sh build yeldir
       - run:
           name: login to docker hub
           command: |
