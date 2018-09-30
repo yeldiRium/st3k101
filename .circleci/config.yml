@@ -10,13 +10,13 @@ jobs:
     steps:
       - checkout
       - run:
+          name: run test
+          command: |
+            ./build.sh test
+      - run:
           name: build images
           command: |
             ./build.sh build yeldir
-      - run:
-          name: test images
-          command: |
-            ./build.sh test
   build_and_publish:
     <<: *default_machine
     filters:
