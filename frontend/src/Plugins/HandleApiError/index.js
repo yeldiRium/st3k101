@@ -77,6 +77,13 @@ const Plugin = {
             text: "The page you were trying to access could not be found."
           });
           break;
+        case "ConflictError":
+          Vue.prototype.$notify({
+            type: "error",
+            title: "Conflicting data",
+            text: "Some data on the server is conflicting with your request."
+          });
+          break;
         default:
           Vue.prototype.$notify({
             type: "warning",
