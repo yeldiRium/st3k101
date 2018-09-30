@@ -7,6 +7,7 @@
  */
 
 import express from "express";
+import morgan from "morgan";
 global.fetch = require("node-fetch");
 require("abortcontroller-polyfill/dist/polyfill-patch-fetch");
 
@@ -15,6 +16,12 @@ import config from "./config/expressConfig";
 import embeddedAuthenticationMiddleware from "./src/express/embeddedAuthenticationMiddleware";
 
 const app = express();
+
+app.use(
+  morgan(
+    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]'
+  )
+);
 
 app.use(
   express.urlencoded({
