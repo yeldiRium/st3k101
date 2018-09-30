@@ -10,7 +10,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: run test
+          name: test images
           command: |
             ./build.sh test
       - run:
@@ -25,13 +25,13 @@ jobs:
     steps:
       - checkout
       - run:
-          name: build images
-          command: |
-            ./build.sh build yeldir
-      - run:
           name: test images
           command: |
             ./build.sh test
+      - run:
+          name: build images
+          command: |
+            ./build.sh build yeldir
       - run:
           name: login to docker hub
           command: |

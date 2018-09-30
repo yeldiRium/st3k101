@@ -8,7 +8,7 @@ CMD ["node", "-r", "esm", "index.js"]
 
 COPY ./package.json /usr/app
 COPY ./package-lock.json /usr/app
-RUN npm ci
+RUN npm install
 
 COPY . /usr/app/
 RUN npm run build
