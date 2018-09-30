@@ -35,8 +35,6 @@ class SurveyBaseSchema(RESTFulSchema):
 
     __private__ = [
         'shadow',
-        'template',
-        'reference_id',
         'incoming_reference_count',
         'owned_incoming_references',
         'reference_to',
