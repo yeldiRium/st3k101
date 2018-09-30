@@ -9,7 +9,7 @@ npm install
 
 node ./node_modules/.bin/greenkeeper-lockfile-update
 
-echo "No tests configured for frontend."
+npm run test
 
 node ./node_modules/.bin/greenkeeper-lockfile-upload
 
