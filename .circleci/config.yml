@@ -10,6 +10,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: npm install
+          command: |
+            npm install
+      - run:
           name: greenkeeper lockfile update
           command: |
             greenkeeper-lockfile-update
@@ -32,6 +36,10 @@ jobs:
         only: master
     steps:
       - checkout
+      - run:
+          name: npm install
+          command: |
+            npm install
       - run:
           name: greenkeeper lockfile update
           command: |
