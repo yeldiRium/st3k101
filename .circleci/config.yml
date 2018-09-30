@@ -12,11 +12,15 @@ jobs:
       - run:
           name: npm install
           command: |
+            cd frontend
             npm install
+            cd -
       - run:
           name: greenkeeper lockfile update
           command: |
-            greenkeeper-lockfile-update
+            cd frontend
+            node ./node_modules/.bin/greenkeeper-lockfile-update
+            cd -
       - run:
           name: test images
           command: |
@@ -24,7 +28,9 @@ jobs:
       - run:
           name: greenkeeper lockfile upload
           command: |
-            greenkeeper-lockfile-upload
+            cd frontend
+            node ./node_modules/.bin/greenkeeper-lockfile-upload
+            cd -
       - run:
           name: build images
           command: |
@@ -39,11 +45,15 @@ jobs:
       - run:
           name: npm install
           command: |
+            cd frontend
             npm install
+            cd -
       - run:
           name: greenkeeper lockfile update
           command: |
-            greenkeeper-lockfile-update
+            cd frontend
+            node ./node_modules/.bin/greenkeeper-lockfile-update
+            cd -
       - run:
           name: test images
           command: |
@@ -51,7 +61,9 @@ jobs:
       - run:
           name: greenkeeper lockfile upload
           command: |
-            greenkeeper-lockfile-upload
+            cd frontend
+            node ./node_modules/.bin/greenkeeper-lockfile-upload
+            cd -
       - run:
           name: build images
           command: |
