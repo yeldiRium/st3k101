@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   postgres:
-    build: postgres
+    image: yeldir/st3k101-postgres
     restart: always
     environment:
       - POSTGRES_PASSWORD=kksrk0vv3zigez6
@@ -16,25 +16,19 @@ services:
     restart: always
 
   backend:
-    build: backend
+    image: yeldir/st3k101-backend
     restart: always
     links:
       - memcached
       - postgres
       - xapi-publisher
-    volumes:
-      - ./backend/app:/app
 
   frontend:
-    build: frontend
-    volumes:
-      - ./frontend:/usr/app:rw
+    image: yeldir/st3k101-frontend
 
   xapi-publisher:
-    build: xapi-publisher
+    image: yeldir/st3k101-xapi-publisher
     restart: always
-    volumes:
-      - ./xapi-publisher/app:/app
     links:
       - mongo
       - redis
@@ -50,7 +44,7 @@ services:
       - mongo:/bitnami
 
   nginx:
-    build: nginx
+    image: yeldir/st3k101-nginx
     ports:
       - 80:80
     links:
