@@ -1,9 +1,27 @@
+default_machine: &default_machine
+  machine:
+    # might not have any effect, since dlc is a premium feature
+    docker_layer_caching: true
+
 version: 2
 jobs:
   build:
-    machine:
-      # might not have any effect, since dlc is a premium feature
-      docker_layer_caching: true
+    <<: *default_machine
+    steps:
+      - checkout
+      - run:
+          name: build images
+          command: |
+            ./build.sh build yeldir
+      - run:
+          name: test images
+          command: |
+            ./build.sh test
+  build_and_publish:
+    <<: *default_machine
+    filters:
+      branches:
+        only: master
     steps:
       - checkout
       - run:
