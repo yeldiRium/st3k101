@@ -2,6 +2,7 @@
     <modal name="modal-use-question-template"
            height="auto"
            @before-open="beforeOpen"
+           v-show="show"
     >
         <div class="modal-use-question-template__header">
             use Question template
@@ -40,7 +41,8 @@ export default {
   data() {
     return {
       question: null,
-      handler: null
+      handler: null,
+      show: false
     };
   },
   computed: {
@@ -55,7 +57,9 @@ export default {
 
       this.$load(
         this.$store.dispatch("questions/fetchQuestionTemplates", {})
-      ).fork(this.$handleApiError, () => {});
+      ).fork(this.$handleApiError, () => {
+        this.show = true;
+      });
     },
     cancel() {
       this.$modal.hide("modal-use-question-template");

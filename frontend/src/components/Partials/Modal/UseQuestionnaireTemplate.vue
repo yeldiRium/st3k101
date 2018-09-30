@@ -2,6 +2,7 @@
     <modal name="modal-use-questionnaire-template"
            height="auto"
            @before-open="beforeOpen"
+           v-show="show"
     >
         <div class="modal-use-questionnaire-template__header">
             use Questionnaire template
@@ -31,7 +32,6 @@ import { mapGetters } from "vuex-fluture";
 import { isNil } from "ramda";
 
 import Button from "../Form/Button";
-import { fetchQuestionnaireTemplates } from "../../../api/Questionnaire";
 
 export default {
   name: "ModalUseQuestionnaireTemplate",
@@ -41,7 +41,8 @@ export default {
   data() {
     return {
       questionnaire: null,
-      handler: null
+      handler: null,
+      show: false
     };
   },
   computed: {
@@ -56,7 +57,9 @@ export default {
 
       this.$load(
         this.$store.dispatch("questionnaires/fetchQuestionnaireTemplates", {})
-      ).fork(this.$handleApiError, () => {});
+      ).fork(this.$handleApiError, () => {
+        this.show = true;
+      });
     },
     cancel() {
       this.$modal.hide("modal-use-questionnaire-template");
