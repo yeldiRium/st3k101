@@ -36,8 +36,7 @@ const Plugin = {
           Vue.prototype.$notify({
             type: "warn",
             title: "Unknown error",
-            text:
-              "An unknown error has occured. Please try again. If this problem persists, start crying."
+            text: "An unknown error has occured. Please try again."
           });
           break;
         case "ForbiddenError":
@@ -82,8 +81,7 @@ const Plugin = {
           Vue.prototype.$notify({
             type: "warning",
             title: "Maybe something went wrong",
-            text:
-              "We're not sure though. If you experience any issues, go fuck yourself."
+            text: "We're not sure though."
           });
       }
     };
