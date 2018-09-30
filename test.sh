@@ -9,4 +9,6 @@ sha=$(git rev-parse HEAD)
 
 name="yeldir/efla-$service"
 
-sh -c "$folder/docker-test.sh $name:$sha"
+if [ -f "$folder/test.sh" ]; then
+	sh -c "$folder/test.sh $name:$sha"
+fi

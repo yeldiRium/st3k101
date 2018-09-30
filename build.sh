@@ -11,7 +11,7 @@ info_message () {
 	echo    ""
 	echo    "Commands:"
 	echo -e "\tbuild     Build images."
-	echo -e "\ttest      Test images."
+	echo -e "\ttest      Run tests."
 	echo -e "\tpublish   Publish images to registry."
 	echo -e "\trun       Build, test and publish."
 	echo    ""
@@ -29,7 +29,7 @@ build () {
 }
 
 test () {
-	find . -name Dockerfile -exec ./docker-test.sh {} \;
+	find . -name Dockerfile -exec ./test.sh {} \;
 }
 
 publish () {
@@ -43,7 +43,7 @@ case $1 in
 		publish
 	;;
 	run)
-		build && test && publish
+		test && build && publish
 	;;
 	*) info_message ;;
 esac
