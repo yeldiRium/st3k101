@@ -27,9 +27,11 @@ import { Range } from "../../../model/SurveyBase/Config/Range";
 
 import CreateResource from "./CreateResource";
 import RangeEditor from "../SurveyBase/Config/RangeEditor";
+import ClosableModal from "./ClosableModal";
 
 export default {
   name: "ModalCreateQuestion",
+  extends: ClosableModal,
   components: {
     CreateResource,
     RangeEditor
@@ -43,6 +45,9 @@ export default {
     };
   },
   methods: {
+    close() {
+      this.cancel();
+    },
     beforeOpen({ params: { language, handler } }) {
       if (isNil(language)) {
         throw new Error("Parameter language required!");

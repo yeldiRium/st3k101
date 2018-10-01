@@ -26,9 +26,11 @@ import { mapState } from "vuex-fluture";
 
 import TranslateResource from "./TranslateResource";
 import Toggle from "../Form/ToggleButton";
+import ClosableModal from "./ClosableModal";
 
 export default {
   text: "ModalTranslateQuestion",
+  extends: ClosableModal,
   components: {
     TranslateResource,
     Toggle
@@ -48,6 +50,9 @@ export default {
     }
   },
   methods: {
+    close() {
+      this.cancel();
+    },
     beforeOpen({ params: { language, handler, text } }) {
       if (isNil(language)) {
         throw new Error("Parameter language required!");
