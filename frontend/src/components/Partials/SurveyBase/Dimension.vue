@@ -294,8 +294,12 @@ export default {
       });
     },
     openUseQuestionTemplateDialog() {
-      this.$modal.show("modal-use-question-template", {
-        handler: this.useQuestionTemplate
+      this.$load(
+        this.$store.dispatch("questions/fetchQuestionTemplates", {})
+      ).fork(this.$handleApiError, () => {
+        this.$modal.show("modal-use-question-template", {
+          handler: this.useQuestionTemplate
+        });
       });
     },
     useQuestionTemplate({ question }) {

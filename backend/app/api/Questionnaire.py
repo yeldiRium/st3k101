@@ -114,7 +114,7 @@ class QuestionnaireListResource(Resource):
 class TemplateQuestionnaireListResource(Resource):
     def get(self):
         templates = Questionnaire.query.filter_by(_template=True).all()
-        schema = QuestionnaireSchema(many=True)
+        schema = QuestionnaireSchema(many=True, exclude=["dimensions"])
         return schema.dump(templates).data
 
 

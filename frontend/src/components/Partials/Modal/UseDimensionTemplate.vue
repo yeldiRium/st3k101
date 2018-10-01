@@ -2,18 +2,17 @@
     <modal name="modal-use-dimension-template"
            height="auto"
            @before-open="beforeOpen"
+           :scrollable="true"
     >
         <div class="modal-use-dimension-template__header">
             use Dimension template
         </div>
         <div class="modal-use-dimension-template__body">
-            <Button
-                    v-for="dimension in dimensionTemplates"
-                    :key="dimension.id"
-                    @action="use(dimension)"
+            <FuzzySearchableList :keys="searchableKeys"
+                                 :items="dimensionTemplates"
+                                 v-on:item-clicked="use"
             >
-                {{ dimension.name }}
-            </Button>
+            </FuzzySearchableList>
             <span
                     v-if="dimensionTemplates.length === 0"
             >
@@ -31,16 +30,22 @@ import { mapGetters } from "vuex-fluture";
 import { isNil } from "ramda";
 
 import Button from "../Form/Button";
+import FuzzySearchableList from "../List/FuzzySearchableList";
 
 export default {
   name: "ModalUseDimensionTemplate",
   components: {
+    FuzzySearchableList,
     Button
   },
   data() {
     return {
       dimension: null,
-      handler: null
+      handler: null,
+      searchableKeys: [
+        { key: "name", display: "Name" },
+        { key: "referenceId", display: "xAPI Activity ID" }
+      ]
     };
   },
   computed: {
@@ -52,10 +57,6 @@ export default {
         throw new Error("Parameter handler required!");
       }
       this.handler = handler;
-
-      this.$load(
-        this.$store.dispatch("dimensions/fetchDimensionTemplates", {})
-      ).fork(this.$handleApiError, () => {});
     },
     cancel() {
       this.$modal.hide("modal-use-dimension-template");

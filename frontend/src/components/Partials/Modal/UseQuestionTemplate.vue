@@ -2,18 +2,17 @@
     <modal name="modal-use-question-template"
            height="auto"
            @before-open="beforeOpen"
+           :scrollable="true"
     >
         <div class="modal-use-question-template__header">
             use Question template
         </div>
         <div class="modal-use-question-template__body">
-            <Button
-                    v-for="question in questionTemplates"
-                    :key="question.id"
-                    @action="use(question)"
+            <FuzzySearchableList :keys="searchableKeys"
+                                 :items="questionTemplates"
+                                 v-on:item-clicked="use"
             >
-                {{ question.text }}
-            </Button>
+            </FuzzySearchableList>
             <span
                     v-if="questionTemplates.length === 0"
             >
@@ -31,16 +30,22 @@ import { mapGetters } from "vuex-fluture";
 import { isNil } from "ramda";
 
 import Button from "../Form/Button";
+import FuzzySearchableList from "../List/FuzzySearchableList";
 
 export default {
   name: "ModalUseQuestionTemplate",
   components: {
+    FuzzySearchableList,
     Button
   },
   data() {
     return {
       question: null,
-      handler: null
+      handler: null,
+      searchableKeys: [
+        { key: "text", display: "Text" },
+        { key: "referenceId", display: "xAPI Activity ID" }
+      ]
     };
   },
   computed: {
@@ -52,10 +57,6 @@ export default {
         throw new Error("Parameter handler required!");
       }
       this.handler = handler;
-
-      this.$load(
-        this.$store.dispatch("questions/fetchQuestionTemplates", {})
-      ).fork(this.$handleApiError, () => {});
     },
     cancel() {
       this.$modal.hide("modal-use-question-template");

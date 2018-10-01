@@ -2,18 +2,18 @@
     <modal name="modal-use-questionnaire-template"
            height="auto"
            @before-open="beforeOpen"
+           width="80%"
+           :scrollable="true"
     >
         <div class="modal-use-questionnaire-template__header">
             use Questionnaire template
         </div>
         <div class="modal-use-questionnaire-template__body">
-            <Button
-                    v-for="questionnaire in questionnaireTemplates"
-                    :key="questionnaire.id"
-                    @action="use(questionnaire)"
+            <FuzzySearchableList :keys="searchableKeys"
+                                 :items="questionnaireTemplates"
+                                 v-on:item-clicked="use"
             >
-                {{ questionnaire.name }}
-            </Button>
+            </FuzzySearchableList>
             <span
                     v-if="questionnaireTemplates.length === 0"
             >
@@ -32,16 +32,23 @@ import { isNil } from "ramda";
 
 import Button from "../Form/Button";
 import { fetchQuestionnaireTemplates } from "../../../api/Questionnaire";
+import FuzzySearchableList from "../../Partials/List/FuzzySearchableList";
 
 export default {
   name: "ModalUseQuestionnaireTemplate",
   components: {
-    Button
+    Button,
+    FuzzySearchableList
   },
   data() {
     return {
       questionnaire: null,
-      handler: null
+      handler: null,
+      searchableKeys: [
+        { key: "name", display: "Name" },
+        { key: "referenceId", display: "xAPI Activity ID" },
+        { key: "description", display: "Description" }
+      ]
     };
   },
   computed: {
@@ -53,10 +60,6 @@ export default {
         throw new Error("Parameter handler required!");
       }
       this.handler = handler;
-
-      this.$load(
-        this.$store.dispatch("questionnaires/fetchQuestionnaireTemplates", {})
-      ).fork(this.$handleApiError, () => {});
     },
     cancel() {
       this.$modal.hide("modal-use-questionnaire-template");

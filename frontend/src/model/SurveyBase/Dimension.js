@@ -87,6 +87,34 @@ class Dimension extends SurveyBase {
   }
 }
 
+class DimensionTemplate extends Dimension {
+  constructor(href, id, languageData, referenceId, name) {
+    super(href, id, [], languageData, true, referenceId, name, [], false);
+  }
+
+  get isReadonlyTemplate() {
+    return true;
+  }
+
+  get isShadow() {
+    return false;
+  }
+
+  get isConcrete() {
+    return false;
+  }
+
+  clone() {
+    return new DimensionTemplate(
+      this.href,
+      this.id,
+      this.languageData.clone(),
+      this.referenceId,
+      this.name
+    );
+  }
+}
+
 class ConcreteDimension extends Dimension {
   /**
    *
@@ -238,4 +266,4 @@ class ShadowDimension extends Dimension {
 
 export default Dimension;
 
-export { Dimension, ConcreteDimension, ShadowDimension };
+export { Dimension, ConcreteDimension, ShadowDimension, DimensionTemplate };
