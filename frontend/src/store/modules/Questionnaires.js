@@ -121,7 +121,7 @@ const store = {
      */
     questionnaireTemplates(state, getters, rootState, rootGetters) {
       const questionnaires = pipe(
-        filter(questionnaire => questionnaire.template),
+        filter(questionnaire => questionnaire.isReadonlyTemplate),
         map(clone)
       )(state.questionnaires);
       for (const questionnaire of questionnaires) {

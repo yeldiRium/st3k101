@@ -221,6 +221,50 @@ class ConcreteQuestionnaire extends Questionnaire {
   }
 }
 
+class QuestionnaireTemplate extends Questionnaire {
+  constructor(href, id, languageData, referenceId, name, description) {
+    super(
+      href,
+      id,
+      [],
+      languageData,
+      true,
+      referenceId,
+      name,
+      description,
+      false,
+      false,
+      "",
+      "",
+      [],
+      []
+    );
+  }
+
+  get isReadonlyTemplate() {
+    return true;
+  }
+
+  get isShadow() {
+    return false;
+  }
+
+  get isConcrete() {
+    return false;
+  }
+
+  clone() {
+    return new QuestionnaireTemplate(
+      this.href,
+      this.id,
+      this.languageData.clone(),
+      this.referenceId,
+      this.name,
+      this.description
+    );
+  }
+}
+
 class ShadowQuestionnaire extends Questionnaire {
   /**
    * @param {string} href See Resource.
@@ -308,4 +352,9 @@ class ShadowQuestionnaire extends Questionnaire {
 
 export default Questionnaire;
 
-export { Questionnaire, ConcreteQuestionnaire, ShadowQuestionnaire };
+export {
+  Questionnaire,
+  ConcreteQuestionnaire,
+  ShadowQuestionnaire,
+  QuestionnaireTemplate
+};

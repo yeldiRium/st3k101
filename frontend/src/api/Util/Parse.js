@@ -5,6 +5,7 @@ import DataClient from "../../model/DataClient";
 import Range from "../../model/SurveyBase/Config/Range";
 import {
   ConcreteQuestionnaire,
+  QuestionnaireTemplate,
   ShadowQuestionnaire
 } from "../../model/SurveyBase/Questionnaire";
 import {
@@ -182,7 +183,7 @@ function parsePasswordChallenge({ password_enabled, password }) {
 function parseQuestionnaire(data) {
   if (prop("shadow", data) === true) {
     return parseShadowQuestionnaire(data, data); // TODO use ...rest
-  } else if (!data.hasOwnProperty("owners")) {
+  } else if (!data.hasOwnProperty("dimensions")) {
     return parseTemplateQuestionnaire(data);
   }
   return parseConcreteQuestionnaire(data, data); // TODO use ...rest
@@ -203,7 +204,7 @@ function parseQuestionnaire(data) {
  * @param {Language} current_language
  * @param {Language} original_language
  * @param {Array<Language>} available_languages
- * @returns {ConcreteQuestionnaire}
+ * @returns {QuestionnaireTemplate}
  */
 function parseTemplateQuestionnaire({
   href,
@@ -211,33 +212,22 @@ function parseTemplateQuestionnaire({
   reference_id,
   name,
   description,
-  dimensions,
   template,
   current_language,
   original_language,
   available_languages
 }) {
-  return new ConcreteQuestionnaire(
+  return new QuestionnaireTemplate(
     href,
     id,
-    [],
     parseLanguageData({
       current_language,
       original_language,
       available_languages
     }),
-    template,
     reference_id,
     name,
-    description,
-    false,
-    false,
-    "",
-    "",
-    map(parseDimension, dimensions),
-    [],
-    0,
-    []
+    description
   );
 }
 
@@ -1048,6 +1038,7 @@ export {
   parseEmailBlacklistChallenge,
   parsePasswordChallenge,
   parseQuestionnaire,
+  parseTemplateQuestionnaire,
   parseShadowQuestionnaire,
   parseConcreteQuestionnaire,
   parseDimension,
