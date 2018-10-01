@@ -44,7 +44,6 @@ class QuestionnaireSchema(SurveyBaseSchema):
             'password',
             'email_whitelist_enabled',
             'email_blacklist_enabled',
-            'password_enabled',
             'xapi_target',
             'allow_embedded',
             'lti_consumer_key'
