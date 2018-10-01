@@ -55,7 +55,7 @@ export default {
       handler() {
         for (const ref in this.$refs) {
           if (R.length(R.match(/^modal-.*/, ref)) > 0) {
-            //this.$refs[ref].close();
+            this.$refs[ref].close();
           }
         }
       }
