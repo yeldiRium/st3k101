@@ -7,7 +7,7 @@ from framework.xapi.XApiVerb import XApiVerb
 from framework.xapi.XApiVerbs import XApiVerbs
 from framework.xapi.XApiPublisher import XApiPublisher
 from framework.xapi.statements.utils import get_xapi_target, get_current_user_as_actor, get_xapi_object, \
-    get_questionnaire
+    get_questionnaire, get_party_as_actor
 from framework.xapi.submission_hooks.scoring_strategies.AverageQuestionsInDimension import AverageQuestionsInDimension
 from framework.xapi.submission_hooks.hooks import hooks
 from model.models.Party import Party
@@ -37,7 +37,7 @@ def do_submission_hooks(the_item: SurveyBase, submission_data: dict, actor: Part
 
     score = hook_configuration['scoring_strategy'].score_item(submission_data)
 
-    actor = get_current_user_as_actor() if actor is None else actor
+    actor = get_current_user_as_actor() if actor is None else get_party_as_actor(actor)
     verb = XApiVerb(XApiVerbs.Answered)
     activity = get_xapi_object(the_item)
     result = XApiScoredResult(
