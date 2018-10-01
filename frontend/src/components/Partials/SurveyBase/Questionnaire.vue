@@ -399,8 +399,12 @@ export default {
       });
     },
     openUseDimensionTemplateDialog() {
-      this.$modal.show("modal-use-dimension-template", {
-        handler: this.useDimensionTemplate
+      this.$load(
+        this.$store.dispatch("dimensions/fetchDimensionTemplates", {})
+      ).fork(this.$handleApiError, () => {
+        this.$modal.show("modal-use-dimension-template", {
+          handler: this.useDimensionTemplate
+        });
       });
     },
     useDimensionTemplate({ dimension }) {

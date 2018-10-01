@@ -181,7 +181,7 @@ class DimensionListResource(Resource):
 class TemplateDimensionListResource(Resource):
     def get(self):
         templates = Dimension.query.filter_by(_template=True).all()
-        schema = DimensionSchema(many=True)
+        schema = DimensionSchema(many=True, exclude=["questions"])
         return schema.dump(templates).data
 
 

@@ -67,8 +67,12 @@ export default {
      * Close the loading... modal
      */
     openUseQuestionnaireTemplateDialog() {
-      this.$modal.show("modal-use-questionnaire-template", {
-        handler: this.useQuestionnaireTemplate
+      this.$load(
+        this.$store.dispatch("questionnaires/fetchQuestionnaireTemplates", {})
+      ).fork(this.$handleApiError, () => {
+        this.$modal.show("modal-use-questionnaire-template", {
+          handler: this.useQuestionnaireTemplate
+        });
       });
     },
     useQuestionnaireTemplate({ questionnaire }) {
