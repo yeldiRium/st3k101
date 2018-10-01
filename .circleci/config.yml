@@ -10,22 +10,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: test images
-          command: |
-            ./build.sh test
-      - run:
-          name: build images
-          command: |
-            ./build.sh build yeldir
-  build_and_publish:
-    <<: *default_machine
-    filters:
-      branches:
-        only: master
-    steps:
-      - checkout
-      - run:
-          name: test images
+          name: run tests
           command: |
             ./build.sh test
       - run:
@@ -33,10 +18,18 @@ jobs:
           command: |
             ./build.sh build yeldir
       - run:
-          name: login to docker hub
+          name: login to docker hub (if master)
           command: |
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            if [[ $CIRCLE_BRANCH -eq "master" ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+            else
+              echo "Not on master branch. Skipping..."
+            fi
       - run:
-          name: push images to docker hub
+          name: push images to docker hub (if master)
           command: |
-            ./build.sh publish yeldir
+            if [[ $CIRCLE_BRANCH -eq "master" ]]; then
+              ./build.sh publish yeldir
+            else
+              echo "Not on master branch. Skipping..."
+            fi
