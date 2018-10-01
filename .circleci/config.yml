@@ -20,7 +20,7 @@ jobs:
       - run:
           name: login to docker hub (if master)
           command: |
-            if [[ $CIRCLE_BRANCH -eq "master" ]]; then
+            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
             else
               echo "Not on master branch. Skipping..."
@@ -28,7 +28,7 @@ jobs:
       - run:
           name: push images to docker hub (if master)
           command: |
-            if [[ $CIRCLE_BRANCH -eq "master" ]]; then
+            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
               ./build.sh publish yeldir
             else
               echo "Not on master branch. Skipping..."
