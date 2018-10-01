@@ -10,6 +10,7 @@ import {
 } from "../../model/SurveyBase/Questionnaire";
 import {
   ConcreteDimension,
+  DimensionTemplate,
   ShadowDimension
 } from "../../model/SurveyBase/Dimension";
 import {
@@ -376,7 +377,7 @@ function parseConcreteQuestionnaire(
 function parseDimension(data) {
   if (prop("shadow", data) === true) {
     return parseShadowDimension(data);
-  } else if (!data.hasOwnProperty("owners")) {
+  } else if (!data.hasOwnProperty("questions")) {
     return parseTemplateDimension(data);
   }
   return parseConcreteDimension(data);
@@ -397,36 +398,29 @@ function parseDimension(data) {
  * @param {Language} current_language
  * @param {Language} original_language
  * @param {Array<Language>} available_languages
- * @returns {ConcreteDimension}
+ * @returns {DimensionTemplate}
  */
 function parseTemplateDimension({
   href,
   id,
   reference_id,
   name,
-  questions,
   randomize_question_order,
   template,
   current_language,
   original_language,
   available_languages
 }) {
-  return new ConcreteDimension(
+  return new DimensionTemplate(
     href,
     id,
-    [], // owners
     parseLanguageData({
       current_language,
       original_language,
       available_languages
     }),
-    template,
     reference_id,
-    name,
-    map(parseQuestion, questions),
-    randomize_question_order,
-    0, // incoming_reference_count
-    [] // owned_incoming_references
+    name
   );
 }
 

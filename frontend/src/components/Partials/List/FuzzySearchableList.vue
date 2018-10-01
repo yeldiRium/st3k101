@@ -1,5 +1,6 @@
 <template>
-    <div class="container">
+    <div class="container"
+    >
         <label>
             Search:
             <input class="search"
@@ -16,17 +17,19 @@
                         v-for="key in keys"
                         :key="key.key"
                     >
-                        {{ key.name }}
+                        {{ key.display }}
                     </th>
                 </tr>
             </thead>
-            <tbody> <!-- todo set height with cimputed classes -->
+            <tbody>
                 <tr class="table-row"
                     v-for="item in matchingItems"
                     @click="clicked(item)"
                 >
                     <td v-for="key in keys">
-                        {{ item.item[key.key] }}
+                        <p :class="{'highlighted': item.matches.hasOwnProperty(key.key) && !(searchString.length === 0) }">
+                            {{ item.item[key.key] }}
+                        </p>
                     </td>
                 </tr>
             </tbody>
@@ -51,6 +54,9 @@ export default {
     itemKey: {
       type: String,
       default: "id"
+    },
+    orderBy: {
+      type: String
     }
   },
   data() {
@@ -63,11 +69,14 @@ export default {
       if (R.isNil(this.items)) {
         return [];
       }
-      return R.filter(
-        x => !R.isEmpty(x.matches),
-        R.map(item => {
-          return { item, matches: this.getMatchingKeys(item) };
-        }, this.items)
+      return R.sortBy(
+        item => item.item[this.sortBy],
+        R.filter(
+          x => !R.isEmpty(x.matches),
+          R.map(item => {
+            return { item, matches: this.getMatchingKeys(item) };
+          }, this.items)
+        )
       );
     },
     searchRegExp() {
@@ -76,9 +85,12 @@ export default {
           R.split(" "),
           R.intersperse(".*"),
           R.join("")
-        )(this.searchString),
+        )(this.searchString.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
         "i"
       );
+    },
+    sortBy() {
+      return R.isNil(this.orderBy) ? this.keys[0].key : this.orderBy;
     }
   },
   methods: {
@@ -114,8 +126,18 @@ export default {
   width: 100%;
 }
 
+label {
+  width: 100%;
+}
+
 table {
   width: 100%;
+}
+
+.highlighted {
+  border: 1px solid $primary;
+  border-radius: 7px;
+  box-shadow: 0 0 10px $primary;
 }
 
 th,
@@ -126,7 +148,7 @@ td {
 
 .table-header {
   &__column {
-    border-bottom: $primary-light 3px solid;
+    border-bottom: $primary 3px solid;
   }
 }
 
@@ -134,18 +156,7 @@ td {
   background-color: $primary-light;
 }
 
-tbody {
-  display: block;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-thead,
-tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-thead {
-  width: calc(100% - 1em);
+p {
+  padding: 0.1em;
 }
 </style>

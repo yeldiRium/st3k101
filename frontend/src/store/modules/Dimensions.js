@@ -83,7 +83,7 @@ const store = {
      */
     dimensionTemplates(state, getters, rootState, rootGetters) {
       const dimensions = pipe(
-        filter(dimension => dimension.template),
+        filter(dimension => dimension.isReadonlyTemplate),
         map(clone)
       )(state.dimensions);
       for (const dimension of dimensions) {

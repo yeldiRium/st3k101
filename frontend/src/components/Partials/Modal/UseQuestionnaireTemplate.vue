@@ -1,9 +1,9 @@
 <template>
     <modal name="modal-use-questionnaire-template"
-           height="80%"
+           height="auto"
            @before-open="beforeOpen"
            width="80%"
-           overflow="scroll"
+           :scrollable="true"
     >
         <div class="modal-use-questionnaire-template__header">
             use Questionnaire template
@@ -45,9 +45,9 @@ export default {
       questionnaire: null,
       handler: null,
       searchableKeys: [
-        { key: "name", name: "Name" },
-        { key: "referenceId", name: "xAPI Activity ID" },
-        { key: "description", name: "Description" }
+        { key: "name", display: "Name" },
+        { key: "referenceId", display: "xAPI Activity ID" },
+        { key: "description", display: "Description" }
       ]
     };
   },

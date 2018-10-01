@@ -601,10 +601,14 @@ const store = {
             // Reload original ConcreteDimension to have an accurate
             // reference count
             .chain(() =>
-              dispatch("dimensions/fetchDimension", {
-                href: concreteDimension.href,
-                language: concreteDimension.languageData.currentLanguage
-              })
+              dispatch(
+                "dimensions/fetchDimension",
+                {
+                  href: concreteDimension.href,
+                  language: concreteDimension.languageData.currentLanguage
+                },
+                { root: true }
+              )
             )
             // still resolve to the new ShadowDimension
             .map(() => shadowDimension)
