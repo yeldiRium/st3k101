@@ -250,6 +250,7 @@ class ConcreteQuestionnaire(Questionnaire):
         super(ConcreteQuestionnaire, self).__init__(name=name,
                                                     description=description,
                                                     **kwargs)
+        self.reference_id = SurveyBase.generate_reference_id(self)
 
     @staticmethod
     def from_shadow(shadow):

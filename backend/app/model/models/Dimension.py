@@ -123,6 +123,7 @@ class ConcreteDimension(Dimension):
     def __init__(self, name: str, **kwargs):
         self.original_language = g._language
         super(ConcreteDimension, self).__init__(name=name, **kwargs)
+        self.reference_id = SurveyBase.generate_reference_id(self)
 
     @staticmethod
     def from_shadow(shadow):
