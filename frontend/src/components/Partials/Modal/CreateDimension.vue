@@ -35,9 +35,11 @@ import { mapState } from "vuex-fluture";
 
 import CreateResource from "./CreateResource";
 import Toggle from "../Form/ToggleButton";
+import ClosableModal from "./ClosableModal";
 
 export default {
   name: "ModalCreateDimension",
+  extends: ClosableModal,
   components: {
     CreateResource,
     Toggle
@@ -54,6 +56,9 @@ export default {
     ...mapState("session", ["dataClient"])
   },
   methods: {
+    close() {
+      this.cancel();
+    },
     beforeOpen({ params: { language, handler } }) {
       if (isNil(language)) {
         throw new Error("Parameter language required!");

@@ -10,9 +10,11 @@
 
 <script>
 import LoadingSpinner from "./LoadingSpinner";
+import ClosableModal from "../../components/Partials/Modal/ClosableModal";
 
 export default {
   name: "LoadingSpinnerModal",
+  extends: ClosableModal,
   components: {
     LoadingSpinner
   },
@@ -27,6 +29,11 @@ export default {
         width: this.size,
         height: this.size
       };
+    }
+  },
+  methods: {
+    close() {
+      this.$modal.hide("loading");
     }
   }
 };

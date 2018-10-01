@@ -4,24 +4,26 @@
         <notifications
                 position="top right"
         />
-        <Dialog/>
+        <Dialog ref="modal-dialog"/>
         <LoadingSpinnerModal
                 :size="width"
+                ref="modal-loadingSpinner"
         />
-        <CreateQuestion/>
-        <CreateDimension/>
-        <CreateQuestionnaire/>
-        <UseQuestionTemplate/>
-        <UseDimensionTemplate/>
-        <UseQuestionnaireTemplate/>
-        <TranslateQuestion/>
-        <TranslateDimension/>
-        <TranslateQuestionnaire/>
+        <CreateQuestion ref="modal-createQuestion"/>
+        <CreateDimension ref="modal-createDimension"/>
+        <CreateQuestionnaire ref="modal-createQuestionnaire"/>
+        <UseQuestionTemplate ref="modal-useQuestionTemplate"/>
+        <UseDimensionTemplate ref="modal-useDimensionTemplate"/>
+        <UseQuestionnaireTemplate ref="modal-useQuestionnaireTemplate"/>
+        <TranslateQuestion ref="modal-translateQuestion"/>
+        <TranslateDimension ref="modal-translateDimension"/>
+        <TranslateQuestionnaire ref="modal-translateQuestionnaire"/>
     </div>
 </template>
 
 <script>
-import { mapState } from "vuex-fluture";
+import * as R from "ramda";
+import { mapState, mapGetters } from "vuex-fluture";
 
 import Dialog from "./Partials/Modal/Dialog";
 import CreateQuestion from "./Partials/Modal/CreateQuestion";
@@ -47,8 +49,21 @@ export default {
     TranslateDimension,
     TranslateQuestionnaire
   },
+  watch: {
+    isLoggedIn: {
+      immediate: true,
+      handler() {
+        for (const ref in this.$refs) {
+          if (R.length(R.match(/^modal-.*/, ref)) > 0) {
+            this.$refs[ref].close();
+          }
+        }
+      }
+    }
+  },
   computed: {
     ...mapState("global", ["window"]),
+    ...mapGetters("session", ["isLoggedIn"]),
     width() {
       if (this.window.width * 0.5 < 200) {
         return "50%";

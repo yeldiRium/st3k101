@@ -27,27 +27,14 @@
 
 <script>
 import { mapState } from "vuex-fluture";
-import {
-  all,
-  assoc,
-  both,
-  either,
-  filter,
-  head,
-  identity,
-  ifElse,
-  is,
-  isNil,
-  map,
-  pipe,
-  prop,
-  sum
-} from "ramda";
+import { both, either, filter, head, is, isNil, pipe, prop } from "ramda";
 
 import Button from "../Form/Button";
+import ClosableModal from "./ClosableModal";
 
 export default {
   name: "ModalDialog",
+  extends: ClosableModal,
   components: {
     Button
   },
@@ -69,6 +56,9 @@ export default {
     }
   },
   methods: {
+    close() {
+      this.$modal.hide("dialog");
+    },
     beforeOpen(event) {
       let { buttons, title, text = "" } = event.params;
 

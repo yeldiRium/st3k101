@@ -32,9 +32,11 @@
 import { has } from "ramda";
 
 import Button from "../Form/Button";
+import ClosableModal from "./ClosableModal";
 
 export default {
   name: "ModalTranslateResource",
+  extends: ClosableModal,
   components: {
     Button
   },
@@ -49,6 +51,9 @@ export default {
     }
   },
   methods: {
+    close() {
+      this.cancel();
+    },
     cancel() {
       this.$emit("cancel");
     },

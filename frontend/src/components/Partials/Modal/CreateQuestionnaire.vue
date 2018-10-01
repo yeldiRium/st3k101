@@ -59,11 +59,13 @@ import { mapState } from "vuex-fluture";
 
 import CreateResource from "./CreateResource";
 import Toggle from "../Form/ToggleButton";
+import ClosableModal from "./ClosableModal";
 import LanguagePicker from "../LanguagePicker";
 import { LanguageData } from "../../../model/Language";
 
 export default {
   name: "ModalCreateQuestionnaire",
+  extends: ClosableModal,
   components: {
     CreateResource,
     Toggle,
@@ -88,6 +90,9 @@ export default {
     }
   },
   methods: {
+    close() {
+      this.cancel();
+    },
     beforeOpen({ params: { language, handler } }) {
       if (isNil(language)) {
         throw new Error("Parameter language required!");
