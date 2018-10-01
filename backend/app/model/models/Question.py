@@ -230,6 +230,7 @@ class ConcreteQuestion(Question):
     def __init__(self, text: str, **kwargs):
         self.original_language = g._language
         super(ConcreteQuestion, self).__init__(text=text, **kwargs)
+        self.reference_id = SurveyBase.generate_reference_id(self)
 
     @staticmethod
     def from_shadow(shadow):

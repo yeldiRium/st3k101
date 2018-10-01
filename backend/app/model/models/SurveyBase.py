@@ -46,10 +46,6 @@ class SurveyBase(OwnershipBase):
 
     @property
     def reference_id(self) -> str:
-        # set initial reference_id if name already present
-        if not self._reference_id:  # FIXME keeps regenerating
-            if self.name is not None and len(self.name) > 0:
-                self._reference_id = self.generate_reference_id()
         return self._reference_id
 
     @reference_id.setter
@@ -170,9 +166,10 @@ class SurveyBase(OwnershipBase):
         """
         return super(SurveyBase, self).accessible_by(party)
 
-    def generate_reference_id(self) -> str:
+    @staticmethod
+    def generate_reference_id(survey_base) -> str:
         while True:
-            name = self.name_translations[self.original_language.name]
+            name = survey_base.name_translations[survey_base.original_language.name]
             name_sane = utils.unicode_to_xml_friendly_ascii(name)
             if len(name_sane) > 15:
                 name_sane = name_sane[:15]
