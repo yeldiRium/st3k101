@@ -30,6 +30,7 @@
                            id="email"
                            type="email"
                            @keyup.enter="login"
+                           autocomplete="off"
                     />
                 </div>
                 <div class="authentication__input-row">
@@ -87,6 +88,7 @@
                            id="email"
                            type="email"
                            @keyup.enter="register"
+                           autocomplete="off"
                     />
                     <ErrorIcon class="authentication__error-icon"
                                v-if="errors.email.length > 0"
