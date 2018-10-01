@@ -1,18 +1,28 @@
-__pycache__/
+__pycache__
+node_modules
+
+# General
+.DS_Store
 
 # IDE
-.idea/
-.vscode/
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
-# Frontend
-websrv-flask/node_modules/*
-**/.sass-cache/
-websrv-flask/app/static/fonts/*
-websrv-flask/app/static/css/*
-websrv-flask/app/static/js/bundle.js
-
+# Backend
 # Compiled translations
 **/*.mo
+# virtualenv
+.venv
 
-db-mongo/data/
-mariadb/data/
+# logfiles, debugging
+*.log
+
+# Frontend
+frontend/dist
+
+# emacs
+*.org~

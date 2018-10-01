@@ -1,0 +1,105 @@
+* ST3K101 Backend Container
+** Development Setup
+   Requires:
+   - docker >=18.06
+   - docker-compose >=1.22
+   - python >=3.7
+
+   Install python dependencies.
+   It is recommended to do so in a
+   [[https://docs.python.org/3/library/venv.html][virtual environment]].
+   #+BEGIN_SRC bash
+     pip install -r /app/requirements.
+   #+END_SRC
+
+   Build docker container.
+   #+BEGIN_SRC bash
+     docker-compose build
+   #+END_SRC
+
+   Run postgres container in background.
+   #+BEGIN_SRC bash
+     docker-compoes up -d postgres
+   #+END_SRC
+
+   Wait a few seconds for postgres to start. Then start
+   backend. This will start a memcached container
+   in the background.
+   #+BEGIN_SRC bash
+     docker-compose up backend
+   #+END_SRC
+
+   Optionally start adminer for a gui for postgres.
+   #+BEGIN_SRC bash
+     docker-compose up -d adminer
+   #+END_SRC
+** Building
+   =docker_registry= must be of the form =hostname[:port]= and is required to
+   tag and push the container to/with the correct registry.
+
+   Build the container.
+    #+BEGIN_SRC bash
+      ./../build.sh build <docker_registry>
+    #+END_SRC
+
+    Run tests (currently none).
+    #+BEGIN_SRC bash
+      ./../build.sh test
+    #+END_SRC
+
+    Publish the container to docker registry.
+    #+BEGIN_SRC bash
+      ./../build.sh publish <docker_registry>
+    #+END_SRC
+
+    Or you can do all of the above in one step.
+    #+BEGIN_SRC bash
+      ./../build.sh run <docker_registry>
+    #+END_SRC
+** Configuration
+*** Environment
+**** Postgres
+     Needs someparameters for user and db creation.
+     - POSTGRES_PASSWORD
+     - POSTGRES_USER
+     - POSTGRES_DB
+
+     Needs a volume of some kind mounted to =/var/lib/postgresql/data=, so that
+     database content is persisted.
+
+** Post-installation setup
+
+    To perform post-installation setup tasks, log on to the container by using:
+    #+BEGIN_SRC bash
+    docker exec -it backend bash
+    #+END_SRC
+
+*** Creating a user
+
+    #+BEGIN_SRC bash
+    flask register
+    #+END_SRC
+
+    Usage: flask register [OPTIONS] [CLICK_STDIN]
+
+    | Option     | Parameter                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Description                     |
+    |------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------|
+    | --email    | TEXT                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | The DataClient's email address. |
+    | --role     | [Root, Admin, Contributor, User, Unprivileged]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | The initial role the will have. |
+    | --language | [zu, zh, zgh, yue, yo, yi, yav, xog, wae, vun, vo, vi, vai, uz, ur, uk, ug, tzm, twq, tr, to, tk, ti, th, teo, te, ta, sw, sv, sr, sq, so, sn, smn, sl, sk, si, shi, sg, ses, seh, se, sbp, saq, sah, rwk, rw, ru, rof, ro, rn, rm, qu, pt, ps, prg, pl, pa, os, or, om, nyn, nus, nnh, nn, nmg, nl, ne, nd, nb, naq, mzn, my, mua, mt, ms, mr, mn, ml, mk, mgo, mgh, mg, mfe, mer, mas, lv, luy, luo, lu, lt, lrc, lo, ln, lkt, lg, lb, lag, ky, kw, ksh, ksf, ksb, ks, kok, ko, kn, km, kln, kl, kkj, kk, ki, khq, kea, kde, kam, kab, ka, jmc, jgo, ja, it, is, ii, ig, id, hy, hu, hsb, hr, hi, he, haw, ha, gv, guz, gu, gsw, gl, gd, ga, fy, fur, fr, fo, fil, fi, ff, fa, ewo, eu, et, es, eo, en, el, ee, ebu, dz, dyo, dua, dsb, dje, de, dav, da, cy, cu, cs, ckb, chr, cgg, ce, ca, bs, brx, br, bo, bn, bm, bg, bez, bem, be, bas, az, ast, asa, as, ar, am, ak, agq, af] | The DataClient's language.      |
+    | --help     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Shows a help message.           |
+
+    You may pipe a password to this command.
+
+*** Importing questionnaires from JSON
+
+    #+BEGIN_SRC bash
+    flask import_questionnaires
+    #+END_SRC
+
+    Usage: flask import_questionnaires [OPTIONS] FILE
+
+    | Option  | Parameter | Description                                                                   |
+    |---------+-----------+-------------------------------------------------------------------------------|
+    | --owner | TEXT      | The email address of the DataClient who will own the imported questionnaires. |
+    | --help  |           | Shows a help message.                                                         |

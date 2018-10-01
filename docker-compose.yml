@@ -1,16 +1,15 @@
 version: '3.1'
 
 services:
-
   postgres:
-    build: ./postgres
+    build: postgres
     restart: always
     environment:
       - POSTGRES_PASSWORD=kksrk0vv3zigez6
       - POSTGRES_USER=flask
       - POSTGRES_DB=st3k101
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
   adminer:
     image: adminer
@@ -19,13 +18,55 @@ services:
       - 8080:8080
 
   memcached:
-    build: ./memcached
+    image: memcached:1.5-alpine
     restart: always
 
-  websrv-flask:
-    build: ./websrv-flask
+  backend:
+    build: backend
     restart: always
+    links:
+      - memcached
+      - postgres
+      - xapi-publisher
+    volumes:
+      - ./backend/app:/app
+
+  frontend:
+    build: frontend
+    volumes:
+      - ./frontend:/usr/app:rw
+
+  xapi-publisher:
+    build: xapi-publisher
+    restart: always
+    volumes:
+      - ./xapi-publisher/app:/app
+    links:
+      - mongo
+      - redis
+
+  redis:
+    image: library/redis
+    volumes:
+      - redis:/data
+
+  mongo:
+    image: bitnami/mongodb:3.6
+    volumes:
+      - mongo:/bitnami
+
+  nginx:
+    build: nginx
     ports:
       - 80:80
-    volumes:
-      - ./websrv-flask/app:/app
+    links:
+      - backend
+      - frontend
+    environment:
+      - NGINX_HOST=localhost
+      - NGINX_PORT=80
+
+volumes:
+  postgres:
+  mongo:
+  redis:

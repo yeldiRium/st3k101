@@ -1,9 +1,0 @@
-python-memcached
-pymongo
-argon2
-Flask-Babel
-pyyaml
-Flask-SQLAlchemy
-sqlalchemy_utils
-psycopg2
-deprecated

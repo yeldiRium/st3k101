@@ -1,0 +1,13 @@
+python-memcached
+argon2
+Flask-Babel
+pyyaml
+Flask-SQLAlchemy
+sqlalchemy_utils
+psycopg2
+deprecated
+blinker
+flask_restful
+marshmallow
+requests
+maxminddb-geolite2

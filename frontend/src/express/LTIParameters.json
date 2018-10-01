@@ -1,0 +1,34 @@
+{
+  "required": {
+    "lti_message_type": "basic-lti-launch-request",
+    "lti_version": "LTI-1p0",
+    "oauth_consumer_key": null,
+    "oauth_callback": "about:blank",
+    "oauth_nonce": null,
+    "oauth_signature": null,
+    "oauth_signature_method": "HMAC-SHA1",
+    "oauth_timestamp": null,
+    "oauth_version": "1.0",
+    "resource_link_id": null,
+    "roles": null,
+    "user_id": null
+  },
+  "optional": {
+    "context_id": null,
+    "context_label": null,
+    "context_title": null,
+    "launch_presentation_locale": null,
+    "launch_presentation_return_url": null,
+    "lis_person_contact_email_primary": null,
+    "lis_person_name_family": null,
+    "lis_person_name_full": null,
+    "lis_person_name_given": null,
+    "resource_link_description": null,
+    "resource_link_title": null,
+    "tool_consumer_info_product_family_code": null,
+    "tool_consumer_info_version": null,
+    "tool_consumer_instance_description": null,
+    "tool_consumer_instance_guid": null,
+    "ext_user_username": null
+  }
+}
