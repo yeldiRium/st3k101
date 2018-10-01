@@ -21,7 +21,7 @@ def get_hook_configuration(the_item: SurveyBase):
     for key, config in hooks.items():
         if key.startswith('regex:'):
             pattern = re.compile(key.replace('regex:', ''))
-            if re.match(pattern, the_item.reference_id):
+            if re.match(pattern, getattr(the_item, "reference_id", default="")):
                 return config
         else:
             if key == the_item.reference_id:
