@@ -51,7 +51,9 @@ class Question(SurveyBase):
     tracker_args = {
         __('text'): TrackingType.TranslationHybrid,
         __('range_start'): TrackingType.Primitive,
-        __('range_end'): TrackingType.Primitive
+        __('range_end'): TrackingType.Primitive,
+        __('range_start_label'): TrackingType.TranslationHybrid,
+        __('range_end_label'): TrackingType.TranslationHybrid
     }
 
     def __init__(self, **kwargs):
