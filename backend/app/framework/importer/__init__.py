@@ -43,7 +43,7 @@ def import_questionnaires(questionnaires_as_json):
                 new_question.range_start = question['range_start']
                 new_question.range_end = question['range_end']
                 new_question.text_translations = question['text']
-                new_question.range_start_label = question['range_start_label']
-                new_question.range_end_label = question['range_end_label']
+                new_question.range_start_label_translations = question['range_start_label']
+                new_question.range_end_label_translations = question['range_end_label']
 
         db.session.add(new_questionnaire)
