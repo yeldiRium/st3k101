@@ -32,12 +32,18 @@ def import_questionnaires(questionnaires_as_json):
 
             for question in dimension['questions']:
                 qs_original_text = question['text'][qn_original_language.name]
+                qs_original_range_start_label = question['range_start_label'][qn_original_language.name]
+                qs_original_range_end_label = question['range_end_label'][qn_original_language.name]
                 with context_language(qn_original_language):
-                    new_question = new_dimension.new_question(qs_original_text)
+                    new_question = new_dimension.new_question(qs_original_text, qs_original_range_start_label,
+                                                              qs_original_range_end_label)
+
                 new_question.template = new_questionnaire.template
                 new_question.reference_id = question['reference_id']
                 new_question.range_start = question['range_start']
                 new_question.range_end = question['range_end']
                 new_question.text_translations = question['text']
+                new_question.range_start_label = question['range_start_label']
+                new_question.range_end_label = question['range_end_label']
 
         db.session.add(new_questionnaire)

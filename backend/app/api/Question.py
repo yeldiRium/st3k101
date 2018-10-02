@@ -117,7 +117,7 @@ class ConcreteQuestionResource(Resource):
         if dimension.shadow:
             abort(403)
 
-        question = dimension.new_question(data['text'])
+        question = dimension.new_question(data['text'], data['range_start_label'], data['range_end_label'])
 
         for k, v in data.items():
             if 'k' == 'template':

@@ -61,11 +61,11 @@ class Dimension(SurveyBase):
     def original_language(self) -> BabelLanguage:
         raise NotImplementedError
 
-    def new_question(self, text: str, **kwargs) -> ConcreteQuestion:
+    def new_question(self, text: str, range_start_label, range_end_label, **kwargs) -> ConcreteQuestion:
         if not isinstance(self, ConcreteDimension):
             raise BusinessRuleViolation("Can't modify shadow instances!")
 
-        question = ConcreteQuestion(text, **kwargs)
+        question = ConcreteQuestion(text, range_start_label, range_end_label, **kwargs)
         self.questions.append(question)
 
         item_added.send(self, added_item=question)
