@@ -370,7 +370,7 @@ export default {
   }
 
   &__question {
-    max-width: 80%;
+    max-width: 90%;
     margin: auto;
   }
 }
@@ -381,7 +381,7 @@ export default {
     font-size: large;
     width: 66%;
     padding-left: 1em;
-    border-right: $primary 1px solid;
+    border-right: $primary-dark 1px solid;
     transition: width 0.33s ease, background-color 0.33s ease,
       font-size 0.33s ease, font-weight 0.33s ease;
   }
