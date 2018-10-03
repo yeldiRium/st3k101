@@ -1,6 +1,7 @@
 <template>
     <modal name="modal-use-question-template"
            height="auto"
+           width="80%"
            @before-open="beforeOpen"
            :scrollable="true"
     >

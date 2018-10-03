@@ -277,7 +277,7 @@ export default {
 
   &__header {
     display: flex;
-    background-color: $primary-light;
+    background-color: $primary;
     justify-content: space-between;
     padding: 1em;
     align-items: center;
@@ -289,7 +289,7 @@ export default {
 
   &__body {
     padding: 1em;
-    border: $primary-light 1px solid;
+    border: $primary 1px solid;
   }
 
   &__dimension-tabs {
@@ -308,14 +308,14 @@ export default {
     word-break: unset;
 
     &--selected {
-      background-color: $primary-light;
-      border: $primary-light 1px solid;
+      background-color: $primary;
+      border: $primary 1px solid;
     }
   }
 
   &__dimension-body {
     border: $primary-light 1px solid;
-    padding: 1em;
+    padding: 0.3em;
   }
 
   &__footer {
@@ -323,7 +323,7 @@ export default {
     flex-direction: column;
     margin-top: 2em;
     padding: 1em;
-    border: $primary-light 1px solid;
+    border: $primary 1px solid;
 
     label {
       display: flex;
