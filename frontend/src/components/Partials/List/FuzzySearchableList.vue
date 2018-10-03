@@ -14,7 +14,7 @@
             <thead class="table-header">
                 <tr>
                     <th class="table-header__column"
-                        v-for="key in keys"
+                        v-for="key in [...keys, ...displayOnlyKeys]"
                         :key="key.key"
                     >
                         {{ key.display }}
@@ -30,6 +30,9 @@
                         <p :class="{'highlighted': item.matches.hasOwnProperty(key.key) && !(searchString.length === 0) }">
                             {{ item.item[key.key] }}
                         </p>
+                    </td>
+                    <td v-for="key in displayOnlyKeys">
+                        {{ item.item[key.key] }}
                     </td>
                 </tr>
             </tbody>
@@ -48,6 +51,10 @@ export default {
       default: () => []
     },
     keys: {
+      type: Array,
+      default: () => []
+    },
+    displayOnlyKeys: {
       type: Array,
       default: () => []
     },
