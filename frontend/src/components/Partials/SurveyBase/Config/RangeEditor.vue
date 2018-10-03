@@ -26,9 +26,19 @@
             </label>
         </div>
         <div class="range-editor__preview">
+            <EditableText :value="value.startLabel"
+                          :edit-left="true"
+                          @input="updateStartLabel"
+                          class="range-editor__preview__label"
+            >
+            </EditableText>
             <RangeSVG :range="value"
                       :preview="true"
             />
+            <EditableText :value="value.endLabel"
+                          @input="updateEndLabel"
+            >
+            </EditableText>
         </div>
     </div>
 </template>
@@ -37,10 +47,12 @@
 import RangeSVG from "./RangeSVG";
 
 import Range from "../../../../model/SurveyBase/Config/Range";
+import EditableText from "../../Form/EditableText";
 
 export default {
   name: "RangeEditor",
   components: {
+    EditableText,
     RangeSVG
   },
   props: {
@@ -55,7 +67,9 @@ export default {
         "input",
         new Range({
           start: Number(event.target.value),
-          end: this.value.end
+          end: this.value.end,
+          startLabel: this.value.startLabel,
+          endLabel: this.value.endLabel
         })
       );
     },
@@ -64,7 +78,31 @@ export default {
         "input",
         new Range({
           start: this.value.start,
-          end: Number(event.target.value)
+          end: Number(event.target.value),
+          startLabel: this.value.startLabel,
+          endLabel: this.value.endLabel
+        })
+      );
+    },
+    updateStartLabel(value) {
+      this.$emit(
+        "input",
+        new Range({
+          start: this.value.start,
+          end: this.value.end,
+          startLabel: value,
+          endLabel: this.value.endLabel
+        })
+      );
+    },
+    updateEndLabel(value) {
+      this.$emit(
+        "input",
+        new Range({
+          start: this.value.start,
+          end: this.value.end,
+          startLabel: this.value.startLabel,
+          endLabel: value
         })
       );
     }
@@ -85,6 +123,9 @@ export default {
 
   &__preview {
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
   }
 }
 </style>

@@ -139,7 +139,11 @@ function addConcreteQuestion(authenticationToken, dimension, text, range) {
   return fetchApi(dimension.href + "/concrete_question", {
     method: "POST",
     authenticationToken,
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({
+      text,
+      range_start_label: range.startLabel,
+      range_end_label: range.endLabel
+    }),
     language: dimension.languageData.currentLanguage
   })
     .chain(extractJson)

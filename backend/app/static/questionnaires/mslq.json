@@ -25,7 +25,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--1_organisationsstrategien--1",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -33,7 +39,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--1_organisationsstrategien--32",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -41,7 +53,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--1_organisationsstrategien--14",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -49,7 +67,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--1_organisationsstrategien--43",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -57,7 +81,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--1_organisationsstrategien--49",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -65,7 +95,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--1_organisationsstrategien--62",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -73,7 +109,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--1_organisationsstrategien--15",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -89,7 +131,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--25",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -97,7 +145,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--54",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -105,7 +159,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--3",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -113,7 +173,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--33",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -121,7 +187,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--16",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -129,7 +201,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--39",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -137,7 +215,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--52",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -145,7 +229,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--2_elaborationsstrategien--4",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -161,7 +251,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--3_wiederholungsstrategien--26",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -169,7 +265,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--3_wiederholungsstrategien--44",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -177,7 +279,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--3_wiederholungsstrategien--17",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -185,7 +293,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--3_wiederholungsstrategien--48",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -193,7 +307,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--3_wiederholungsstrategien--5",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -201,7 +321,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--3_wiederholungsstrategien--34",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -217,7 +343,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_1_planung--60",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -225,7 +357,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_1_planung--27",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -233,7 +371,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_1_planung--18",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -241,7 +385,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_1_planung--6",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -257,7 +407,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_2_überwachung--50",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -265,7 +421,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_2_überwachung--35",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -273,7 +435,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_2_überwachung--7",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -281,7 +449,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_2_überwachung--19",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -289,7 +463,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_2_überwachung--28",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -305,7 +485,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_3_regulation--59",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -313,7 +499,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_3_regulation--8",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -321,7 +513,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_3_regulation--41",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -329,7 +527,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_3_regulation--20",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -337,7 +541,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_3_regulation--58",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -345,7 +555,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--4_3_regulation--29",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -361,7 +577,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--5_anstrengung--36",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -369,7 +591,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--5_anstrengung--53",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -377,7 +605,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--5_anstrengung--63",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -385,7 +619,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--5_anstrengung--46",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -393,7 +633,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--5_anstrengung--55",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -409,7 +655,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--6_zeitmanagement--37",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -417,7 +669,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--6_zeitmanagement--51",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -425,7 +683,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--6_zeitmanagement--31",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -433,7 +697,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--6_zeitmanagement--12",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       },
@@ -449,7 +719,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--7_lernen_mit_anderen--23",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -457,7 +733,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--7_lernen_mit_anderen--57",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -465,7 +747,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--7_lernen_mit_anderen--61",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -473,7 +761,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--7_lernen_mit_anderen--47",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -481,7 +775,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--7_lernen_mit_anderen--13",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -489,7 +789,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--7_lernen_mit_anderen--38",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           },
           {
             "text": {
@@ -497,7 +803,13 @@
             },
             "reference_id": "lernstrategien_wild_schiefele--7_lernen_mit_anderen--24",
             "range_start": 1,
-            "range_end": 5
+            "range_end": 5,
+            "range_start_label": {
+              "de": "Nie"
+            },
+            "range_end_label": {
+              "de": "Immer"
+            }
           }
         ]
       }

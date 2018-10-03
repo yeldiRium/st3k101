@@ -1,92 +1,100 @@
 <template>
-    <svg class="range-svg"
-         :style="svgStyle"
-    >
-        <line :x1="`${(100-width)/2}%`"
-              :y1="`${lineY}%`"
-              :x2="`${(100-width)/2 + width}%`"
-              :y2="`${lineY}%`"
-              class="range-svg__middle-line"
-        />
-
-        <g>
-            <line v-for="number in range.numbers"
-                  :key="`number${number}`"
-                  :x1="`${numberX(number)}%`"
-                  :y1="`${lineY1}%`"
-                  :x2="`${numberX(number)}%`"
-                  :y2="`${lineY2}%`"
-                  class="range-svg__number-line"
-                  :class="[`range-svg__number-line-${number}`]"
+    <div class="container">
+        <span v-if="!preview">
+            {{ range.startLabel }}
+        </span>
+        <svg class="range-svg"
+             :style="svgStyle"
+        >
+            <line :x1="`${(100-width)/2}%`"
+                  :y1="`${lineY}%`"
+                  :x2="`${(100-width)/2 + width}%`"
+                  :y2="`${lineY}%`"
+                  class="range-svg__middle-line"
             />
-        </g>
 
-        <g v-if="!preview">
-            <g v-for="number in range.numbers"
-               :key="`reactor${number}`"
-               class="range-svg__number-reactor"
-            >
-                <rect :x="`${reactorX(number)}%`"
-                      :y="`${reactorY}%`"
-                      :width="`${reactorWidth}%`"
-                      :height="`${reactorHeight}%`"
-                      @mouseenter="startHover(number)"
-                      @mouseleave="endHover(number)"
-                      @click="setSelector(number)"
+            <g>
+                <line v-for="number in range.numbers"
+                      :key="`number${number}`"
+                      :x1="`${numberX(number)}%`"
+                      :y1="`${lineY1}%`"
+                      :x2="`${numberX(number)}%`"
+                      :y2="`${lineY2}%`"
+                      class="range-svg__number-line"
+                      :class="[`range-svg__number-line-${number}`]"
                 />
             </g>
 
-            <g v-if="selector > -1" class="range-svg__selector">
-                <line :x1="`${numberX(selector)}%`"
-                      :y1="`${selectorLineY1}%`"
-                      :x2="`${numberX(selector)}%`"
-                      :y2="`${selectorLineY2}%`"
-                      class="range-svg__selector-line"
-                />
-                <text :x="`${numberX(selector)}%`"
-                      :y="`${selectorNumberY}%`"
-                      text-anchor="middle"
-                      class="range-svg__selector-number"
+            <g v-if="!preview">
+                <g v-for="number in range.numbers"
+                   :key="`reactor${number}`"
+                   class="range-svg__number-reactor"
                 >
-                    {{ selector }}
-                </text>
-            </g>
-        </g>
+                    <rect :x="`${reactorX(number)}%`"
+                          :y="`${reactorY}%`"
+                          :width="`${reactorWidth}%`"
+                          :height="`${reactorHeight}%`"
+                          @mouseenter="startHover(number)"
+                          @mouseleave="endHover(number)"
+                          @click="setSelector(number)"
+                    />
+                </g>
 
-        <g>
-            <g v-if="preview">
-                <text v-for="number in range.numbers"
-                      :key="`label${number}`"
-                      :x="`${numberX(number)}%`"
-                      :y="`${numberY}%`"
-                      text-anchor="middle"
-                      class="range-svg__number"
-                >
-                    {{ number }}
-                </text>
+                <g v-if="selector > -1" class="range-svg__selector">
+                    <line :x1="`${numberX(selector)}%`"
+                          :y1="`${selectorLineY1}%`"
+                          :x2="`${numberX(selector)}%`"
+                          :y2="`${selectorLineY2}%`"
+                          class="range-svg__selector-line"
+                    />
+                    <text :x="`${numberX(selector)}%`"
+                          :y="`${selectorNumberY}%`"
+                          text-anchor="middle"
+                          class="range-svg__selector-number"
+                    >
+                        {{ selector }}
+                    </text>
+                </g>
             </g>
-            <g v-else>
-                <text v-if="selector !== range.start"
-                      :x="`${numberX(range.start)}%`"
-                      :y="`${numberY}%`"
-                      text-anchor="middle"
-                      class="range-svg__number"
-                      :class="[`range-svg__number-${range.start}`]"
-                >
-                    {{ range.start }}
-                </text>
-                <text v-if="selector !== range.end"
-                      :x="`${numberX(range.end)}%`"
-                      :y="`${numberY}%`"
-                      text-anchor="middle"
-                      class="range-svg__number"
-                      :class="[`range-svg__number-${range.end}`]"
-                >
-                    {{ range.end }}
-                </text>
+
+            <g>
+                <g v-if="preview">
+                    <text v-for="number in range.numbers"
+                          :key="`label${number}`"
+                          :x="`${numberX(number)}%`"
+                          :y="`${numberY}%`"
+                          text-anchor="middle"
+                          class="range-svg__number"
+                    >
+                        {{ number }}
+                    </text>
+                </g>
+                <g v-else>
+                    <text v-if="selector !== range.start"
+                          :x="`${numberX(range.start)}%`"
+                          :y="`${numberY}%`"
+                          text-anchor="middle"
+                          class="range-svg__number"
+                          :class="[`range-svg__number-${range.start}`]"
+                    >
+                        {{ range.start }}
+                    </text>
+                    <text v-if="selector !== range.end"
+                          :x="`${numberX(range.end)}%`"
+                          :y="`${numberY}%`"
+                          text-anchor="middle"
+                          class="range-svg__number"
+                          :class="[`range-svg__number-${range.end}`]"
+                    >
+                        {{ range.end }}
+                    </text>
+                </g>
             </g>
-        </g>
-    </svg>
+        </svg>
+        <span v-if="!preview">
+            {{ range.endLabel }}
+        </span>
+    </div>
 </template>
 
 <script>
@@ -98,7 +106,7 @@ export default {
   name: "RangeSVG",
   props: {
     range: {
-      type: Range
+      type: Range // TODO: display startLabel, endLabel
     },
     /**
      * If true, all numbers are shown and nothing can be selected.
@@ -271,11 +279,28 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "../../../scss/_variables";
 
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    flex-basis: 15%;
+    flex-grow: 1;
+    flex-shrink: 2;
+    text-align: center;
+  }
+}
+
 .range-svg {
-  width: 100%;
+  //width: 100%;
+  flex-basis: 100%;
+  flex-grow: 2;
+  flex-shrink: 1;
 
   &__middle-line {
     stroke: $slightlydark;

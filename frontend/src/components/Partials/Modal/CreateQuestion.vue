@@ -57,7 +57,11 @@ export default {
       }
       this.language = language;
       this.handler = handler;
-      this.range = new Range({ end: 10 });
+      this.range = new Range({
+        end: 10,
+        startLabel: "Completely disagree",
+        endLabel: "Completely agree"
+      });
     },
     cancel() {
       this.$modal.hide("modal-create-question");

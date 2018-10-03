@@ -552,6 +552,8 @@ function parseQuestion(data) {
  * @param {String} text
  * @param {Integer} range_start
  * @param {Integer} range_end
+ * @param range_start_label
+ * @param range_end_label
  * @param {Boolean} template
  * @param {Language} current_language
  * @param {Language} original_language
@@ -565,6 +567,8 @@ function parseTemplateQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   template,
   current_language,
   original_language,
@@ -582,7 +586,12 @@ function parseTemplateQuestion({
     template,
     reference_id,
     text,
-    new Range({ start: range_start, end: range_end }),
+    new Range({
+      start: range_start,
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
+    }),
     0, // incoming reference count
     [] // owned incoming references
   );
@@ -614,6 +623,8 @@ function parseShadowQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   current_language,
   original_language,
   available_languages,
@@ -630,7 +641,12 @@ function parseShadowQuestion({
     }),
     reference_id,
     text,
-    new Range({ start: range_start, end: range_end }),
+    new Range({
+      start: range_start,
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
+    }),
     parseResource(reference_to)
   );
 }
@@ -645,6 +661,8 @@ function parseShadowQuestion({
  * @param {String} text
  * @param {Number} range_start
  * @param {Number} range_end
+ * @param range_start_label
+ * @param range_end_label
  * @param {Boolean} template
  * @param {Object} current_language
  * @param {Object} original_language
@@ -662,6 +680,8 @@ function parseConcreteQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   template,
   current_language,
   original_language,
@@ -681,7 +701,12 @@ function parseConcreteQuestion({
     template,
     reference_id,
     text,
-    new Range({ start: range_start, end: range_end }),
+    new Range({
+      start: range_start,
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
+    }),
     incoming_reference_count,
     map(parseResource, owned_incoming_references)
   );
@@ -881,6 +906,8 @@ function parseSubmissionQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   current_language,
   original_language,
   available_languages
@@ -891,7 +918,9 @@ function parseSubmissionQuestion({
     text,
     new Range({
       start: range_start,
-      end: range_end
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
     }),
     parseLanguageData({
       current_language,

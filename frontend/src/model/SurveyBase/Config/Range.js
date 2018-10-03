@@ -4,8 +4,10 @@ class Range {
   /**
    * @param {number} start
    * @param {number} end
+   * @param {string} startLabel
+   * @param {string} endLabel
    */
-  constructor({ start = 0, end }) {
+  constructor({ start = 0, end, startLabel, endLabel }) {
     if (start > end) {
       throw new Error("Range start can't be bigger than end.");
     }
@@ -15,6 +17,8 @@ class Range {
 
     this._start = start;
     this._end = end;
+    this._startLabel = startLabel;
+    this._endLabel = endLabel;
     /** @type {Array<number>} */
     this._numbers = [];
     this.calcNumbers();
@@ -71,6 +75,22 @@ class Range {
   }
 
   /**
+   * Getter for startLabel.
+   * @returns {string}
+   */
+  get startLabel() {
+    return this._startLabel;
+  }
+
+  /**
+   * Getter for endLabel.
+   * @returns {string}
+   */
+  get endLabel() {
+    return this._endLabel;
+  }
+
+  /**
    * @returns {Array<number>}
    */
   get numbers() {
@@ -91,7 +111,9 @@ class Range {
   clone() {
     return new Range({
       start: this._start,
-      end: this._end
+      end: this._end,
+      startLabel: this._startLabel,
+      endLabel: this._endLabel
     });
   }
 
@@ -104,7 +126,9 @@ class Range {
   equals(otherRange) {
     return R.allPass([
       o => R.equals(o.start, this.start),
-      o => R.equals(o.end, this.end)
+      o => R.equals(o.end, this.end),
+      o => R.equals(o.startLabel, this.startLabel),
+      o => R.equals(o.endLabel, this.endLabel)
     ])(otherRange);
   }
 }

@@ -40,7 +40,7 @@ export default {
   border-bottom: $lighter 1px dotted;
   &__header {
     display: block;
-    text-align: left;
+    text-align: center;
     margin: 1em auto 0.4em;
     word-break: break-word;
     width: 80%;
