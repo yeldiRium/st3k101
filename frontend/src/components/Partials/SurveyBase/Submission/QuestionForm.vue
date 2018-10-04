@@ -50,4 +50,7 @@ export default {
     margin-bottom: 1em;
   }
 }
+* > .question-form:last-child {
+  border: none;
+}
 </style>
