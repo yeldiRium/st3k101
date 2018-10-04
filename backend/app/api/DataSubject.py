@@ -1,5 +1,6 @@
 from flask import request
 from flask_restful import Resource
+from sqlalchemy import or_
 
 from api import api
 from api.schema.DataSubject import DataSubjectQuerySchema, DataSubjectSchema
@@ -21,15 +22,15 @@ class DataSubjectListResource(Resource):
             }, 400
 
         query = DataSubject.query
-        filters = []
+        predicates = []
         if 'email' in data:
-            filters.append(DataSubject.email.like(data['email']))
+            predicates.append(DataSubject.email.like(data['email']))
         if 'moodle_username' in data:
-            filters.append(DataSubject.moodle_username.like(data['moodle_username']))
+            predicates.append(DataSubject.moodle_username.like(data['moodle_username']))
         if 'source' in data:
-            filters.append(DataSubject.source.like(data['source']))
-        if filters:
-            query = query.filter(*filters)
+            predicates.append(DataSubject.source.like(data['source']))
+        if predicates:
+            query = query.filter(or_(*predicates))
 
         data_subjects = query.all()
         return DataSubjectSchema(many=True).dump(data_subjects)
