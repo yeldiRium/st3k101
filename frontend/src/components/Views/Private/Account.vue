@@ -3,7 +3,8 @@
         <Button @action="logout">
             Logout
         </Button>
-        <Button @action="openForgetDataSubject">
+        <Button v-if="isAdmin"
+                @action="openForgetDataSubject">
             Forget DataSubject
         </Button>
     </div>
@@ -15,6 +16,8 @@ import { mapGetters } from "vuex-fluture";
 import Button from "../../Partials/Form/Button";
 import ForgetDataSubject from "../../Partials/Modal/ForgetDataSubject";
 import { forgetDataSubject } from "../../../api/DataSubject";
+import { isAtLeast } from "../../../model/Roles";
+import Roles from "../../../model/Roles";
 
 export default {
   name: "Account",
@@ -22,7 +25,10 @@ export default {
     Button
   },
   computed: {
-    ...mapGetters("session", ["dataClient", "sessionToken"])
+    ...mapGetters("session", ["dataClient", "sessionToken"]),
+    isAdmin() {
+      return isAtLeast(this.dataClient, Roles.Admin);
+    }
   },
   methods: {
     logout() {

@@ -30,7 +30,6 @@ function fetchDataSubjectsByQuery(
   if (!R.isNil(source)) {
     query.source = source;
   }
-  console.log(JSON.stringify(query));
 
   return fetchApi("/api/datasubject", {
     authenticationToken,
