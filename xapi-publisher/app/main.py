@@ -80,7 +80,7 @@ def send_statement(statement: dict, receiver: str):
     }
     payload = json.dumps(statement) if type(statement) is not str else statement
     req = requests.post(receiver, json=payload, headers=headers)
-    assert req.status_code == 200
+    assert 200 <= req.status_code < 300
 
 
 def flush():
