@@ -37,6 +37,10 @@
                         @response-change="updateResponseValue($event)"
                 />
             </div>
+            <div class="submission__pagination-buttons">
+                <Button @action="paginationPrevious">Previous page</Button>
+                <Button @action="paginationNext">Next page</Button>
+            </div>
         </div>
         <div class="submission__footer">
             <div v-if="errors.length > 0"
@@ -232,6 +236,32 @@ export default {
       }
       return newQuestionnaire;
     },
+    paginationNext() {
+      let found = false;
+      for (let dimension of this.submissionQuestionnaire.dimensions) {
+        if (found) {
+          this.selectedDimensionId = dimension.id;
+          break;
+        }
+        if (dimension.id === this.selectedDimensionId) {
+          found = true;
+        }
+      }
+    },
+    paginationPrevious() {
+      let found = false;
+      for (let dimension of R.reverse(
+        this.submissionQuestionnaire.dimensions
+      )) {
+        if (found) {
+          this.selectedDimensionId = dimension.id;
+          break;
+        }
+        if (dimension.id === this.selectedDimensionId) {
+          found = true;
+        }
+      }
+    },
     /**
      * Submits response values to API.
      */
@@ -341,6 +371,15 @@ export default {
   &__dimension-body {
     border: $primary-light 1px solid;
     padding: 0.3em;
+  }
+
+  &__pagination-buttons {
+    margin-top: 1em;
+    display: flex;
+    justify-content: space-between;
+    > * {
+      flex-basis: 30%;
+    }
   }
 
   &__footer {
