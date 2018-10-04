@@ -68,6 +68,11 @@ class Dimension(SurveyBase):
         question = ConcreteQuestion(text, range_start_label, range_end_label, **kwargs)
         self.questions.append(question)
 
+        for copy in self.copies:
+            s_question = ShadowQuestion(question)
+            s_question.owners = copy.owners
+            copy.questions.append(question)
+
         item_added.send(self, added_item=question)
 
         return question
