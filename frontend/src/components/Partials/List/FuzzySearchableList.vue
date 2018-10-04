@@ -135,10 +135,13 @@ export default {
   watch: {
     searchString(newValue, _) {
       this.$emit("input", newValue);
+    },
+    value: {
+      immediate: true,
+      handler(newValue, _) {
+        this.searchString = newValue;
+      }
     }
-  },
-  created() {
-    this.searchString = this.value;
   },
   mounted() {
     if (this.focusOnOpen) {
