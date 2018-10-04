@@ -2,20 +2,12 @@
     <div class="authentication"
          :style="style"
     >
-        <div class="authentication__login"
-             v-if="isLogin"
-        >
+        <div class="authentication__login">
             <div class="authentication__title">
                 Login
             </div>
 
             <div class="authentication__body">
-                <div class="authentication__success-row"
-                     v-if="registeredDataClient"
-                >
-                    Congratulations! Registration successfull!
-                </div>
-
                 <div class="authentication__error-row"
                      v-for="error in this.errors.login"
                 >
@@ -51,91 +43,6 @@
                     Login
                 </Button>
             </div>
-
-            <div class="authentication__bottom-link">
-                <Button class="button--grey"
-                        :offset="3"
-                        @action="setIsLogin(false)"
-                >
-                    Not registered yet? Create an account.
-                </Button>
-            </div>
-        </div>
-        <div class="authentication__register"
-             v-else
-        >
-            <div class="authentication__title">
-                Register
-            </div>
-
-            <div class="authentication__body">
-                <div class="authentication__error-row"
-                     v-for="error in this.errors.email"
-                >
-                    {{error}}
-                </div>
-                <div class="authentication__error-row"
-                     v-for="error in this.errors.password"
-                >
-                    {{error}}
-                </div>
-                <div class="authentication__input-row">
-                    <label for="email">
-                        E-Mail:
-                    </label>
-                    <input v-model="inputData.email"
-                           id="email"
-                           type="email"
-                           @keyup.enter="register"
-                    />
-                    <ErrorIcon class="authentication__error-icon"
-                               v-if="errors.email.length > 0"
-                    />
-                </div>
-                <div class="authentication__input-row">
-                    <label for="password">
-                        Password:
-                    </label>
-                    <input v-model="inputData.password"
-                           id="password"
-                           type="password"
-                           @keyup.enter="register"
-                    />
-                    <ErrorIcon class="authentication__error-icon"
-                               v-if="errors.password.length > 0"
-                    />
-                </div>
-                <div class="authentication__input-row">
-                    <label for="password-confirmation">
-                        Confirm Password:
-                    </label>
-                    <input v-model="inputData.passwordConfirmation"
-                           id="password-confirmation"
-                           type="password"
-                           @keyup.enter="register"
-                    />
-                    <ErrorIcon class="authentication__error-icon"
-                               v-if="errors.password.length > 0"
-                    />
-                </div>
-            </div>
-
-            <div class="authentication__buttons">
-                <Button :offset="3"
-                        @action="register"
-                >
-                    Register
-                </Button>
-            </div>
-
-            <div class="authentication__bottom-link">
-                <Button class="button--grey"
-                        :offset="3"
-                        @action="setIsLogin(true)"
-                >
-                    Already have an account? Log in.
-                </Button>
-            </div>
         </div>
     </div>
 </template>
@@ -166,8 +73,6 @@ export default {
         password: "",
         passwordConfirmation: ""
       },
-
-      registeredDataClient: null,
 
       errors: {
         login: [],
@@ -243,47 +148,6 @@ export default {
         },
         () => {}
       );
-    },
-    register() {
-      this.clearErrors();
-
-      if (this.inputData.password !== this.inputData.passwordConfirmation) {
-        this.errors.password.push(
-          "Password and Confirmation must be identical."
-        );
-        return;
-      }
-
-      this.$load(
-        this.$store.dispatch("session/register", {
-          email: this.inputData.email,
-          password: this.inputData.password
-        })
-      ).fork(
-        error => {
-          if (
-            either(
-              propEq("name", "ConflictError"),
-              propEq("name", "BadRequestError")
-            )(error)
-          ) {
-            this.errors.email = propOr([], "email", error.payload);
-            this.errors.password = propOr([], "password", error.payload);
-            this.$notify({
-              type: "error",
-              title: "Login error",
-              text:
-                "An error occured while registering. Please check your information and try again."
-            });
-          } else {
-            this.$handleApiError(error);
-          }
-        },
-        result => {
-          this.registeredDataClient = result;
-          this.isLogin = true;
-        }
-      );
     }
   }
 };
@@ -306,7 +170,6 @@ export default {
   justify-items: center;
   align-items: start;
 
-  &__register,
   &__login {
     grid-area: content;
 
