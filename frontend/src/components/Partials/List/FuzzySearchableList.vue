@@ -69,6 +69,10 @@ export default {
     focusOnOpen: {
       type: Boolean,
       default: false
+    },
+    value: {
+      type: String,
+      default: ""
     }
   },
   data() {
@@ -129,9 +133,12 @@ export default {
     }
   },
   watch: {
-    searchString(oldValue, newValue) {
-      this.$emit("searchStringChanged", oldValue);
+    searchString(newValue, _) {
+      this.$emit("input", newValue);
     }
+  },
+  created() {
+    this.searchString = this.value;
   },
   mounted() {
     if (this.focusOnOpen) {
