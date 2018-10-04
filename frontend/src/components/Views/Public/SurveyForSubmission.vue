@@ -39,6 +39,15 @@
             </div>
         </div>
         <div class="submission__footer">
+            <div v-if="errors.length > 0"
+                 class="submission__errors"
+            >
+                <p v-for="errorMessage in errors">
+                    <b>!</b>
+                    {{errorMessage}}
+                </p>
+            </div>
+
             <label>
                 <span>Email Address</span>
                 <input type="email"
@@ -75,6 +84,7 @@ import DimensionForm from "../../Partials/SurveyBase/Submission/DimensionForm";
 import Button from "../../Partials/Form/Button";
 import LanguagePicker from "../../Partials/LanguagePicker";
 import { submitResponse } from "../../../api/Submission";
+import * as R from "ramda";
 
 export default {
   name: "SurveyForSubmission",
@@ -90,7 +100,8 @@ export default {
         password: "",
         email: ""
       },
-      selectedDimensionId: null
+      selectedDimensionId: null,
+      errors: []
     };
   },
   computed: {
@@ -228,10 +239,24 @@ export default {
       if (!this.isReadyToSubmit) {
         return;
       }
+      this.errors = [];
       this.$load(
         submitResponse(this.submissionQuestionnaire, this.inputData)
       ).fork(
-        this.$handleApiError,
+        error => {
+          if (
+            R.either(
+              R.propEq("name", "BadRequestError"),
+              R.propEq("name", "ForbiddenError")
+            )(error)
+          ) {
+            this.errors.push(
+              "There was an error with the data you've provided. Please check your data and try again."
+            );
+          } else {
+            this.$handleApiError(error);
+          }
+        },
         console.log // TODO: thank you page
       );
     },
@@ -332,6 +357,19 @@ export default {
 
       input {
         width: 45%;
+      }
+    }
+  }
+
+  &__errors {
+    > p {
+      color: $danger;
+      margin-bottom: 1em;
+
+      > b {
+        color: inherit;
+        font-size: x-large;
+        margin-right: 1em;
       }
     }
   }
