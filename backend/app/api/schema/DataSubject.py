@@ -14,6 +14,7 @@ class DataSubjectQuerySchema(Schema):
 
 
 class DataSubjectSchema(Schema):
+    id = fields.Integer()
     email = fields.Email()
     lti_user_id = fields.String()
     moodle_username = fields.String()
