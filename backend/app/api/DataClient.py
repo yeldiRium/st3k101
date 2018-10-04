@@ -21,6 +21,7 @@ class CurrentDataClientResource(Resource):
     def get(self):
         return DataClientSchema().dump(current_user()).data
 
+    @needs_minimum_role(Role.Admin)
     def post(self):
         schema = DataClientSchema()
         data, errors = schema.load(request.json)
