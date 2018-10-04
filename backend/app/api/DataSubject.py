@@ -12,7 +12,7 @@ __author__ = "Noah Hummel"
 
 class DataSubjectListResource(Resource):
     @needs_minimum_role(Role.Admin)
-    def get(self):
+    def post(self):
         data, errors = DataSubjectQuerySchema().load(request.json, partial=True)
         if errors:
             return {
@@ -20,7 +20,18 @@ class DataSubjectListResource(Resource):
                 'errors': errors
             }, 400
 
-        data_subjects = DataSubject.query.filter_by(data).all()
+        query = DataSubject.query
+        filters = []
+        if 'email' in data:
+            filters.append(DataSubject.email.like(data['email']))
+        if 'moodle_username' in data:
+            filters.append(DataSubject.moodle_username.like(data['moodle_username']))
+        if 'source' in data:
+            filters.append(DataSubject.source.like(data['source']))
+        if filters:
+            query = query.filter(*filters)
+
+        data_subjects = query.all()
         return DataSubjectSchema(many=True).dump(data_subjects)
 
 
@@ -31,6 +42,7 @@ class DataSubjectResource(Resource):
         for obj in data_subject.owned_objects:
             db.session.delete(obj)
         db.session.delete(data_subject)
+        db.session.commit()
         return {
             'message': 'DataSubject and all personal data deleted.'
         }
