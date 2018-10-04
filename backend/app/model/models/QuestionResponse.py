@@ -6,7 +6,7 @@ __author__ = "Noah Hummel"
 
 
 class QuestionResponse(OwnershipBase):
-    id = db.Column(db.Integer, db.ForeignKey(OwnershipBase.id), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey(OwnershipBase.id, ondelete="CASCADE", onupdate="CASCADE"), primary_key=True)
     value = db.Column(db.SmallInteger, nullable=False)
     verified = db.Column(db.Boolean, default=False, nullable=False)
     verification_token = db.Column(db.String(32))

@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-from api.schema.DataSubject import DataSubjectSchema
+from api.schema.DataSubject import SmallDataSubjectSchema
 
 __author__ = "Noah Hummel"
 
@@ -17,7 +17,7 @@ class DimensionSubmissionSchema(Schema):
 
 
 class SubmissionSchema(Schema):
-    data_subject = fields.Nested(DataSubjectSchema, required=True)
+    data_subject = fields.Nested(SmallDataSubjectSchema, required=True)
     password = fields.String()
     captcha_token = fields.String(required=True)
     dimensions = fields.Nested(DimensionSubmissionSchema,
