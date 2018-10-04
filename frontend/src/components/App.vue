@@ -18,6 +18,7 @@
         <TranslateQuestion ref="modal-translateQuestion"/>
         <TranslateDimension ref="modal-translateDimension"/>
         <TranslateQuestionnaire ref="modal-translateQuestionnaire"/>
+        <ForgetDataSubject ref="modal-forgetDataSubject"/>
     </div>
 </template>
 
@@ -35,9 +36,11 @@ import UseQuestionnaireTemplate from "./Partials/Modal/UseQuestionnaireTemplate"
 import TranslateQuestion from "./Partials/Modal/TranslateQuestion";
 import TranslateDimension from "./Partials/Modal/TranslateDimension";
 import TranslateQuestionnaire from "./Partials/Modal/TranslateQuestionnaire";
+import ForgetDataSubject from "./Partials/Modal/ForgetDataSubject";
 
 export default {
   components: {
+    ForgetDataSubject,
     Dialog,
     CreateQuestion,
     CreateDimension,
@@ -79,6 +82,6 @@ export default {
 
 * {
   color: $verydark;
-  font-family: "Noto Sans Light", "Arial";
+  font-family: "Noto Sans Light", "Arial", sans-serif;
 }
 </style>
