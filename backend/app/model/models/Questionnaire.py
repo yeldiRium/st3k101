@@ -31,7 +31,7 @@ class Questionnaire(SurveyBase):
 
     # survey lifecycle related
     published = db.Column(db.Boolean, nullable=False, default=False)
-    concluded = db.Column(db.Boolean, nullable=False, default=False)
+    accepts_submissions = db.Column(db.Boolean, nullable=False, default=False)
     scheduled = db.Column(db.Boolean, nullable=False, default=False)
     begins = db.Column(db.DateTime, nullable=True, default=None)
     ends = db.Column(db.DateTime, nullable=True, default=None)
