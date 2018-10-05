@@ -31,7 +31,7 @@ class Questionnaire(SurveyBase):
 
     # survey lifecycle related
     published = db.Column(db.Boolean, nullable=False, default=False)
-    concluded = db.Column(db.Boolean, nullable=False, default=False)
+    accepts_submissions = db.Column(db.Boolean, nullable=False, default=False)
     scheduled = db.Column(db.Boolean, nullable=False, default=False)
     begins = db.Column(db.DateTime, nullable=True, default=None)
     ends = db.Column(db.DateTime, nullable=True, default=None)
@@ -207,29 +207,6 @@ class Questionnaire(SurveyBase):
 
         db.session.delete(self)
 
-    def apply_scheduling(self):
-        """
-        Checks whether self is scheduled to begin and end at a certain time,
-        then updates the published and concluded state accordingly.
-        """
-        previously_published = copy(self.published)
-        previously_concluded = copy(self.concluded)
-        if self.scheduled:
-            now = datetime.now()
-            if self.begins < now < self.ends:
-                self.published = True
-                self.concluded = False
-            elif self.ends < now:
-                self.concluded = True
-
-        if not previously_published and self.published:
-            SIG_QUESTIONNAIRE_PUBLISHED.send(self)
-        if previously_published and not self.published:
-            SIG_QUESTIONNAIRE_UNPUBLISHED.send(self)
-
-        if not previously_concluded and self.concluded:
-            SIG_SURVEY_CONCLUDED.send(self)
-
 
 class ConcreteQuestionnaire(Questionnaire):
     id = db.Column(db.Integer, db.ForeignKey(Questionnaire.id), primary_key=True)
@@ -250,6 +227,7 @@ class ConcreteQuestionnaire(Questionnaire):
         super(ConcreteQuestionnaire, self).__init__(name=name,
                                                     description=description,
                                                     **kwargs)
+        self.reference_id = SurveyBase.generate_reference_id(self)
 
     @staticmethod
     def from_shadow(shadow):

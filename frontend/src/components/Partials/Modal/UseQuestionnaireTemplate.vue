@@ -31,11 +31,12 @@ import { mapGetters } from "vuex-fluture";
 import { isNil } from "ramda";
 
 import Button from "../Form/Button";
-import { fetchQuestionnaireTemplates } from "../../../api/Questionnaire";
+import ClosableModal from "./ClosableModal";
 import FuzzySearchableList from "../../Partials/List/FuzzySearchableList";
 
 export default {
   name: "ModalUseQuestionnaireTemplate",
+  extends: ClosableModal,
   components: {
     Button,
     FuzzySearchableList
@@ -55,6 +56,9 @@ export default {
     ...mapGetters("questionnaires", ["questionnaireTemplates"])
   },
   methods: {
+    close() {
+      this.cancel();
+    },
     beforeOpen({ params: { handler } }) {
       if (isNil(handler)) {
         throw new Error("Parameter handler required!");

@@ -4,10 +4,15 @@
             <div class="welcome">
                 <WelcomePage :title="submissionQuestionnaire.name"
                              :text="submissionQuestionnaire.description"
-                             v-if="paginationIndex === -1"
+                             v-if="paginationIndex === -1 && submissionQuestionnaire.acceptsSubmissions"
                              @startClicked="paginationNext()"
                 >
                 </WelcomePage>
+                <LandingPage v-else-if="paginationIndex === -1 && !submissionQuestionnaire.acceptsSubmissions"
+                             :questionnaire="submissionQuestionnaire"
+                             @action="paginationNext()"
+                >
+                </LandingPage>
             </div>
             <div class="embedded__survey"
                 v-show="paginationAtSurvey"
@@ -56,7 +61,9 @@
              v-show="paginationIndex === dimensionCount"
             >
                 <div class="card">
-                    <h1>Ready to submit your answers?</h1>
+                    <h1>
+                        Ready to submit your answers?
+                    </h1>
                     <p>You can review your answers before submitting by clicking the button at the bottom of this screen.</p>
                     <Button @action="submit()"
                             :class="{'button--grey': !isReadyToSubmit}"
@@ -97,10 +104,12 @@ import { submitResponseLti } from "../../../api/Submission";
 import { mapState } from "vuex-fluture";
 import WelcomePage from "./Partials/WelcomePage";
 import ThankYou from "./ThankYou";
+import LandingPage from "../../Partials/LandingPage";
 
 export default {
   name: "EmbeddedSurveyForSubmission",
   components: {
+    LandingPage,
     ThankYou,
     WelcomePage,
     Button,
@@ -223,6 +232,11 @@ export default {
      * Advances the pagination by one.
      */
     paginationNext() {
+      if (!this.submissionQuestionnaire.acceptsSubmissions) {
+        if (this.paginationIndex === this.dimensionCount - 1) {
+          return;
+        }
+      }
       if (this.paginationIndex === this.dimensionCount + 1) {
         return;
       }
@@ -370,7 +384,7 @@ export default {
   }
 
   &__question {
-    max-width: 80%;
+    max-width: 90%;
     margin: auto;
   }
 }
@@ -381,7 +395,7 @@ export default {
     font-size: large;
     width: 66%;
     padding-left: 1em;
-    border-right: $primary 1px solid;
+    border-right: $primary-dark 1px solid;
     transition: width 0.33s ease, background-color 0.33s ease,
       font-size 0.33s ease, font-weight 0.33s ease;
   }

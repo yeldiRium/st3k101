@@ -5,6 +5,7 @@
             Search:
             <input class="search"
                    type="text"
+                   ref="searchInput"
                    v-model="searchString"
             />
         </label>
@@ -14,7 +15,7 @@
             <thead class="table-header">
                 <tr>
                     <th class="table-header__column"
-                        v-for="key in keys"
+                        v-for="key in [...keys, ...displayOnlyKeys]"
                         :key="key.key"
                     >
                         {{ key.display }}
@@ -30,6 +31,9 @@
                         <p :class="{'highlighted': item.matches.hasOwnProperty(key.key) && !(searchString.length === 0) }">
                             {{ item.item[key.key] }}
                         </p>
+                    </td>
+                    <td v-for="key in displayOnlyKeys">
+                        {{ item.item[key.key] }}
                     </td>
                 </tr>
             </tbody>
@@ -51,12 +55,24 @@ export default {
       type: Array,
       default: () => []
     },
+    displayOnlyKeys: {
+      type: Array,
+      default: () => []
+    },
     itemKey: {
       type: String,
       default: "id"
     },
     orderBy: {
       type: String
+    },
+    focusOnOpen: {
+      type: Boolean,
+      default: false
+    },
+    value: {
+      type: String,
+      default: ""
     }
   },
   data() {
@@ -98,7 +114,7 @@ export default {
       let matches = {};
       for (let key of this.keys) {
         key = key.key; // kiki, do you love me? are your riding?
-        if (!item.hasOwnProperty(key)) {
+        if (!item.hasOwnProperty(key) && !item[key]) {
           continue;
         }
         let value = item[key];
@@ -114,6 +130,22 @@ export default {
     },
     clicked(item) {
       this.$emit("item-clicked", item.item);
+    }
+  },
+  watch: {
+    searchString(newValue, _) {
+      this.$emit("input", newValue);
+    },
+    value: {
+      immediate: true,
+      handler(newValue, _) {
+        this.searchString = newValue;
+      }
+    }
+  },
+  mounted() {
+    if (this.focusOnOpen) {
+      this.$refs.searchInput.focus();
     }
   }
 };

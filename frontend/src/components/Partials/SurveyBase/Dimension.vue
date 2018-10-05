@@ -73,6 +73,11 @@
                 >
                     Retract template
                 </Button>
+                <Button v-if="isEditable(dimension)"
+                        @action="openUpdateAllRangeLabelsDialog"
+                >
+                    Update all range labels
+                </Button>
             </div>
 
             <!-- Preferences -->
@@ -145,6 +150,7 @@ import IconExpandMore from "../../../assets/icons/baseline-expand_more-24px.svg"
 import Collapsible from "../Collapsible";
 import Roles, { isAtLeast } from "../../../model/Roles";
 import * as R from "ramda";
+import * as Future from "fluture/index.js";
 
 export default {
   name: "Dimension",
@@ -407,6 +413,31 @@ export default {
       ).fork(this.$handleApiError, () => {
         this.$emit("updated");
       });
+    },
+    openUpdateAllRangeLabelsDialog() {
+      this.$modal.show("modal-updateAllRangeLabels", {
+        dimension: this.dimension,
+        handler: this.updateAllRangeLabels
+      });
+    },
+    updateAllRangeLabels(rangeStartLabel, rangeEndLabel) {
+      const futures = R.map(
+        question =>
+          this.$store.dispatch("questions/updateQuestion", {
+            question,
+            params: {
+              range: {
+                startLabel: rangeStartLabel,
+                endLabel: rangeEndLabel
+              }
+            }
+          }),
+        R.filter(R.propEq("isShadow", false), this.dimension.questions)
+      );
+      this.$load(Future.parallel(Infinity, futures)).fork(
+        this.$handleApiError,
+        () => {}
+      );
     }
   },
   created() {

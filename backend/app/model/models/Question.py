@@ -51,7 +51,9 @@ class Question(SurveyBase):
     tracker_args = {
         __('text'): TrackingType.TranslationHybrid,
         __('range_start'): TrackingType.Primitive,
-        __('range_end'): TrackingType.Primitive
+        __('range_end'): TrackingType.Primitive,
+        __('range_start_label'): TrackingType.TranslationHybrid,
+        __('range_end_label'): TrackingType.TranslationHybrid
     }
 
     def __init__(self, **kwargs):
@@ -121,6 +123,44 @@ class Question(SurveyBase):
             }
         For available languages, see framework/internationalization/babel_languages
         :return: Dict[str, str]
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def range_start_label(self) -> str:
+        """
+        The label for Question.range_start.
+
+        This property is internationalized, translations are stored in
+        Question.range_start_label_translations.
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def range_start_label_translations(self) -> Dict[str, str]:
+        """
+        All translations of Question.range_start_label.
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def range_end_label(self) -> str:
+        """
+        The label for Question.range_end.
+
+        This property is internationalized, translations are stored in
+        Question.range_end_label_translations.
+        """
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def range_end_label_translations(self) -> Dict[str, str]:
+        """
+        All translations of Question.range_end_label.
         """
         raise NotImplementedError
 
@@ -214,9 +254,11 @@ class Question(SurveyBase):
 class ConcreteQuestion(Question):
     id = db.Column(db.Integer, db.ForeignKey(Question.id), primary_key=True)
 
+    # sqla config
     __tablename__ = 'concrete_question'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
+    # columns
     range_start = db.Column(db.SmallInteger, default=0, nullable=False)
     range_end = db.Column(db.SmallInteger, default=10, nullable=False)
     original_language = db.Column(db.Enum(BabelLanguage), nullable=False)
@@ -224,34 +266,50 @@ class ConcreteQuestion(Question):
     # translatable columns
     text_translations = db.Column(MUTABLE_HSTORE)
     text = translation_hybrid(text_translations)
+    range_start_label_translations = db.Column(MUTABLE_HSTORE)
+    range_start_label = translation_hybrid(range_start_label_translations)  # TODO: somehow include this in xAPI statement
+    range_end_label_translations = db.Column(MUTABLE_HSTORE)
+    range_end_label = translation_hybrid(range_end_label_translations)
 
     shadow = False
 
-    def __init__(self, text: str, **kwargs):
+    def __init__(self, text: str, range_start_label: str, range_end_label: str, **kwargs):
         self.original_language = g._language
-        super(ConcreteQuestion, self).__init__(text=text, **kwargs)
+        super(ConcreteQuestion, self).__init__(
+            text=text,
+            range_start_label=range_start_label,
+            range_end_label=range_end_label,
+            **kwargs
+        )
+        self.reference_id = SurveyBase.generate_reference_id(self)
 
     @staticmethod
+    # FIXME: confusing naming: this actually converts a shadow to a concrete,
+    # the owner must be the same
     def from_shadow(shadow):
         """
         Factory method for ConcreteQuestion.
-        Creates a new ConcreteQuestion with contents
-        :param shadow:
-        :return:
-        """
+        Creates a new ConcreteQuestion with contents of given ShadowQuestion.
 
-        # TODO: WTF? why are we stealing the statistic from the shadow here?
-        q = ConcreteQuestion("")  # FIXME: this is not preserving shadow.original_language !
+        This is used when a concrete instance is deleted, but there are shadows pointing to
+        it. In this case, the shadow is converted to a concrete instance.
+        :param shadow:
+        """
+        q = ConcreteQuestion("", "", "")
         q.dirty = shadow.dirty
         q.reference_id = shadow.reference_id
         q.original_language = shadow.original_language
 
+        # TODO: This should actually clone the statistic object instead of re-assigning it
+        # q.statistic = shadow.statistic.clone()
         stat = shadow.statistic
         shadow.statistic = None
         q.statistic = stat
 
         q.responses = shadow.responses
         q.text_translations = shadow.text_translations
+        q.range_start_label_translations = shadow.range_start_label_translations
+        q.range_end_label_translations = shadow.range_end_label_translations
         q.owners = shadow.owners
         q.range_start = shadow.range_start
         q.range_end = shadow.range_end
@@ -308,3 +366,19 @@ class ShadowQuestion(Question):
     @property
     def range_end(self) -> int:
         return self._referenced_object.range_end
+
+    @property
+    def range_start_label(self) -> str:
+        return self._referenced_object.range_start_label
+
+    @property
+    def range_start_label_translations(self) -> Dict[str, str]:
+        return self._referenced_object.range_start_label_translations
+
+    @property
+    def range_end_label(self) -> str:
+        return self._referenced_object.range_end_label
+
+    @property
+    def range_end_label_translations(self) -> Dict[str, str]:
+        return self._referenced_object.range_end_label_translations

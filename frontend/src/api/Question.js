@@ -105,6 +105,8 @@ function updateQuestion(authenticationToken, question, language, params) {
       pipe(
         assoc("range_start", path(["range", "start"], params)),
         assoc("range_end", path(["range", "end"], params)),
+        assoc("range_start_label", path(["range", "startLabel"], params)),
+        assoc("range_end_label", path(["range", "endLabel"], params)),
         dissoc("range")
       )
     )

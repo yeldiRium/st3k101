@@ -17,7 +17,7 @@ class QuestionnaireSchema(SurveyBaseSchema):
     owners = fields.Nested(DataClientSchema(only=("id", "href")), many=True, dump_only=True)
 
     published = fields.Boolean()
-    concluded = fields.Boolean()
+    accepts_submissions = fields.Boolean()
     scheduled = fields.Boolean()
     begins = fields.DateTime()
     ends = fields.DateTime()
@@ -44,7 +44,6 @@ class QuestionnaireSchema(SurveyBaseSchema):
             'password',
             'email_whitelist_enabled',
             'email_blacklist_enabled',
-            'password_enabled',
             'xapi_target',
             'allow_embedded',
             'lti_consumer_key'

@@ -94,11 +94,10 @@ class ResponseListForQuestionnaireResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
 
         # survey lifecycle check
-        questionnaire.apply_scheduling()
         if not questionnaire.published:
             abort(403)
-        if questionnaire.concluded:
-            abort(403, message="The survey has already concluded.")
+        if not questionnaire.accepts_submissions:
+            abort(403, message="Submissions are not accepted at this point")
 
         # captcha and challenges
         if not validate_captcha(data['captcha_token']):
@@ -205,13 +204,12 @@ class LtiResponseResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
 
         # survey lifecycle check
-        questionnaire.apply_scheduling()
         if not questionnaire.published:
             abort(403, message="Survey was not published yet.")
         if not questionnaire.allow_embedded:
             abort(403)
-        if questionnaire.concluded:
-            abort(403, message="Survey has concluded.")
+        if not questionnaire.accepts_submissions:
+            abort(403, message="Submissions are not accepted at this point.")
 
         all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
 

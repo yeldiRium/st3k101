@@ -1,6 +1,7 @@
 <template>
     <modal name="modal-use-dimension-template"
            height="auto"
+           width="80%"
            @before-open="beforeOpen"
            :scrollable="true"
     >
@@ -31,9 +32,11 @@ import { isNil } from "ramda";
 
 import Button from "../Form/Button";
 import FuzzySearchableList from "../List/FuzzySearchableList";
+import ClosableModal from "./ClosableModal";
 
 export default {
   name: "ModalUseDimensionTemplate",
+  extends: ClosableModal,
   components: {
     FuzzySearchableList,
     Button
@@ -52,6 +55,9 @@ export default {
     ...mapGetters("dimensions", ["dimensionTemplates"])
   },
   methods: {
+    close() {
+      this.cancel();
+    },
     beforeOpen({ params: { handler } }) {
       if (isNil(handler)) {
         throw new Error("Parameter handler required!");

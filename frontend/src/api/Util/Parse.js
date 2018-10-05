@@ -32,6 +32,7 @@ import SubmissionQuestionnaire from "../../model/Submission/SubmissionQuestionna
 import SubmissionDimension from "../../model/Submission/SubmissionDimension";
 import SubmissionQuestion from "../../model/Submission/SubmissionQuestion";
 import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
+import DataSubject from "../../model/DataSubject";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -116,6 +117,20 @@ function parseDataClient({ email, id, href, language, roles }) {
  */
 function parseSmallDataClient({ id, href }) {
   return new DataClient(href, id, "", null, []);
+}
+
+/**
+ * Parses the full API representation of a DataSubject.
+ *
+ * @param {String} id
+ * @param {String} email
+ * @param {String} lti_user_id
+ * @param {String} moodle_username
+ * @param {String} source
+ * @returns {DataSubject}
+ */
+function parseDataSubject({ id, email, lti_user_id, moodle_username, source }) {
+  return new DataSubject(id, email, lti_user_id, moodle_username, source);
 }
 
 /**
@@ -243,6 +258,7 @@ function parseTemplateQuestionnaire({
  * @param {String} description
  * @param {Array} dimensions
  * @param {Boolean} published
+ * @param {Boolean} accepts_submissions
  * @param {Boolean} template
  * @param {Boolean} allow_embedded
  * @param {String} xapi_target
@@ -265,6 +281,7 @@ function parseShadowQuestionnaire(
     description,
     dimensions,
     published,
+    accepts_submissions,
     allow_embedded,
     xapi_target,
     lti_consumer_key,
@@ -288,6 +305,7 @@ function parseShadowQuestionnaire(
     name,
     description,
     published,
+    accepts_submissions,
     allow_embedded,
     xapi_target,
     lti_consumer_key,
@@ -308,6 +326,7 @@ function parseShadowQuestionnaire(
  * @param {String} description
  * @param {Array} dimensions
  * @param {Boolean} published
+ * @param {Boolean} accepts_submissions
  * @param {Boolean} template
  * @param {Boolean} allow_embedded
  * @param {String} xapi_target
@@ -331,6 +350,7 @@ function parseConcreteQuestionnaire(
     description,
     dimensions,
     published,
+    accepts_submissions,
     template,
     allow_embedded,
     xapi_target,
@@ -357,6 +377,7 @@ function parseConcreteQuestionnaire(
     name,
     description,
     published,
+    accepts_submissions,
     allow_embedded,
     xapi_target,
     lti_consumer_key,
@@ -552,6 +573,8 @@ function parseQuestion(data) {
  * @param {String} text
  * @param {Integer} range_start
  * @param {Integer} range_end
+ * @param range_start_label
+ * @param range_end_label
  * @param {Boolean} template
  * @param {Language} current_language
  * @param {Language} original_language
@@ -565,6 +588,8 @@ function parseTemplateQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   template,
   current_language,
   original_language,
@@ -582,7 +607,12 @@ function parseTemplateQuestion({
     template,
     reference_id,
     text,
-    new Range({ start: range_start, end: range_end }),
+    new Range({
+      start: range_start,
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
+    }),
     0, // incoming reference count
     [] // owned incoming references
   );
@@ -614,6 +644,8 @@ function parseShadowQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   current_language,
   original_language,
   available_languages,
@@ -630,7 +662,12 @@ function parseShadowQuestion({
     }),
     reference_id,
     text,
-    new Range({ start: range_start, end: range_end }),
+    new Range({
+      start: range_start,
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
+    }),
     parseResource(reference_to)
   );
 }
@@ -645,6 +682,8 @@ function parseShadowQuestion({
  * @param {String} text
  * @param {Number} range_start
  * @param {Number} range_end
+ * @param range_start_label
+ * @param range_end_label
  * @param {Boolean} template
  * @param {Object} current_language
  * @param {Object} original_language
@@ -662,6 +701,8 @@ function parseConcreteQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   template,
   current_language,
   original_language,
@@ -681,7 +722,12 @@ function parseConcreteQuestion({
     template,
     reference_id,
     text,
-    new Range({ start: range_start, end: range_end }),
+    new Range({
+      start: range_start,
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
+    }),
     incoming_reference_count,
     map(parseResource, owned_incoming_references)
   );
@@ -881,6 +927,8 @@ function parseSubmissionQuestion({
   text,
   range_start,
   range_end,
+  range_start_label,
+  range_end_label,
   current_language,
   original_language,
   available_languages
@@ -891,7 +939,9 @@ function parseSubmissionQuestion({
     text,
     new Range({
       start: range_start,
-      end: range_end
+      end: range_end,
+      startLabel: range_start_label,
+      endLabel: range_end_label
     }),
     parseLanguageData({
       current_language,
@@ -959,6 +1009,7 @@ function parseSubmissionQuestionnaire({
   name,
   description,
   password_enabled,
+  accepts_submissions,
   dimensions,
   current_language,
   original_language,
@@ -975,6 +1026,7 @@ function parseSubmissionQuestionnaire({
       available_languages
     }),
     password_enabled,
+    accepts_submissions,
     map(parseSubmissionDimension, dimensions)
   );
 }
@@ -1027,6 +1079,7 @@ export {
   parseLanguage,
   parseLanguageData,
   parseDataClient,
+  parseDataSubject,
   parseChallenges,
   parseEMailWhitelistChallenge,
   parseEmailBlacklistChallenge,
