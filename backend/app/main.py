@@ -173,6 +173,7 @@ import model.models
 import api.Question
 import api.Session
 import api.DataClient
+import api.DataSubject
 import api.Questionnaire
 import api.Dimension
 import api.Language

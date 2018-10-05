@@ -32,6 +32,7 @@ import SubmissionQuestionnaire from "../../model/Submission/SubmissionQuestionna
 import SubmissionDimension from "../../model/Submission/SubmissionDimension";
 import SubmissionQuestion from "../../model/Submission/SubmissionQuestion";
 import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
+import DataSubject from "../../model/DataSubject";
 
 /**
  * Parses the API representation of a Language into a Language object.
@@ -116,6 +117,20 @@ function parseDataClient({ email, id, href, language, roles }) {
  */
 function parseSmallDataClient({ id, href }) {
   return new DataClient(href, id, "", null, []);
+}
+
+/**
+ * Parses the full API representation of a DataSubject.
+ *
+ * @param {String} id
+ * @param {String} email
+ * @param {String} lti_user_id
+ * @param {String} moodle_username
+ * @param {String} source
+ * @returns {DataSubject}
+ */
+function parseDataSubject({ id, email, lti_user_id, moodle_username, source }) {
+  return new DataSubject(id, email, lti_user_id, moodle_username, source);
 }
 
 /**
@@ -1056,6 +1071,7 @@ export {
   parseLanguage,
   parseLanguageData,
   parseDataClient,
+  parseDataSubject,
   parseChallenges,
   parseEMailWhitelistChallenge,
   parseEmailBlacklistChallenge,
