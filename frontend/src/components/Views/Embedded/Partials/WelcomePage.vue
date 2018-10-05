@@ -9,8 +9,8 @@
         <Button @action="onClick()"
                 class="start"
         >
-                    Start
-                </Button>
+            Start
+        </Button>
         <span>Survey created with <b>st3k101</b></span>
     </div>
 </template>
@@ -71,6 +71,11 @@ p {
 }
 
 .start {
+  margin-left: 8vw;
+  margin-right: 8vw;
+  margin-bottom: 2vh;
+  text-align: justify;
+  max-width: 600px;
   margin-top: auto;
 }
 
