@@ -51,6 +51,7 @@
     "jest": "^23.6.0",
     "lint-staged": "^7.3.0",
     "node-sass": "^4.9.3",
+    "nodemon": "^1.18.4",
     "prettier": "^1.14.3",
     "regenerator-runtime": "^0.12.1",
     "rimraf": "^2.6.0",

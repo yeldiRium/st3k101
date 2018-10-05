@@ -35,6 +35,7 @@ services:
     build: frontend
     volumes:
       - ./frontend:/usr/app:rw
+    command: ["npx", "nodemon", "-r", "esm", "index.js"]
 
   xapi-publisher:
     build: xapi-publisher
