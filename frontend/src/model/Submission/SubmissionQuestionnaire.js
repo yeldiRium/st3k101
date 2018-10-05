@@ -11,6 +11,7 @@ class SubmissionQuestionnaire {
    * @param description
    * @param languageData
    * @param passwordEnabled
+   * @param acceptsSubmissions
    * @param {Array<SubmissionDimension>} dimensions
    */
   constructor(
@@ -20,6 +21,7 @@ class SubmissionQuestionnaire {
     description,
     languageData,
     passwordEnabled,
+    acceptsSubmissions,
     dimensions
   ) {
     this.id = id;
@@ -28,6 +30,7 @@ class SubmissionQuestionnaire {
     this.description = description;
     this.languageData = languageData;
     this.passwordEnabled = passwordEnabled;
+    this.acceptsSubmissions = acceptsSubmissions;
     this.dimensions = dimensions;
   }
 
@@ -39,6 +42,7 @@ class SubmissionQuestionnaire {
       this.description,
       this.languageData,
       this.passwordEnabled,
+      this.acceptsSubmissions,
       map(clone, this.dimensions)
     );
   }

@@ -14,6 +14,7 @@ class Questionnaire extends SurveyBase {
    * @param {string} description A description for the Questionnaire.
    * @param {boolean} isPublic Whether the Questionnaire can be filled out and
    *  submitted.
+   * @param {Boolean} acceptsSubmissions
    * @param {boolean} allowEmbedded Whether the Questionnaire can be used in
    *  embedded mode in alternate frontends.
    * @param {string} xapiTarget
@@ -32,6 +33,7 @@ class Questionnaire extends SurveyBase {
     name,
     description,
     isPublic,
+    acceptsSubmissions,
     allowEmbedded,
     xapiTarget,
     ltiConsumerKey,
@@ -43,6 +45,7 @@ class Questionnaire extends SurveyBase {
     this.name = name;
     this.description = description;
     this.isPublic = isPublic;
+    this.acceptsSubmissions = acceptsSubmissions;
     this.allowEmbedded = allowEmbedded;
     this.xapiTarget = xapiTarget;
     this.ltiConsumerKey = ltiConsumerKey;
@@ -82,6 +85,7 @@ class Questionnaire extends SurveyBase {
       this.name,
       this.description,
       this.isPublic,
+      this.acceptsSubmissions,
       this.allowEmbedded,
       this.xapiTarget,
       this.ltiConsumerKey,
@@ -106,6 +110,7 @@ class Questionnaire extends SurveyBase {
       o => R.equals(o.name, this.name),
       o => R.equals(o.description, this.description),
       o => R.equals(o.isPublic, this.isPublic),
+      o => R.equals(o.acceptsSubmissions, this.acceptsSubmissions),
       o => R.equals(o.allowEmbedded, this.allowEmbedded),
       o => R.equals(o.xapiTarget, this.xapiTarget),
       o => R.equals(o.ltiConsumerKey, this.ltiConsumerKey),
@@ -126,6 +131,7 @@ class ConcreteQuestionnaire extends Questionnaire {
    * @param {string} name See Questionnaire.
    * @param {string} description See Questionnaire.
    * @param {boolean} isPublic See Questionnaire.
+   * @param {boolean} acceptsSubmissions
    * @param {boolean} allowEmbedded See Questionnaire.
    * @param {string} xapiTarget See Questionnaire.
    * @param ltiConsumerKey {String} See Questionnaire.
@@ -149,6 +155,7 @@ class ConcreteQuestionnaire extends Questionnaire {
     name,
     description,
     isPublic,
+    acceptsSubmissions,
     allowEmbedded,
     xapiTarget,
     ltiConsumerKey,
@@ -167,6 +174,7 @@ class ConcreteQuestionnaire extends Questionnaire {
       name,
       description,
       isPublic,
+      acceptsSubmissions,
       allowEmbedded,
       xapiTarget,
       ltiConsumerKey,
@@ -210,6 +218,7 @@ class ConcreteQuestionnaire extends Questionnaire {
       this.name,
       this.description,
       this.isPublic,
+      this.acceptsSubmissions,
       this.allowEmbedded,
       this.xapiTarget,
       this.ltiConsumerKey,
@@ -232,6 +241,7 @@ class QuestionnaireTemplate extends Questionnaire {
       referenceId,
       name,
       description,
+      false,
       false,
       false,
       "",
@@ -275,6 +285,7 @@ class ShadowQuestionnaire extends Questionnaire {
    * @param {string} name See Questionnaire.
    * @param {string} description See Questionnaire.
    * @param {boolean} isPublic See Questionnaire.
+   * @param {boolean} acceptsSubmissions
    * @param {boolean} allowEmbedded See Questionnaire.
    * @param {string} xapiTarget See Questionnaire.
    * @param ltiConsumerKey {String} See Questionnaire.
@@ -292,6 +303,7 @@ class ShadowQuestionnaire extends Questionnaire {
     name,
     description,
     isPublic,
+    acceptsSubmissions,
     allowEmbedded,
     xapiTarget,
     ltiConsumerKey,
@@ -309,6 +321,7 @@ class ShadowQuestionnaire extends Questionnaire {
       name,
       description,
       isPublic,
+      acceptsSubmissions,
       allowEmbedded,
       xapiTarget,
       ltiConsumerKey,
@@ -340,6 +353,7 @@ class ShadowQuestionnaire extends Questionnaire {
       this.name,
       this.description,
       this.isPublic,
+      this.acceptsSubmissions,
       this.allowEmbedded,
       this.xapiTarget,
       this.ltiConsumerKey,
