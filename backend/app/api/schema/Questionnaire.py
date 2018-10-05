@@ -17,7 +17,7 @@ class QuestionnaireSchema(SurveyBaseSchema):
     owners = fields.Nested(DataClientSchema(only=("id", "href")), many=True, dump_only=True)
 
     published = fields.Boolean()
-    concluded = fields.Boolean()
+    accepts_submissions = fields.Boolean()
     scheduled = fields.Boolean()
     begins = fields.DateTime()
     ends = fields.DateTime()

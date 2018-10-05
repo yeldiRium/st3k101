@@ -48,7 +48,7 @@ class XApiVerbs(Enum):
     ConcludedSurvey = {
         "id": "http://activitystrea.ms/schema/1.0/archive",
         "display": {
-            "en-US": "Indicates the DataClient has concluded and archived their survey at st3k101."
+            "en-US": "Indicates the DataClient has concluded their survey at st3k101."
         }
     }
 
