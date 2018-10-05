@@ -1,8 +1,13 @@
 <template>
-    <div>
+    <div v-if="submissionQuestionnaire !== null">
+        <LandingPage v-if="!submissionQuestionnaire.acceptsSubmissions && !landingPageDismissed"
+                     :questionnaire="submissionQuestionnaire"
+                     @action="dismissLandingPage"
+        >
+        </LandingPage>
         <div class="submission"
              :style="itemStyle"
-             v-if="submissionQuestionnaire !== null && !submitted"
+             v-else-if="!submitted"
         >
             <span class="submission__header">
                 <span>{{ submissionQuestionnaire.name }}</span>
@@ -43,7 +48,9 @@
                     <Button @action="paginationNext">Next page</Button>
                 </div>
             </div>
-            <div class="submission__footer">
+            <div class="submission__footer"
+                 v-if="submissionQuestionnaire.acceptsSubmissions"
+            >
                 <div v-if="errors.length > 0"
                      class="submission__errors"
                 >
@@ -97,10 +104,12 @@ import LanguagePicker from "../../Partials/LanguagePicker";
 import { submitResponse } from "../../../api/Submission";
 import * as R from "ramda";
 import ThankYou from "../../Views/Embedded/ThankYou";
+import LandingPage from "../../Partials/LandingPage";
 
 export default {
   name: "SurveyForSubmission",
   components: {
+    LandingPage,
     Button,
     DimensionForm,
     LanguagePicker,
@@ -116,7 +125,8 @@ export default {
       selectedDimensionId: null,
       errors: [],
       submitted: false,
-      thankYouNotifications: []
+      thankYouNotifications: [],
+      landingPageDismissed: false
     };
   },
   computed: {
@@ -158,6 +168,9 @@ export default {
     }
   },
   methods: {
+    dismissLandingPage() {
+      this.landingPageDismissed = true;
+    },
     getNumberOfIncompleteQuestions(dimension) {
       let counter = 0;
       for (let iDimension of this.submissionQuestionnaire.dimensions) {
