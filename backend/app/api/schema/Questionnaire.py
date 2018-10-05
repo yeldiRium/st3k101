@@ -39,7 +39,6 @@ class QuestionnaireSchema(SurveyBaseSchema):
         *SurveyBaseSchema.get_private(),
         *[
             'published',
-            'accepts_submissions',
             'email_whitelist',
             'email_blacklist',
             'password',
