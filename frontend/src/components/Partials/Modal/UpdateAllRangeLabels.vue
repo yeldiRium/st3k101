@@ -4,6 +4,7 @@
            :width="width"
            @before-open="beforeOpen"
            class="modal"
+           :scrollable="true"
     >
         <div class="modal__header">
             Update all range labels for dimension

@@ -3,6 +3,7 @@
            height="auto"
            width="80%"
            @before-open="beforeOpen"
+           :scrollable="true"
     >
         <div class="container">
             <span class="container__header">Forget DataSubject</span>
