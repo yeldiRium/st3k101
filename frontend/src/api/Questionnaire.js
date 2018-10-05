@@ -235,7 +235,8 @@ function updateQuestionnaire(
     renameProp("isPublic", "published"),
     renameProp("referenceId", "reference_id"),
     renameProp("xapiTarget", "xapi_target"),
-    renameProp("allowEmbedded", "allow_embedded")
+    renameProp("allowEmbedded", "allow_embedded"),
+    renameProp("acceptsSubmissions", "accepts_submissions")
   )(params);
 
   return fetchApi(questionnaire.href, {

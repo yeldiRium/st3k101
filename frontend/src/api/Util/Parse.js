@@ -258,6 +258,7 @@ function parseTemplateQuestionnaire({
  * @param {String} description
  * @param {Array} dimensions
  * @param {Boolean} published
+ * @param {Boolean} accepts_submissions
  * @param {Boolean} template
  * @param {Boolean} allow_embedded
  * @param {String} xapi_target
@@ -280,6 +281,7 @@ function parseShadowQuestionnaire(
     description,
     dimensions,
     published,
+    accepts_submissions,
     allow_embedded,
     xapi_target,
     lti_consumer_key,
@@ -303,6 +305,7 @@ function parseShadowQuestionnaire(
     name,
     description,
     published,
+    accepts_submissions,
     allow_embedded,
     xapi_target,
     lti_consumer_key,
@@ -323,6 +326,7 @@ function parseShadowQuestionnaire(
  * @param {String} description
  * @param {Array} dimensions
  * @param {Boolean} published
+ * @param {Boolean} accepts_submissions
  * @param {Boolean} template
  * @param {Boolean} allow_embedded
  * @param {String} xapi_target
@@ -346,6 +350,7 @@ function parseConcreteQuestionnaire(
     description,
     dimensions,
     published,
+    accepts_submissions,
     template,
     allow_embedded,
     xapi_target,
@@ -372,6 +377,7 @@ function parseConcreteQuestionnaire(
     name,
     description,
     published,
+    accepts_submissions,
     allow_embedded,
     xapi_target,
     lti_consumer_key,
@@ -1003,6 +1009,7 @@ function parseSubmissionQuestionnaire({
   name,
   description,
   password_enabled,
+  accepts_submissions,
   dimensions,
   current_language,
   original_language,
@@ -1019,6 +1026,7 @@ function parseSubmissionQuestionnaire({
       available_languages
     }),
     password_enabled,
+    accepts_submissions,
     map(parseSubmissionDimension, dimensions)
   );
 }

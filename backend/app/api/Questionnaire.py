@@ -22,7 +22,6 @@ class QuestionnaireResource(Resource):
     def get(self, questionnaire_id=None):
         schema = QuestionnaireSchema()
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
-        questionnaire.apply_scheduling()
         if not questionnaire.accessible_by(current_user()):
             if not questionnaire.published:
                 abort(403)
@@ -60,8 +59,17 @@ class QuestionnaireResource(Resource):
                 if k == 'template' and not current_has_minimum_role(Role.Contributor):
                     errors[k] = ['You need to be a contributor to publish templates.']
                     continue
+                elif k == 'accepts_submissions':
+                    if not questionnaire.published:
+                        errors[k] = ['You can\'t set an unpublished Questionnaire to accept submissions. '
+                                     'Please publish it first.']
+                        continue
+                elif k == 'published':
+                    if questionnaire.accepts_submissions:
+                        errors[k] = ['The Questionnaire still accepts submissions. Please conclude it first.']
+                        continue
+
             setattr(questionnaire, k, v)
-        questionnaire.apply_scheduling()
         db.session.commit()
 
         if not previously_published and questionnaire.published:
