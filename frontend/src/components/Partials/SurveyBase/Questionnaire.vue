@@ -148,8 +148,17 @@
                         Published:
                     </span>
                     <Toggle :value="questionnaire.isPublic"
-                            :disabled="!isOwnedByCurrentDataClient(questionnaire)"
+                            :disabled="!isOwnedByCurrentDataClient(questionnaire) || questionnaire.acceptsSubmissions"
                             @input="updateQuestionnaire('isPublic', $event)"
+                    >
+                    </Toggle>
+
+                    <span class="questionnaire__table-label">
+                        Accepts new submissions:
+                    </span>
+                    <Toggle :value="questionnaire.acceptsSubmissions"
+                            :disabled="!isOwnedByCurrentDataClient(questionnaire) || !questionnaire.isPublic"
+                            @input="updateQuestionnaire('acceptsSubmissions', $event)"
                     >
                     </Toggle>
                 </div>
