@@ -9,21 +9,10 @@
          @mouseleave="lower"
          tabindex="0"
     >
-        <div class="button__content">
-            <slot></slot>
+        <div class="button__ripple js-ripple">
+            <span class="button__circle"></span>
         </div>
-        <svg class="button__ripple"
-             ref="ripple"
-             version="1.1"
-             xmlns="http://www.w3.org/2000/svg"
-        >
-            <circle class="button__ripple-circle"
-                    ref="circle"
-                    r="1"
-                    x="0"
-                    y="0"
-            />
-        </svg>
+        <slot></slot>
     </div>
 </template>
 
@@ -111,44 +100,7 @@ export default {
      *
      * @param event
      */
-    rippleAnimation(event) {
-      // Can only ripple, if the event's target has a bounding box.
-      if (typeof event.target.getBoundingClientRect !== "function") {
-        return;
-      }
-
-      const timing = 0.75;
-      const tl = new TimelineMax();
-
-      const buttonBoundingBox = event.target.getBoundingClientRect();
-      const w = buttonBoundingBox.width;
-      const h = buttonBoundingBox.height;
-      const x = "offsetX" in event ? event.offsetX : w / 2;
-      const y = "offsetY" in event ? event.offsetY : h / 2;
-
-      const offsetX = Math.abs(w / 2 - x);
-      const offsetY = Math.abs(h / 2 - y);
-      const deltaX = w / 2 + offsetX;
-      const deltaY = h / 2 + offsetY;
-      const scale_ratio = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-
-      tl.fromTo(
-        this.$refs.circle,
-        timing,
-        {
-          x: x,
-          y: y,
-          transformOrigin: "50% 50%",
-          scale: 0,
-          opacity: 1,
-          ease: Linear.easeIn
-        },
-        {
-          scale: scale_ratio,
-          opacity: 0
-        }
-      );
-    }
+    rippleAnimation(event) {}
   }
 };
 </script>
@@ -168,36 +120,25 @@ $button-focus-color: $secondary;
 
   background-color: $button-color;
 
-  display: grid;
-  grid-template-areas: "content";
-  grid-template-columns: fit-content(0px);
+  position: relative;
+  display: inline-block;
+  padding: 0.3em 0.5em 0.3em 0.5em;
+  vertical-align: middle;
+  overflow: visible;
+  text-align: center;
+  transition: all 0.2s ease;
+
+  &:hover,
+  &:focus {
+    outline: 0;
+    text-decoration: none;
+  }
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 
   &:focus {
     border-color: $button-focus-color;
-  }
-
-  &__content {
-    grid-area: content;
-    min-height: 1em;
-
-    text-align: center;
-    padding: 0.3em 0.5em 0.3em 0.5em;
-
-    white-space: nowrap;
-  }
-
-  &__ripple {
-    grid-area: content;
-
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none;
-
-    &-circle {
-      fill: $button-ripple-color;
-      opacity: 0;
-    }
   }
 
   &--grey {
@@ -205,10 +146,6 @@ $button-focus-color: $secondary;
 
     &:focus {
       border-color: $slightlydark;
-    }
-
-    .button__ripple-circle {
-      fill: $slightlydark;
     }
   }
 }

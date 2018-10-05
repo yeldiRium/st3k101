@@ -119,6 +119,10 @@ export default {
     grid-auto-flow: column;
     grid-column-gap: 1em;
     justify-content: center;
+
+    .button {
+      width: calc(100% - 20px);
+    }
   }
 
   &__button {
