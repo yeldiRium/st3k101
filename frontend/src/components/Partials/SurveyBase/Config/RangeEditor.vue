@@ -34,9 +34,12 @@
             </EditableText>
             <RangeSVG :range="value"
                       :preview="true"
+                      :showLabels="false"
+                      class="range-editor__preview__range"
             />
             <EditableText :value="value.endLabel"
                           @input="updateEndLabel"
+                          class="range-editor__preview__label"
             >
             </EditableText>
         </div>
@@ -126,6 +129,14 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+
+    &__label {
+      flex-basis: 10%;
+    }
+
+    &__range {
+      flex-basis: 80%;
+    }
   }
 }
 </style>
