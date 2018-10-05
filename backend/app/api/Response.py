@@ -94,7 +94,6 @@ class ResponseListForQuestionnaireResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
 
         # survey lifecycle check
-        questionnaire.apply_scheduling()
         if not questionnaire.published:
             abort(403)
         if questionnaire.concluded:
@@ -205,7 +204,6 @@ class LtiResponseResource(Resource):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
 
         # survey lifecycle check
-        questionnaire.apply_scheduling()
         if not questionnaire.published:
             abort(403, message="Survey was not published yet.")
         if not questionnaire.allow_embedded:
