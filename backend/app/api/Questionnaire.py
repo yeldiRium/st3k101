@@ -22,7 +22,6 @@ class QuestionnaireResource(Resource):
     def get(self, questionnaire_id=None):
         schema = QuestionnaireSchema()
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
-        questionnaire.apply_scheduling()
         if not questionnaire.accessible_by(current_user()):
             if not questionnaire.published:
                 abort(403)
@@ -61,7 +60,6 @@ class QuestionnaireResource(Resource):
                     errors[k] = ['You need to be a contributor to publish templates.']
                     continue
             setattr(questionnaire, k, v)
-        questionnaire.apply_scheduling()
         db.session.commit()
 
         if not previously_published and questionnaire.published:
