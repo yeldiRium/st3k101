@@ -994,6 +994,7 @@ function parseSubmissionQuestionnaire({
   name,
   description,
   password_enabled,
+  accepts_submissions,
   dimensions,
   current_language,
   original_language,
@@ -1010,7 +1011,7 @@ function parseSubmissionQuestionnaire({
       available_languages
     }),
     password_enabled,
-    false,
+    accepts_submissions,
     map(parseSubmissionDimension, dimensions)
   );
 }
