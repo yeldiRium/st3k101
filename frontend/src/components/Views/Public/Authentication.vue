@@ -70,8 +70,7 @@ export default {
 
       inputData: {
         email: "",
-        password: "",
-        passwordConfirmation: ""
+        password: ""
       },
 
       errors: {
