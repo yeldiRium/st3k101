@@ -1,81 +1,90 @@
 <template>
-    <div class="submission"
-         :style="itemStyle"
-         v-if="submissionQuestionnaire !== null"
-    >
-        <span class="submission__header">
-            <span>{{ submissionQuestionnaire.name }}</span>
-            <LanguagePicker
-                    :language-data="submissionQuestionnaire.languageData"
-                    :hideUnused="true"
-                    :useLongNames="true"
-                    @choose-language="changeLanguage"
-            />
-        </span>
-        <div class="submission__body">
-            <div class="submission__description"
-                 v-if="submissionQuestionnaire.description.length > 0"
-            >
-                {{submissionQuestionnaire.description}}
-            </div>
-
-            <div class="submission__dimension-tabs">
-                <div class="submission__dimension-item"
-                     v-for="dimension in submissionQuestionnaire.dimensions"
-                     @click.prevent="selectedDimensionId = dimension.id"
-                     v-bind:class="{'submission__dimension-item--selected': selectedDimensionId === dimension.id}"
+    <div v-if="submissionQuestionnaire !== null">
+        <LandingPage v-if="!submissionQuestionnaire.acceptsSubmissions && !landingPageDismissed"
+                     :questionnaire="submissionQuestionnaire"
+                     @action="dismissLandingPage"
+        >
+        </LandingPage>
+        <div class="submission"
+             :style="itemStyle"
+             v-else
+        >
+            <span class="submission__header">
+                <span>{{ submissionQuestionnaire.name }}</span>
+                <LanguagePicker
+                        :language-data="submissionQuestionnaire.languageData"
+                        :hideUnused="true"
+                        :useLongNames="true"
+                        @choose-language="changeLanguage"
+                />
+            </span>
+            <div class="submission__body">
+                <div class="submission__description"
+                     v-if="submissionQuestionnaire.description.length > 0"
                 >
-                    {{ dimensionLabel(dimension) }}
+                    {{submissionQuestionnaire.description}}
+                </div>
+
+                <div class="submission__dimension-tabs">
+                    <div class="submission__dimension-item"
+                         v-for="dimension in submissionQuestionnaire.dimensions"
+                         @click.prevent="selectedDimensionId = dimension.id"
+                         v-bind:class="{'submission__dimension-item--selected': selectedDimensionId === dimension.id}"
+                    >
+                        {{ dimensionLabel(dimension) }}
+                    </div>
+                </div>
+                <div class="submission__dimension-body">
+                    <DimensionForm
+                            v-for="dimension in submissionQuestionnaire.dimensions"
+                            v-show="selectedDimensionId === dimension.id"
+                            :dimension="dimension"
+                            :key="dimension.href"
+                            @response-change="updateResponseValue($event)"
+                    />
+                </div>
+                <div class="submission__pagination-buttons">
+                    <Button @action="paginationPrevious">Previous page</Button>
+                    <Button @action="paginationNext">Next page</Button>
                 </div>
             </div>
-            <div class="submission__dimension-body">
-                <DimensionForm
-                        v-for="dimension in submissionQuestionnaire.dimensions"
-                        v-show="selectedDimensionId === dimension.id"
-                        :dimension="dimension"
-                        :key="dimension.href"
-                        @response-change="updateResponseValue($event)"
-                />
-            </div>
-            <div class="submission__pagination-buttons">
-                <Button @action="paginationPrevious">Previous page</Button>
-                <Button @action="paginationNext">Next page</Button>
-            </div>
-        </div>
-        <div class="submission__footer">
-            <div v-if="errors.length > 0"
-                 class="submission__errors"
+            <div class="submission__footer"
+                 v-if="submissionQuestionnaire.acceptsSubmissions"
             >
-                <p v-for="errorMessage in errors">
-                    <b>!</b>
-                    {{errorMessage}}
-                </p>
-            </div>
-
-            <label>
-                <span>Email Address</span>
-                <input type="email"
-                       v-model="inputData.email"
-                />
-            </label>
-
-            <label v-if="submissionQuestionnaire.passwordEnabled">
-                <span>Password</span>
-                <input type="password"
-                       v-model="inputData.password"
+                <div v-if="errors.length > 0"
+                     class="submission__errors"
                 >
-            </label>
+                    <p v-for="errorMessage in errors">
+                        <b>!</b>
+                        {{errorMessage}}
+                    </p>
+                </div>
 
-            <Button @action="submit"
-                    :class="{'button--grey': !isReadyToSubmit}"
-            >
-                <span v-if="isReadyToSubmit">
-                    Submit
-                </span>
-                <span v-else>
-                    Please complete the survey to submit.
-                </span>
-            </Button>
+                <label>
+                    <span>Email Address</span>
+                    <input type="email"
+                           v-model="inputData.email"
+                    />
+                </label>
+
+                <label v-if="submissionQuestionnaire.passwordEnabled">
+                    <span>Password</span>
+                    <input type="password"
+                           v-model="inputData.password"
+                    >
+                </label>
+
+                <Button @action="submit"
+                        :class="{'button--grey': !isReadyToSubmit}"
+                >
+                    <span v-if="isReadyToSubmit">
+                        Submit
+                    </span>
+                    <span v-else>
+                        Please complete the survey to submit.
+                    </span>
+                </Button>
+            </div>
         </div>
     </div>
 </template>
@@ -89,10 +98,12 @@ import Button from "../../Partials/Form/Button";
 import LanguagePicker from "../../Partials/LanguagePicker";
 import { submitResponse } from "../../../api/Submission";
 import * as R from "ramda";
+import LandingPage from "../../Partials/LandingPage";
 
 export default {
   name: "SurveyForSubmission",
   components: {
+    LandingPage,
     Button,
     DimensionForm,
     LanguagePicker
@@ -105,7 +116,8 @@ export default {
         email: ""
       },
       selectedDimensionId: null,
-      errors: []
+      errors: [],
+      landingPageDismissed: false
     };
   },
   computed: {
@@ -147,6 +159,9 @@ export default {
     }
   },
   methods: {
+    dismissLandingPage() {
+      this.landingPageDismissed = true;
+    },
     getNumberOfIncompleteQuestions(dimension) {
       let counter = 0;
       for (let iDimension of this.submissionQuestionnaire.dimensions) {
