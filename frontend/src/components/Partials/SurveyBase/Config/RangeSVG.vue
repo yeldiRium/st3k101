@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <span v-if="!preview">
+        <span v-if="showLabels">
             {{ range.startLabel }}
         </span>
         <svg class="range-svg"
@@ -91,7 +91,7 @@
                 </g>
             </g>
         </svg>
-        <span v-if="!preview">
+        <span v-if="showLabels">
             {{ range.endLabel }}
         </span>
     </div>
@@ -106,7 +106,7 @@ export default {
   name: "RangeSVG",
   props: {
     range: {
-      type: Range // TODO: display startLabel, endLabel
+      type: Range
     },
     /**
      * If true, all numbers are shown and nothing can be selected.
@@ -114,6 +114,10 @@ export default {
     preview: {
       type: Boolean,
       default: false
+    },
+    showLabels: {
+      type: Boolean,
+      default: true
     },
     /**
      * The currently selected number.

@@ -12,6 +12,17 @@ function allTrue(xs) {
 }
 
 /**
+ * anyTrue :: [Boolean] -> Boolean
+ *
+ * Predicate that is true if a given list contains one or more true Booleans.
+ *
+ * @param {Array<Boolean>} xs
+ */
+function anyTrue(xs) {
+  return R.reduce(R.or, false, xs);
+}
+
+/**
  * allContentsEqual :: a -> a -> Boolean
  *
  * Predicate that is true if contents of a and b match.
@@ -25,4 +36,4 @@ function allContentsEqual(a, b) {
   return allTrue(R.zipWith((a, b) => a.contentEquals(b), a, b));
 }
 
-export { allTrue, allContentsEqual };
+export { allTrue, anyTrue, allContentsEqual };

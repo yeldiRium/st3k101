@@ -19,6 +19,7 @@
         <TranslateDimension ref="modal-translateDimension"/>
         <TranslateQuestionnaire ref="modal-translateQuestionnaire"/>
         <ForgetDataSubject ref="modal-forgetDataSubject"/>
+        <UpdateAllRangeLabels ref="modal-updateAllRangeLabels"/>
     </div>
 </template>
 
@@ -37,10 +38,12 @@ import TranslateQuestion from "./Partials/Modal/TranslateQuestion";
 import TranslateDimension from "./Partials/Modal/TranslateDimension";
 import TranslateQuestionnaire from "./Partials/Modal/TranslateQuestionnaire";
 import ForgetDataSubject from "./Partials/Modal/ForgetDataSubject";
+import UpdateAllRangeLabels from "./Partials/Modal/UpdateAllRangeLabels";
 
 export default {
   components: {
     ForgetDataSubject,
+    UpdateAllRangeLabels,
     Dialog,
     CreateQuestion,
     CreateDimension,
