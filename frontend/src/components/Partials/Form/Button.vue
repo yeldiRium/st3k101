@@ -113,10 +113,13 @@ $button-color: $primary-light;
 $button-ripple-color: $primary;
 $button-focus-color: $secondary;
 
+$border-thickness: 3px;
+
 .button {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
+  border: $border-thickness solid transparent;
 
   background-color: $button-color;
 
@@ -138,7 +141,7 @@ $button-focus-color: $secondary;
   }
 
   &:focus {
-    border-color: $button-focus-color;
+    border: $border-thickness solid $button-focus-color;
   }
 
   &--grey {
