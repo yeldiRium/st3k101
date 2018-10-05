@@ -18,6 +18,7 @@
         <TranslateQuestion ref="modal-translateQuestion"/>
         <TranslateDimension ref="modal-translateDimension"/>
         <TranslateQuestionnaire ref="modal-translateQuestionnaire"/>
+        <UpdateAllRangeLabels ref="modal-updateAllRangeLabels"/>
     </div>
 </template>
 
@@ -35,9 +36,11 @@ import UseQuestionnaireTemplate from "./Partials/Modal/UseQuestionnaireTemplate"
 import TranslateQuestion from "./Partials/Modal/TranslateQuestion";
 import TranslateDimension from "./Partials/Modal/TranslateDimension";
 import TranslateQuestionnaire from "./Partials/Modal/TranslateQuestionnaire";
+import UpdateAllRangeLabels from "./Partials/Modal/UpdateAllRangeLabels";
 
 export default {
   components: {
+    UpdateAllRangeLabels,
     Dialog,
     CreateQuestion,
     CreateDimension,
