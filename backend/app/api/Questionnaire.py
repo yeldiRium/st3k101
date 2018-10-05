@@ -59,6 +59,16 @@ class QuestionnaireResource(Resource):
                 if k == 'template' and not current_has_minimum_role(Role.Contributor):
                     errors[k] = ['You need to be a contributor to publish templates.']
                     continue
+                elif k == 'accepts_submissions':
+                    if not questionnaire.published:
+                        errors[k] = ['You can\'t set an unpublished Questionnaire to accept submissions. '
+                                     'Please publish it first.']
+                        continue
+                elif k == 'published':
+                    if questionnaire.accepts_submissions:
+                        errors[k] = ['The Questionnaire still accepts submissions. Please conclude it first.']
+                        continue
+
             setattr(questionnaire, k, v)
         db.session.commit()
 
