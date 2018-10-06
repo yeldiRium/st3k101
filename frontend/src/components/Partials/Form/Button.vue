@@ -22,9 +22,6 @@
 </template>
 
 <script>
-import { dissoc, has } from "ramda";
-import { Linear, TimelineMax } from "gsap";
-
 /**
  * A button that is styled and supports raising elevation on mouseover.
  */
