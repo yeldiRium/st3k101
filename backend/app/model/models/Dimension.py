@@ -9,6 +9,7 @@ from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType
 from framework.signals import item_added, item_removed
 from model import db, MUTABLE_HSTORE, translation_hybrid
+from sqlalchemy.ext.orderinglist import ordering_list
 from model.models.Question import Question, ConcreteQuestion, ShadowQuestion
 from model.models.SurveyBase import SurveyBase
 
@@ -22,6 +23,7 @@ class Dimension(SurveyBase):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # columns
+    position = db.Column(db.Integer, nullable=False)
     randomize_question_order = db.Column(db.Boolean, nullable=False,
                                          default=False)
 
@@ -33,7 +35,9 @@ class Dimension(SurveyBase):
         'Question',
         backref='dimension',
         cascade='all, delete-orphan',
-        foreign_keys=[Question.dimension_id]
+        foreign_keys=[Question.dimension_id],
+        order_by='Question.position',
+        collection_class=ordering_list('position')
     )
 
     tracker_args = {
