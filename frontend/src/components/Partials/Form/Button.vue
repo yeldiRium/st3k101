@@ -1,16 +1,21 @@
 <template>
     <div class="button"
          ref="button"
-         :class="classes"
+         :class="buttonClasses"
          v-on="$listeners"
-         @click="action"
          @keyup.enter="action"
          @mouseover="raise"
          @mouseleave="lower"
          tabindex="0"
     >
-        <div class="button__ripple js-ripple">
-            <span class="button__circle"></span>
+        <div class="button__ripple js-ripple"
+             :class="rippleClasses"
+             ref="ripple"
+             @click="action"
+        >
+            <span class="button__circle"
+                  :style="circleStyle"
+            ></span>
         </div>
         <slot></slot>
     </div>
@@ -45,8 +50,13 @@ export default {
   data() {
     return {
       elevationOffset: 0,
-      circleX: 0,
-      circleY: 0
+      offsetTop: 0,
+      offsetLeft: 0,
+      /*
+       * Whether the ripple is currently moving. This is either false or a
+       * timeout id.
+       */
+      isActive: false
     };
   },
   computed: {
@@ -63,8 +73,22 @@ export default {
      * Sets the elevation class for the button.
      * @returns {Array<String>}
      */
-    classes() {
+    buttonClasses() {
       return [`elevation-${this.actualElevation}`];
+    },
+    /**
+     * Styles for the ripple circle. Sets the ripple's centerpoint.
+     */
+    circleStyle() {
+      return {
+        top: `${this.offsetTop}px`,
+        left: `${this.offsetLeft}px`
+      };
+    },
+    rippleClasses() {
+      return {
+        "button__ripple--active": this.isActive
+      };
     }
   },
   methods: {
@@ -100,7 +124,22 @@ export default {
      *
      * @param event
      */
-    rippleAnimation(event) {}
+    rippleAnimation(event) {
+      window.clearTimeout(this.isActive);
+      this.isActive = false;
+
+      this.$nextTick(() => {
+        const buttonBoundingBox = event.target.getBoundingClientRect();
+        const w = buttonBoundingBox.width;
+        const h = buttonBoundingBox.height;
+        this.offsetTop = "offsetY" in event ? event.offsetY : h / 2;
+        this.offsetLeft = "offsetX" in event ? event.offsetX : w / 2;
+
+        this.isActive = window.setTimeout(() => {
+          this.isActive = false;
+        }, 600);
+      });
+    }
   }
 };
 </script>
@@ -114,6 +153,7 @@ $button-ripple-color: $primary;
 $button-focus-color: $secondary;
 
 $border-thickness: 3px;
+$ripple-color: rgba(255, 255, 255, 0.8);
 
 .button {
   -webkit-border-radius: 3px;
@@ -160,6 +200,10 @@ $border-thickness: 3px;
     height: 100%;
     overflow: hidden;
     background: transparent;
+
+    &--active .button__circle {
+      animation: a-ripple 0.6s ease-in;
+    }
   }
 
   &__circle {
@@ -171,10 +215,7 @@ $border-thickness: 3px;
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.25);
-    .button__ripple.is-active & {
-      animation: a-ripple 0.4s ease-in;
-    }
+    background: $ripple-color;
   }
 }
 
@@ -186,7 +227,7 @@ $border-thickness: 3px;
     opacity: 1;
   }
   100% {
-    width: 200%;
+    width: 400%;
     padding-bottom: 200%;
     opacity: 0;
   }
