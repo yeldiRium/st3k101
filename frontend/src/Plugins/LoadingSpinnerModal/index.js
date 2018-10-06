@@ -4,7 +4,7 @@ import vModal from "vue-js-modal";
 import LoadingSpinnerModal from "./LoadingSpinnerModal";
 
 const Plugin = {
-  install(Vue, options = {}) {
+  install(Vue) {
     Vue.use(vModal);
 
     /**

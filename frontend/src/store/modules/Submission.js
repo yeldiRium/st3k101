@@ -1,6 +1,6 @@
 import { Future } from "fluture/index.js";
 
-import { complement, equals, filter, find, isNil } from "ramda";
+import { complement, equals, filter } from "ramda";
 
 import { fetchQuestionnaireForSubmissionById } from "../../api/Questionnaire";
 

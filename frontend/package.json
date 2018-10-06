@@ -85,7 +85,8 @@
       "eslint:recommended"
     ],
     "globals": {
-      "ltiSessionToken": true
+      "ltiSessionToken": true,
+      "ltiLaunchParameters": true
     },
     "plugins": [
       "jest"

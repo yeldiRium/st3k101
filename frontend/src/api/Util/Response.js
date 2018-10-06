@@ -1,4 +1,3 @@
-import { curry } from "ramda";
 import * as Future from "fluture/index.js";
 import {
   ForbiddenError,

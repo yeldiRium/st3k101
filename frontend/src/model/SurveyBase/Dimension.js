@@ -1,6 +1,6 @@
 import SurveyBase from "./SurveyBase";
 import * as R from "ramda";
-import { allContentsEqual, allTrue } from "../../utility/functional";
+import { allContentsEqual } from "../../utility/functional";
 
 class Dimension extends SurveyBase {
   /**

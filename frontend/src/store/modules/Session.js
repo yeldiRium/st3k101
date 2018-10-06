@@ -1,9 +1,8 @@
-import { isNil, path } from "ramda";
+import { isNil } from "ramda";
 import * as Future from "fluture/index.js";
 
 import { getItem, removeItem, setItem } from "../Utility/cookies";
 
-import DataClient from "../../model/DataClient";
 import {
   endSession,
   getCurrentDataClient,

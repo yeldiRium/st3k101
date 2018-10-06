@@ -396,7 +396,7 @@ export default {
 
       let template = !this.dimension.template;
 
-      const cancel = this.$load(
+      this.$load(
         this.$store
           .dispatch("dimensions/updateDimension", {
             dimension: this.dimension,
@@ -407,7 +407,7 @@ export default {
           .chain(dimension =>
             this.$store.dispatch("dimensions/fetchDimension", {
               href: dimension.href,
-              language
+              language: dimension.language
             })
           )
       ).fork(this.$handleApiError, () => {

@@ -311,10 +311,11 @@ export default {
       },
       questionnaire => {
         // TODO: redirect datasubject if survey has concluded
-        /*if (questionnaire.concluded) {
-                            this.$router.push("/embedded/concluded");
-                        }*/
-        console.log(questionnaire.dimensions);
+        /*
+         * if (questionnaire.concluded) {
+         *   this.$router.push("/embedded/concluded");
+         * }
+         */
         this.submissionQuestionnaire = questionnaire;
       }
     );

@@ -14,7 +14,6 @@
 import { mapGetters } from "vuex-fluture";
 
 import Button from "../../Partials/Form/Button";
-import ForgetDataSubject from "../../Partials/Modal/ForgetDataSubject";
 import { forgetDataSubject } from "../../../api/DataSubject";
 import { isAtLeast } from "../../../model/Roles";
 import Roles from "../../../model/Roles";

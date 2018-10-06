@@ -20,8 +20,6 @@
 </template>
 
 <script>
-import { all, join, map, pipe, split, test, trim } from "ramda";
-
 import ChallengeForm from "./ChallengeForm";
 import Password from "../../../../model/SurveyBase/Challenge/Password";
 
@@ -44,7 +42,7 @@ export default {
   watch: {
     challenge: {
       immediate: true,
-      handler(newChallenge) {
+      handler() {
         this.tempPassword = this.challenge.password;
       }
     }
