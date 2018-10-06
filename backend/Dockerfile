@@ -2,7 +2,8 @@ FROM tiangolo/uwsgi-nginx-flask:python3.6
 
 COPY ./app /app
 
-RUN pip install -r /app/requirements.txt
+RUN pip install --upgrade pip && pip install -r /app/requirements.txt
+RUN apt update && apt install -y sendmail
 
 WORKDIR /app
 RUN pybabel compile -d translations
