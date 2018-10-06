@@ -10,6 +10,7 @@ from api.schema.Submission import SubmissionSchema
 from auth.roles import Role, needs_minimum_role
 from auth.session import current_user
 from framework.captcha import validate_captcha
+from framework.internationalization import _
 from framework.signals import SIG_ANSWERS_VALIDATED
 from framework.xapi.XApiPublisher import XApiPublisher
 from framework.xapi.submission_hooks import do_submission_hooks
@@ -21,7 +22,7 @@ from model.models.QuestionResponse import QuestionResponse
 from model.models.Questionnaire import Questionnaire
 from utils import generate_verification_token
 from utils.dicts import merge_error_dicts
-from framework.email import validate_email_blacklist, validate_email_whitelist
+from framework.email import validate_email_blacklist, validate_email_whitelist, construct_verification_email, send_mail
 
 __author__ = "Noah Hummel"
 
@@ -148,6 +149,12 @@ class ResponseListForQuestionnaireResource(Resource):
                 'missing': list(all_questions)
             }, 400
 
+        send_mail(
+            data_subject.email,
+            _("Please verify your survey submission"),
+            construct_verification_email(questionnaire, verification_token)
+        )
+
         db.session.commit()
         return {
             'message': 'Submission successful. Please verify by email.'
@@ -252,6 +259,7 @@ class LtiResponseResource(Resource):
         return {
             'message': 'Submission successful.'
         }, 200
+
 
 api.add_resource(
     ResponseListForQuestionnaireResource,
