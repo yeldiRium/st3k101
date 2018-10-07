@@ -310,12 +310,6 @@ export default {
         this.error = error;
       },
       questionnaire => {
-        // TODO: redirect datasubject if survey has concluded
-        /*
-         * if (questionnaire.concluded) {
-         *   this.$router.push("/embedded/concluded");
-         * }
-         */
         this.submissionQuestionnaire = questionnaire;
       }
     );
