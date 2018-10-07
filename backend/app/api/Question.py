@@ -6,6 +6,7 @@ from api.utils.ResourceBroker import ResourceBroker
 from api.schema.Question import QuestionSchema, ShadowQuestionSchema
 from auth.roles import needs_minimum_role, Role, current_has_minimum_role
 from auth.session import current_user
+from framework.exceptions import BusinessRuleViolation
 from model import db
 from model.models.Dimension import Dimension
 from model.models.Question import Question, ShadowQuestion
@@ -159,7 +160,14 @@ class ShadowQuestionResource(Resource):
         if question.shadow:
             abort(403)
 
-        shadow_question = dimension.add_shadow_question(question)
+        try:
+            shadow_question = dimension.add_shadow_question(question)
+        except BusinessRuleViolation as e:
+            db.session.rollback()
+            return {
+                'message': 'BusinessRuleViolation: {}'.format(e.args[0])
+            }, 400
+
         db.session.commit()
 
         data = QuestionSchema().dump(shadow_question).data

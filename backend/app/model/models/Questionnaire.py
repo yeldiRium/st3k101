@@ -157,6 +157,10 @@ class Questionnaire(SurveyBase):
         if not isinstance(self, ConcreteQuestionnaire):
             raise BusinessRuleViolation("Can't modify shadow instances!")
 
+        # this would cause bad things when trying to remove it later.
+        if concrete_dimension in self.dimensions:
+            raise BusinessRuleViolation("The dimension is already present inside this Questionnaire.")
+
         dimension = ShadowDimension(concrete_dimension)
         self.dimensions.append(dimension)
 
