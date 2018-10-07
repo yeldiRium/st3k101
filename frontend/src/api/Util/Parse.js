@@ -228,7 +228,6 @@ function parseTemplateQuestionnaire({
   reference_id,
   name,
   description,
-  template,
   current_language,
   original_language,
   available_languages
@@ -916,6 +915,8 @@ function parseTrackerEntry(data) {
  * @param text {String}
  * @param range_start {Integer}
  * @param range_end {Integer}
+ * @param range_start_label {String}
+ * @param range_end_label {String}
  * @param current_language {Language}
  * @param original_language {Language}
  * @param available_languages {Array<Language>}
@@ -997,6 +998,7 @@ function parseSubmissionDimension({
  * @param name {String}
  * @param description {String}
  * @param password_enabled {Boolean}
+ * @param accepts_submissions
  * @param dimensions {Array<Object>}
  * @param current_language {Language}
  * @param original_language {Language}

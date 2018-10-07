@@ -1,4 +1,4 @@
-import { always, assoc, identity, ifElse, isNil } from "ramda";
+import { isNil } from "ramda";
 import * as Future from "fluture/index.js";
 
 import { buildApiUrl } from "./Path";
@@ -18,23 +18,6 @@ function buildAuthenticationHeaders(authenticationToken = "") {
   } else {
     return {};
   }
-}
-
-/**
- * Returns an object containing a accept-language header, if the given language
- * is not null.
- *
- * @param {Language} language
- * @returns {Object}
- * @deprecated
- */
-function getLanguageHeaders(language = null) {
-  if (isNil(language)) {
-    return {};
-  }
-  return {
-    "Accept-Language": language.shortName
-  };
 }
 
 const defaultHeaders = {

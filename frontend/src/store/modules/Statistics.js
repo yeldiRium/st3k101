@@ -2,7 +2,6 @@ import { isNil, find, clone, reject, equals, without, concat } from "ramda";
 
 import { Future } from "fluture/index.js";
 
-import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
 import {
   fetchQuestionStatistic,
   fetchQuestionStatisticsByQuestionnaire
@@ -19,7 +18,7 @@ const store = {
     questionStatistics: []
   },
   getters: {
-    statisticByQuestionHref(state, getters, rootState, rootGetters) {
+    statisticByQuestionHref(state) {
       return href => {
         const statistic = clone(
           find(

@@ -48,7 +48,7 @@ export default {
   watch: {
     challenge: {
       immediate: true,
-      handler(newChallenge) {
+      handler() {
         this.templist = join(", ", this.challenge.emails);
       }
     }

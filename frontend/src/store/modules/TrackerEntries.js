@@ -23,7 +23,7 @@ const store = {
     }
   },
   actions: {
-    loadMyTrackerEntries({ dispatch, commit, rootGetters }) {
+    loadMyTrackerEntries({ commit, rootGetters }) {
       return fetchMyTrackerEntries(rootGetters["session/sessionToken"]).chain(
         trackerEntries =>
           Future((reject, resolve) => {
@@ -32,7 +32,7 @@ const store = {
           })
       );
     },
-    loadTrackerEntriesForItemHref({ dispatch, commit, rootGetters }, href) {
+    loadTrackerEntriesForItemHref({ commit, rootGetters }, href) {
       return fetchTrackerEntriesByItemHref(
         rootGetters["session/sessionToken"],
         href

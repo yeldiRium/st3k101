@@ -312,13 +312,14 @@ export default {
           }
         },
         () => {
-        this.submitted = true;
-        this.thankYouNotifications.push(
-          `A verification link has been sent to ${
-            this.inputData.email
-          }. Please follow the instructions in the email we've sent you to verify your submission.`
-        );
-      });
+          this.submitted = true;
+          this.thankYouNotifications.push(
+            `A verification link has been sent to ${
+              this.inputData.email
+            }. Please follow the instructions in the email we've sent you to verify your submission.`
+          );
+        }
+      );
     },
     dimensionLabel(dimension) {
       let counter = this.getNumberOfIncompleteQuestions(dimension);

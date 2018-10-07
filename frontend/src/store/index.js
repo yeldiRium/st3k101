@@ -33,9 +33,11 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
+    // eslint-disable-next-line no-unused-vars
     initialLoadingDone: (state, data) => {
       state.initialLoading = "done";
     },
+    // eslint-disable-next-line no-unused-vars
     initialLoadingError: (state, error) => {
       state.initialLoading = "error";
     }

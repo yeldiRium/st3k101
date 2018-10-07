@@ -1,4 +1,4 @@
-import { append, clone, concat, contains, uniq, without } from "ramda";
+import { append, clone, concat, uniq, without } from "ramda";
 
 import Challenge from "./Challenge";
 
@@ -37,7 +37,7 @@ class EMailListBase extends Challenge {
    */
   withAll(emails) {
     const newList = this.clone();
-    newList.email = cnocat(emails, newList.emails);
+    newList.email = concat(emails, newList.emails);
     return newList;
   }
 

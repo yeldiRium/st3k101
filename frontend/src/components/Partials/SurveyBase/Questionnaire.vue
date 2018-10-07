@@ -516,7 +516,7 @@ export default {
 
       let template = !this.questionnaire.template;
 
-      const cancel = this.$load(
+      this.$load(
         this.$store
           .dispatch("questionnaires/updateQuestionnaire", {
             questionnaire: this.questionnaire,

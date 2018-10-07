@@ -1,5 +1,5 @@
 import * as Future from "fluture/index.js";
-import { contains, map, path, pipe, prop, without } from "ramda";
+import { contains, map, pipe, prop } from "ramda";
 
 import { extractJson } from "./Util/Response";
 import { fetchApi } from "./Util/Request";
@@ -14,18 +14,7 @@ import {
   ConcreteQuestionnaire,
   ShadowQuestionnaire
 } from "../model/SurveyBase/Questionnaire";
-import { ConcreteDimension } from "../model/SurveyBase/Dimension";
 import renameProp from "./Util/renameProp";
-
-const properties = [
-  "name",
-  "description",
-  "isPublic",
-  "allowEmbedded",
-  "xapiTarget"
-];
-
-const concreteProperties = ["name", "description"];
 
 /**
  * Create a new ConcreteQuestionnaire.
@@ -132,7 +121,10 @@ function createShadowQuestionnaire(authenticationToken, questionnaire) {
  * @cancel
  */
 function fetchMyQuestionnaires(authenticationToken, language) {
-  return fetchApi("/api/dataclient/questionnaire", { authenticationToken })
+  return fetchApi("/api/dataclient/questionnaire", {
+    authenticationToken,
+    language
+  })
     .chain(extractJson)
     .map(map(parseQuestionnaire));
 }
@@ -178,7 +170,6 @@ function fetchQuestionnaireById(authenticationToken, id, language = null) {
 }
 
 /**
- * @param authenticationToken
  * @param id
  * @param language
  * @returns {Future}
@@ -378,102 +369,6 @@ function removeDimension(authenticationToken, questionnaire, dimension) {
     return Future.reject("Dimension not contained in Questionnaire.");
   }
 }
-
-/**
- * Takes in a Questionnaire and populates its incoming references field by re-
- * placing all resolvable References with their corresponding ShadowQuestion-
- * naire instances.
- *
- * Accesses the API to load the Questionnaires.
- *
- * If this rejects, then some questionnaires might be populated and some might
- * still be Resources. The exact state will have to be tested.
- *
- * @param authenticationToken
- * @param {ConcreteQuestionnaire} concreteQuestionnaire
- * @return {Future}
- * @resolve {Array<ShadowQuestionnaire>}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateOwnedIncomingReferences(
-  authenticationToken,
-  concreteQuestionnaire
-) {
-  const resolvedShadowQuestionnaireFutures = [];
-
-  // Use basic for loop to easily replace values.
-  for (
-    let i = 0;
-    i < concreteQuestionnaire.ownedIncomingReferences.length;
-    i++
-  ) {
-    let reference = concreteQuestionnaire.ownedIncomingReferences[i];
-
-    if (instanceOf(reference, Resource)) {
-      const shadowQuestionnaireFuture = fetchQuestionnaire(
-        authenticationToken,
-        reference.href,
-        concreteQuestionnaire.languageData.currentLanguage
-      ).chain(shadowQuestionnaire => {
-        concreteQuestionnaire.ownedIncomingReferences[i] = shadowQuestionnaire;
-        return Future.of(shadowQuestionnaire);
-      });
-
-      resolvedShadowQuestionnaireFutures.push(shadowQuestionnaireFuture);
-    }
-  }
-  // MAYBE: is Infinity appropriate?
-  return Future.parallel(Infinity, resolvedShadowQuestionnaireFutures);
-}
-
-/**
- * If the referenceTo field contains a Resource, it is resolved to a
- * ConcreteQuestionnaire instance. Otherwise it is left as is.
- *
- * Accesses the API to load the Questionnaire.
- *
- * @param authenticationToken
- * @param {ShadowQuestionnaire} shadowQuestionnaire
- * @return {Future}
- * @resolve {ConcreteQuestionnaire}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateReferenceTo(authenticationToken, shadowQuestionnaire) {
-  if (instanceOf(shadowQuestionnaire.referenceTo, Resource)) {
-    return fetchQuestionnaire(
-      authenticationToken,
-      shadowQuestionnaire.referenceTo.href,
-      shadowQuestionnaire.languageData.currentLanguage
-    ).chain(concreteQuestionnaire => {
-      shadowQuestionnaire.referenceTo = concreteQuestionnaire;
-      return Future.of(concreteQuestionnaire);
-    });
-  }
-  return Future.of(shadowQuestionnaire.referenceTo);
-}
-
-/**
- * Based on the type of the given Questionnaire this either populates its inco-
- * ming references or its referenceTo field.
- *
- * @param authenticationToken
- * @param {Questionnaire} questionnaire
- * @return {Future}
- * @resolve {Array<ShadowQuestionnaire>|ConcreteQuestionnaire}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateQuestionnaire(authenticationToken, questionnaire) {
-  if (instanceOf(questionnaire, ShadowQuestionnaire)) {
-    return populateReferenceTo(authenticationToken, questionnaire);
-  }
-  if (instanceOf(questionnaire, ConcreteQuestionnaire)) {
-    return populateOwnedIncomingReferences(authenticationToken, questionnaire);
-  }
-}
-
 export {
   createConcreteQuestionnaire,
   createShadowQuestionnaire,
@@ -486,8 +381,5 @@ export {
   deleteQuestionnaire,
   addConcreteDimension,
   addShadowDimension,
-  removeDimension,
-  populateOwnedIncomingReferences,
-  populateReferenceTo,
-  populateQuestionnaire
+  removeDimension
 };

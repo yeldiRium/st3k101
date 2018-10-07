@@ -87,7 +87,7 @@ export default {
     }
   },
   watch: {
-    surveyBase(oldValue, newValue) {
+    surveyBase() {
       this.loadTrackerEntries(); // TODO: this causes lots of updates
     }
   },

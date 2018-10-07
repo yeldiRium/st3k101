@@ -1,6 +1,5 @@
 import SurveyBase from "./SurveyBase";
 
-import Range from "./Config/Range";
 import * as R from "ramda";
 
 /**
