@@ -212,7 +212,7 @@ export default {
       return `Contains ${this.dimension.questions.length} questions.`;
     },
     questionsOrdered() {
-      return R.sortBy(R.prop("id"), this.dimension.questions);
+      return R.sortBy(R.prop("position"), this.dimension.questions);
     }
   },
   methods: {

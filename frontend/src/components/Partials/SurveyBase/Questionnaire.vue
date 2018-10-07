@@ -307,7 +307,7 @@ export default {
       );
     },
     dimensionsOrdered() {
-      return R.sortBy(R.prop("id"), this.questionnaire.dimensions);
+      return R.sortBy(R.prop("position"), this.questionnaire.dimensions);
     },
     ltiUrl() {
       return `https://${window.location.hostname}/survey/${
