@@ -594,10 +594,11 @@ function parseTemplateQuestion({
   original_language,
   available_languages
 }) {
+  // TODO: template Question class
   return new ConcreteQuestion(
     href,
     id,
-    [], // owners
+    [],
     parseLanguageData({
       current_language,
       original_language,
@@ -606,14 +607,15 @@ function parseTemplateQuestion({
     template,
     reference_id,
     text,
+    0,
     new Range({
       start: range_start,
       end: range_end,
       startLabel: range_start_label,
       endLabel: range_end_label
     }),
-    0, // incoming reference count
-    [] // owned incoming references
+    0,
+    []
   );
 }
 
@@ -625,6 +627,7 @@ function parseTemplateQuestion({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} text
+ * @param {Integer} position
  * @param {Number} range_start
  * @param {Number} range_end
  * @param {Boolean} template
@@ -641,6 +644,7 @@ function parseShadowQuestion({
   owners,
   reference_id,
   text,
+  position,
   range_start,
   range_end,
   range_start_label,
@@ -661,6 +665,7 @@ function parseShadowQuestion({
     }),
     reference_id,
     text,
+    position,
     new Range({
       start: range_start,
       end: range_end,
@@ -679,10 +684,11 @@ function parseShadowQuestion({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} text
+ * @param {Integer} position
  * @param {Number} range_start
  * @param {Number} range_end
- * @param range_start_label
- * @param range_end_label
+ * @param {String} range_start_label
+ * @param {String} range_end_label
  * @param {Boolean} template
  * @param {Object} current_language
  * @param {Object} original_language
@@ -698,6 +704,7 @@ function parseConcreteQuestion({
   owners,
   reference_id,
   text,
+  position,
   range_start,
   range_end,
   range_start_label,
@@ -721,6 +728,7 @@ function parseConcreteQuestion({
     template,
     reference_id,
     text,
+    position,
     new Range({
       start: range_start,
       end: range_end,
