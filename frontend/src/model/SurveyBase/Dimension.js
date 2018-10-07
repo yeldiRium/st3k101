@@ -11,6 +11,7 @@ class Dimension extends SurveyBase {
    * @param {Boolean} template See SurveyBase.
    * @param {String} referenceId See SurveyBase.
    * @param {string} name The Dimension's name.
+   * @param {Integer} position The Dimension's position within the Questionnaire.
    * @param {Array.<Question>} questions An Array of all connected Questions.
    * @param {boolean} randomizeQuestions Whether the Questions should be dis-
    *  played in a random order to DataSubjects.
@@ -23,11 +24,13 @@ class Dimension extends SurveyBase {
     template,
     referenceId,
     name,
+    position,
     questions,
     randomizeQuestions
   ) {
     super(href, id, owners, languageData, template, referenceId);
     this.name = name;
+    this.position = position;
     this.questions = questions;
     this.randomizeQuestions = randomizeQuestions;
   }
@@ -62,6 +65,7 @@ class Dimension extends SurveyBase {
       this.template,
       this.referenceId,
       this.name,
+      this.position,
       R.map(R.clone, this.questions),
       this.randomizeQuestions
     );
@@ -81,6 +85,7 @@ class Dimension extends SurveyBase {
       o => R.equals(o.referenceId, this.referenceId),
       o => R.equals(o.template, this.template),
       o => R.equals(o.name, this.name),
+      o => R.equals(o.position, this.position),
       o => R.equals(o.randomizeQuestions, this.randomizeQuestions),
       o => allContentsEqual(o.questions, this.questions)
     ])(otherDimension);
@@ -89,7 +94,7 @@ class Dimension extends SurveyBase {
 
 class DimensionTemplate extends Dimension {
   constructor(href, id, languageData, referenceId, name) {
-    super(href, id, [], languageData, true, referenceId, name, [], false);
+    super(href, id, [], languageData, true, referenceId, name, 0, [], false);
   }
 
   get isReadonlyTemplate() {
@@ -125,6 +130,7 @@ class ConcreteDimension extends Dimension {
    * @param {Boolean} template See SurveyBase.
    * @param {String} referenceId See SurveyBase.
    * @param {string} name See Dimension.
+   * @param {Integer} position See Dimension.
    * @param {Array.<Question>} questions See Dimension.
    * @param {boolean} randomizeQuestions See Dimension.
    * @param {number}  incomingReferenceCount Number of references to this
@@ -143,6 +149,7 @@ class ConcreteDimension extends Dimension {
     template,
     referenceId,
     name,
+    position,
     questions,
     randomizeQuestions,
     incomingReferenceCount,
@@ -156,6 +163,7 @@ class ConcreteDimension extends Dimension {
       template,
       referenceId,
       name,
+      position,
       questions,
       randomizeQuestions
     );
@@ -184,6 +192,7 @@ class ConcreteDimension extends Dimension {
       this.template,
       this.referenceId,
       this.name,
+      this.position,
       R.map(R.clone, this.questions),
       this.randomizeQuestions,
       this.incomingReferenceCount,
@@ -211,6 +220,7 @@ class ShadowDimension extends Dimension {
    * @param {LanguageData} languageData See SurveyBase.
    * @param {String} referenceId See SurveyBase.
    * @param {string} name See Dimension.
+   * @param {Integer} position See Dimension.
    * @param {Array.<Question>} questions See Dimension.
    * @param {boolean} randomizeQuestions See Dimension.
    * @param {Resource|ConcreteDimension} referenceTo Href or instance of the
@@ -223,6 +233,7 @@ class ShadowDimension extends Dimension {
     languageData,
     referenceId,
     name,
+    position,
     questions,
     randomizeQuestions,
     referenceTo
@@ -235,6 +246,7 @@ class ShadowDimension extends Dimension {
       false,
       referenceId,
       name,
+      position,
       questions,
       randomizeQuestions
     );
@@ -257,6 +269,7 @@ class ShadowDimension extends Dimension {
       this.languageData.clone(),
       this.referenceId,
       this.name,
+      this.position,
       R.map(R.clone, this.questions),
       this.randomizeQuestions,
       this.referenceTo.clone()

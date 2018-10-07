@@ -452,6 +452,7 @@ function parseTemplateDimension({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} name
+ * @param {Integer} position
  * @param {Array} questions
  * @param {Boolean} randomize_question_order
  * @param {Boolean} template
@@ -468,6 +469,7 @@ function parseShadowDimension({
   owners,
   reference_id,
   name,
+  position,
   questions,
   randomize_question_order,
   current_language,
@@ -486,6 +488,7 @@ function parseShadowDimension({
     }),
     reference_id,
     name,
+    position,
     map(parseQuestion, questions),
     randomize_question_order,
     parseResource(reference_to)
@@ -500,6 +503,7 @@ function parseShadowDimension({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} name
+ * @param {Integer} position
  * @param {Array} questions
  * @param {Boolean} randomize_question_order
  * @param {Boolean} template
@@ -517,6 +521,7 @@ function parseConcreteDimension({
   owners,
   reference_id,
   name,
+  position,
   questions,
   randomize_question_order,
   template,
@@ -538,6 +543,7 @@ function parseConcreteDimension({
     template,
     reference_id,
     name,
+    position,
     map(parseQuestion, questions),
     randomize_question_order,
     incoming_reference_count,
