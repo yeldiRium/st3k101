@@ -19,10 +19,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('dimension', sa.Column('position', sa.Integer(), nullable=False, server_default="0"))
-    op.add_column('question', sa.Column('position', sa.Integer(), nullable=False, server_default="0"))
-    op.alter_column('dimension', 'position', server_default=None)  # remove default, only needed for not null constraint
-    op.alter_column('question', 'position', server_default=None)
+    op.add_column('dimension', sa.Column('position', sa.Integer()))
+    op.add_column('question', sa.Column('position', sa.Integer()))
     upgrade_data()
 
 

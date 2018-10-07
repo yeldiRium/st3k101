@@ -28,7 +28,7 @@ class Question(SurveyBase):
     __tablename__ = 'question'
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
-    position = db.Column(db.Integer, nullable=False)
+    position = db.Column(db.Integer)
 
     # foreign keys
     dimension_id = db.Column(db.Integer, db.ForeignKey('dimension.id'))

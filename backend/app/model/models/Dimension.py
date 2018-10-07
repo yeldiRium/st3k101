@@ -23,7 +23,7 @@ class Dimension(SurveyBase):
     __mapper_args__ = {'polymorphic_identity': __tablename__}
 
     # columns
-    position = db.Column(db.Integer, nullable=False)
+    position = db.Column(db.Integer)
     randomize_question_order = db.Column(db.Boolean, nullable=False,
                                          default=False)
 
