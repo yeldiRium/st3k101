@@ -5,7 +5,17 @@ from typing import List, Pattern
 
 from flask import g
 
+from framework.internationalization import _
+
 __author__ = "Noah Hummel, Hannes Leutloff"
+
+
+def construct_verification_email(questionnaire, verification_token) -> str:
+    if __name__ == '__main__':
+        message = _("Hi there!\n You've recently participated in the survey ") + questionnaire.name + ".\n"
+        message += _("To verify that you're actually you and make your answer count, please follow the link below:\n\n")
+        message += "http://{}/api/response/verify/{}\n\n".format(g._config['DOMAIN_NAME'], verification_token)  # TODO https
+        return message
 
 
 def send_mail(to: str, subject: str, message: str) -> None:
