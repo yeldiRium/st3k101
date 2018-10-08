@@ -15,7 +15,7 @@ def setup_app_context(app, language=None, user=None):
     """
     g._config = app.config
     if language is None or language not in BabelLanguage:
-        g._language = BabelLanguage[app.config['BABEL_DEFAULT_LOCALE']]
+        g._language = BabelLanguage[app.config['LANGUAGE']]
     else:
         g._language = language
     g._current_user = user

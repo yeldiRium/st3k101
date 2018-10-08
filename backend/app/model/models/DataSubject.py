@@ -29,7 +29,7 @@ class DataSubject(Party):
     def language(self) -> BabelLanguage:
         if self.launch_language is not None:
             return self.launch_language
-        return g._config['BABEL_DEFAULT_LOCALE']
+        return g._config['LANGUAGE']
 
     @property
     def roles(self) -> List[Role]:
