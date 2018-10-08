@@ -26,24 +26,20 @@ _config_keys = {
         "default": "localhost"
     },
     "ADMIN_EMAIL": {
-        "type": str,
-        "default": None
+        "type": str
     },
     "XAPI_DEFAULT_ENDPOINT": {
         "type": str,
         "default": "tla.edutec.guru"
     },
     "SMTP_FROM_ADDRESS": {
-        "type": str,
-        "default": None
+        "type": str
     },
     "SMTP_PASSWORD": {
-        "type": str,
-        "default": None
+        "type": str
     },
     "SMTP_SERVER": {
-        "type": str,
-        "default": None
+        "type": str
     },
     "SMTP_PORT": {
         "type": int,
@@ -78,7 +74,7 @@ def get_config_from_envvars() -> dict:
     for key, info in _config_keys.items():
         value = os.environ.get(key)
         expected_type: type = info["type"]
-        default_value = info["default"]
+        default_value = info.get("default")
         if value is None:
             if default_value is None:
                 raise MissingConfigValueException(key)
