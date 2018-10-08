@@ -25,6 +25,10 @@
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
             />
+            <div class="list-item__icon stack-icons">
+                <IconExpandLess @click.native="moveUp"></IconExpandLess>
+                <IconExpandMore @click.native="moveDown"></IconExpandMore>
+            </div>
         </ListItem>
 
         <div class="dimension__body"
@@ -216,6 +220,12 @@ export default {
     }
   },
   methods: {
+    moveUp() {
+      this.$emit("dimension-move-up");
+    },
+    moveDown() {
+      this.$emit("dimension-move-down");
+    },
     toggleExpanded() {
       this.expanded = !this.expanded;
     },
@@ -535,6 +545,19 @@ export default {
     &--on-side.toggle-button__on-side--active {
       color: $verydark;
     }
+  }
+}
+.stack-icons {
+  display: inline-grid;
+  grid-template-rows: 2.5% 47.5% 47.5% 2.5%;
+  grid-template-areas: "." "top" "bottom" ".";
+
+  > *:first-child {
+    grid-area: top;
+  }
+
+  > *:last-child {
+    grid-area: bottom;
   }
 }
 </style>
