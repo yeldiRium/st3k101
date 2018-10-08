@@ -8,7 +8,7 @@ __author__ = "Noah Hummel"
 
 class QuestionSchema(SurveyBaseSchema):
     text = fields.String(required=True)
-    position = fields.Integer(dump_only=True)
+    position = fields.Integer()
     range_start = fields.Integer(default=10)
     range_end = fields.Integer(default=0)
     range_start_label = fields.String(required=True)
