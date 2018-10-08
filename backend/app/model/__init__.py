@@ -28,7 +28,7 @@ def default_locale(obj: db.Model) -> str:
         return obj.original_language.name
     elif hasattr(obj, 'default_language'):
         return obj.default_language.name
-    return app.config['BABEL_DEFAULT_LOCALE']
+    return app.config['LANGUAGE']
 
 
 translation_hybrid = TranslationHybrid(

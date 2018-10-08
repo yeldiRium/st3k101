@@ -29,7 +29,7 @@ __author__ = "Noah Hummel"
 @SIG_LOGGED_IN.connect
 def publish_logged_in_xapi_statement(sender: Party):
     statement = XApiLoggedInStatement(sender)
-    XApiPublisher().enqueue([statement], [g._config['XAPI_DEFAULT_TARGET']])
+    XApiPublisher().enqueue([statement], [g._config['XAPI_DEFAULT_ENDPOINT']])
 
 
 @SIG_LTI_LAUNCH.connect
@@ -44,7 +44,7 @@ def publish_lti_launch_xapi_statement(sender: DataSubject, questionnaire=None):
         activity,
         xapi_context=context
     )
-    XApiPublisher().enqueue([statement], [g._config['XAPI_DEFAULT_TARGET']])
+    XApiPublisher().enqueue([statement], [g._config['XAPI_DEFAULT_ENDPOINT']])
 
 
 @SIG_QUESTION_ANSWERED.connect
