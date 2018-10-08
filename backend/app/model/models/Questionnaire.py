@@ -1,7 +1,3 @@
-from copy import copy
-
-from datetime import datetime
-
 import os
 
 from abc import abstractmethod
@@ -13,9 +9,9 @@ from framework.exceptions import BusinessRuleViolation
 from framework.internationalization import __
 from framework.internationalization.babel_languages import BabelLanguage
 from framework.tracker import TrackingType
-from framework.signals import item_added, item_removed, questionnaire_removed, SIG_QUESTIONNAIRE_PUBLISHED, \
-    SIG_QUESTIONNAIRE_UNPUBLISHED, SIG_SURVEY_CONCLUDED
+from framework.signals import item_added, item_removed, questionnaire_removed
 from model import db, MUTABLE_HSTORE, translation_hybrid
+from sqlalchemy.ext.orderinglist import ordering_list
 from model.models.Dimension import Dimension, ConcreteDimension, ShadowDimension
 from model.models.QuestionResponse import QuestionResponse
 from model.models.SurveyBase import SurveyBase
@@ -57,7 +53,9 @@ class Questionnaire(SurveyBase):
         'Dimension',
         backref='questionnaire',
         cascade='all, delete-orphan',
-        foreign_keys=[Dimension.questionnaire_id]
+        foreign_keys=[Dimension.questionnaire_id],
+        order_by='Dimension.position',
+        collection_class=ordering_list('position')
     )
 
     tracker_args = {

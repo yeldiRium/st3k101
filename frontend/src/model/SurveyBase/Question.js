@@ -16,6 +16,7 @@ class Question extends SurveyBase {
    * @param {Boolean} template See SurveyBase.
    * @param {String} referenceId See SurveyBase.
    * @param {string}  text The Question text.
+   * @param {Integer} position The position of the question in the parent Dimension
    * @param {Range}   range The range for the Question's answer.
    */
   constructor(
@@ -26,11 +27,13 @@ class Question extends SurveyBase {
     template,
     referenceId,
     text,
+    position,
     range
   ) {
     super(href, id, owners, languageData, template, referenceId);
 
     this.text = text;
+    this.position = position;
     this.range = range;
   }
 
@@ -64,6 +67,7 @@ class Question extends SurveyBase {
       this.template,
       this.referenceId,
       this.text,
+      this.position,
       this.range.clone()
     );
   }
@@ -82,6 +86,7 @@ class Question extends SurveyBase {
       o => R.equals(o.template, this.template),
       o => R.equals(o.referenceId, this.referenceId),
       o => R.equals(o.text, this.text),
+      o => R.equals(o.position, this.position),
       o => R.equals(o.range, this.range)
     ])(otherQuestion);
   }
@@ -93,15 +98,16 @@ class Question extends SurveyBase {
  */
 class ConcreteQuestion extends Question {
   /**
-   * @param {String}  href See Resource.
+   * @param {String} href See Resource.
    * @param {String} id See Resource.
    * @param {Array<Party>} owners See OwnedResource.
    * @param {LanguageData} languageData See SurveyBase.
    * @param {Boolean} template See SurveyBase.
    * @param {String} referenceId See SurveyBase.
-   * @param {string}  text See Question.
-   * @param {Range}   range See Question.
-   * @param {number}  incomingReferenceCount Number of references to this
+   * @param {string} text See Question.
+   * @param {Integer} position See Question.
+   * @param {Range} range See Question.
+   * @param {number} incomingReferenceCount Number of references to this
    *  Question.
    *  This counts references not owned by the current user and can thus be
    *  bigger than the number of ownedIncomingReferences.
@@ -117,6 +123,7 @@ class ConcreteQuestion extends Question {
     template,
     referenceId,
     text,
+    position,
     range,
     incomingReferenceCount,
     ownedIncomingReferences
@@ -127,7 +134,17 @@ class ConcreteQuestion extends Question {
       );
     }
 
-    super(href, id, owners, languageData, template, referenceId, text, range);
+    super(
+      href,
+      id,
+      owners,
+      languageData,
+      template,
+      referenceId,
+      text,
+      position,
+      range
+    );
     this.incomingReferenceCount = incomingReferenceCount;
     this.ownedIncomingReferences = ownedIncomingReferences;
   }
@@ -162,6 +179,7 @@ class ConcreteQuestion extends Question {
       this.template,
       this.referenceId,
       this.text,
+      this.position,
       this.range.clone(),
       this.incomingReferenceCount,
       R.map(R.clone, this.ownedIncomingReferences)
@@ -175,13 +193,14 @@ class ConcreteQuestion extends Question {
  */
 class ShadowQuestion extends Question {
   /**
-   * @param {String}  href See Resource.
+   * @param {String} href See Resource.
    * @param {String} id See Resource.
    * @param {Array<Party>} owners See OwnedResource.
    * @param {LanguageData} languageData See SurveyBase.
    * @param {String} referenceId See SurveyBase.
-   * @param {string}  text See Question.
-   * @param {Range}   range See Question.
+   * @param {string} text See Question.
+   * @param {Integer} position See Question.
+   * @param {Range} range See Question.
    * @param {Resource|ConcreteQuestion} referenceTo Href or instance of the
    *  referenced Question.
    */
@@ -192,10 +211,21 @@ class ShadowQuestion extends Question {
     languageData,
     referenceId,
     text,
+    position,
     range,
     referenceTo
   ) {
-    super(href, id, owners, languageData, false, referenceId, text, range);
+    super(
+      href,
+      id,
+      owners,
+      languageData,
+      false,
+      referenceId,
+      text,
+      position,
+      range
+    );
     this.referenceTo = referenceTo;
   }
 
@@ -218,6 +248,7 @@ class ShadowQuestion extends Question {
       this.languageData.clone(),
       this.referenceId,
       this.text,
+      this.position,
       this.range.clone(),
       this.referenceTo.clone()
     );

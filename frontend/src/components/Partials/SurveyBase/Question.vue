@@ -24,6 +24,12 @@
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
             />
+            <div class="list-item__icon stack-icons"
+                 v-if="isDeletable(question)"
+            >
+                <IconExpandLess @click.native="moveUp"></IconExpandLess>
+                <IconExpandMore @click.native="moveDown"></IconExpandMore>
+            </div>
         </ListItem>
 
         <div class="question__body"
@@ -173,6 +179,12 @@ export default {
     }
   },
   methods: {
+    moveUp() {
+      this.$emit("question-move-up");
+    },
+    moveDown() {
+      this.$emit("question-move-down");
+    },
     /**
      * Toggle whether the Question is collapsed or expanded.
      */

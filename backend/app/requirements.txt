@@ -3,6 +3,7 @@ argon2
 Flask-Babel
 pyyaml
 Flask-SQLAlchemy
+Flask-Migrate
 sqlalchemy_utils
 psycopg2
 deprecated

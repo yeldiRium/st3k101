@@ -204,4 +204,17 @@ export default {
     cursor: pointer;
   }
 }
+.stack-icons {
+  display: inline-grid;
+  grid-template-rows: 2.5% 47.5% 47.5% 2.5%;
+  grid-template-areas: "." "top" "bottom" ".";
+
+  > *:first-child {
+    grid-area: top;
+  }
+
+  > *:last-child {
+    grid-area: bottom;
+  }
+}
 </style>

@@ -9,6 +9,7 @@ __author__ = "Noah Hummel"
 
 class DimensionSchema(SurveyBaseSchema):
     name = fields.String(required=True)
+    position = fields.Integer()
     randomize_question_order = fields.Boolean()
     questions = fields.Nested(QuestionSchema, many=True)
     shadow = fields.Method('is_shadow')

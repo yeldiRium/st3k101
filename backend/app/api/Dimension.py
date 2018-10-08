@@ -45,13 +45,14 @@ class DimensionResource(Resource):
                 'errors': errors
             }, 400
 
-        shadow_attributes = ['randomize_question_order']
+        shadow_attributes = ['randomize_question_order', 'position']
         for k, v in data.items():
             if isinstance(dimension, ShadowDimension):
                 if k not in shadow_attributes:
-                    errors[k] = ['Can\'t update {} of a ShadowDimension. The '
-                                 'contributor owning the template is '
-                                 'responsible for the Dimension\'s content.'.format(k)]
+                    errors[k] = [
+                        'Can\'t update {} of a ShadowDimension. The contributor owning '
+                        'the template is responsible for the Dimension\'s content.'.format(k)
+                    ]
                     continue
             else:
                 if k == 'template' and not current_has_minimum_role(Role.Contributor):
