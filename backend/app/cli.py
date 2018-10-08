@@ -36,7 +36,7 @@ def initdb():
 @click.option(
     '--language',
     type=click.Choice([lang.name for lang in BabelLanguage]),
-    default=app.config['BABEL_DEFAULT_LOCALE'],
+    default=app.config['LANGUAGE'],
     help='The DataClient\'s language.'
 )
 @click.argument(

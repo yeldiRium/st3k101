@@ -75,7 +75,7 @@ class Questionnaire(SurveyBase):
         self.password = ''
         self.email_blacklist = []
         self.email_whitelist = []
-        self.xapi_target = g._config['XAPI_DEFAULT_TARGET']
+        self.xapi_target = g._config['XAPI_DEFAULT_ENDPOINT']
         self.lti_consumer_key = os.urandom(32).hex()
 
     @property

@@ -30,7 +30,7 @@ def before_request():
 
     # Setting the locale for the current request
     g._language = BabelLanguage[
-        g._config["BABEL_DEFAULT_LOCALE"]
+        g._config["LANGUAGE"]
     ]  # use default locale if all fails
 
     # parse bearer token auth
