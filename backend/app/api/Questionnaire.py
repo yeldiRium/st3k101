@@ -47,7 +47,7 @@ class QuestionnaireResource(Resource):
 
         previously_published = copy(questionnaire.published)
 
-        shadow_attributes = ['published', 'allow_embedded', 'xapi_target']
+        shadow_attributes = ['published', 'accepts_submissions', 'allow_embedded', 'xapi_target']
         for k, v in data.items():
             if isinstance(questionnaire, ShadowQuestionnaire):
                 if k not in shadow_attributes:
