@@ -24,6 +24,12 @@
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
             />
+            <div class="list-item__icon stack-icons"
+                 v-if="isDeletable(question)"
+            >
+                <IconExpandLess @click.native="moveUp"></IconExpandLess>
+                <IconExpandMore @click.native="moveDown"></IconExpandMore>
+            </div>
         </ListItem>
 
         <div class="question__body"
@@ -107,8 +113,6 @@ import { assoc } from "ramda";
 import { Question } from "../../../model/SurveyBase/Question";
 import { Roles, isAtLeast } from "../../../model/Roles";
 
-import { setRange, setText } from "../../../api/Question";
-
 import SurveyBase from "./SurveyBase";
 import ListItem from "../List/Item";
 import LanguagePicker from "../LanguagePicker";
@@ -175,6 +179,12 @@ export default {
     }
   },
   methods: {
+    moveUp() {
+      this.$emit("question-move-up");
+    },
+    moveDown() {
+      this.$emit("question-move-down");
+    },
     /**
      * Toggle whether the Question is collapsed or expanded.
      */
@@ -186,7 +196,7 @@ export default {
      * @param {Language} language
      */
     changeLanguage(language) {
-      const cancel = this.$load(
+      this.$load(
         this.$store.dispatch("questions/fetchQuestion", {
           href: this.question.href,
           language
@@ -223,7 +233,7 @@ export default {
         return;
       }
 
-      const cancel = this.$load(
+      this.$load(
         this.$store
           .dispatch("questions/updateQuestion", {
             question: this.question,
@@ -297,7 +307,7 @@ export default {
 
       let template = !this.question.template;
 
-      const cancel = this.$load(
+      this.$load(
         this.$store
           .dispatch("questions/updateQuestion", {
             question: this.question,

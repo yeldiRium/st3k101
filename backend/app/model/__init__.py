@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from sqlalchemy import MetaData
 from sqlalchemy_utils import TranslationHybrid
 from sqlalchemy.dialects.postgresql import HSTORE as postgresql_HSTORE
@@ -16,7 +17,7 @@ naming_convention = {
 }
 metadata = MetaData(naming_convention=naming_convention)
 db: SQLAlchemy = SQLAlchemy(app, metadata=metadata)
-
+migrate = Migrate(app, db)
 
 # Internationalization from sqlalchemy_utils
 

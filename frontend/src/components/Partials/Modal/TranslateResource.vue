@@ -70,7 +70,6 @@ export default {
       // Escape key was pressed
       if (event.which == 27) {
         this.$emit("cancel");
-        return;
       }
     }
   },

@@ -1,29 +1,19 @@
 import {
-  __,
   allPass,
-  always,
-  any,
-  assoc,
   bind,
   clone,
-  contains,
   filter,
   find,
   isNil,
-  keys,
   map,
   pipe,
   prop,
-  propEq,
   reject,
   uniq,
-  when,
   without
 } from "ramda";
 import * as Future from "fluture/index.js";
 
-import { ConcreteQuestionnaire } from "../../model/SurveyBase/Questionnaire";
-import { Language } from "../../model/Language";
 import {
   addConcreteDimension,
   addShadowDimension,
@@ -232,6 +222,7 @@ const store = {
      * store.
      *
      * @param dispatch
+     * @param rootGetters
      * @param {Language} language
      * @param {String} name
      * @param {String} description
@@ -265,6 +256,7 @@ const store = {
      * store.
      *
      * @param dispatch
+     * @param rootGetters
      * @param {ConcreteQuestionnaire} concreteQuestionnaire
      *
      * @return {Future}

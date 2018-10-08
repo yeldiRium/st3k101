@@ -22,7 +22,7 @@
 |*|  * docCookies.keys()
 |*|
 |*|
-|*|  EDITED BY Hannes Leutlof <hannes.leutloff@aol.de>
+|*|  EDITED BY Hannes Leutloff <hannes.leutloff@aol.de>
 |*|  to be ES6 compliant and a little more to my liking
 |*|
 \*/
@@ -36,7 +36,7 @@ function getItem(sKey) {
       document.cookie.replace(
         new RegExp(
           "(?:(?:^|.*;)\\s*" +
-            encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") +
+            encodeURIComponent(sKey).replace(/[-.+*]/g, "\\$&") +
             "\\s*\\=\\s*([^;]*).*$)|^.*$"
         ),
         "$1"
@@ -46,7 +46,7 @@ function getItem(sKey) {
 }
 
 function setItem(sKey, sValue, vEnd, sPath, sDomain, bSecure) {
-  if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+  if (!sKey || /^(?:expires|max-age|path|domain|secure)$/i.test(sKey)) {
     return false;
   }
   let sExpires = "";
@@ -99,20 +99,20 @@ function removeItem(sKey, sPath, sDomain) {
 }
 
 function hasItem(sKey) {
-  if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) {
+  if (!sKey || /^(?:expires|max-age|path|domain|secure)$/i.test(sKey)) {
     return false;
   }
   return new RegExp(
     "(?:^|;\\s*)" +
-      encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") +
+      encodeURIComponent(sKey).replace(/[-.+*]/g, "\\$&") +
       "\\s*\\="
   ).test(document.cookie);
 }
 
 function keys() {
   const aKeys = document.cookie
-    .replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
-    .split(/\s*(?:\=[^;]*)?;\s*/);
+    .replace(/((?:^|\s*;)[^=]+)(?=;|$)|^\s*|\s*(?:=[^;]*)?(?:\1|$)/g, "")
+    .split(/\s*(?:=[^;]*)?;\s*/);
   for (let nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) {
     aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
   }

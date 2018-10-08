@@ -266,15 +266,15 @@ export default {
     }
   },
   watch: {
-    selector(newSelector, oldSelector) {
+    selector(newSelector) {
       this.$emit("selector-change", newSelector);
     },
-    "range.start": function(newStart, oldStart) {
+    "range.start": function(newStart) {
       if (!contains(this.selector, this.range.numbers)) {
         this.selector = newStart;
       }
     },
-    "range.end": function(newEnd, oldEnd) {
+    "range.end": function(newEnd) {
       if (!contains(this.selector, this.range.numbers)) {
         this.selector = newEnd;
       }

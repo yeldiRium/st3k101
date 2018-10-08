@@ -1,15 +1,5 @@
 import * as Future from "fluture/index.js";
-import {
-  assoc,
-  clone,
-  contains,
-  dissoc,
-  has,
-  map,
-  pipe,
-  prop,
-  without
-} from "ramda";
+import { contains, map, pipe, prop } from "ramda";
 
 import { fetchApi } from "./Util/Request";
 import { extractJson } from "./Util/Response";
@@ -20,12 +10,8 @@ import {
   ConcreteDimension,
   ShadowDimension
 } from "../model/SurveyBase/Dimension";
-import { ConcreteQuestion } from "../model/SurveyBase/Question";
 import renameProp from "./Util/renameProp";
-
-const properties = ["name", "randomizeQuestions"];
-
-const concreteProperties = ["name"];
+import { Resource } from "../model/Resource";
 
 /**
  * Fetches a Dimension by a given href in the given language.
@@ -218,96 +204,6 @@ function removeQuestion(authenticationToken, dimension, question) {
     }).map(() => true);
   } else {
     return Future.reject("Question not contained in Dimension.");
-  }
-}
-
-/**
- * Takes in a Dimension and populates its incoming references field by replacing
- * all resolvable References with their corresponding ShadowDimension instances.
- *
- * Accesses the API to load the Dimensions.
- *
- * If this rejects, then some dimensions might be populated and some might still
- * be Resources. The exact state will have to be tested.
- *
- * @param {String} authenticationToken
- * @param {ConcreteDimension} concreteDimension
- * @return {Future}
- * @resolve {Array<ShadowDimension>}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateOwnedIncomingReferences(
-  authenticationToken,
-  concreteDimension
-) {
-  const resolvedShadowDimensionFutures = [];
-
-  // Use basic for loop to easily replace values.
-  for (let i = 0; i < concreteDimension.ownedIncomingReferences.length; i++) {
-    let reference = concreteDimension.ownedIncomingReferences[i];
-
-    if (instanceOf(reference, Resource)) {
-      const shadowDimensionFuture = fetchDimension(
-        authenticationToken,
-        reference.href,
-        concreteDimension.languageData.currentLanguage
-      ).chain(shadowDimension => {
-        concreteDimension.ownedIncomingReferences[i] = shadowDimension;
-        return Future.of(shadowDimension);
-      });
-
-      resolvedShadowDimensionFutures.push(shadowDimensionFuture);
-    }
-  }
-  // MAYBE: is Infinity appropriate?
-  return Future.parallel(Infinity, resolvedShadowDimensionFutures);
-}
-
-/**
- * If the referenceTo field contains a Resource, it is resolved to a
- * ConcreteDimension instance. Otherwise it is left as is.
- *
- * Accesses the API to load the Dimension.
- *
- * @param {String} authenticationToken
- * @param {ShadowDimension} shadowDimension
- * @return {Future}
- * @resolve {ConcreteDimension}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateReferenceTo(authenticationToken, shadowDimension) {
-  if (instanceOf(shadowDimension.referenceTo, Resource)) {
-    return fetchDimension(
-      authenticationToken,
-      shadowDimension.referenceTo.href,
-      shadowDimension.languageData.currentLanguage
-    ).chain(concreteDimension => {
-      shadowDimension.referenceTo = concreteDimension;
-      return Future.of(concreteDimension);
-    });
-  }
-  return Future.of(shadowDimension.referenceTo);
-}
-
-/**
- * Based on the type of the given Dimension this either populates its incoming
- * references or its referenceTo field.
- *
- * @param {String} authenticationToken
- * @param {Dimension} dimension
- * @return {Future}
- * @resolve {Array<ShadowDimension>|ConcreteDimension}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateDimension(authenticationToken, dimension) {
-  if (instanceOf(dimension, ShadowDimension)) {
-    return populateReferenceTo(authenticationToken, dimension);
-  }
-  if (instanceOf(dimension, ConcreteDimension)) {
-    return populateOwnedIncomingReferences(authenticationToken, dimension);
   }
 }
 

@@ -1,4 +1,4 @@
-import { append, clone, concat, contains, uniq, without } from "ramda";
+import { clone, contains } from "ramda";
 
 import EMailListBase from "./EMailListBase";
 

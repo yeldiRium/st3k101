@@ -60,6 +60,8 @@
                            :key="dimension.href"
                            :dimension="dimension"
                            :deletable="questionnaire.isConcrete"
+                           @dimension-move-up="moveDimensionUp(dimension)"
+                           @dimension-move-down="moveDimensionDown(dimension)"
                            @dimension-delete="deleteDimension"
                 />
             </div>
@@ -307,7 +309,7 @@ export default {
       );
     },
     dimensionsOrdered() {
-      return R.sortBy(R.prop("id"), this.questionnaire.dimensions);
+      return R.sortBy(R.prop("position"), this.questionnaire.dimensions);
     },
     ltiUrl() {
       return `https://${window.location.hostname}/survey/${
@@ -316,6 +318,45 @@ export default {
     }
   },
   methods: {
+    swapDimensions(first, second) {
+      const firstPosition = first.position;
+      const secondPosition = second.position;
+      this.$load(
+        this.$store
+          .dispatch("dimensions/updateDimension", {
+            dimension: first,
+            params: {
+              position: secondPosition
+            }
+          })
+          .chain(() =>
+            this.$store.dispatch("dimensions/updateDimension", {
+              dimension: second,
+              params: {
+                position: firstPosition
+              }
+            })
+          )
+      ).fork(this.$handleApiError, () => this.$emit("updated"));
+    },
+    moveDimensionUp(dimension) {
+      const previous = R.find(
+        R.propEq("position", dimension.position - 1),
+        this.questionnaire.dimensions
+      );
+      if (!R.isNil(previous)) {
+        this.swapDimensions(previous, dimension);
+      }
+    },
+    moveDimensionDown(dimension) {
+      const next = R.find(
+        R.propEq("position", dimension.position + 1),
+        this.questionnaire.dimensions
+      );
+      if (!R.isNil(next)) {
+        this.swapDimensions(dimension, next);
+      }
+    },
     toggleExpanded() {
       this.expanded = !this.expanded;
     },
@@ -516,7 +557,7 @@ export default {
 
       let template = !this.questionnaire.template;
 
-      const cancel = this.$load(
+      this.$load(
         this.$store
           .dispatch("questionnaires/updateQuestionnaire", {
             questionnaire: this.questionnaire,

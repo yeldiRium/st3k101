@@ -1,4 +1,4 @@
-import { bind, filter, find, isNil, map, pipe, reject } from "ramda";
+import { bind, filter, find, isNil, reject } from "ramda";
 import * as Future from "fluture/index.js";
 
 import {
@@ -31,12 +31,9 @@ const store = {
      * Returns al Questions that can be used as templates.
      *
      * @param state
-     * @param getters
-     * @param rootState
-     * @param rootGetters
      * @returns {Array<ConcreteQuestion>}
      */
-    questionTemplates(state, getters, rootState, rootGetters) {
+    questionTemplates(state) {
       return filter(question => question.template, state.questions);
     }
   },

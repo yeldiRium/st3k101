@@ -1,30 +1,12 @@
 import * as Future from "fluture/index.js";
-import {
-  assoc,
-  clone,
-  contains,
-  dissoc,
-  has,
-  map,
-  path,
-  pipe,
-  prop,
-  when
-} from "ramda";
+import { assoc, dissoc, has, map, path, pipe, prop, when } from "ramda";
 
 import { fetchApi } from "./Util/Request";
 import { extractJson } from "./Util/Response";
 import { parseQuestion } from "./Util/Parse";
 
-import Question, {
-  ConcreteQuestion,
-  ShadowQuestion
-} from "../model/SurveyBase/Question";
+import { ConcreteQuestion, ShadowQuestion } from "../model/SurveyBase/Question";
 import renameProp from "./Util/renameProp";
-
-const properties = ["text", "range"];
-
-const concreteProperties = ["text"];
 
 /**
  * Fetches a Question by a given href in the given language.
@@ -127,107 +109,9 @@ function updateQuestion(authenticationToken, question, language, params) {
     );
 }
 
-/**
- * Takes in a Question and populates its incoming references field by replacing
- * all resolvable References with their corresponding ShadowQuestion instances.
- *
- * Accesses the API to load the Questions.
- *
- * If this rejects, then some questions might be populated and some might still
- * be Resources. The exact state will have to be tested.
- *
- * @param authenticationToken
- * @param {ConcreteQuestion} concreteQuestion
- * @return {Future}
- * @resolve {Array<ShadowQuestion>}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateOwnedIncomingReferences(
-  authenticationToken,
-  concreteQuestion
-) {
-  const resolvedShadowQuestionFutures = [];
-
-  // Use basic for loop to easily replace values.
-  for (let i = 0; i < concreteQuestion.ownedIncomingReferences.length; i++) {
-    /** @type {Resource|ShadowQuestion} */
-    let reference = concreteQuestion.ownedIncomingReferences[i];
-
-    if (instanceOf(reference, Resource)) {
-      const shadowQuestionFuture = fetchQuestion(
-        authenticationToken,
-        reference.href,
-        concreteQuestion.languageData.currentLanguage
-      ).chain(shadowQuestion => {
-        concreteQuestion.ownedIncomingReferences[i] = shadowQuestion;
-        return Future.of(shadowQuestion);
-      });
-
-      resolvedShadowQuestionFutures.push(shadowQuestionFuture);
-    }
-  }
-  // MAYBE: is Infinity appropriate?
-  return Future.parallel(Infinity, resolvedShadowQuestionFutures);
-}
-
-/**
- * If the referenceTo field contains a Resource, it is resolved to a
- * ConcreteQuestion instance. Otherwise it is left as is.
- *
- * Accesses the API to load the Question.
- *
- * If this rejects, the referenceTo property was not replaced. It might still be
- * a Resource.
- *
- * @param authenticationToken
- * @param {ShadowQuestion} shadowQuestion
- * @return {Future}
- * @resolve {ConcreteQuestion}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateReferenceTo(authenticationToken, shadowQuestion) {
-  if (instanceOf(shadowQuestion.referenceTo, Resource)) {
-    const shadowQuestionFuture = fetchQuestion(
-      authenticationToken,
-      shadowQuestion.referenceTo.href,
-      shadowQuestion.languageData.currentLanguage
-    ).chain(concreteQuestion => {
-      shadowQuestion.referenceTo = concreteQuestion;
-      return Future.of(concreteQuestion);
-    });
-  }
-  return Future.of(shadowQuestion.referenceTo);
-}
-
-/**
- * Based on the type of the given Question this either populates its incoming
- * references or its referenceTo field.
- *
- * @param authenticationToken
- * @param {Question} question
- * @return {Future}
- * @resolve {Array<ShadowQuestion>|ConcreteQuestion}
- * @reject {TypeError|ApiError}
- * @cancel
- */
-function populateQuestion(authenticationToken, question) {
-  // Type warnings can be ignored, since they are tested.
-  if (instanceOf(question, ShadowQuestion)) {
-    return populateReferenceTo(authenticationToken, question);
-  }
-  if (instanceOf(question, ConcreteQuestion)) {
-    return populateOwnedIncomingReferences(authenticationToken, question);
-  }
-}
-
 export {
   fetchQuestion,
   fetchQuestionById,
   fetchQuestionTemplates,
-  updateQuestion,
-  populateOwnedIncomingReferences,
-  populateReferenceTo,
-  populateQuestion
+  updateQuestion
 };

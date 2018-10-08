@@ -55,15 +55,21 @@ class QuestionResource(Resource):
                 'errors': errors
             }, 400
 
-        if isinstance(question, ShadowQuestion):
-            abort(403)
-
+        shadow_attributes = ['position']
         for k, v in data.items():
-            if 'k' == 'template':
-                if not current_has_minimum_role(Role.Contributor):
-                    errors[k] = ['You need to be a contributor to publish '
-                                 'templates.']
+            if isinstance(question, ShadowQuestion):
+                if k not in shadow_attributes:
+                    errors[k] = [
+                        'Can\'t update {} of a ShadowQuestion. The contributor owning '
+                        'the template is responsible for the Dimension\'s content.'.format(k)
+                    ]
                     continue
+            else:
+                if 'k' == 'template':
+                    if not current_has_minimum_role(Role.Contributor):
+                        errors[k] = ['You need to be a contributor to publish '
+                                     'templates.']
+                        continue
             setattr(question, k, v)
         db.session.commit()
 

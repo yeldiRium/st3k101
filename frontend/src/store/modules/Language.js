@@ -1,7 +1,7 @@
 import { sort } from "ramda";
 import * as Future from "fluture/index.js";
 
-import { byShortName, Language } from "../../model/Language";
+import { byShortName } from "../../model/Language";
 import { fetchLanguages } from "../../api/Language";
 
 const store = {

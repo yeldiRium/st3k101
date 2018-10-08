@@ -133,12 +133,12 @@ export default {
     }
   },
   watch: {
-    searchString(newValue, _) {
+    searchString(newValue) {
       this.$emit("input", newValue);
     },
     value: {
       immediate: true,
-      handler(newValue, _) {
+      handler(newValue) {
         this.searchString = newValue;
       }
     }

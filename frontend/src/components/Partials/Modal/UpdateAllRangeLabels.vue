@@ -169,6 +169,7 @@ export default {
       return range => {
         this.recomputeHack;
         if (R.isNil(this.expandedRanges[range])) {
+          // FIXME: computed properties should not have side effects
           this.expandedRanges[range] = false;
         }
         return this.expandedRanges[range];

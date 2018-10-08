@@ -1,10 +1,8 @@
-import { is } from "ramda";
-
 import store from "../../store";
 import router from "../../router";
 
 const Plugin = {
-  install(Vue, options = {}) {
+  install(Vue) {
     /**
      * Makes sure that plugin can be installed only once
      */

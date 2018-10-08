@@ -1,36 +1,27 @@
 <template>
     <div class="button"
          ref="button"
-         :class="classes"
+         :class="buttonClasses"
          v-on="$listeners"
-         @click="action"
          @keyup.enter="action"
          @mouseover="raise"
          @mouseleave="lower"
          tabindex="0"
     >
-        <div class="button__content">
-            <slot></slot>
-        </div>
-        <svg class="button__ripple"
+        <div class="button__ripple js-ripple"
+             :class="rippleClasses"
              ref="ripple"
-             version="1.1"
-             xmlns="http://www.w3.org/2000/svg"
+             @click="action"
         >
-            <circle class="button__ripple-circle"
-                    ref="circle"
-                    r="1"
-                    x="0"
-                    y="0"
-            />
-        </svg>
+            <span class="button__circle"
+                  :style="circleStyle"
+            ></span>
+        </div>
+        <slot></slot>
     </div>
 </template>
 
 <script>
-import { dissoc, has } from "ramda";
-import { Linear, TimelineMax } from "gsap";
-
 /**
  * A button that is styled and supports raising elevation on mouseover.
  */
@@ -56,8 +47,13 @@ export default {
   data() {
     return {
       elevationOffset: 0,
-      circleX: 0,
-      circleY: 0
+      offsetTop: 0,
+      offsetLeft: 0,
+      /*
+       * Whether the ripple is currently moving. This is either false or a
+       * timeout id.
+       */
+      isActive: false
     };
   },
   computed: {
@@ -74,8 +70,22 @@ export default {
      * Sets the elevation class for the button.
      * @returns {Array<String>}
      */
-    classes() {
+    buttonClasses() {
       return [`elevation-${this.actualElevation}`];
+    },
+    /**
+     * Styles for the ripple circle. Sets the ripple's centerpoint.
+     */
+    circleStyle() {
+      return {
+        top: `${this.offsetTop}px`,
+        left: `${this.offsetLeft}px`
+      };
+    },
+    rippleClasses() {
+      return {
+        "button__ripple--active": this.isActive
+      };
     }
   },
   methods: {
@@ -112,42 +122,20 @@ export default {
      * @param event
      */
     rippleAnimation(event) {
-      // Can only ripple, if the event's target has a bounding box.
-      if (typeof event.target.getBoundingClientRect !== "function") {
-        return;
-      }
+      window.clearTimeout(this.isActive);
+      this.isActive = false;
 
-      const timing = 0.75;
-      const tl = new TimelineMax();
+      this.$nextTick(() => {
+        const buttonBoundingBox = event.target.getBoundingClientRect();
+        const w = buttonBoundingBox.width;
+        const h = buttonBoundingBox.height;
+        this.offsetTop = "offsetY" in event ? event.offsetY : h / 2;
+        this.offsetLeft = "offsetX" in event ? event.offsetX : w / 2;
 
-      const buttonBoundingBox = event.target.getBoundingClientRect();
-      const w = buttonBoundingBox.width;
-      const h = buttonBoundingBox.height;
-      const x = "offsetX" in event ? event.offsetX : w / 2;
-      const y = "offsetY" in event ? event.offsetY : h / 2;
-
-      const offsetX = Math.abs(w / 2 - x);
-      const offsetY = Math.abs(h / 2 - y);
-      const deltaX = w / 2 + offsetX;
-      const deltaY = h / 2 + offsetY;
-      const scale_ratio = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-
-      tl.fromTo(
-        this.$refs.circle,
-        timing,
-        {
-          x: x,
-          y: y,
-          transformOrigin: "50% 50%",
-          scale: 0,
-          opacity: 1,
-          ease: Linear.easeIn
-        },
-        {
-          scale: scale_ratio,
-          opacity: 0
-        }
-      );
+        this.isActive = window.setTimeout(() => {
+          this.isActive = false;
+        }, 600);
+      });
     }
   }
 };
@@ -161,43 +149,36 @@ $button-color: $primary-light;
 $button-ripple-color: $primary;
 $button-focus-color: $secondary;
 
+$border-thickness: 3px;
+$ripple-color: rgba(255, 255, 255, 0.8);
+
 .button {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
+  border: $border-thickness solid transparent;
 
   background-color: $button-color;
 
-  display: grid;
-  grid-template-areas: "content";
-  grid-template-columns: fit-content(0px);
+  position: relative;
+  display: inline-block;
+  padding: 0.3em 0.5em 0.3em 0.5em;
+  vertical-align: middle;
+  overflow: visible;
+  text-align: center;
+  transition: all 0.2s ease;
+
+  &:hover,
+  &:focus {
+    outline: 0;
+    text-decoration: none;
+  }
+  &:not(:disabled) {
+    cursor: pointer;
+  }
 
   &:focus {
-    border-color: $button-focus-color;
-  }
-
-  &__content {
-    grid-area: content;
-    min-height: 1em;
-
-    text-align: center;
-    padding: 0.3em 0.5em 0.3em 0.5em;
-
-    white-space: nowrap;
-  }
-
-  &__ripple {
-    grid-area: content;
-
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none;
-
-    &-circle {
-      fill: $button-ripple-color;
-      opacity: 0;
-    }
+    border: $border-thickness solid $button-focus-color;
   }
 
   &--grey {
@@ -206,10 +187,46 @@ $button-focus-color: $secondary;
     &:focus {
       border-color: $slightlydark;
     }
+  }
 
-    .button__ripple-circle {
-      fill: $slightlydark;
+  &__ripple {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+
+    &--active .button__circle {
+      animation: a-ripple 0.6s ease-in;
     }
+  }
+
+  &__circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: $ripple-color;
+  }
+}
+
+@keyframes a-ripple {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    width: 400%;
+    padding-bottom: 200%;
+    opacity: 0;
   }
 }
 </style>

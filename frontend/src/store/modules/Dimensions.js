@@ -1,6 +1,5 @@
 import {
   allPass,
-  assoc,
   bind,
   clone,
   filter,

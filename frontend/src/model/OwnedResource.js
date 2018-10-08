@@ -1,5 +1,4 @@
 import Resource from "./Resource";
-import Party from "./Party";
 import { any } from "ramda";
 
 /**

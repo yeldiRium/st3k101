@@ -89,7 +89,6 @@ export default {
     },
     showGraphFor() {
       return dimension => {
-        console.log();
         if (dimension.questions.length < 1) {
           return false;
         }
@@ -109,7 +108,7 @@ export default {
     }
   },
   watch: {
-    myQuestionnaires(oldValue, newValue) {
+    myQuestionnaires() {
       this.loadData();
     }
   },

@@ -49,14 +49,11 @@
 
 <script>
 import { mapGetters, mapState } from "vuex-fluture";
-import { either, propEq, propOr } from "ramda";
-
-import { register, requestSession } from "../../../api/Authentication";
+import { either, propEq } from "ramda";
 
 import Button from "../../Partials/Form/Button";
 
 import ErrorIcon from "../../../assets/icons/baseline-error-24px.svg";
-import { BadRequestError, ConflictError } from "../../../api/Errors";
 
 export default {
   name: "Authentication",
@@ -100,7 +97,7 @@ export default {
     // or after a successful login.
     isLoggedIn: {
       immediate: true,
-      handler(newVal, oldVal) {
+      handler(newVal) {
         if (newVal === true) {
           this.$router.push({ name: "Dashboard" });
         }

@@ -228,7 +228,6 @@ function parseTemplateQuestionnaire({
   reference_id,
   name,
   description,
-  template,
   current_language,
   original_language,
   available_languages
@@ -453,6 +452,7 @@ function parseTemplateDimension({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} name
+ * @param {Integer} position
  * @param {Array} questions
  * @param {Boolean} randomize_question_order
  * @param {Boolean} template
@@ -469,6 +469,7 @@ function parseShadowDimension({
   owners,
   reference_id,
   name,
+  position,
   questions,
   randomize_question_order,
   current_language,
@@ -487,6 +488,7 @@ function parseShadowDimension({
     }),
     reference_id,
     name,
+    position,
     map(parseQuestion, questions),
     randomize_question_order,
     parseResource(reference_to)
@@ -501,6 +503,7 @@ function parseShadowDimension({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} name
+ * @param {Integer} position
  * @param {Array} questions
  * @param {Boolean} randomize_question_order
  * @param {Boolean} template
@@ -518,6 +521,7 @@ function parseConcreteDimension({
   owners,
   reference_id,
   name,
+  position,
   questions,
   randomize_question_order,
   template,
@@ -539,6 +543,7 @@ function parseConcreteDimension({
     template,
     reference_id,
     name,
+    position,
     map(parseQuestion, questions),
     randomize_question_order,
     incoming_reference_count,
@@ -595,10 +600,11 @@ function parseTemplateQuestion({
   original_language,
   available_languages
 }) {
+  // TODO: template Question class
   return new ConcreteQuestion(
     href,
     id,
-    [], // owners
+    [],
     parseLanguageData({
       current_language,
       original_language,
@@ -607,14 +613,15 @@ function parseTemplateQuestion({
     template,
     reference_id,
     text,
+    0,
     new Range({
       start: range_start,
       end: range_end,
       startLabel: range_start_label,
       endLabel: range_end_label
     }),
-    0, // incoming reference count
-    [] // owned incoming references
+    0,
+    []
   );
 }
 
@@ -626,6 +633,7 @@ function parseTemplateQuestion({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} text
+ * @param {Integer} position
  * @param {Number} range_start
  * @param {Number} range_end
  * @param {Boolean} template
@@ -642,6 +650,7 @@ function parseShadowQuestion({
   owners,
   reference_id,
   text,
+  position,
   range_start,
   range_end,
   range_start_label,
@@ -662,6 +671,7 @@ function parseShadowQuestion({
     }),
     reference_id,
     text,
+    position,
     new Range({
       start: range_start,
       end: range_end,
@@ -680,10 +690,11 @@ function parseShadowQuestion({
  * @param {Array} owners
  * @param {String} reference_id
  * @param {String} text
+ * @param {Integer} position
  * @param {Number} range_start
  * @param {Number} range_end
- * @param range_start_label
- * @param range_end_label
+ * @param {String} range_start_label
+ * @param {String} range_end_label
  * @param {Boolean} template
  * @param {Object} current_language
  * @param {Object} original_language
@@ -699,6 +710,7 @@ function parseConcreteQuestion({
   owners,
   reference_id,
   text,
+  position,
   range_start,
   range_end,
   range_start_label,
@@ -722,6 +734,7 @@ function parseConcreteQuestion({
     template,
     reference_id,
     text,
+    position,
     new Range({
       start: range_start,
       end: range_end,
@@ -916,6 +929,8 @@ function parseTrackerEntry(data) {
  * @param text {String}
  * @param range_start {Integer}
  * @param range_end {Integer}
+ * @param range_start_label {String}
+ * @param range_end_label {String}
  * @param current_language {Language}
  * @param original_language {Language}
  * @param available_languages {Array<Language>}
@@ -997,6 +1012,7 @@ function parseSubmissionDimension({
  * @param name {String}
  * @param description {String}
  * @param password_enabled {Boolean}
+ * @param accepts_submissions
  * @param dimensions {Array<Object>}
  * @param current_language {Language}
  * @param original_language {Language}

@@ -25,6 +25,12 @@
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
             />
+            <div class="list-item__icon stack-icons"
+                 v-if="isDeletable(dimension)"
+            >
+                <IconExpandLess @click.native="moveUp"></IconExpandLess>
+                <IconExpandMore @click.native="moveDown"></IconExpandMore>
+            </div>
         </ListItem>
 
         <div class="dimension__body"
@@ -38,6 +44,8 @@
                           :key="question.href"
                           :question="question"
                           :deletable="dimension.isConcrete"
+                          @question-move-up="moveQuestionUp(question)"
+                          @question-move-down="moveQuestionDown(question)"
                           @question-delete="deleteQuestion"
                 />
 
@@ -212,10 +220,55 @@ export default {
       return `Contains ${this.dimension.questions.length} questions.`;
     },
     questionsOrdered() {
-      return R.sortBy(R.prop("id"), this.dimension.questions);
+      return R.sortBy(R.prop("position"), this.dimension.questions);
     }
   },
   methods: {
+    swapQuestions(first, second) {
+      const firstPosition = first.position;
+      const secondPosition = second.position;
+      this.$load(
+        this.$store
+          .dispatch("questions/updateQuestion", {
+            question: first,
+            params: {
+              position: secondPosition
+            }
+          })
+          .chain(() =>
+            this.$store.dispatch("questions/updateQuestion", {
+              question: second,
+              params: {
+                position: firstPosition
+              }
+            })
+          )
+      ).fork(this.$handleApiError, () => this.$emit("updated"));
+    },
+    moveQuestionUp(question) {
+      const previous = R.find(
+        R.propEq("position", question.position - 1),
+        this.dimension.questions
+      );
+      if (!R.isNil(previous)) {
+        this.swapQuestions(previous, question);
+      }
+    },
+    moveQuestionDown(question) {
+      const next = R.find(
+        R.propEq("position", question.position + 1),
+        this.dimension.questions
+      );
+      if (!R.isNil(next)) {
+        this.swapQuestions(question, next);
+      }
+    },
+    moveUp() {
+      this.$emit("dimension-move-up");
+    },
+    moveDown() {
+      this.$emit("dimension-move-down");
+    },
     toggleExpanded() {
       this.expanded = !this.expanded;
     },
@@ -396,7 +449,7 @@ export default {
 
       let template = !this.dimension.template;
 
-      const cancel = this.$load(
+      this.$load(
         this.$store
           .dispatch("dimensions/updateDimension", {
             dimension: this.dimension,
@@ -407,7 +460,7 @@ export default {
           .chain(dimension =>
             this.$store.dispatch("dimensions/fetchDimension", {
               href: dimension.href,
-              language
+              language: dimension.language
             })
           )
       ).fork(this.$handleApiError, () => {

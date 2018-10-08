@@ -17,7 +17,6 @@
     "esm": "^3.0.84",
     "express": "^4.16.3",
     "fluture": "^10.1.0",
-    "gsap": "^2.0.2",
     "mini-css-extract-plugin": "^0.4.3",
     "morgan": "^1.9.1",
     "node-fetch": "^2.2.0",
@@ -86,7 +85,8 @@
       "eslint:recommended"
     ],
     "globals": {
-      "ltiSessionToken": true
+      "ltiSessionToken": true,
+      "ltiLaunchParameters": true
     },
     "plugins": [
       "jest"
