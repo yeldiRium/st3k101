@@ -134,7 +134,7 @@ class ResponseListForQuestionnaireResource(Resource):
                     }, 400
                 question.add_question_result(question_data['value'], data_subject,
                                              verification_token=verification_token)
-                question.statistic.update()
+
                 all_questions.remove(question_data['id'])
 
             do_submission_hooks(dimension, dimension_data, data_subject)
@@ -198,9 +198,11 @@ class ResponseVerificationResource(Resource):
             abort(404)
         for response in responses:
             response.verify()
+            response.question.statistic.update()
         SIG_ANSWERS_VALIDATED.send(responses[0].question.dimension.questionnaire)
+
         db.session.commit()
-        return  # TODO redirect
+        return _("Your answers have been saved. Thank you for participating!")
 
 
 class LtiResponseResource(Resource):
