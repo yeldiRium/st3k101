@@ -25,7 +25,9 @@
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
             />
-            <div class="list-item__icon stack-icons" >
+            <div class="list-item__icon stack-icons"
+                 v-if="isDeletable(dimension)"
+            >
                 <IconExpandLess @click.native="moveUp"></IconExpandLess>
                 <IconExpandMore @click.native="moveDown"></IconExpandMore>
             </div>
