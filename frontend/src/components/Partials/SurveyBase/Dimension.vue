@@ -25,7 +25,7 @@
                             @choose-language="changeLanguage"
                             @choose-language-unavailable="openAddNewTranslationDialog"
             />
-            <div class="list-item__icon stack-icons">
+            <div class="list-item__icon stack-icons" >
                 <IconExpandLess @click.native="moveUp"></IconExpandLess>
                 <IconExpandMore @click.native="moveDown"></IconExpandMore>
             </div>
@@ -42,6 +42,8 @@
                           :key="question.href"
                           :question="question"
                           :deletable="dimension.isConcrete"
+                          @question-move-up="moveQuestionUp(question)"
+                          @question-move-down="moveQuestionDown(question)"
                           @question-delete="deleteQuestion"
                 />
 
@@ -220,6 +222,45 @@ export default {
     }
   },
   methods: {
+    swapQuestions(first, second) {
+      const firstPosition = first.position;
+      const secondPosition = second.position;
+      this.$load(
+        this.$store
+          .dispatch("questions/updateQuestion", {
+            question: first,
+            params: {
+              position: secondPosition
+            }
+          })
+          .chain(() =>
+            this.$store.dispatch("questions/updateQuestion", {
+              question: second,
+              params: {
+                position: firstPosition
+              }
+            })
+          )
+      ).fork(this.$handleApiError, () => this.$emit("updated"));
+    },
+    moveQuestionUp(question) {
+      const previous = R.find(
+        R.propEq("position", question.position - 1),
+        this.dimension.questions
+      );
+      if (!R.isNil(previous)) {
+        this.swapQuestions(previous, question);
+      }
+    },
+    moveQuestionDown(question) {
+      const next = R.find(
+        R.propEq("position", question.position + 1),
+        this.dimension.questions
+      );
+      if (!R.isNil(next)) {
+        this.swapQuestions(question, next);
+      }
+    },
     moveUp() {
       this.$emit("dimension-move-up");
     },
@@ -545,19 +586,6 @@ export default {
     &--on-side.toggle-button__on-side--active {
       color: $verydark;
     }
-  }
-}
-.stack-icons {
-  display: inline-grid;
-  grid-template-rows: 2.5% 47.5% 47.5% 2.5%;
-  grid-template-areas: "." "top" "bottom" ".";
-
-  > *:first-child {
-    grid-area: top;
-  }
-
-  > *:last-child {
-    grid-area: bottom;
   }
 }
 </style>
