@@ -252,6 +252,9 @@ class Question(SurveyBase):
         SIG_QUESTION_ANSWERED.send(result)
         return result
 
+    def remove_question_result(self, result):
+        self.responses.remove(result)
+
 
 class ConcreteQuestion(Question):
     id = db.Column(db.Integer, db.ForeignKey(Question.id), primary_key=True)

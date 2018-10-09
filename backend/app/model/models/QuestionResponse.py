@@ -26,8 +26,9 @@ class QuestionResponse(OwnershipBase):
         question increased
         """
         question = self.question
+        data_subject = next(filter(lambda x: isinstance(x, DataSubject), self.owners))
 
-        earlier_results = question.get_question_responses_by_subject(self.data_subject)
+        earlier_results = question.get_question_responses_by_subject(data_subject)
         verified_results = list(filter(lambda x: x.verified, earlier_results))
 
         for vr in verified_results:  # remove previous verified result(s?)

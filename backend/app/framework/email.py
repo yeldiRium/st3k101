@@ -5,7 +5,16 @@ from typing import List, Pattern
 
 from flask import g
 
+from framework.internationalization import _
+
 __author__ = "Noah Hummel, Hannes Leutloff"
+
+
+def construct_verification_email(questionnaire, verification_token) -> str:
+    message = _("Hi there!\nYou've recently participated in the survey ") + questionnaire.name + ".\n"
+    message += _("To confirm your submission, please follow the link below:\n\n")
+    message += "http://{}/api/response/verify/{}\n\n".format(g._config['DOMAIN_NAME'], verification_token)  # TODO https
+    return message
 
 
 def send_mail(to: str, subject: str, message: str) -> None:
@@ -78,6 +87,6 @@ def validate_email_blacklist(blacklist: List[str], email: str) -> bool:
     return any((m is not None for m in (r.match(email) for r in regexes)))
 
 
-def validate_email_whitelist(whitelist: str, email: str) -> bool:
+def validate_email_whitelist(whitelist: List[str], email: str) -> bool:
     regexes = parse_email_list(whitelist)
     return all((m is None for m in (r.match(email) for r in regexes)))

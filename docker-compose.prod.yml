@@ -17,6 +17,8 @@ services:
 
   backend:
     image: yeldir/st3k101-backend
+    env_file:
+      - backend.env
     restart: always
     links:
       - memcached
