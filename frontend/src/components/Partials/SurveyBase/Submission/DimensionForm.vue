@@ -11,6 +11,7 @@
 
 <script>
 import QuestionForm from "./QuestionForm";
+import * as R from "ramda";
 export default {
   name: "DimensionForm",
   components: { QuestionForm },
@@ -27,7 +28,7 @@ export default {
     getQuestionsOrdered(dimension) {
       let qs = dimension.questions;
       if (!dimension.randomizeQuestionOrder) {
-        return qs;
+        return R.sortBy(R.prop("position"), qs);
       }
 
       // from https://stackoverflow.com/a/12646864
