@@ -44,8 +44,17 @@
                     />
                 </div>
                 <div class="submission__pagination-buttons">
-                    <Button @action="paginationPrevious">Previous page</Button>
-                    <Button @action="paginationNext">Next page</Button>
+                    <Button v-if="selectedDimensionId !== firstDimensionId"
+                            @action="paginationPrevious"
+                    >
+                        <IconPrevious></IconPrevious>
+                    </Button>
+                    <div v-else></div>
+                    <Button v-if="selectedDimensionId !== lastDimensionId"
+                            @action="paginationNext"
+                    >
+                        <IconNext></IconNext>
+                    </Button>
                 </div>
             </div>
             <div class="submission__footer"
@@ -106,6 +115,9 @@ import * as R from "ramda";
 import ThankYou from "../../Views/Embedded/ThankYou";
 import LandingPage from "../../Partials/LandingPage";
 
+import IconNext from "../../../assets/icons/baseline-navigate_next-24px.svg";
+import IconPrevious from "../../../assets/icons/baseline-navigate_before-24px.svg";
+
 export default {
   name: "SurveyForSubmission",
   components: {
@@ -113,7 +125,9 @@ export default {
     Button,
     DimensionForm,
     LanguagePicker,
-    ThankYou
+    ThankYou,
+    IconPrevious,
+    IconNext
   },
   data() {
     return {
@@ -165,6 +179,14 @@ export default {
         }
       }
       return true;
+    },
+    firstDimensionId() {
+      if (R.isNil(this.submissionQuestionnaire)) return -1;
+      return R.head(this.submissionQuestionnaire.dimensions).id;
+    },
+    lastDimensionId() {
+      if (R.isNil(this.submissionQuestionnaire)) return -1;
+      return R.last(this.submissionQuestionnaire.dimensions).id;
     }
   },
   methods: {
