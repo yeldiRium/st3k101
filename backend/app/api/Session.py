@@ -77,9 +77,12 @@ class LtiSessionResource(Resource):
             subject.email = data['lis_person_contact_email_primary']
 
         # parse lti launch locale and update user locale preferences
-        language = parse_language_tag(data['launch_presentation_locale'])
-        subject.launch_language = language  # it is okay to set this to None, subject.language has defaults
-        debug_print("LTI: launch locale parsed: {}".format(language))
+        if 'launch_presentation_locale' in data:
+            language = parse_language_tag(data['launch_presentation_locale'])
+            debug_print("LTI: launch locale parsed: {}".format(language))
+            subject.launch_language = language
+        else:
+            subject.launch_language = g._config['LANGUAGE']
 
         session_token = auth.datasubject.new_lti_session(subject.lti_user_id)
 
