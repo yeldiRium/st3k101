@@ -4,6 +4,7 @@ import requests
 from celery import Celery
 
 from flask import request, json, Response
+from requests import RequestException
 
 from app import app
 from database import collection
@@ -56,13 +57,12 @@ def get_next_retry_time(retry_count):
 
 class LogOnAbortTask(celery.Task):
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
-        if self.max_retries == self.request.retries:
+        if status == "FAILURE":
             log_lost(*args)
-
 
 @celery.task(
     base=LogOnAbortTask,
-    autoretry_for=(AssertionError,),
+    autoretry_for=(AssertionError, RequestException),
     retry_backoff=True,
     retry_kwargs={'max_retries': app.config['MAX_RETRIES']}
 )
