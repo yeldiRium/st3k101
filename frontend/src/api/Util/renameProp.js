@@ -15,7 +15,7 @@ const renameProp = curry((oldProp, newProp, obj) => {
   return when(
     has(oldProp),
     pipe(
-      obj => assoc(newProp, prop(oldProp, obj), obj),
+      assoc(newProp, prop(oldProp, obj)),
       dissoc(oldProp)
     )
   )(obj);
