@@ -78,6 +78,8 @@ def send_statement(statement: dict, receiver: str):
                         headers=headers,
                         timeout=5
                         )
+    if res.status_code == 409:  # privacy settings don't match
+        return  # DO NOT log the statement, privacy risk!
     assert 200 <= res.status_code < 300
     log_message = "{}: {}".format(receiver, res.status_code)
     if "Location" in res.headers:
