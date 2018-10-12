@@ -21,7 +21,7 @@ class XApiPublisher(metaclass=Singleton):
     def flush(self):
         for url, payload in self.__requests:
             if payload:
-                requests.post(url, json=json.dumps(payload))
+                requests.post(url, json=payload)
             else:
                 requests.post(url)
         self.__requests = []  # avoid sending duplicates, yes that happened.

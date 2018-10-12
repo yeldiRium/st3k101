@@ -79,8 +79,8 @@ def send_statement(statement: dict, receiver: str):
         'User-Agent': 'st3k101/2.0'
     }
     payload = json.dumps(statement) if type(statement) is not str else statement
-    req = requests.post(receiver, json=payload, headers=headers)
-    assert 200 <= req.status_code < 300
+    res = requests.post(receiver, data=payload, headers=headers)
+    assert 200 <= res.status_code < 300
 
 
 def flush():
@@ -99,9 +99,8 @@ def flush():
 
 @app.route('/enqueue/immediate', methods=['POST'])
 def enqueue_immediate():
-    data = json.loads(request.json)
-    statements = data['statements']
-    receivers = data['receivers']
+    statements = request.json['statements']
+    receivers = request.json['receivers']
     for statement in statements:
         enqueue(statement, receivers)
     return "Success"
@@ -109,9 +108,8 @@ def enqueue_immediate():
 
 @app.route('/enqueue/deferred/<survey_base_id>', methods=['POST'])
 def enqueue_deferred(survey_base_id: int=None):
-    data = json.loads(request.json)
-    statements = data['statements']
-    receivers = data['receivers']
+    statements = request.json['statements']
+    receivers = request.json['receivers']
     for statement in statements:
         enqueue(statement, receivers, survey_base_id)
     return "Success"
