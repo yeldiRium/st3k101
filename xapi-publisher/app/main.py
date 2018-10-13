@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import requests
 from celery import Celery
 
-from flask import request, json, Response
+from flask import request, Response
 from requests import RequestException
 
 from app import app
@@ -45,20 +45,15 @@ def log_lost(statement, receiver):
     with open(app.config['LOST_LOG'], 'a') as f:
         f.write("{}: lost xapi statement due to too many failed sending attempts.\n".format(datetime.now().isoformat()))
         f.write("Destination: {}\n".format(receiver))
-        f.write(json.dumps(statement))
+        f.write(statement)
         f.write(2*"\n")
-
-
-def get_next_retry_time(retry_count):
-    kappa = app.config['KAPPA']
-    interval_seconds = (kappa * (retry_count + 1)) ** 2
-    return datetime.now() + timedelta(seconds=interval_seconds)
 
 
 class LogOnAbortTask(celery.Task):
     def after_return(self, status, retval, task_id, args, kwargs, einfo):
         if status == "FAILURE":
             log_lost(*args)
+
 
 @celery.task(
     base=LogOnAbortTask,
@@ -78,9 +73,18 @@ def send_statement(statement: dict, receiver: str):
         'X-Experience-API-Version': '1.0.0',
         'User-Agent': 'st3k101/2.0'
     }
-    payload = json.dumps(statement) if type(statement) is not str else statement
-    res = requests.post(receiver, data=payload, headers=headers)
+    res = requests.post(receiver,
+                        data=statement,
+                        headers=headers,
+                        timeout=5
+                        )
+    if res.status_code == 409:  # privacy settings don't match
+        return  # DO NOT log the statement, privacy risk!
     assert 200 <= res.status_code < 300
+    log_message = "{}: {}".format(receiver, res.status_code)
+    if "Location" in res.headers:
+        log_message += ", Location: {}".format(res.headers['Location'])
+    print(log_message)
 
 
 def flush():
