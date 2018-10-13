@@ -488,9 +488,12 @@ export default {
   &__previous {
     position: absolute;
     bottom: 0;
-    width: 100vw;
-    margin: auto;
+    width: 16.6vw;
   }
+}
+
+.next {
+  width: 16.6vw;
 }
 
 .card {
