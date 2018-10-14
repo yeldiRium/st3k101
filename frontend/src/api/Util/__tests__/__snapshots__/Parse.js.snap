@@ -1,5 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`parseChallenges raises error for missing properties 1`] = `"Field \`email_whitelist_enabled\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 2`] = `"Field \`email_whitelist\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 3`] = `"Field \`email_blacklist_enabled\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 4`] = `"Field \`email_blacklist\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 5`] = `"Field \`password_enabled\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 6`] = `"Field \`password\` is required."`;
+
 exports[`parseDataClient raises error for missing properties 1`] = `"Field \`email\` is required."`;
 
 exports[`parseDataClient raises error for missing properties 2`] = `"Field \`id\` is required."`;

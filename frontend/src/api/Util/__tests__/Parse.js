@@ -1,6 +1,7 @@
 import * as R from "ramda";
 
 import {
+  parseChallenges,
   parseDataClient,
   parseDataSubject,
   parseEmailBlacklistChallenge,
@@ -248,7 +249,34 @@ describe("parseDataSubject", () => {
   });
 });
 
-describe("parseChallenges", () => {});
+describe("parseChallenges", () => {
+  const testParams = {
+    email_whitelist_enabled: true,
+    email_whitelist: "test",
+    email_blacklist_enabled: true,
+    email_blacklist: "test",
+    password_enabled: true,
+    password: "test"
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parseChallenges(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build Challenge list object from given object", () => {
+    expect(parseChallenges(testParams)).toEqual([
+      parseEMailWhitelistChallenge(testParams),
+      parseEmailBlacklistChallenge(testParams),
+      parsePasswordChallenge(testParams)
+    ]);
+  });
+});
 
 describe("parseEMailWhitelistChallenge", () => {
   const testParams = {
@@ -318,7 +346,7 @@ describe("parsePasswordChallenge", () => {
     );
   });
 
-  test("build EmailWhiteList object from given object", () => {
+  test("build Password challenge object from given object", () => {
     expect(parsePasswordChallenge(testParams)).toEqual(
       new Password(testParams.password_enabled, testParams.password)
     );
