@@ -130,6 +130,21 @@ function parseRoles(roles) {
  * @return {DataClient}
  */
 function parseDataClient({ email, id, href, language, roles }) {
+  if (email === undefined) {
+    throw new ValidationError("Field `email` is required.");
+  }
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required.");
+  }
+  if (href === undefined) {
+    throw new ValidationError("Field `href` is required.");
+  }
+  if (language === undefined) {
+    throw new ValidationError("Field `language` is required.");
+  }
+  if (roles === undefined) {
+    throw new ValidationError("Field `roles` is required.");
+  }
   return new DataClient(
     href,
     id,

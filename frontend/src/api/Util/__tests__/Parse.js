@@ -1,6 +1,7 @@
 import * as R from "ramda";
 
 import {
+  parseDataClient,
   parseLanguage,
   parseLanguageData,
   parseResource,
@@ -8,6 +9,7 @@ import {
 } from "../Parse";
 import { Language, LanguageData } from "../../../model/Language";
 import { Resource } from "../../../model/Resource";
+import { DataClient } from "../../../model/DataClient";
 
 describe("parseLanguage", () => {
   const testParams = {
@@ -141,7 +143,47 @@ describe("parseRoles", () => {
   });
 });
 
-describe("parseDataClient", () => {});
+describe("parseDataClient", () => {
+  const testParams = {
+    email: "testEmail",
+    id: "testId",
+    href: "testHref",
+    language: {
+      item_id: "testItemId",
+      value: "testValue"
+    },
+    roles: [
+      {
+        value: "testRole"
+      },
+      {
+        value: "testRole2"
+      }
+    ]
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parseDataClient(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build Language object from given object", () => {
+    expect(parseDataClient(testParams)).toEqual(
+      new DataClient(
+        testParams.href,
+        testParams.id,
+        testParams.email,
+        new Language(testParams.language.item_id, testParams.language.value),
+        [testParams.roles[0].value, testParams.roles[1].value]
+      )
+    );
+  });
+});
 
 describe("parseSmallDataClient", () => {});
 
