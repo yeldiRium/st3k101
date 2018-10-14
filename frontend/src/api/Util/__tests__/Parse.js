@@ -1,13 +1,14 @@
 import * as R from "ramda";
 
 import { parseLanguage, parseLanguageData } from "../Parse";
-import { Language } from "../../../model/Language";
+import { Language, LanguageData } from "../../../model/Language";
 
 describe("parseLanguage", () => {
   const testParams = {
     item_id: "testItemId",
     value: "testValue"
   };
+
   test("raises error for missing properties", () => {
     R.forEach(
       key =>
@@ -26,13 +27,59 @@ describe("parseLanguage", () => {
 });
 
 describe("parseLanguageData", () => {
-  /**
-   * TODO: Behaviour here must be defined and tested
-   */
-  test("does what whith empty input?", () => {
-    console.log(
-      "parseLanguageData is passed empty object:",
-      parseLanguageData({})
+  const testParams = {
+    current_language: {
+      item_id: "testItemId",
+      value: "testValue"
+    },
+    original_language: {
+      item_id: "testItemId",
+      value: "testValue"
+    },
+    available_languages: [
+      {
+        item_id: "testItemId",
+        value: "testValue"
+      },
+      {
+        item_id: "testItemId",
+        value: "testValue"
+      }
+    ]
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parseLanguageData(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build LanguageData object from given object", () => {
+    expect(parseLanguageData(testParams)).toEqual(
+      new LanguageData(
+        new Language(
+          testParams.current_language.item_id,
+          testParams.current_language.value
+        ),
+        new Language(
+          testParams.original_language.item_id,
+          testParams.original_language.value
+        ),
+        [
+          new Language(
+            testParams.available_languages[0].item_id,
+            testParams.available_languages[0].value
+          ),
+          new Language(
+            testParams.available_languages[1].item_id,
+            testParams.available_languages[1].value
+          )
+        ]
+      )
     );
   });
 });

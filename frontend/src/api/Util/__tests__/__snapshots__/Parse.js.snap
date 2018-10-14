@@ -3,3 +3,9 @@
 exports[`parseLanguage raises error for missing properties 1`] = `"Field \`item_id\` is required.."`;
 
 exports[`parseLanguage raises error for missing properties 2`] = `"Field \`value\` is required.."`;
+
+exports[`parseLanguageData raises error for missing properties 1`] = `"Field \`current_language\` is required.."`;
+
+exports[`parseLanguageData raises error for missing properties 2`] = `"Field \`original_language\` is required.."`;
+
+exports[`parseLanguageData raises error for missing properties 3`] = `"Field \`available_languages\` is required.."`;

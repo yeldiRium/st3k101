@@ -35,10 +35,6 @@ import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
 import DataSubject from "../../model/DataSubject";
 import { ValidationError } from "../Errors";
 
-function throwErrorIfMissing(propertyName, obj) {
-  R.ifElse(R.isNil(R.prop(propertyName)));
-}
-
 /**
  * Parses the API representation of a Language into a Language object.
  *
@@ -71,6 +67,15 @@ function parseLanguageData({
   original_language,
   available_languages
 }) {
+  if (current_language === undefined) {
+    throw new ValidationError("Field `current_language` is required..");
+  }
+  if (original_language === undefined) {
+    throw new ValidationError("Field `original_language` is required..");
+  }
+  if (available_languages === undefined) {
+    throw new ValidationError("Field `available_languages` is required..");
+  }
   return new LanguageData(
     parseLanguage(current_language),
     parseLanguage(original_language),
