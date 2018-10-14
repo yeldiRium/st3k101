@@ -182,6 +182,21 @@ function parseSmallDataClient({ id, href }) {
  * @returns {DataSubject}
  */
 function parseDataSubject({ id, email, lti_user_id, moodle_username, source }) {
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required.");
+  }
+  if (email === undefined) {
+    throw new ValidationError("Field `email` is required.");
+  }
+  if (lti_user_id === undefined) {
+    throw new ValidationError("Field `lti_user_id` is required.");
+  }
+  if (moodle_username === undefined) {
+    throw new ValidationError("Field `moodle_username` is required.");
+  }
+  if (source === undefined) {
+    throw new ValidationError("Field `source` is required.");
+  }
   return new DataSubject(id, email, lti_user_id, moodle_username, source);
 }
 

@@ -10,6 +10,16 @@ exports[`parseDataClient raises error for missing properties 4`] = `"Field \`lan
 
 exports[`parseDataClient raises error for missing properties 5`] = `"Field \`roles\` is required."`;
 
+exports[`parseDataSubject raises error for missing properties 1`] = `"Field \`id\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 2`] = `"Field \`email\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 3`] = `"Field \`lti_user_id\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 4`] = `"Field \`moodle_username\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 5`] = `"Field \`source\` is required."`;
+
 exports[`parseLanguage raises error for missing properties 1`] = `"Field \`item_id\` is required."`;
 
 exports[`parseLanguage raises error for missing properties 2`] = `"Field \`value\` is required."`;

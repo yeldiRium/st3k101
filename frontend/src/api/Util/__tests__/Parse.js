@@ -2,6 +2,7 @@ import * as R from "ramda";
 
 import {
   parseDataClient,
+  parseDataSubject,
   parseLanguage,
   parseLanguageData,
   parseResource,
@@ -11,6 +12,7 @@ import {
 import { Language, LanguageData } from "../../../model/Language";
 import { Resource } from "../../../model/Resource";
 import { DataClient } from "../../../model/DataClient";
+import { DataSubject } from "../../../model/DataSubject";
 
 describe("parseLanguage", () => {
   const testParams = {
@@ -209,7 +211,37 @@ describe("parseSmallDataClient", () => {
   });
 });
 
-describe("parseDataSubject", () => {});
+describe("parseDataSubject", () => {
+  const testParams = {
+    id: "testId",
+    email: "testEmail",
+    lti_user_id: "testLtiUserUd",
+    moodle_username: "testMoodleUsername",
+    source: "testSource"
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parseDataSubject(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build Language object from given object", () => {
+    expect(parseDataSubject(testParams)).toEqual(
+      new DataSubject(
+        testParams.id,
+        testParams.email,
+        testParams.lti_user_id,
+        testParams.moodle_username,
+        testParams.source
+      )
+    );
+  });
+});
 
 describe("parseChallenges", () => {});
 
