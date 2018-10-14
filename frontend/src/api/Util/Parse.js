@@ -265,6 +265,12 @@ function parseEmailBlacklistChallenge({
  */
 
 function parsePasswordChallenge({ password_enabled, password }) {
+  if (password_enabled === undefined) {
+    throw new ValidationError("Field `password_enabled` is required.");
+  }
+  if (password === undefined) {
+    throw new ValidationError("Field `password` is required.");
+  }
   return new Password(password_enabled, password);
 }
 

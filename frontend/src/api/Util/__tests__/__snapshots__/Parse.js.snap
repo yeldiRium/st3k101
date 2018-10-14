@@ -38,6 +38,10 @@ exports[`parseLanguageData raises error for missing properties 2`] = `"Field \`o
 
 exports[`parseLanguageData raises error for missing properties 3`] = `"Field \`available_languages\` is required."`;
 
+exports[`parsePasswordChallenge raises error for missing properties 1`] = `"Field \`password_enabled\` is required."`;
+
+exports[`parsePasswordChallenge raises error for missing properties 2`] = `"Field \`password\` is required."`;
+
 exports[`parseResource raises error for missing properties 1`] = `"Field \`href\` is required."`;
 
 exports[`parseResource raises error for missing properties 2`] = `"Field \`id\` is required."`;

@@ -7,6 +7,7 @@ import {
   parseEMailWhitelistChallenge,
   parseLanguage,
   parseLanguageData,
+  parsePasswordChallenge,
   parseResource,
   parseRoles,
   parseSmallDataClient
@@ -16,6 +17,7 @@ import { Resource } from "../../../model/Resource";
 import { DataClient } from "../../../model/DataClient";
 import { DataSubject } from "../../../model/DataSubject";
 import EMailWhitelist from "../../../model/SurveyBase/Challenge/EMailWhitelist";
+import Password from "../../../model/SurveyBase/Challenge/Password";
 
 describe("parseLanguage", () => {
   const testParams = {
@@ -300,7 +302,28 @@ describe("parseEmailBlacklistChallenge", () => {
   });
 });
 
-describe("parsePasswordChallenge", () => {});
+describe("parsePasswordChallenge", () => {
+  const testParams = {
+    password_enabled: true,
+    password: "test"
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parsePasswordChallenge(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build EmailWhiteList object from given object", () => {
+    expect(parsePasswordChallenge(testParams)).toEqual(
+      new Password(testParams.password_enabled, testParams.password)
+    );
+  });
+});
 
 describe("parseQuestionnaire", () => {});
 
