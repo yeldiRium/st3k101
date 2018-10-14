@@ -3,6 +3,7 @@ import * as R from "ramda";
 import {
   parseDataClient,
   parseDataSubject,
+  parseEmailBlacklistChallenge,
   parseEMailWhitelistChallenge,
   parseLanguage,
   parseLanguageData,
@@ -273,7 +274,31 @@ describe("parseEMailWhitelistChallenge", () => {
   });
 });
 
-describe("parseEmailBlacklistChallenge", () => {});
+describe("parseEmailBlacklistChallenge", () => {
+  const testParams = {
+    email_blacklist_enabled: true,
+    email_blacklist: "test"
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parseEmailBlacklistChallenge(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build EmailWhiteList object from given object", () => {
+    expect(parseEmailBlacklistChallenge(testParams)).toEqual(
+      new EMailWhitelist(
+        testParams.email_blacklist_enabled,
+        testParams.email_blacklist
+      )
+    );
+  });
+});
 
 describe("parsePasswordChallenge", () => {});
 

@@ -247,6 +247,12 @@ function parseEmailBlacklistChallenge({
   email_blacklist_enabled,
   email_blacklist
 }) {
+  if (email_blacklist_enabled === undefined) {
+    throw new ValidationError("Field `email_blacklist_enabled` is required.");
+  }
+  if (email_blacklist === undefined) {
+    throw new ValidationError("Field `email_blacklist` is required.");
+  }
   return new EMailBlacklist(email_blacklist_enabled, email_blacklist);
 }
 

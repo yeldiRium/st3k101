@@ -24,6 +24,10 @@ exports[`parseEMailWhitelistChallenge raises error for missing properties 1`] = 
 
 exports[`parseEMailWhitelistChallenge raises error for missing properties 2`] = `"Field \`email_whitelist\` is required."`;
 
+exports[`parseEmailBlacklistChallenge raises error for missing properties 1`] = `"Field \`email_blacklist_enabled\` is required."`;
+
+exports[`parseEmailBlacklistChallenge raises error for missing properties 2`] = `"Field \`email_blacklist\` is required."`;
+
 exports[`parseLanguage raises error for missing properties 1`] = `"Field \`item_id\` is required."`;
 
 exports[`parseLanguage raises error for missing properties 2`] = `"Field \`value\` is required."`;
