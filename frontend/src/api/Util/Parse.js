@@ -45,10 +45,10 @@ import { ValidationError } from "../Errors";
  */
 function parseLanguage({ item_id, value }) {
   if (item_id === undefined) {
-    throw new ValidationError("Field `item_id` is required..");
+    throw new ValidationError("Field `item_id` is required.");
   }
   if (value === undefined) {
-    throw new ValidationError("Field `value` is required..");
+    throw new ValidationError("Field `value` is required.");
   }
   return new Language(item_id, value);
 }
@@ -68,13 +68,13 @@ function parseLanguageData({
   available_languages
 }) {
   if (current_language === undefined) {
-    throw new ValidationError("Field `current_language` is required..");
+    throw new ValidationError("Field `current_language` is required.");
   }
   if (original_language === undefined) {
-    throw new ValidationError("Field `original_language` is required..");
+    throw new ValidationError("Field `original_language` is required.");
   }
   if (available_languages === undefined) {
-    throw new ValidationError("Field `available_languages` is required..");
+    throw new ValidationError("Field `available_languages` is required.");
   }
   return new LanguageData(
     parseLanguage(current_language),
@@ -92,10 +92,10 @@ function parseLanguageData({
  */
 function parseResource({ href, id }) {
   if (href === undefined) {
-    throw new ValidationError("Field `href` is required..");
+    throw new ValidationError("Field `href` is required.");
   }
   if (id === undefined) {
-    throw new ValidationError("Field `id` is required..");
+    throw new ValidationError("Field `id` is required.");
   }
   return new Resource(href, id);
 }
@@ -107,6 +107,15 @@ function parseResource({ href, id }) {
  * @returns {Array<Roles>}
  */
 function parseRoles(roles) {
+  return R.map(
+    R.compose(
+      R.when(R.isNil, () => {
+        throw new ValidationError("Field `value` is required on role.");
+      }),
+      R.prop("value")
+    ),
+    roles
+  );
   return R.map(R.prop("value"), roles);
 }
 
