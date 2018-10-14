@@ -162,6 +162,12 @@ function parseDataClient({ email, id, href, language, roles }) {
  * @return {DataClient}
  */
 function parseSmallDataClient({ id, href }) {
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required.");
+  }
+  if (href === undefined) {
+    throw new ValidationError("Field `href` is required.");
+  }
   return new DataClient(href, id, "", null, []);
 }
 
@@ -1143,6 +1149,7 @@ export {
   parseResource,
   parseRoles,
   parseDataClient,
+  parseSmallDataClient,
   parseDataSubject,
   parseChallenges,
   parseEMailWhitelistChallenge,

@@ -5,7 +5,8 @@ import {
   parseLanguage,
   parseLanguageData,
   parseResource,
-  parseRoles
+  parseRoles,
+  parseSmallDataClient
 } from "../Parse";
 import { Language, LanguageData } from "../../../model/Language";
 import { Resource } from "../../../model/Resource";
@@ -185,7 +186,28 @@ describe("parseDataClient", () => {
   });
 });
 
-describe("parseSmallDataClient", () => {});
+describe("parseSmallDataClient", () => {
+  const testParams = {
+    id: "testId",
+    href: "testHref"
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parseSmallDataClient(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build Language object from given object", () => {
+    expect(parseSmallDataClient(testParams)).toEqual(
+      new DataClient(testParams.href, testParams.id, "", null, [])
+    );
+  });
+});
 
 describe("parseDataSubject", () => {});
 
