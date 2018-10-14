@@ -20,6 +20,10 @@ exports[`parseDataSubject raises error for missing properties 4`] = `"Field \`mo
 
 exports[`parseDataSubject raises error for missing properties 5`] = `"Field \`source\` is required."`;
 
+exports[`parseEMailWhitelistChallenge raises error for missing properties 1`] = `"Field \`email_whitelist_enabled\` is required."`;
+
+exports[`parseEMailWhitelistChallenge raises error for missing properties 2`] = `"Field \`email_whitelist\` is required."`;
+
 exports[`parseLanguage raises error for missing properties 1`] = `"Field \`item_id\` is required."`;
 
 exports[`parseLanguage raises error for missing properties 2`] = `"Field \`value\` is required."`;

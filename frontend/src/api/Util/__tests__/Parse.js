@@ -3,6 +3,7 @@ import * as R from "ramda";
 import {
   parseDataClient,
   parseDataSubject,
+  parseEMailWhitelistChallenge,
   parseLanguage,
   parseLanguageData,
   parseResource,
@@ -13,6 +14,7 @@ import { Language, LanguageData } from "../../../model/Language";
 import { Resource } from "../../../model/Resource";
 import { DataClient } from "../../../model/DataClient";
 import { DataSubject } from "../../../model/DataSubject";
+import EMailWhitelist from "../../../model/SurveyBase/Challenge/EMailWhitelist";
 
 describe("parseLanguage", () => {
   const testParams = {
@@ -111,7 +113,7 @@ describe("parseResource", () => {
     );
   });
 
-  test("build Language object from given object", () => {
+  test("build Resource object from given object", () => {
     expect(parseResource(testParams)).toEqual(
       new Resource(testParams.href, testParams.id)
     );
@@ -137,7 +139,7 @@ describe("parseRoles", () => {
     }).toThrowErrorMatchingSnapshot();
   });
 
-  test("build Language object from given object", () => {
+  test("build role list from given object", () => {
     expect(parseRoles(testParams)).toEqual([
       "testValue",
       "testValue",
@@ -175,7 +177,7 @@ describe("parseDataClient", () => {
     );
   });
 
-  test("build Language object from given object", () => {
+  test("build DataClient object from given object", () => {
     expect(parseDataClient(testParams)).toEqual(
       new DataClient(
         testParams.href,
@@ -204,7 +206,7 @@ describe("parseSmallDataClient", () => {
     );
   });
 
-  test("build Language object from given object", () => {
+  test("build small DataClient object from given object", () => {
     expect(parseSmallDataClient(testParams)).toEqual(
       new DataClient(testParams.href, testParams.id, "", null, [])
     );
@@ -230,7 +232,7 @@ describe("parseDataSubject", () => {
     );
   });
 
-  test("build Language object from given object", () => {
+  test("build DataSubject object from given object", () => {
     expect(parseDataSubject(testParams)).toEqual(
       new DataSubject(
         testParams.id,
@@ -245,7 +247,31 @@ describe("parseDataSubject", () => {
 
 describe("parseChallenges", () => {});
 
-describe("parseEMailWhitelistChallenge", () => {});
+describe("parseEMailWhitelistChallenge", () => {
+  const testParams = {
+    email_whitelist_enabled: true,
+    email_whitelist: "test"
+  };
+
+  test("raises error for missing properties", () => {
+    R.forEach(
+      key =>
+        expect(() => {
+          parseEMailWhitelistChallenge(R.dissoc(key, testParams));
+        }).toThrowErrorMatchingSnapshot(),
+      R.keys(testParams)
+    );
+  });
+
+  test("build EMailWhiteList object from given object", () => {
+    expect(parseEMailWhitelistChallenge(testParams)).toEqual(
+      new EMailWhitelist(
+        testParams.email_whitelist_enabled,
+        testParams.email_whitelist
+      )
+    );
+  });
+});
 
 describe("parseEmailBlacklistChallenge", () => {});
 

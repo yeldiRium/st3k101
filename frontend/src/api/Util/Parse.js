@@ -227,6 +227,12 @@ function parseEMailWhitelistChallenge({
   email_whitelist_enabled,
   email_whitelist
 }) {
+  if (email_whitelist_enabled === undefined) {
+    throw new ValidationError("Field `email_whitelist_enabled` is required.");
+  }
+  if (email_whitelist === undefined) {
+    throw new ValidationError("Field `email_whitelist` is required.");
+  }
   return new EMailWhitelist(email_whitelist_enabled, email_whitelist);
 }
 
