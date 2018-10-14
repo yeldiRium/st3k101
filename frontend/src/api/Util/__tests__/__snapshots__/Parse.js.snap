@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parseLanguage raises error for missing properties 1`] = `"Field \`item_id\` is required.."`;
+
+exports[`parseLanguage raises error for missing properties 2`] = `"Field \`value\` is required.."`;

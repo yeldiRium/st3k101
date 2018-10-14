@@ -33,15 +33,23 @@ import SubmissionDimension from "../../model/Submission/SubmissionDimension";
 import SubmissionQuestion from "../../model/Submission/SubmissionQuestion";
 import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
 import DataSubject from "../../model/DataSubject";
+import { ValidationError } from "../Errors";
 
 /**
  * Parses the API representation of a Language into a Language object.
  *
  * @param {String} item_id
  * @param {String} value
+ * @throws {ValidationError} when a required parameter is missing or invalid.
  * @return {Language}
  */
 function parseLanguage({ item_id, value }) {
+  if (item_id === undefined) {
+    throw new ValidationError("Field `item_id` is required..");
+  }
+  if (value === undefined) {
+    throw new ValidationError("Field `value` is required..");
+  }
   return new Language(item_id, value);
 }
 
