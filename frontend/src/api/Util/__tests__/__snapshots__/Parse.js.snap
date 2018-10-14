@@ -13,3 +13,5 @@ exports[`parseLanguageData raises error for missing properties 3`] = `"Field \`a
 exports[`parseResource raises error for missing properties 1`] = `"Field \`href\` is required."`;
 
 exports[`parseResource raises error for missing properties 2`] = `"Field \`id\` is required."`;
+
+exports[`parseRoles raises error for missing properties 1`] = `"Field \`value\` is required on role."`;

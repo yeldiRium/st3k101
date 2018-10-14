@@ -1,6 +1,11 @@
 import * as R from "ramda";
 
-import { parseLanguage, parseLanguageData, parseResource } from "../Parse";
+import {
+  parseLanguage,
+  parseLanguageData,
+  parseResource,
+  parseRoles
+} from "../Parse";
 import { Language, LanguageData } from "../../../model/Language";
 import { Resource } from "../../../model/Resource";
 
@@ -108,7 +113,33 @@ describe("parseResource", () => {
   });
 });
 
-describe("parseRoles", () => {});
+describe("parseRoles", () => {
+  const testParams = [
+    {
+      value: "testValue"
+    },
+    {
+      value: "testValue"
+    },
+    {
+      value: "testValue"
+    }
+  ];
+
+  test("raises error for missing properties", () => {
+    expect(() => {
+      parseRoles([{}, {}]);
+    }).toThrowErrorMatchingSnapshot();
+  });
+
+  test("build Language object from given object", () => {
+    expect(parseRoles(testParams)).toEqual([
+      "testValue",
+      "testValue",
+      "testValue"
+    ]);
+  });
+});
 
 describe("parseDataClient", () => {});
 

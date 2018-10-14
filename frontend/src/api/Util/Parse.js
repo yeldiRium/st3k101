@@ -116,7 +116,6 @@ function parseRoles(roles) {
     ),
     roles
   );
-  return R.map(R.prop("value"), roles);
 }
 
 /**
@@ -1127,6 +1126,7 @@ export {
   parseLanguage,
   parseLanguageData,
   parseResource,
+  parseRoles,
   parseDataClient,
   parseDataSubject,
   parseChallenges,
