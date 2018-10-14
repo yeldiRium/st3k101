@@ -1,4 +1,4 @@
-import { map, prop } from "ramda";
+import * as R from "ramda";
 
 import { Language, LanguageData } from "../../model/Language";
 import DataClient from "../../model/DataClient";
@@ -35,6 +35,10 @@ import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
 import DataSubject from "../../model/DataSubject";
 import { ValidationError } from "../Errors";
 
+function throwErrorIfMissing(propertyName, obj) {
+  R.ifElse(R.isNil(R.prop(propertyName)));
+}
+
 /**
  * Parses the API representation of a Language into a Language object.
  *
@@ -70,7 +74,7 @@ function parseLanguageData({
   return new LanguageData(
     parseLanguage(current_language),
     parseLanguage(original_language),
-    map(parseLanguage, available_languages)
+    R.map(parseLanguage, available_languages)
   );
 }
 
@@ -92,7 +96,7 @@ function parseResource({ href, id }) {
  * @returns {Array<Roles>}
  */
 function parseRoles(roles) {
-  return map(prop("value"), roles);
+  return R.map(R.prop("value"), roles);
 }
 
 /**
@@ -205,7 +209,7 @@ function parsePasswordChallenge({ password_enabled, password }) {
  * @return {Questionnaire}
  */
 function parseQuestionnaire(data) {
-  if (prop("shadow", data) === true) {
+  if (R.prop("shadow", data) === true) {
     return parseShadowQuestionnaire(data, data); // TODO use ...rest
   } else if (!data.hasOwnProperty("dimensions")) {
     return parseTemplateQuestionnaire(data);
@@ -302,7 +306,7 @@ function parseShadowQuestionnaire(
   return new ShadowQuestionnaire(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -316,7 +320,7 @@ function parseShadowQuestionnaire(
     allow_embedded,
     xapi_target,
     lti_consumer_key,
-    map(parseDimension, dimensions),
+    R.map(parseDimension, dimensions),
     parseChallenges(whole),
     parseResource(reference_to)
   );
@@ -373,7 +377,7 @@ function parseConcreteQuestionnaire(
   return new ConcreteQuestionnaire(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -388,10 +392,10 @@ function parseConcreteQuestionnaire(
     allow_embedded,
     xapi_target,
     lti_consumer_key,
-    map(parseDimension, dimensions),
+    R.map(parseDimension, dimensions),
     parseChallenges(whole),
     incoming_reference_count,
-    map(parseResource, owned_incoming_references)
+    R.map(parseResource, owned_incoming_references)
   );
 }
 
@@ -403,7 +407,7 @@ function parseConcreteQuestionnaire(
  * @return {Dimension}
  */
 function parseDimension(data) {
-  if (prop("shadow", data) === true) {
+  if (R.prop("shadow", data) === true) {
     return parseShadowDimension(data);
   } else if (!data.hasOwnProperty("questions")) {
     return parseTemplateDimension(data);
@@ -488,7 +492,7 @@ function parseShadowDimension({
   return new ShadowDimension(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -497,7 +501,7 @@ function parseShadowDimension({
     reference_id,
     name,
     position,
-    map(parseQuestion, questions),
+    R.map(parseQuestion, questions),
     randomize_question_order,
     parseResource(reference_to)
   );
@@ -542,7 +546,7 @@ function parseConcreteDimension({
   return new ConcreteDimension(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -552,10 +556,10 @@ function parseConcreteDimension({
     reference_id,
     name,
     position,
-    map(parseQuestion, questions),
+    R.map(parseQuestion, questions),
     randomize_question_order,
     incoming_reference_count,
-    map(parseResource, owned_incoming_references)
+    R.map(parseResource, owned_incoming_references)
   );
 }
 
@@ -567,7 +571,7 @@ function parseConcreteDimension({
  * @return {Question}
  */
 function parseQuestion(data) {
-  if (prop("shadow", data) === true) {
+  if (R.prop("shadow", data) === true) {
     return parseShadowQuestion(data);
   } else if (!data.hasOwnProperty("owners")) {
     return parseTemplateQuestion(data);
@@ -671,7 +675,7 @@ function parseShadowQuestion({
   return new ShadowQuestion(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -733,7 +737,7 @@ function parseConcreteQuestion({
   return new ConcreteQuestion(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -750,7 +754,7 @@ function parseConcreteQuestion({
       endLabel: range_end_label
     }),
     incoming_reference_count,
-    map(parseResource, owned_incoming_references)
+    R.map(parseResource, owned_incoming_references)
   );
 }
 
@@ -1008,7 +1012,7 @@ function parseSubmissionDimension({
       original_language,
       available_languages
     }),
-    map(parseSubmissionQuestion, questions)
+    R.map(parseSubmissionQuestion, questions)
   );
 }
 
@@ -1051,7 +1055,7 @@ function parseSubmissionQuestionnaire({
     }),
     password_enabled,
     accepts_submissions,
-    map(parseSubmissionDimension, dimensions)
+    R.map(parseSubmissionDimension, dimensions)
   );
 }
 
