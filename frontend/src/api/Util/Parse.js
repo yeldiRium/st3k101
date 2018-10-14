@@ -91,6 +91,12 @@ function parseLanguageData({
  * @returns {Resource}
  */
 function parseResource({ href, id }) {
+  if (href === undefined) {
+    throw new ValidationError("Field `href` is required..");
+  }
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required..");
+  }
   return new Resource(href, id);
 }
 
@@ -1111,6 +1117,7 @@ function parseQuestionStatistic({
 export {
   parseLanguage,
   parseLanguageData,
+  parseResource,
   parseDataClient,
   parseDataSubject,
   parseChallenges,

@@ -9,3 +9,7 @@ exports[`parseLanguageData raises error for missing properties 1`] = `"Field \`c
 exports[`parseLanguageData raises error for missing properties 2`] = `"Field \`original_language\` is required.."`;
 
 exports[`parseLanguageData raises error for missing properties 3`] = `"Field \`available_languages\` is required.."`;
+
+exports[`parseResource raises error for missing properties 1`] = `"Field \`href\` is required.."`;
+
+exports[`parseResource raises error for missing properties 2`] = `"Field \`id\` is required.."`;
