@@ -1,4 +1,4 @@
-import { map, prop } from "ramda";
+import * as R from "ramda";
 
 import { Language, LanguageData } from "../../model/Language";
 import DataClient from "../../model/DataClient";
@@ -33,15 +33,23 @@ import SubmissionDimension from "../../model/Submission/SubmissionDimension";
 import SubmissionQuestion from "../../model/Submission/SubmissionQuestion";
 import QuestionStatistic from "../../model/Statistic/QuestionStatistic";
 import DataSubject from "../../model/DataSubject";
+import { ValidationError } from "../Errors";
 
 /**
  * Parses the API representation of a Language into a Language object.
  *
  * @param {String} item_id
  * @param {String} value
+ * @throws {ValidationError} when a required parameter is missing or invalid.
  * @return {Language}
  */
 function parseLanguage({ item_id, value }) {
+  if (item_id === undefined) {
+    throw new ValidationError("Field `item_id` is required.");
+  }
+  if (value === undefined) {
+    throw new ValidationError("Field `value` is required.");
+  }
   return new Language(item_id, value);
 }
 
@@ -59,10 +67,19 @@ function parseLanguageData({
   original_language,
   available_languages
 }) {
+  if (current_language === undefined) {
+    throw new ValidationError("Field `current_language` is required.");
+  }
+  if (original_language === undefined) {
+    throw new ValidationError("Field `original_language` is required.");
+  }
+  if (available_languages === undefined) {
+    throw new ValidationError("Field `available_languages` is required.");
+  }
   return new LanguageData(
     parseLanguage(current_language),
     parseLanguage(original_language),
-    map(parseLanguage, available_languages)
+    R.map(parseLanguage, available_languages)
   );
 }
 
@@ -74,6 +91,12 @@ function parseLanguageData({
  * @returns {Resource}
  */
 function parseResource({ href, id }) {
+  if (href === undefined) {
+    throw new ValidationError("Field `href` is required.");
+  }
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required.");
+  }
   return new Resource(href, id);
 }
 
@@ -84,7 +107,15 @@ function parseResource({ href, id }) {
  * @returns {Array<Roles>}
  */
 function parseRoles(roles) {
-  return map(prop("value"), roles);
+  return R.map(
+    R.compose(
+      R.when(R.isNil, () => {
+        throw new ValidationError("Field `value` is required on role.");
+      }),
+      R.prop("value")
+    ),
+    roles
+  );
 }
 
 /**
@@ -99,6 +130,21 @@ function parseRoles(roles) {
  * @return {DataClient}
  */
 function parseDataClient({ email, id, href, language, roles }) {
+  if (email === undefined) {
+    throw new ValidationError("Field `email` is required.");
+  }
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required.");
+  }
+  if (href === undefined) {
+    throw new ValidationError("Field `href` is required.");
+  }
+  if (language === undefined) {
+    throw new ValidationError("Field `language` is required.");
+  }
+  if (roles === undefined) {
+    throw new ValidationError("Field `roles` is required.");
+  }
   return new DataClient(
     href,
     id,
@@ -116,6 +162,12 @@ function parseDataClient({ email, id, href, language, roles }) {
  * @return {DataClient}
  */
 function parseSmallDataClient({ id, href }) {
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required.");
+  }
+  if (href === undefined) {
+    throw new ValidationError("Field `href` is required.");
+  }
   return new DataClient(href, id, "", null, []);
 }
 
@@ -130,6 +182,21 @@ function parseSmallDataClient({ id, href }) {
  * @returns {DataSubject}
  */
 function parseDataSubject({ id, email, lti_user_id, moodle_username, source }) {
+  if (id === undefined) {
+    throw new ValidationError("Field `id` is required.");
+  }
+  if (email === undefined) {
+    throw new ValidationError("Field `email` is required.");
+  }
+  if (lti_user_id === undefined) {
+    throw new ValidationError("Field `lti_user_id` is required.");
+  }
+  if (moodle_username === undefined) {
+    throw new ValidationError("Field `moodle_username` is required.");
+  }
+  if (source === undefined) {
+    throw new ValidationError("Field `source` is required.");
+  }
   return new DataSubject(id, email, lti_user_id, moodle_username, source);
 }
 
@@ -160,6 +227,12 @@ function parseEMailWhitelistChallenge({
   email_whitelist_enabled,
   email_whitelist
 }) {
+  if (email_whitelist_enabled === undefined) {
+    throw new ValidationError("Field `email_whitelist_enabled` is required.");
+  }
+  if (email_whitelist === undefined) {
+    throw new ValidationError("Field `email_whitelist` is required.");
+  }
   return new EMailWhitelist(email_whitelist_enabled, email_whitelist);
 }
 
@@ -174,6 +247,12 @@ function parseEmailBlacklistChallenge({
   email_blacklist_enabled,
   email_blacklist
 }) {
+  if (email_blacklist_enabled === undefined) {
+    throw new ValidationError("Field `email_blacklist_enabled` is required.");
+  }
+  if (email_blacklist === undefined) {
+    throw new ValidationError("Field `email_blacklist` is required.");
+  }
   return new EMailBlacklist(email_blacklist_enabled, email_blacklist);
 }
 
@@ -186,6 +265,12 @@ function parseEmailBlacklistChallenge({
  */
 
 function parsePasswordChallenge({ password_enabled, password }) {
+  if (password_enabled === undefined) {
+    throw new ValidationError("Field `password_enabled` is required.");
+  }
+  if (password === undefined) {
+    throw new ValidationError("Field `password` is required.");
+  }
   return new Password(password_enabled, password);
 }
 
@@ -197,7 +282,7 @@ function parsePasswordChallenge({ password_enabled, password }) {
  * @return {Questionnaire}
  */
 function parseQuestionnaire(data) {
-  if (prop("shadow", data) === true) {
+  if (R.prop("shadow", data) === true) {
     return parseShadowQuestionnaire(data, data); // TODO use ...rest
   } else if (!data.hasOwnProperty("dimensions")) {
     return parseTemplateQuestionnaire(data);
@@ -294,7 +379,7 @@ function parseShadowQuestionnaire(
   return new ShadowQuestionnaire(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -308,7 +393,7 @@ function parseShadowQuestionnaire(
     allow_embedded,
     xapi_target,
     lti_consumer_key,
-    map(parseDimension, dimensions),
+    R.map(parseDimension, dimensions),
     parseChallenges(whole),
     parseResource(reference_to)
   );
@@ -365,7 +450,7 @@ function parseConcreteQuestionnaire(
   return new ConcreteQuestionnaire(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -380,10 +465,10 @@ function parseConcreteQuestionnaire(
     allow_embedded,
     xapi_target,
     lti_consumer_key,
-    map(parseDimension, dimensions),
+    R.map(parseDimension, dimensions),
     parseChallenges(whole),
     incoming_reference_count,
-    map(parseResource, owned_incoming_references)
+    R.map(parseResource, owned_incoming_references)
   );
 }
 
@@ -395,7 +480,7 @@ function parseConcreteQuestionnaire(
  * @return {Dimension}
  */
 function parseDimension(data) {
-  if (prop("shadow", data) === true) {
+  if (R.prop("shadow", data) === true) {
     return parseShadowDimension(data);
   } else if (!data.hasOwnProperty("questions")) {
     return parseTemplateDimension(data);
@@ -480,7 +565,7 @@ function parseShadowDimension({
   return new ShadowDimension(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -489,7 +574,7 @@ function parseShadowDimension({
     reference_id,
     name,
     position,
-    map(parseQuestion, questions),
+    R.map(parseQuestion, questions),
     randomize_question_order,
     parseResource(reference_to)
   );
@@ -534,7 +619,7 @@ function parseConcreteDimension({
   return new ConcreteDimension(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -544,10 +629,10 @@ function parseConcreteDimension({
     reference_id,
     name,
     position,
-    map(parseQuestion, questions),
+    R.map(parseQuestion, questions),
     randomize_question_order,
     incoming_reference_count,
-    map(parseResource, owned_incoming_references)
+    R.map(parseResource, owned_incoming_references)
   );
 }
 
@@ -559,7 +644,7 @@ function parseConcreteDimension({
  * @return {Question}
  */
 function parseQuestion(data) {
-  if (prop("shadow", data) === true) {
+  if (R.prop("shadow", data) === true) {
     return parseShadowQuestion(data);
   } else if (!data.hasOwnProperty("owners")) {
     return parseTemplateQuestion(data);
@@ -663,7 +748,7 @@ function parseShadowQuestion({
   return new ShadowQuestion(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -725,7 +810,7 @@ function parseConcreteQuestion({
   return new ConcreteQuestion(
     href,
     id,
-    map(parseSmallDataClient, owners),
+    R.map(parseSmallDataClient, owners),
     parseLanguageData({
       current_language,
       original_language,
@@ -742,7 +827,7 @@ function parseConcreteQuestion({
       endLabel: range_end_label
     }),
     incoming_reference_count,
-    map(parseResource, owned_incoming_references)
+    R.map(parseResource, owned_incoming_references)
   );
 }
 
@@ -1000,7 +1085,7 @@ function parseSubmissionDimension({
       original_language,
       available_languages
     }),
-    map(parseSubmissionQuestion, questions)
+    R.map(parseSubmissionQuestion, questions)
   );
 }
 
@@ -1043,7 +1128,7 @@ function parseSubmissionQuestionnaire({
     }),
     password_enabled,
     accepts_submissions,
-    map(parseSubmissionDimension, dimensions)
+    R.map(parseSubmissionDimension, dimensions)
   );
 }
 
@@ -1094,7 +1179,10 @@ function parseQuestionStatistic({
 export {
   parseLanguage,
   parseLanguageData,
+  parseResource,
+  parseRoles,
   parseDataClient,
+  parseSmallDataClient,
   parseDataSubject,
   parseChallenges,
   parseEMailWhitelistChallenge,

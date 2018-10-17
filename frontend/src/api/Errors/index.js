@@ -8,7 +8,7 @@ class ApiError extends Error {
 
 /**
  * Client side validation error. Does not correlate with a status code, since it
- * is used before interaction with the Api ensues.
+ * is used on the client side.
  */
 class ValidationError extends ApiError {
   constructor(s, payload) {

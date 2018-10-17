@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parseChallenges raises error for missing properties 1`] = `"Field \`email_whitelist_enabled\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 2`] = `"Field \`email_whitelist\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 3`] = `"Field \`email_blacklist_enabled\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 4`] = `"Field \`email_blacklist\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 5`] = `"Field \`password_enabled\` is required."`;
+
+exports[`parseChallenges raises error for missing properties 6`] = `"Field \`password\` is required."`;
+
+exports[`parseDataClient raises error for missing properties 1`] = `"Field \`email\` is required."`;
+
+exports[`parseDataClient raises error for missing properties 2`] = `"Field \`id\` is required."`;
+
+exports[`parseDataClient raises error for missing properties 3`] = `"Field \`href\` is required."`;
+
+exports[`parseDataClient raises error for missing properties 4`] = `"Field \`language\` is required."`;
+
+exports[`parseDataClient raises error for missing properties 5`] = `"Field \`roles\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 1`] = `"Field \`id\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 2`] = `"Field \`email\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 3`] = `"Field \`lti_user_id\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 4`] = `"Field \`moodle_username\` is required."`;
+
+exports[`parseDataSubject raises error for missing properties 5`] = `"Field \`source\` is required."`;
+
+exports[`parseEMailWhitelistChallenge raises error for missing properties 1`] = `"Field \`email_whitelist_enabled\` is required."`;
+
+exports[`parseEMailWhitelistChallenge raises error for missing properties 2`] = `"Field \`email_whitelist\` is required."`;
+
+exports[`parseEmailBlacklistChallenge raises error for missing properties 1`] = `"Field \`email_blacklist_enabled\` is required."`;
+
+exports[`parseEmailBlacklistChallenge raises error for missing properties 2`] = `"Field \`email_blacklist\` is required."`;
+
+exports[`parseLanguage raises error for missing properties 1`] = `"Field \`item_id\` is required."`;
+
+exports[`parseLanguage raises error for missing properties 2`] = `"Field \`value\` is required."`;
+
+exports[`parseLanguageData raises error for missing properties 1`] = `"Field \`current_language\` is required."`;
+
+exports[`parseLanguageData raises error for missing properties 2`] = `"Field \`original_language\` is required."`;
+
+exports[`parseLanguageData raises error for missing properties 3`] = `"Field \`available_languages\` is required."`;
+
+exports[`parsePasswordChallenge raises error for missing properties 1`] = `"Field \`password_enabled\` is required."`;
+
+exports[`parsePasswordChallenge raises error for missing properties 2`] = `"Field \`password\` is required."`;
+
+exports[`parseResource raises error for missing properties 1`] = `"Field \`href\` is required."`;
+
+exports[`parseResource raises error for missing properties 2`] = `"Field \`id\` is required."`;
+
+exports[`parseRoles raises error for missing properties 1`] = `"Field \`value\` is required on role."`;
+
+exports[`parseSmallDataClient raises error for missing properties 1`] = `"Field \`id\` is required."`;
+
+exports[`parseSmallDataClient raises error for missing properties 2`] = `"Field \`href\` is required."`;
