@@ -27,7 +27,7 @@ function categorizeResponse(response) {
 
   switch (response.status) {
     case 400:
-      return Future.tryP(() => response.json()).chain(data =>
+      return extractJson(response).chain(data =>
         Future.reject(new BadRequestError("Bad request.", data))
       );
     case 401:
@@ -37,13 +37,13 @@ function categorizeResponse(response) {
     case 404:
       return Future.reject(new NotFoundError("Resource not found."));
     case 409:
-      return Future.tryP(() => response.json()).chain(data =>
+      return extractJson(response).chain(data =>
         Future.reject(new ConflictError("Conflicting data.", data))
       );
     case 500:
       return Future.reject(new InternalServerError("Internal server error."));
     default:
-      return Future.tryP(() => response.json()).chain(data =>
+      return extractJson(response).chain(data =>
         Future.reject(new UnknownError("Conflicting data.", data))
       );
   }
