@@ -2,11 +2,11 @@
 This file contains all the setup logic for the flask.app.
 Wherever the app instance is needed (db, api), it is imported from here. 
 """
-from logging.handlers import SMTPHandler
 from flask import Flask, g
+from flask.logging import default_handler
 from flask_babel import Babel
-import logging
 
+from framework.logging import configure_loggers
 from framework.config import get_config_from_envvars
 
 __author__ = "Noah Hummel"
@@ -21,20 +21,7 @@ app.config.update(**get_config_from_envvars())
 
 # Setup of logging for critical errors, critical errors are logged by email
 # For configuration, see flask.cfg
-mail_handler = SMTPHandler(
-    mailhost=(app.config["SMTP_SERVER"], app.config["SMTP_PORT"]),
-    fromaddr=app.config["SMTP_FROM_ADDRESS"],
-    toaddrs=[app.config["ADMIN_EMAIL"]],
-    subject='[Survey Tool] Application Error',
-    credentials=(app.config["SMTP_FROM_ADDRESS"], app.config["SMTP_PASSWORD"]),
-    secure=()
-)
-mail_handler.setLevel(logging.ERROR)
-mail_handler.setFormatter(logging.Formatter(
-    '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
-))
-app.logger.addHandler(mail_handler)
-
+configure_loggers(app, default_handler)
 
 # Setup of flask_babel to ba able to use gettext() for translating strings
 babel = Babel(app)
