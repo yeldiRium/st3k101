@@ -51,3 +51,8 @@ class DataSubject(Party):
         else:
             raise ValueError("No identifying feature provided! Provide email, oder lti_user_id.")
         return subject
+
+    def __str__(self) -> str:
+        lti_id_or_username = self.moodle_username if self.moodle_username else self.lti_user_id
+        identifier = self.email if self.email else "LTI:{}@{}".format(lti_id_or_username, self.source)
+        return "<DataSubject: {identifier}>".format(identifier=identifier)
