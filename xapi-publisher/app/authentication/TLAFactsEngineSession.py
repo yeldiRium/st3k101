@@ -1,4 +1,4 @@
-from typing import Dict
+from requests import Response
 
 from authentication.AuthenticatedXApiSession import AuthenticatedXApiSession
 
@@ -14,7 +14,7 @@ class TLAFactsEngineSession(AuthenticatedXApiSession):
     def before_requests(self) -> None:
         pass
 
-    def request(self, statement: str) -> int:
+    def request(self, statement: str) -> Response:
         pass
 
     def after_requests(self) -> None:

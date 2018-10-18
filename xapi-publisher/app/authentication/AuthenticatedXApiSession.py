@@ -1,4 +1,6 @@
 from abc import abstractmethod
+
+from requests import Response
 from typing import Dict, Any
 
 __author__ = "Noah Hummel"
@@ -23,11 +25,11 @@ class AuthenticatedXApiSession(object):
         pass
 
     @abstractmethod
-    def request(self, statement: str) -> int:
+    def request(self, statement: str) -> Response:
         """
         Sends the xAPI statement to self.receiver.
         :param statement: The serialized xAPI statement.
-        :return: The HTTP status code.
+        :return: Teh response object.
         """
         pass
 
@@ -58,6 +60,7 @@ class AuthenticatedXApiSession(object):
         self.authentication_parameters
         """
         self.__receiver = receiver
+        parameters = dict()
         self.validate_parameters(parameters)
         self.__parameters = parameters
 
