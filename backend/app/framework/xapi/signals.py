@@ -29,7 +29,7 @@ __author__ = "Noah Hummel"
 @SIG_LOGGED_IN.connect
 def publish_logged_in_xapi_statement(sender: Party):
     statement = XApiLoggedInStatement(sender)
-    XApiPublisher().enqueue([statement], [g._config['XAPI_DEFAULT_ENDPOINT']])
+    XApiPublisher().enqueue([statement], g._config['XAPI_DEFAULT_ENDPOINT'])
 
 
 @SIG_LTI_LAUNCH.connect
@@ -44,7 +44,7 @@ def publish_lti_launch_xapi_statement(sender: DataSubject, questionnaire=None):
         activity,
         xapi_context=context
     )
-    XApiPublisher().enqueue([statement], [g._config['XAPI_DEFAULT_ENDPOINT']])
+    XApiPublisher().enqueue([statement], g._config['XAPI_DEFAULT_ENDPOINT'])
 
 
 @SIG_QUESTION_ANSWERED.connect
@@ -53,7 +53,7 @@ def enqueue_answered_xapi_statements(sender: QuestionResponse):
     subject = next(filter(lambda s: isinstance(s, DataSubject), sender.owners))
     receiver = get_xapi_target(sender.question)
     statement = XApiAnswerSubmittedStatement(subject, question, sender.value)
-    XApiPublisher().enqueue_deferred([statement], [receiver], question.dimension.questionnaire_id)
+    XApiPublisher().enqueue_deferred([statement], receiver, question.dimension.questionnaire_id)
 
 
 @SIG_ANSWERS_VALIDATED.connect
@@ -83,7 +83,7 @@ def publish_reference_id_updated_xapi_statement(
 
     receiver = get_xapi_target(sender)
     statement = XApiStatement(actor, verb, activity, result, context)
-    XApiPublisher().enqueue([statement], [receiver])
+    XApiPublisher().enqueue([statement], receiver)
 
 
 @SIG_QUESTIONNAIRE_PUBLISHED.connect
@@ -95,7 +95,7 @@ def publish_questionnaire_published_xapi_statement(sender: Questionnaire):
 
     receiver = get_xapi_target(sender)
     statement = XApiStatement(actor, verb, activity, xapi_context=context)
-    XApiPublisher().enqueue([statement], [receiver])
+    XApiPublisher().enqueue([statement], receiver)
 
 
 @SIG_QUESTIONNAIRE_UNPUBLISHED.connect
@@ -107,7 +107,7 @@ def publish_questionnaire_retracted_xapi_statement(sender: Questionnaire):
 
     receiver = get_xapi_target(sender)
     statement = XApiStatement(actor, verb, activity, xapi_context=context)
-    XApiPublisher().enqueue([statement], [receiver])
+    XApiPublisher().enqueue([statement], receiver)
 
 
 @SIG_SURVEY_CONCLUDED.connect
@@ -119,4 +119,4 @@ def publish_survey_concluded_xapi_statement(sender: Questionnaire):
 
     receiver = get_xapi_object(sender)
     statement = XApiStatement(actor, verb, activity, xapi_context=context)
-    XApiPublisher().enqueue([statement], [receiver])
+    XApiPublisher().enqueue([statement], receiver)
