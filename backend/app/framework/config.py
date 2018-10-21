@@ -35,9 +35,6 @@ _config_keys = {
     "TLA_XAPI_ENDPOINT": {
         "type": str
     },
-    "TLA_AUTH_ENDPOINT": {
-        "type": str
-    },
     "TLA_AUTH_USERNAME": {
         "type": str
     },

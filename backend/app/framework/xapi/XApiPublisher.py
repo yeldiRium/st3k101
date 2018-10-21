@@ -41,7 +41,6 @@ class XApiPublisher(metaclass=Singleton):
             payload['authentication'] = {
                 'method': 'TLAFactsEngine',
                 'parameters': {
-                    'authentication_endpoint': g._config['TLA_AUTH_ENDPOINT'],
                     'username': g._config['TLA_AUTH_USERNAME'],
                     'password': g._config['TLA_AUTH_PASSWORD']
                 }
@@ -61,7 +60,6 @@ class XApiPublisher(metaclass=Singleton):
             payload['authentication'] = {
                 'method': 'TLAFactsEngine',
                 'parameters': {
-                    'authentication_endpoint': g._config['TLA_AUTH_ENDPOINT'],
                     'username': g._config['TLA_AUTH_USERNAME'],
                     'password': g._config['TLA_AUTH_PASSWORD']
                 }
