@@ -1,4 +1,6 @@
 import json
+
+from flask import g
 from typing import List
 
 import requests
@@ -29,21 +31,41 @@ class XApiPublisher(metaclass=Singleton):
     def rollback(self):
         self.__requests = []
 
-    def enqueue(self, statements: List[XApiStatement], receivers):
+    def enqueue(self, statements: List[XApiStatement], receiver):
         payload = {
             'statements': [s.as_json() for s in statements],
-            'receivers': receivers
+            'receiver': receiver
         }
+        if receiver == g._config['TLA_XAPI_ENDPOINT']:
+            # TODO: hotfix for bachelor thesis, remove later
+            payload['authentication'] = {
+                'method': 'TLAFactsEngine',
+                'parameters': {
+                    'authentication_endpoint': g._config['TLA_AUTH_ENDPOINT'],
+                    'username': g._config['TLA_AUTH_USERNAME'],
+                    'password': g._config['TLA_AUTH_PASSWORD']
+                }
+            }
         self.__requests.append((
             'http://xapi-publisher/enqueue/immediate',
             payload
         ))
 
-    def enqueue_deferred(self, statements: List[XApiStatement], receivers, key):
+    def enqueue_deferred(self, statements: List[XApiStatement], receiver, key):
         payload = {
             'statements': [s.as_json() for s in statements],
-            'receivers': receivers
+            'receiver': receiver
         }
+        if receiver == g._config['TLA_XAPI_ENDPOINT']:
+            # TODO: hotfix for bachelor thesis, remove later
+            payload['authentication'] = {
+                'method': 'TLAFactsEngine',
+                'parameters': {
+                    'authentication_endpoint': g._config['TLA_AUTH_ENDPOINT'],
+                    'username': g._config['TLA_AUTH_USERNAME'],
+                    'password': g._config['TLA_AUTH_PASSWORD']
+                }
+            }
 
         self.__requests.append((
             'http://xapi-publisher/enqueue/deferred/{}'.format(key),

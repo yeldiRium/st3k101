@@ -32,6 +32,18 @@ _config_keys = {
         "type": str,
         "default": "tla.edutec.guru"
     },
+    "TLA_XAPI_ENDPOINT": {
+        "type": str
+    },
+    "TLA_AUTH_ENDPOINT": {
+        "type": str
+    },
+    "TLA_AUTH_USERNAME": {
+        "type": str
+    },
+    "TLA_AUTH_PASSWORD": {
+        "type": str
+    },
     "SMTP_FROM_ADDRESS": {
         "type": str
     },

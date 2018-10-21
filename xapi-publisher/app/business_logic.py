@@ -5,23 +5,22 @@ from database import collection
 __author__ = "Noah Hummel"
 
 
-def enqueue(statement, receivers, approval_key: int = None,
+def enqueue(statement, receiver, approval_key: int = None,
             authentication_method: str = "NoAuthentication",
             authentication_parameters: Dict[str, Any] = None):
-    for destination in receivers:
-        document = {
-            'approved': approval_key is None,
-            'approval_key': approval_key,
-            'destination': destination,
-            'authentication': {
-                'method': authentication_method,
-                'parameters': authentication_parameters if authentication_parameters else dict()
-            },
-            'statement': statement,
-            'transmission_attempts': 0,
-            'in_flush': False
-        }
-        collection.insert_one(document)
+    document = {
+        'approved': approval_key is None,
+        'approval_key': approval_key,
+        'destination': receiver,
+        'authentication': {
+            'method': authentication_method,
+            'parameters': authentication_parameters if authentication_parameters else dict()
+        },
+        'statement': statement,
+        'transmission_attempts': 0,
+        'in_flush': False
+    }
+    collection.insert_one(document)
 
 
 def dequeue(survey_base_id: int = None):

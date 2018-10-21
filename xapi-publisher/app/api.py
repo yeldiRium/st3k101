@@ -15,7 +15,7 @@ def get_available_authentication_methods():
 @app.route('/enqueue/immediate', methods=['POST'])
 def enqueue_immediate():
     statements = request.json['statements']
-    receivers = request.json['receivers']
+    receiver = request.json['receiver']
     authentication_args = []
     if 'authentication' in request.json:
         authentication = request.json['authentication']
@@ -24,14 +24,14 @@ def enqueue_immediate():
             authentication['parameters']
         ]
     for statement in statements:
-        enqueue(statement, receivers, None, *authentication_args)
+        enqueue(statement, receiver, None, *authentication_args)
     return "Success"
 
 
 @app.route('/enqueue/deferred/<survey_base_id>', methods=['POST'])
 def enqueue_deferred(survey_base_id: int=None):
     statements = request.json['statements']
-    receivers = request.json['receivers']
+    receiver = request.json['receiver']
     authentication_args = []
     if 'authentication' in request.json:
         authentication = request.json['authentication']
@@ -40,7 +40,7 @@ def enqueue_deferred(survey_base_id: int=None):
             authentication['parameters']
         ]
     for statement in statements:
-        enqueue(statement, receivers, survey_base_id, *authentication_args)
+        enqueue(statement, receiver, survey_base_id, *authentication_args)
     return "Success"
 
 
