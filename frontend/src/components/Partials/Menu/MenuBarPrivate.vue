@@ -67,7 +67,7 @@ export default {
 @import "../../scss/_elevation";
 
 .menu-bar-private {
-  background-color: $verydark;
+  background-color: $primary-dark;
 
   &__navigation {
     width: 100%;
@@ -93,14 +93,14 @@ export default {
     height: 100%;
 
     .menu-bar-private__icon {
-      fill: $primary-dark;
+      fill: $secondary-light;
     }
 
     &.router-link-active {
-      fill: $primary-light;
+      fill: $secondary;
 
       .menu-bar-private__icon {
-        fill: $primary-light;
+        fill: $secondary;
       }
     }
   }
