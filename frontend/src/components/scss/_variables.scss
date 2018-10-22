@@ -5,13 +5,20 @@ $neutral: #efefef;
 
 $moodle-primary: #1177d1;
 
-$primary-dark: $carbon;
-$primary: $moodle-primary;
-$primary-light: $neutral;
+$dipf-blue-dark: #3674b3;
+$dipf-blue: #6699cc;
+$dipf-blue-light: #8fadcc;
+$dipf-orange-dark: #bf8000;
+$dipf-orange: #e19900;
+$dipf-orange-light: #e0ac43;
 
-$secondary-dark: $sky;
-$secondary: $sky;
-$secondary-light: $sky;
+$primary-dark: $dipf-blue-dark;
+$primary: $dipf-blue;
+$primary-light: $dipf-blue-light;
+
+$secondary-dark: $dipf-orange-dark;
+$secondary: $dipf-orange;
+$secondary-light: $dipf-orange-light;
 
 $verydark: #1E1E1E;
 $darker: #878787;

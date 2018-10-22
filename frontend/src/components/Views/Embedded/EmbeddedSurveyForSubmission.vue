@@ -343,9 +343,11 @@ export default {
 .embedded {
   &__survey {
     height: 100vh;
-    background-color: $primary-light;
+    background-color: $primary;
   }
   &__header {
+    color: white;
+    font-weight: bold;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -388,6 +390,7 @@ export default {
 
 .pagination {
   &__droplet {
+    color: white;
     text-align: left;
     font-size: large;
     width: 66%;
@@ -403,21 +406,15 @@ export default {
     width: 100%;
     color: white;
     vertical-align: center;
-    background-color: $primary;
+    background-color: $secondary;
     padding: 0 auto 0 auto;
     font-weight: bolder;
-  }
-  &__current:hover {
-    background-color: $primary;
   }
 }
 
 .badge {
   position: relative;
-
-  &__current {
-    color: white;
-  }
+  color: white;
 }
 
 .badge[data-badge]:after {

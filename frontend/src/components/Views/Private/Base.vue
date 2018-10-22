@@ -1,3 +1,4 @@
+
 <template>
     <div id="private-base">
         <MenuBarPrivate/>
@@ -40,7 +41,6 @@ export default {
     loadMyQuestionnaires() {
       return this.$store.dispatch("questionnaires/loadMyQuestionnaires");
     },
-
     loadMyTrackerEntries() {
       return this.$store.dispatch("trackerEntries/loadMyTrackerEntries");
     }
@@ -64,7 +64,7 @@ export default {
 
   display: grid;
   grid-template-areas: "content" "menubar";
-  grid-template-rows: auto 15%;
+  grid-template-rows: auto 10%;
 }
 
 .content {
