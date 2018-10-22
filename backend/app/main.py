@@ -137,6 +137,7 @@ def internal_server_error_handler(error):
     :param error: The exception 
     :return: Response that is sent back to the user
     """
+    app.logger.error(error)
     return make_response(error, 500)
 
 

@@ -1,3 +1,5 @@
+from smtplib import SMTPRecipientsRefused, SMTPHeloError, SMTPSenderRefused, SMTPDataError, SMTPNotSupportedError
+
 from typing import List
 
 from flask import request
@@ -21,7 +23,6 @@ from model.models.Question import Question
 from model.models.QuestionResponse import QuestionResponse
 from model.models.Questionnaire import Questionnaire
 from utils import generate_verification_token
-from utils.dicts import merge_error_dicts
 from framework.email import validate_email_blacklist, validate_email_whitelist, construct_verification_email, send_mail
 
 __author__ = "Noah Hummel"
@@ -94,6 +95,12 @@ class ResponseListForQuestionnaireResource(Resource):
         data, errors = schema.load(request.json)
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
 
+        if errors:
+            return {
+                'message': 'Your request contained errors.',
+                'errors': errors
+            }, 400
+
         # survey lifecycle check
         if not questionnaire.published:
             abort(403)
@@ -109,7 +116,7 @@ class ResponseListForQuestionnaireResource(Resource):
         if challenge_errors:
             return {
                 'message': 'Some challenges could not be completed.',
-                'errors': merge_error_dicts(errors, challenge_errors)
+                'errors': challenge_errors
             }, 403
 
         verification_token = generate_verification_token()
@@ -149,11 +156,25 @@ class ResponseListForQuestionnaireResource(Resource):
                 'missing': list(all_questions)
             }, 400
 
-        send_mail(
-            data_subject.email,
-            _("Please verify your survey submission"),
-            construct_verification_email(questionnaire, verification_token)
-        )
+        try:
+            send_mail(
+                data_subject.email,
+                _("Please verify your survey submission"),
+                construct_verification_email(questionnaire, verification_token)
+            )
+        except (
+            SMTPRecipientsRefused,
+            SMTPHeloError,
+            SMTPSenderRefused,
+            SMTPDataError,
+            SMTPNotSupportedError
+        ) as e:
+            db.session.rollback()
+            XApiPublisher().rollback()
+            return {
+                'message': 'Error while sending verification email.',
+                'errors': [str(e)]
+            }, 500
 
         db.session.commit()
         return {
@@ -212,6 +233,12 @@ class LtiResponseResource(Resource):
         data, errors = schema.load(request.json)
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
 
+        if errors:
+            return {
+                'message': 'Your request contained errors.',
+                'errors': errors
+            }, 400
+
         # survey lifecycle check
         if not questionnaire.published:
             abort(403, message="Survey was not published yet.")
@@ -236,7 +263,8 @@ class LtiResponseResource(Resource):
                     return {
                         'message': 'Questionnaire has no question with id {}'.format(question_data['id'])
                     }, 400
-                result = question.add_question_result(
+                
+                question.add_question_result(
                     question_data['value'],
                     current_user(),
                     needs_verification=False

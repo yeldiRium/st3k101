@@ -65,14 +65,12 @@ const embeddedAuthenticationMiddleware = frontendPath => (req, res, next) => {
   )
     .chain(res =>
       Future.node(done => fs.readFile(`${frontendPath}/index.html`, done))
-        .chain(res => Future.of(res.toString()))
+        .map(res => res.toString())
         .map(
           R.replace(
             "var ltiSessionToken = undefined;",
             `var ltiSessionToken = ${JSON.stringify(res)};
-                        var ltiLaunchParameters = ${JSON.stringify(
-                          ltiLaunchParameters
-                        )};`
+             var ltiLaunchParameters = ${JSON.stringify(ltiLaunchParameters)};`
           )
         )
     )

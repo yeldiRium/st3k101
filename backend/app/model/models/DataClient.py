@@ -69,3 +69,7 @@ class DataClient(Party):
         pw_salt, pw_hash = self.hash_password(password)
         self.password_salt = pw_salt
         self.password_hash = pw_hash
+
+    def __str__(self) -> str:
+        highest_role = sorted(self.roles)[0].name
+        return "<{role}: {email}>".format(role=highest_role, email=self.email)

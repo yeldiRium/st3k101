@@ -51,9 +51,7 @@
                     <Button @action="paginationNext()"
                             class="next"
                     >
-                        <span>
-                            ↪️ Next Page
-                        </span>
+                        <IconNext></IconNext>
                     </Button>
                 </div>
             </div>
@@ -76,7 +74,7 @@
                 <Button @action="paginationPrevious()"
                         class="submit__previous"
                 >
-                    ↩️ Review answers
+                    <IconPrevious></IconPrevious>
                 </Button>
             </div>
         </div>
@@ -105,6 +103,8 @@ import { mapState } from "vuex-fluture";
 import WelcomePage from "./Partials/WelcomePage";
 import ThankYou from "./ThankYou";
 import LandingPage from "../../Partials/LandingPage";
+import IconPrevious from "../../../assets/icons/baseline-navigate_before-24px.svg";
+import IconNext from "../../../assets/icons/baseline-navigate_next-24px.svg";
 
 export default {
   name: "EmbeddedSurveyForSubmission",
@@ -113,7 +113,9 @@ export default {
     ThankYou,
     WelcomePage,
     Button,
-    QuestionForm
+    QuestionForm,
+    IconPrevious,
+    IconNext
   },
   data() {
     return {
@@ -486,9 +488,12 @@ export default {
   &__previous {
     position: absolute;
     bottom: 0;
-    width: 100vw;
-    margin: auto;
+    width: 16.6vw;
   }
+}
+
+.next {
+  width: 16.6vw;
 }
 
 .card {

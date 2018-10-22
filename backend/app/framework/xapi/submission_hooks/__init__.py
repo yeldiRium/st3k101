@@ -57,4 +57,4 @@ def do_submission_hooks(the_item: SurveyBase, submission_data: dict, actor: Part
     )
 
     questionnaire = get_questionnaire(the_item)
-    XApiPublisher().enqueue_deferred([statement], [get_xapi_target(the_item)], questionnaire.id)
+    XApiPublisher().enqueue_deferred([statement], get_xapi_target(the_item), questionnaire.id)

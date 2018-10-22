@@ -6,4 +6,4 @@ RUN pip install -r /app/requirements.txt
 
 ENV FLASK_APP="main.py"
 ENV FLASK_CONFIG_PATH="flask.cfg"
-ENV CELERY_OBJECT=main.celery
+ENV CELERY_OBJECT=transmission.celery
