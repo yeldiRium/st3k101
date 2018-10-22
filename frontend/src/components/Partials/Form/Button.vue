@@ -145,11 +145,11 @@ export default {
 @import "../../scss/_variables";
 @import "../../scss/_elevation";
 
-$button-color: $primary-light;
-$button-ripple-color: $primary;
-$button-focus-color: $secondary;
+$button-color: $primary;
+$button-ripple-color: $primary-dark;
+$button-focus-color: $secondary-light;
 
-$border-thickness: 3px;
+$border-thickness: 2px;
 $ripple-color: rgba(255, 255, 255, 0.8);
 
 .button {

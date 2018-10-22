@@ -167,9 +167,9 @@ table {
 }
 
 .highlighted {
-  border: 1px solid $primary;
+  border: 1px solid $secondary;
   border-radius: 7px;
-  box-shadow: 0 0 10px $primary;
+  box-shadow: 0 0 10px $secondary;
 }
 
 th,
@@ -185,7 +185,7 @@ td {
 }
 
 .table-row:hover {
-  background-color: $primary-light;
+  background-color: $secondary-light;
 }
 
 p {
