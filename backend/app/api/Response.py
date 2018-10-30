@@ -13,7 +13,7 @@ from auth.roles import Role, needs_minimum_role
 from auth.session import current_user
 from framework.captcha import validate_captcha
 from framework.internationalization import _
-from framework.signals import SIG_ANSWERS_VALIDATED
+from framework.signals import SIG_ANSWER_VERIFIED
 from framework.xapi.XApiPublisher import XApiPublisher
 from framework.xapi.submission_hooks import do_submission_hooks
 from model import db
@@ -220,7 +220,7 @@ class ResponseVerificationResource(Resource):
         for response in responses:
             response.verify()
             response.question.statistic.update()
-        SIG_ANSWERS_VALIDATED.send(responses[0].question.dimension.questionnaire)
+            SIG_ANSWER_VERIFIED.send(response)
 
         db.session.commit()
         return _("Your answers have been saved. Thank you for participating!")
@@ -248,6 +248,7 @@ class LtiResponseResource(Resource):
             abort(403, message="Submissions are not accepted at this point.")
 
         all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
+        responses = []
 
         for dimension_data in data['dimensions']:
             dimension = next((d for d in questionnaire.dimensions
@@ -264,11 +265,11 @@ class LtiResponseResource(Resource):
                         'message': 'Questionnaire has no question with id {}'.format(question_data['id'])
                     }, 400
                 
-                question.add_question_result(
+                responses.append(question.add_question_result(
                     question_data['value'],
                     current_user(),
                     needs_verification=False
-                )
+                ))
                 all_questions.remove(question_data['id'])
                 question.statistic.update()
 
@@ -284,7 +285,8 @@ class LtiResponseResource(Resource):
                 'missing': list(all_questions)
             }, 400
 
-        SIG_ANSWERS_VALIDATED.send(questionnaire)
+        for response in responses:
+            SIG_ANSWER_VERIFIED.send(response)
         db.session.commit()
         return {
             'message': 'Submission successful.'

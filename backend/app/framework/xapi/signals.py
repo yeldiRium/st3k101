@@ -1,7 +1,7 @@
 from flask import g
 
 from framework.signals import SIG_LOGGED_IN, SIG_QUESTION_ANSWERED, \
-    SIG_ANSWERS_VALIDATED, SIG_REFERENCE_ID_UPDATED, SIG_QUESTIONNAIRE_PUBLISHED, SIG_QUESTIONNAIRE_UNPUBLISHED, \
+    SIG_ANSWER_VERIFIED, SIG_REFERENCE_ID_UPDATED, SIG_QUESTIONNAIRE_PUBLISHED, SIG_QUESTIONNAIRE_UNPUBLISHED, \
     SIG_SURVEY_CONCLUDED, SIG_LTI_LAUNCH
 from framework.xapi.XApiActivities import XApiActivities
 from framework.xapi.XApiContext import XApiSt3k101Context
@@ -53,11 +53,12 @@ def enqueue_answered_xapi_statements(sender: QuestionResponse):
     subject = next(filter(lambda s: isinstance(s, DataSubject), sender.owners))
     receiver = get_xapi_target(sender.question)
     statement = XApiAnswerSubmittedStatement(subject, question, sender.value)
-    XApiPublisher().enqueue_deferred([statement], receiver, question.dimension.questionnaire_id)
+
+    XApiPublisher().enqueue_deferred([statement], receiver, sender.id)
 
 
-@SIG_ANSWERS_VALIDATED.connect
-def approve_pending_xapi_statements(sender: Questionnaire):
+@SIG_ANSWER_VERIFIED.connect
+def approve_pending_xapi_statements(sender: QuestionResponse):
     XApiPublisher().approve(sender.id)
 
 
