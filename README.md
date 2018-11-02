@@ -8,7 +8,7 @@ Frontend Coverage: [![codecov](https://codecov.io/gh/yeldiRium/st3k101/branch/de
 ## What is this?
 
 The xAPI-Probe (codename st3k101) is a survey tool targeting applications in
-the social sciences. It uses [xAPI]() for data exchange and has a RESTful API.
+the social sciences. It uses [xAPI](https://github.com/adlnet/xAPI-Spec) for data exchange and has a RESTful API.
 
 The tool is realized as a full-stack web application, featuring a reactive
 frontend written in VueJS. It was originally developed as part of a seminar
