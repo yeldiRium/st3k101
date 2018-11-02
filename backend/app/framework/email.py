@@ -13,7 +13,7 @@ __author__ = "Noah Hummel, Hannes Leutloff"
 def construct_verification_email(questionnaire, verification_token) -> str:
     message = _("Hi there!\nYou've recently participated in the survey ") + questionnaire.name + ".\n"
     message += _("To confirm your submission, please follow the link below:\n\n")
-    message += "http://{}/api/response/verify/{}\n\n".format(g._config['DOMAIN_NAME'], verification_token)  # TODO https
+    message += "{}/api/response/verify/{}\n\n".format(g._config['DOMAIN_NAME'], verification_token)  # TODO https
     return message
 
 

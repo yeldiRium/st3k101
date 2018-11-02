@@ -20,7 +20,7 @@ class XApiLoggedInStatement(XApiStatement):
             XApiVerb(XApiVerbs.LoggedIn),
             XApiActivityObject(
                 XApiActivities.Login,
-                "http://{}/#/private".format(g._config['DOMAIN_NAME']),  # TODO: replace hard coded url with something more useful
+                "{}/#/private".format(g._config['DOMAIN_NAME']),  # TODO: replace hard coded url with something more useful
                 {
                     "en-US": "St3k101 login view"
                 }

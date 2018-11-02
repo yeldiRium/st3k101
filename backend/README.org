@@ -1,4 +1,29 @@
 * ST3K101 Backend Container
+** Setting up the environment
+
+The backend container needs certain environment variables to be set in order to
+function. In a typical deployment situation, these variables should be supplied
+using environment files. Below is a table detailing the configurable values:
+
+| Variable              | Description                                                                                                          |
+|-----------------------+----------------------------------------------------------------------------------------------------------------------|
+| LANGUAGE              | The default language used by the system as two/three-letter code                                                     |
+| TIMEZONE              | The default timezone used by the system for localization                                                             |
+| DOMAIN_NAME           | The domain, where the service is hosted. Used for generating URLs. Be sure to prefix this with either http or https. |
+| ADMIN_EMAIL           | The email address where error notifications are sent to.                                                             |
+| XAPI_DEFAULT_ENDPOINT | The HTTP endpoint used for sending system-related xAPI statements.                                                   |
+| TLA_XAPI_ENDPOINT     | Only required for use with TLA. TLAs xAPI endpoint.                                                                  |
+| TLA_AUTH_USERNAME     | Only required for use with TLA. The username for TLAs xAPI endpoint.                                                 |
+| TLA_AUTH_PASSWORD     | Only required for use with TLA. The password for TLAs xAPI endpoint.                                                 |
+| SMTP_FROM_ADDRESS     | The "FROM" address used when sending emails from the system.                                                         |
+| SMTP_PASSWORD         | The password required by the SMTP server.                                                                            |
+| SMTP_SERVER           | The SMTP server to send emails from.                                                                                 |
+| SMTP_PORT             | The port to use when sending emails via SMTP.                                                                        |
+| SMTP_USE_STARTTLS     | Whether STARTTLS should be used when sending emails via SMTP.                                                        |
+| DEBUG                 | Enables verbose output if set to True.                                                                               |
+| DEBUG_SPOOF_LOCATION  | Disables IP-based geolocation lookup and uses a spoofed location in xAPI statements                                  |
+
+
 ** Development Setup
    Requires:
    - docker >=18.06

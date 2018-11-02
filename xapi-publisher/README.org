@@ -7,24 +7,48 @@ Will try to send any stored and approved statements after each
 request. If the destination returns a non-OK status code,
 the statement will be resent the next time.
 
+** Development Setup
+
+No special setup is necessary. Use the `docker-compose.yml` file provided
+by the project to start this service.
+
 ** API
 
-*** /enqueue/immediate
+*** GET /authentication/methods
+
+Returns a list of all available authentication methods.
+
+**** Response: application/json
+
+#+BEGIN_SRC javascript
+{
+    "methodName": {
+        "parameterName": "parameterType",
+        "anotherParameterName": "parameterType"
+    }
+}
+#+END_SRC
+
+*** POST /enqueue/immediate
 Enqueues a statement that may be published immediately
 
 **** Payload: application/json
 
 #+BEGIN_SRC javascript
 {
-    statements: [...],  // list of xAPI statements
-    receivers: ["http://172.18.0.1", "http://141.2.1.21"],  // list of receivers
+    "statements": [...],  // list of xAPI statements
+    "receivers": ["http://172.18.0.1", "http://141.2.1.21"],  // list of receivers
+    "authentication": {  // optional
+        "method": "someMethod",  // see GET /authentication/methods
+        "parameters": {...}  // see GET /authentication/methods
+    }
 }
 #+END_SRC
 
 Make sure to prefix all receivers with ~http://~ or ~https://~ for SSL, as
 the ~requests~ library needs to know which protocol to use.
 
-*** /enqueue/deferred/<key>
+*** POST /enqueue/deferred/<key>
 Enqueues a statement that may not be published immediately.
 
 **** Arguments
@@ -39,13 +63,17 @@ Enqueues a statement that may not be published immediately.
 {
     statements: [...],  // list of xAPI statements
     receivers: ["http://172.18.0.1", "http://141.2.1.21"],  // list of receivers
+    "authentication": {  // optional
+        "method": "someMethod",  // see GET /authentication/methods
+        "parameters": {...}  // see GET /authentication/methods
+    }
 }
 #+END_SRC
 
 Make sure to prefix all receivers with ~http://~ or ~https://~ for SSL, as
 the ~requests~ library needs to know which protocol to use.
 
-*** /cancel/<key>
+*** POST /cancel/<key>
     Cancels all deferred statements that were submitted under this key.
-*** /approve/<key>
+*** POST /approve/<key>
     Approves all deferred statements that were submitted under this key.
