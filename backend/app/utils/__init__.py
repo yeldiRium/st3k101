@@ -25,7 +25,7 @@ def generate_verification_url(endpoint: str, token: str) -> str:
     :param token: str The verification token
     :return: str The url to the verification service
     """
-    return "http://{}{}/{}".format(
+    return "{}{}/{}".format(
         g._config["DOMAIN_NAME"],
         endpoint,
         token
@@ -39,7 +39,7 @@ def generate_questionnaire_url(questionnaire_uuid: str) -> str:
     :param questionnaire_uuid: str The uuid of the Questionnaire in question
     :return: str The url of the questionnaire
     """
-    return "http://{}{}/{}".format(
+    return "{}{}/{}".format(
         g._config["DOMAIN_NAME"],
         "/survey",
         questionnaire_uuid
