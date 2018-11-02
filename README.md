@@ -18,7 +18,7 @@ be found [here](https://github.com/strangedev/bachelor-thesis/blob/master/ba.pdf
 
 ## Project Structure
 
-The project is divided into different services, which can be found the 
+The project is divided into different services, which can be found in the 
 identically named directories:
 
 - frontend
