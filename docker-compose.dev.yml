@@ -22,7 +22,9 @@ services:
     restart: unless-stopped
 
   backend:
-    build: backend
+    build:
+      context: backend
+      dockerfile: Dockerfile-dev
     env_file:
       - backend.env
     restart: unless-stopped
