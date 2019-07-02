@@ -40,11 +40,6 @@ module.exports = merge(baseWebpackConfig, {
       "process.env": env
     }),
     new UglifyJsPlugin({
-      uglifyOptions: {
-        compress: {
-          warnings: false
-        }
-      },
       sourceMap: config.build.productionSourceMap,
       parallel: true
     }),
