@@ -2,8 +2,8 @@ version: '3.1'
 
 services:
   postgres:
-    image: yeldir/st3k101-postgres
-    restart: always
+    build: postgres
+    restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=kksrk0vv3zigez6
       - POSTGRES_USER=flask
@@ -13,40 +13,43 @@ services:
 
   memcached:
     image: memcached:1.5-alpine
-    restart: always
+    restart: unless-stopped
 
   backend:
-    image: yeldir/st3k101-backend
+    build: backend
     env_file:
       - backend.env
-    restart: always
+    restart: unless-stopped
     links:
       - memcached
       - postgres
       - xapi-publisher
 
   frontend:
-    image: yeldir/st3k101-frontend
+    build: frontend
 
   xapi-publisher:
-    image: yeldir/st3k101-xapi-publisher
-    restart: always
+    build: xapi-publisher
+    restart: unless-stopped
     links:
       - mongo
       - redis
 
   redis:
     image: library/redis
+    restart: unless-stopped
     volumes:
       - redis:/data
 
   mongo:
     image: bitnami/mongodb:3.6
+    restart: unless-stopped
     volumes:
       - mongo:/bitnami
 
   nginx:
-    image: yeldir/st3k101-nginx
+    build: nginx
+    restart: unless-stopped
     ports:
       - 80:80
     links:
