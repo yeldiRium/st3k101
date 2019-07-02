@@ -1,0 +1,16 @@
+FROM node:10-alpine
+WORKDIR /usr/app
+
+EXPOSE 443
+EXPOSE 80
+
+CMD ["node", "-r", "esm", "index.js"]
+
+# due to a bug in npm, we need to upgrade asap
+RUN npm i -g npm
+
+COPY ./package.json /usr/app
+COPY ./package-lock.json /usr/app
+RUN npm install
+
+COPY . /usr/app/

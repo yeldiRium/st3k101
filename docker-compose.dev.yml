@@ -3,7 +3,7 @@ version: '3.1'
 services:
   postgres:
     build: postgres
-    restart: always
+    restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=kksrk0vv3zigez6
       - POSTGRES_USER=flask
@@ -13,19 +13,19 @@ services:
 
   adminer:
     image: adminer
-    restart: always
+    restart: unless-stopped
     ports:
       - 8080:8080
 
   memcached:
     image: memcached:1.5-alpine
-    restart: always
+    restart: unless-stopped
 
   backend:
     build: backend
     env_file:
       - backend.env
-    restart: always
+    restart: unless-stopped
     links:
       - memcached
       - postgres
@@ -34,13 +34,15 @@ services:
       - ./backend/app:/app
 
   frontend:
-    build: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile-dev
     volumes:
-      - ./frontend:/usr/app:rw
+      - ./frontend/dist:/usr/app/dist:rw
 
   xapi-publisher:
     build: xapi-publisher
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./xapi-publisher/app:/app
     links:
