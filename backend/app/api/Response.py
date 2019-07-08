@@ -79,7 +79,7 @@ def validate_resource_path(
 
 class ResponseListForQuestionnaireResource(Resource):
     @needs_minimum_role(Role.User)
-    def get(self, questionnaire_id: int=None):
+    def get(self, questionnaire_id: int = None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
         if not questionnaire.accessible_by(current_user()):
             abort(403)
@@ -90,7 +90,7 @@ class ResponseListForQuestionnaireResource(Resource):
                 responses += question.responses
         return schema.dump(responses).data
 
-    def post(self, questionnaire_id: int=None):
+    def post(self, questionnaire_id: int = None):
         schema = SubmissionSchema()
         data, errors = schema.load(request.json)
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
@@ -122,7 +122,8 @@ class ResponseListForQuestionnaireResource(Resource):
         verification_token = generate_verification_token()
         data_subject = DataSubject.get_or_create(data['data_subject']['email'])
 
-        all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
+        all_questions = {
+            q.id for d in questionnaire.dimensions for q in d.questions}
 
         for dimension_data in data['dimensions']:
             dimension = next((d for d in questionnaire.dimensions
@@ -167,9 +168,11 @@ class ResponseListForQuestionnaireResource(Resource):
             SMTPHeloError,
             SMTPSenderRefused,
             SMTPDataError,
-            SMTPNotSupportedError
+            SMTPNotSupportedError,
+            OSError
         ) as e:
-            db.session.rollback()
+            # db.session.rollback()
+            db.session.commit()  # FIXME: Just for debugging
             XApiPublisher().rollback()
             return {
                 'message': 'Error while sending verification email.',
@@ -184,8 +187,8 @@ class ResponseListForQuestionnaireResource(Resource):
 
 class ResponseListForQuestionResource(Resource):
     @needs_minimum_role(Role.User)
-    def get(self, questionnaire_id: int=None, dimension_id: int=None,
-            question_id: int=None):
+    def get(self, questionnaire_id: int = None, dimension_id: int = None,
+            question_id: int = None):
         _, _, question = validate_resource_path(questionnaire_id, dimension_id,
                                                 question_id)
         if question is None:
@@ -198,8 +201,8 @@ class ResponseListForQuestionResource(Resource):
 
 class ResponseResource(Resource):
     @needs_minimum_role(Role.User)
-    def get(self, questionnaire_id: int=None, dimension_id: int=None,
-            question_id: int=None, response_id: int=None):
+    def get(self, questionnaire_id: int = None, dimension_id: int = None,
+            question_id: int = None, response_id: int = None):
         _, _, question = validate_resource_path(questionnaire_id, dimension_id,
                                                 question_id)
         response = QuestionResponse.query.get_or_404(response_id)
@@ -212,7 +215,7 @@ class ResponseResource(Resource):
 
 
 class ResponseVerificationResource(Resource):
-    def get(self, verification_token: str=None):
+    def get(self, verification_token: str = None):
         responses = QuestionResponse.query.filter_by(
             verification_token=verification_token).all()  # type: List[QuestionResponse]
         if not responses:
@@ -228,7 +231,7 @@ class ResponseVerificationResource(Resource):
 
 class LtiResponseResource(Resource):
     @needs_minimum_role(Role.Unprivileged)
-    def post(self, questionnaire_id: int=None):
+    def post(self, questionnaire_id: int = None):
         schema = SubmissionSchema(exclude=["data_subject"])
         data, errors = schema.load(request.json)
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
@@ -247,7 +250,8 @@ class LtiResponseResource(Resource):
         if not questionnaire.accepts_submissions:
             abort(403, message="Submissions are not accepted at this point.")
 
-        all_questions = {q.id for d in questionnaire.dimensions for q in d.questions}
+        all_questions = {
+            q.id for d in questionnaire.dimensions for q in d.questions}
         responses = []
 
         for dimension_data in data['dimensions']:
@@ -264,7 +268,7 @@ class LtiResponseResource(Resource):
                     return {
                         'message': 'Questionnaire has no question with id {}'.format(question_data['id'])
                     }, 400
-                
+
                 responses.append(question.add_question_result(
                     question_data['value'],
                     current_user(),
@@ -320,4 +324,5 @@ api.add_resource(
     '/api/questionnaire/<int:questionnaire_id>/lti/response'
 )
 
-ResourceBroker.add_resource_for(ResponseResource, QuestionResponse, 'response_id')
+ResourceBroker.add_resource_for(
+    ResponseResource, QuestionResponse, 'response_id')
