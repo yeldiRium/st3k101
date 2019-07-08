@@ -1,48 +1,53 @@
 <template>
-    <div class="dashboard">
-        <div v-for="questionnaire in myQuestionnaires"
-             class="dashboard__questionnaire"
+  <div class="dashboard">
+    <div
+      v-for="questionnaire in myQuestionnaires"
+      class="dashboard__questionnaire"
+      :key="questionnaire.id"
+    >
+      <span class="dashboard__questionnaire__title">
+        {{ questionnaire.name }}
+      </span>
+      <table class="dashboard__questionnaire__general-info">
+        <tr v-if="questionnaire.description.length > 0">
+          <td>Description:</td>
+          <td>{{ questionnaire.description }}</td>
+        </tr>
+        <tr>
+          <td>Total number of submissions:</td>
+          <td>{{ submissionCountForQuestionnaire(questionnaire) }}</td>
+        </tr>
+      </table>
+
+      <div class="dashboard__questionnaire__body">
+        <div
+          v-for="dimension in questionnaire.dimensions"
+          class="dashboard__dimension"
+          :key="dimension.id"
         >
-            <span class="dashboard__questionnaire__title">
-                {{ questionnaire.name }}
+          <div class="dashboard__dimension__chart">
+            <span class="chart-title">
+              {{ dimension.name }}
             </span>
-            <table class="dashboard__questionnaire__general-info">
-                <tr v-if="questionnaire.description.length > 0">
-                    <td>Description:</td>
-                    <td>{{ questionnaire.description }}</td>
-                </tr>
-                <tr>
-                    <td>Total number of submissions:</td>
-                    <td>{{ submissionCountForQuestionnaire(questionnaire) }}</td>
-                </tr>
-            </table>
-            <div class="dashboard__questionnaire__body">
-                <div v-for="dimension in questionnaire.dimensions"
-                     class="dashboard__dimension"
-                >
-                    <div class="dashboard__dimension__chart">
-                        <span class="chart-title">
-                            {{ dimension.name }}
-                        </span>
-                        <RadarChart :title="dimension.name"
-                                    :questionStatistics="statisticsByDimension(dimension)"
-                                    :truncateAfter="16"
-                                    v-if="showGraphFor(dimension)"
-                        />
-                        <div v-else
-                             class="chart-placeholder"
-                        >
-                            There are no answers for this dimension yet.
-                        </div>
-                        <TrackerEntries :surveyBase="dimension"
-                                        :recurse="true"
-                                        class="collapsible--no-border collapsible--border-top"
-                        ></TrackerEntries>
-                    </div>
-                </div>
+            <RadarChart
+              :title="dimension.name"
+              :questionStatistics="statisticsByDimension(dimension)"
+              :truncateAfter="16"
+              v-if="showGraphFor(dimension)"
+            />
+            <div v-else class="chart-placeholder">
+              There are no answers for this dimension yet.
             </div>
+            <TrackerEntries
+              :surveyBase="dimension"
+              :recurse="true"
+              class="collapsible--no-border collapsible--border-top"
+            ></TrackerEntries>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
