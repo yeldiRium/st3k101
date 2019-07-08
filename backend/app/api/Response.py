@@ -1,8 +1,11 @@
-from smtplib import SMTPRecipientsRefused, SMTPHeloError, SMTPSenderRefused, SMTPDataError, SMTPNotSupportedError
-
 from typing import List
 
-from flask import request
+import csv
+from io import StringIO
+
+from smtplib import SMTPRecipientsRefused, SMTPHeloError, SMTPSenderRefused, SMTPDataError, SMTPNotSupportedError
+
+from flask import request, Response
 from flask_restful import Resource, abort
 
 from api import api
@@ -16,6 +19,7 @@ from framework.internationalization import _
 from framework.signals import SIG_ANSWER_VERIFIED
 from framework.xapi.XApiPublisher import XApiPublisher
 from framework.xapi.submission_hooks import do_submission_hooks
+from framework import make_error
 from model import db
 from model.models.DataSubject import DataSubject
 from model.models.Dimension import Dimension
@@ -81,6 +85,7 @@ class ResponseListForQuestionnaireResource(Resource):
     @needs_minimum_role(Role.User)
     def get(self, questionnaire_id: int = None):
         questionnaire = Questionnaire.query.get_or_404(questionnaire_id)
+        output_format = request.args.get('format', default='json')
         if not questionnaire.accessible_by(current_user()):
             abort(403)
         schema = QuestionResponseSchema(many=True)
@@ -88,7 +93,45 @@ class ResponseListForQuestionnaireResource(Resource):
         for dimension in questionnaire.dimensions:
             for question in dimension.questions:
                 responses += question.responses
-        return schema.dump(responses).data
+        if output_format == 'json':
+            return schema.dump(responses).data
+        elif output_format == 'csv':
+            buffer = StringIO()
+            writer = csv.writer(buffer)
+            writer.writerow(
+                [
+                    'value',
+                    'data_subject',
+                    'question_id',
+                    'question_text',
+                    'range_start',
+                    'range_end',
+                    'range_start_label',
+                    'range_end_label',
+                    'dimension_randomized',
+                    'dimension_name',
+                    'dimension_id'
+                ]
+            )
+            for response in responses:
+                writer.writerow(
+                    [
+                        response.value,
+                        schema.anonymize_data_client(response),
+                        response.question.reference_id,
+                        response.question.text,
+                        response.question.range_start,
+                        response.question.range_end,
+                        response.question.range_start_label,
+                        response.question.range_end_label,
+                        response.question.dimension.randomize_question_order,
+                        response.question.dimension.name,
+                        response.question.dimension.reference_id
+                    ]
+                )
+            return Response(buffer.getvalue(), mimetype='text/csv')
+        else:
+            return make_error('Unrecognized format. Allowed values are: json, csv', 400)
 
     def post(self, questionnaire_id: int = None):
         schema = SubmissionSchema()
