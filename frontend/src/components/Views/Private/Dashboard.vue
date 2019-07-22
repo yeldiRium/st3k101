@@ -5,9 +5,9 @@
       class="dashboard__questionnaire"
       :key="questionnaire.id"
     >
-      <span class="dashboard__questionnaire__title">{{
-        questionnaire.name
-      }}</span>
+      <span class="dashboard__questionnaire__title">
+        {{ questionnaire.name }}
+      </span>
       <table class="dashboard__questionnaire__general-info">
         <tr v-if="questionnaire.description.length > 0">
           <td>Description:</td>
@@ -17,17 +17,11 @@
           <td>Total number of submissions:</td>
           <td>{{ submissionCountForQuestionnaire(questionnaire) }}</td>
         </tr>
-        <tr>
-          <td>Export as CSV</td>
-          <a
-            :id="questionnaire.id"
-            class="download"
-            :download="downloadName(questionnaire)"
-          >
-            <Button @click="downloadCSV(questionnaire)">Click here</Button>
-          </a>
-        </tr>
       </table>
+
+      <Button class="download" @click="downloadCSV(questionnaire)"
+        >Export results as CSV</Button
+      >
 
       <div class="dashboard__questionnaire__body">
         <div
@@ -71,7 +65,8 @@ import Button from "../../Partials/Form/Button";
 export default {
   components: {
     RadarChart,
-    TrackerEntries
+    TrackerEntries,
+    Button
   },
   computed: {
     ...mapGetters("questionnaires", ["myQuestionnaires"]),
@@ -236,6 +231,12 @@ export default {
   .dashboard__dimension__chart {
     width: 38vw;
   }
+}
+
+.download {
+  width: 80vw;
+  margin: 1em auto 0 auto;
+  background: $primary-light;
 }
 
 .chart-placeholder {
