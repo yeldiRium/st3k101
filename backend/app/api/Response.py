@@ -214,8 +214,7 @@ class ResponseListForQuestionnaireResource(Resource):
             SMTPNotSupportedError,
             OSError
         ) as e:
-            # db.session.rollback()
-            db.session.commit()  # FIXME: Just for debugging
+            db.session.rollback()
             XApiPublisher().rollback()
             return {
                 'message': 'Error while sending verification email.',
