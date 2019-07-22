@@ -1,4 +1,3 @@
-import { isNil } from "ramda";
 import * as Future from "fluture/index.js";
 
 import { buildApiUrl } from "./Path";
@@ -54,7 +53,8 @@ function fetchApi(
     body = "",
     headers = {},
     authenticationToken = "",
-    language = null
+    language = null,
+    query = {}
   }
 ) {
   return Future.Future((reject, resolve) => {
@@ -75,6 +75,11 @@ function fetchApi(
 
     if (method !== "GET" && method !== "HEAD") {
       fetchParams["body"] = body;
+    }
+
+    if (Object.keys(query).length > 0) {
+      const queryParams = new URLSearchParams(query);
+      path = path.append(queryParams.toString());
     }
 
     fetch(buildApiUrl(path, language), fetchParams)
