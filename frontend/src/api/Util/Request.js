@@ -79,7 +79,7 @@ function fetchApi(
 
     if (Object.keys(query).length > 0) {
       const queryParams = new URLSearchParams(query);
-      path = path.append(queryParams.toString());
+      path += `?${queryParams.toString()}`;
     }
 
     fetch(buildApiUrl(path, language), fetchParams)

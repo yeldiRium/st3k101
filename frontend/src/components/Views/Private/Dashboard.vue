@@ -5,9 +5,9 @@
       class="dashboard__questionnaire"
       :key="questionnaire.id"
     >
-      <span class="dashboard__questionnaire__title">
-        {{ questionnaire.name }}
-      </span>
+      <span class="dashboard__questionnaire__title">{{
+        questionnaire.name
+      }}</span>
       <table class="dashboard__questionnaire__general-info">
         <tr v-if="questionnaire.description.length > 0">
           <td>Description:</td>
@@ -16,6 +16,16 @@
         <tr>
           <td>Total number of submissions:</td>
           <td>{{ submissionCountForQuestionnaire(questionnaire) }}</td>
+        </tr>
+        <tr>
+          <td>Export as CSV</td>
+          <a
+            :id="questionnaire.id"
+            class="download"
+            :download="downloadName(questionnaire)"
+          >
+            <Button @click="downloadCSV(questionnaire)">Click here</Button>
+          </a>
         </tr>
       </table>
 
@@ -26,9 +36,7 @@
           :key="dimension.id"
         >
           <div class="dashboard__dimension__chart">
-            <span class="chart-title">
-              {{ dimension.name }}
-            </span>
+            <span class="chart-title">{{ dimension.name }}</span>
             <RadarChart
               :title="dimension.name"
               :questionStatistics="statisticsByDimension(dimension)"
@@ -54,9 +62,11 @@
 import { mapGetters } from "vuex-fluture";
 import { Future } from "fluture/index.js";
 import { map, prop, reject, isNil } from "ramda";
+import { saveAs } from "file-saver";
 
 import RadarChart from "../../Partials/Graph/RadarChart";
 import TrackerEntries from "../../Partials/SurveyBase/TrackerEntries";
+import Button from "../../Partials/Form/Button";
 
 export default {
   components: {
@@ -110,6 +120,13 @@ export default {
           )
         );
       };
+    },
+    downloadName() {
+      return questionnaire =>
+        `${questionnaire.name}_${new Date().toDateString()}.csv`.replace(
+          /\s+/g,
+          "-"
+        );
     }
   },
   watch: {
@@ -118,6 +135,17 @@ export default {
     }
   },
   methods: {
+    downloadCSV(questionnaire) {
+      this.$store
+        .dispatch("response/fetchQuestionnaireResponses", {
+          questionnaire,
+          format: "csv"
+        })
+        .fork(this.$handleApiError, data => {
+          const blob = new Blob([data], { type: "text/csv" });
+          saveAs(blob, this.downloadName(questionnaire));
+        });
+    },
     loadData() {
       this.loadStatistics().fork(this.$handleApiError, () => {});
     },

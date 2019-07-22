@@ -76,4 +76,11 @@ const extractJsonPlusLanguage = function(response) {
   }));
 };
 
-export { categorizeResponse, extractJson, extractJsonPlusLanguage };
+const extractText = response => Future.tryP(() => response.text());
+
+export {
+  categorizeResponse,
+  extractJson,
+  extractJsonPlusLanguage,
+  extractText
+};
